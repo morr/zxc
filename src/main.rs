@@ -1,5 +1,8 @@
-fn main() {
-    println!("Hello, world!");
+use bevy::prelude::*;
 
-    let mut guess = "zxc";
+fn main() {
+    // println!("Hello, world!");
+    // rand::
+    // let mut guess = "zxc";
+    App::new().add_plugins(DefaultPlugins).run();
 }
