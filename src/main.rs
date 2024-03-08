@@ -5,7 +5,7 @@ pub use configs::*;
 use bevy::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     prelude::*,
-    window::close_on_esc,
+    window::{close_on_esc, PresentMode},
 };
 use bevy_pancam::{PanCam, PanCamPlugin};
 
@@ -17,6 +17,7 @@ fn main() {
                 .set(WindowPlugin {
                     primary_window: Some(Window {
                         mode: bevy::window::WindowMode::Windowed,
+                        present_mode: PresentMode::AutoNoVsync,
                         resolution: (WW as f32, WH as f32).into(),
                         title: "Zxc".to_string(),
                         ..default()
