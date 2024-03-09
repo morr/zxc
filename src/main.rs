@@ -18,6 +18,8 @@ use bevy::{
 };
 use bevy_pancam::{PanCam, PanCamPlugin};
 
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
+
 fn main() {
     App::new()
         .add_plugins(
@@ -34,6 +36,7 @@ fn main() {
                     ..default()
                 }),
         )
+        .add_plugins(WorldInspectorPlugin::new())
         .add_plugins(PanCamPlugin::default())
         // .add_plugins(LogDiagnosticsPlugin::default())
         // .add_plugins(FrameTimeDiagnosticsPlugin::default())
@@ -47,7 +50,9 @@ fn main() {
         // .insert_resource(ClearColor(Color::rgba_u8(
         //     BG_COLOR.0, BG_COLOR.1, BG_COLOR.2, 0,
         // )))
-        .add_systems(Startup, (spawn_camera, spawn_base, spawn_pawns))
+        .add_systems(Startup, spawn_camera)
+        .add_systems(Startup, spawn_base)
+        // .add_systems(Startup, spawn_pawns)
         .add_systems(Update, close_on_esc)
         .run();
 }
@@ -55,9 +60,17 @@ fn main() {
 fn spawn_camera(mut commands: Commands) {
     println!("Spawning camera");
 
-    commands
-        .spawn(Camera2dBundle::default())
-        .insert(PanCam::default());
+    commands.spawn(Camera2dBundle::default()).insert(PanCam {
+        enabled: true,
+        grab_buttons: vec![MouseButton::Left, MouseButton::Middle],
+        max_scale: Some(1.0),
+        max_x: None,
+        max_y: None,
+        min_scale: 0.01,
+        min_x: None,
+        min_y: None,
+        zoom_to_cursor: true,
+    });
 }
 
 fn spawn_base(
