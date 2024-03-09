@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 mod systems;
 
-#[derive(Component)]
-struct Pawn {}
+#[derive(Component, Debug)]
+pub struct Pawn {}
 
 pub struct PawnPlugin;
 
