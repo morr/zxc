@@ -1,9 +1,13 @@
 pub mod configs;
 pub use configs::*;
 
+mod map;
+mod pawn;
+mod settings;
+
 // use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
+use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::{
-    diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     prelude::*,
     window::{close_on_esc, PresentMode},
 };
@@ -28,9 +32,16 @@ fn main() {
         .add_plugins(PanCamPlugin::default())
         .add_plugins(LogDiagnosticsPlugin::default())
         .add_plugins(FrameTimeDiagnosticsPlugin::default())
-        .insert_resource(ClearColor(Color::rgba_u8(
-            BG_COLOR.0, BG_COLOR.1, BG_COLOR.2, 0,
-        )))
+        .add_plugins(pawn::PawnPlugin)
+        .add_plugins(map::MapPlugin)
+        .insert_resource(ClearColor(Color::rgb(0.1, 0.0, 0.15)))
+        .insert_resource(AmbientLight {
+            color: Color::default(),
+            brightness: 0.75,
+        })
+        // .insert_resource(ClearColor(Color::rgba_u8(
+        //     BG_COLOR.0, BG_COLOR.1, BG_COLOR.2, 0,
+        // )))
         .add_systems(Startup, spawn_camera)
         .add_systems(Update, close_on_esc)
         .run();
