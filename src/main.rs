@@ -3,17 +3,17 @@ use bevy::{
     render::camera::ScalingMode,
     window::{close_on_esc, PresentMode},
 };
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_inspector_egui::quick::FilterQueryInspectorPlugin;
 use bevy_pancam::{PanCam, PanCamPlugin};
 
 pub mod configs;
 use bevy::sprite::MaterialMesh2dBundle;
 pub use configs::*;
 
-mod map;
+// mod map;
 mod settings;
 
-mod pawn;
+// mod pawn;
 // use pawn::*;
 
 mod structure;
@@ -35,13 +35,15 @@ fn main() {
                     ..default()
                 }),
         )
-        .add_plugins(WorldInspectorPlugin::new())
+        .add_plugins(FilterQueryInspectorPlugin::<With<structure::Structure>>::default())
+        // .add_plugins(WorldInspectorPlugin::new())
+        // FilterQueryInspectorPlugin::<With<pawn::components::Pawn>>::default(),
         // .add_plugins(camera::CameraPlugin)
         .add_plugins(PanCamPlugin::default())
         // .add_plugins(LogDiagnosticsPlugin::default())
         // .add_plugins(FrameTimeDiagnosticsPlugin::default())
-        .add_plugins(pawn::PawnPlugin)
-        .add_plugins(map::MapPlugin)
+        // .add_plugins(pawn::PawnPlugin)
+        // .add_plugins(map::MapPlugin)
         .insert_resource(ClearColor(Color::rgb(0.1, 0.0, 0.15)))
         .insert_resource(AmbientLight {
             color: Color::default(),
@@ -52,8 +54,10 @@ fn main() {
         // )))
         .add_systems(Startup, spawn_camera)
         .add_systems(Startup, spawn_base)
-        .add_systems(Startup, spawn_pawns)
+        // .add_systems(Startup, spawn_pawns)
         .add_systems(Update, close_on_esc)
+        // .add_systems(Startup, spawn_paddle)
+        // .add_systems(FixedUpdate, move_paddle)
         .run();
 }
 
@@ -95,10 +99,10 @@ fn spawn_base(
     commands.spawn((
         StructureBundle {
             structure: Structure {
-                x: -1,
-                y: -1,
-                width: 1,
-                height: 1,
+                // x: -1,
+                // y: -1,
+                // width: 1,
+                // height: 1,
             },
             name: Name::new("Pawn"),
         },
@@ -116,7 +120,56 @@ fn spawn_base(
     ));
 }
 
-fn spawn_pawns(mut commands: Commands) {
-    println!("Spawning pawns");
-    commands.spawn(pawn::Pawn {});
-}
+// const PADDLE_COLOR: Color = Color::rgb(0.3, 0.3, 0.7);
+// const PADDLE_SIZE: Vec2 = Vec2::new(1.20, 0.2);
+// const PADDLE_SPEED: f32 = 5.0;
+// const PADDLE_START_Y: f32 = 0.0;
+//
+// const BALLE_COLOR: Color = Color::rgb(1.0, 0.5, 0.5);
+//
+// #[derive(Component)]
+// struct Paddle;
+//
+// fn spawn_paddle(mut commands: Commands) {
+//     commands.spawn((
+//         SpriteBundle {
+//             transform: Transform {
+//                 translation: vec3(0., PADDLE_START_Y, 0.),
+//                 ..default()
+//             },
+//             sprite: Sprite {
+//                 color: PADDLE_COLOR,
+//                 custom_size: Some(PADDLE_SIZE),
+//                 ..default()
+//             },
+//             ..default()
+//         },
+//         Paddle,
+//     ));
+// }
+//
+// fn move_paddle(
+//     input: Res<ButtonInput<KeyCode>>,
+//     time_step: Res<Time>,
+//     mut query: Query<&mut Transform, With<Paddle>>,
+// ) {
+//     let mut paddle_transform = query.single_mut();
+//     let mut direction = 0.0;
+//
+//     if input.pressed(KeyCode::KeyA) {
+//         direction -= 1.0;
+//     }
+//     if input.pressed(KeyCode::KeyD) {
+//         direction += 1.0;
+//     }
+//     // println!("move paddle {:?}", time_step);
+//
+//     let new_x =
+//         paddle_transform.translation.x + direction * PADDLE_SPEED * time_step.delta_seconds();
+//     paddle_transform.translation.x = new_x;
+// }
+//
+// // fn spawn_pawns(mut commands: Commands) {
+// //     println!("Spawning pawns");
+// //     commands.spawn(pawn::Pawn {});
+// // }
