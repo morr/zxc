@@ -1,12 +1,10 @@
-use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
-use bevy::render::camera::ScalingMode;
 use bevy::{
     prelude::*,
+    render::camera::ScalingMode,
     window::{close_on_esc, PresentMode},
 };
-use bevy_pancam::{PanCam, PanCamPlugin};
-
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_pancam::{PanCam, PanCamPlugin};
 
 pub mod configs;
 use bevy::sprite::MaterialMesh2dBundle;
@@ -20,8 +18,6 @@ mod pawn;
 
 mod structure;
 use structure::*;
-
-// mod camera;
 
 fn main() {
     App::new()
