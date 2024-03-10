@@ -1,3 +1,13 @@
+use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+use bevy::render::camera::ScalingMode;
+use bevy::{
+    prelude::*,
+    window::{close_on_esc, PresentMode},
+};
+use bevy_pancam::{PanCam, PanCamPlugin};
+
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
+
 pub mod configs;
 use bevy::sprite::MaterialMesh2dBundle;
 pub use configs::*;
@@ -6,19 +16,12 @@ mod map;
 mod settings;
 
 mod pawn;
-use pawn::*;
+// use pawn::*;
 
 mod structure;
 use structure::*;
 
-use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
-use bevy::{
-    prelude::*,
-    window::{close_on_esc, PresentMode},
-};
-use bevy_pancam::{PanCam, PanCamPlugin};
-
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
+// mod camera;
 
 fn main() {
     App::new()
@@ -37,6 +40,7 @@ fn main() {
                 }),
         )
         .add_plugins(WorldInspectorPlugin::new())
+        // .add_plugins(camera::CameraPlugin)
         .add_plugins(PanCamPlugin::default())
         // .add_plugins(LogDiagnosticsPlugin::default())
         // .add_plugins(FrameTimeDiagnosticsPlugin::default())
@@ -52,7 +56,7 @@ fn main() {
         // )))
         .add_systems(Startup, spawn_camera)
         .add_systems(Startup, spawn_base)
-        // .add_systems(Startup, spawn_pawns)
+        .add_systems(Startup, spawn_pawns)
         .add_systems(Update, close_on_esc)
         .run();
 }
@@ -60,17 +64,23 @@ fn main() {
 fn spawn_camera(mut commands: Commands) {
     println!("Spawning camera");
 
-    commands.spawn(Camera2dBundle::default()).insert(PanCam {
-        enabled: true,
-        grab_buttons: vec![MouseButton::Left, MouseButton::Middle],
-        max_scale: Some(1.0),
-        max_x: None,
-        max_y: None,
-        min_scale: 0.01,
-        min_x: None,
-        min_y: None,
-        zoom_to_cursor: true,
-    });
+    commands
+        .spawn({
+            let mut camera = Camera2dBundle::default();
+            camera.projection.scaling_mode = ScalingMode::FixedVertical(10.0);
+            camera
+        })
+        .insert(PanCam {
+            enabled: true,
+            grab_buttons: vec![MouseButton::Left, MouseButton::Middle],
+            max_scale: Some(10.0),
+            max_x: None,
+            max_y: None,
+            min_scale: 0.01,
+            min_x: None,
+            min_y: None,
+            zoom_to_cursor: true,
+        });
 }
 
 fn spawn_base(
