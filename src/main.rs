@@ -96,20 +96,18 @@ fn spawn_base(
     let mesh_handle = meshes.add(mesh);
     let material_handle = materials.add(material);
 
-    commands.spawn((
-        StructureBundle {
-            structure: Structure {
+    commands.spawn((StructureBundle {
+        structure: Structure {
                 // x: -1,
                 // y: -1,
                 // width: 1,
                 // height: 1,
             },
-            name: Name::new("Pawn"),
-        },
-        MaterialMesh2dBundle {
+        name: Name::new("Pawn"),
+        mesh_bundle: MaterialMesh2dBundle {
             mesh: mesh_handle.into(),
             material: material_handle,
-            // transform: Transform::from_xyz(
+            transform: Transform::from_xyz(0.0, 0.0, 0.0),
             //     // Distribute shapes from -X_EXTENT to +X_EXTENT.
             //     -X_EXTENT / 2. + i as f32 / (num_shapes - 1) as f32 * X_EXTENT,
             //     0.0,
@@ -117,7 +115,7 @@ fn spawn_base(
             // ),
             ..default()
         },
-    ));
+    },));
 }
 
 // const PADDLE_COLOR: Color = Color::rgb(0.3, 0.3, 0.7);
