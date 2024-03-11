@@ -27,7 +27,8 @@ fn main() {
                 .set(WindowPlugin {
                     primary_window: Some(Window {
                         mode: bevy::window::WindowMode::Windowed,
-                        present_mode: PresentMode::AutoNoVsync,
+                        // present_mode: PresentMode::AutoNoVsync,
+                        present_mode: PresentMode::AutoVsync,
                         resolution: (WW as f32, WH as f32).into(),
                         title: "Zxc".to_string(),
                         ..default()
@@ -90,7 +91,7 @@ fn spawn_base(
 ) {
     println!("Spawning base");
 
-    let mesh = Mesh::from(Rectangle::new(1.0, 1.0));
+    let mesh = Mesh::from(Rectangle::new(2.0, 2.0));
     let material = ColorMaterial::from(Color::rgb(1., 0., 0.));
 
     let mesh_handle = meshes.add(mesh);
@@ -103,16 +104,11 @@ fn spawn_base(
                 // width: 1,
                 // height: 1,
             },
-        name: Name::new("Pawn"),
+        name: Name::new("Base"),
         mesh_bundle: MaterialMesh2dBundle {
             mesh: mesh_handle.into(),
             material: material_handle,
             transform: Transform::from_xyz(0.0, 0.0, 0.0),
-            //     // Distribute shapes from -X_EXTENT to +X_EXTENT.
-            //     -X_EXTENT / 2. + i as f32 / (num_shapes - 1) as f32 * X_EXTENT,
-            //     0.0,
-            //     0.0,
-            // ),
             ..default()
         },
     },));
