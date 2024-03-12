@@ -1,23 +1,16 @@
 use bevy::{
     prelude::*,
-    render::camera::ScalingMode,
     window::{close_on_esc, PresentMode},
 };
 use bevy_inspector_egui::quick::FilterQueryInspectorPlugin;
-use bevy_pancam::{PanCam, PanCamPlugin};
 
 pub mod configs;
-use bevy::sprite::MaterialMesh2dBundle;
 pub use configs::*;
-
-// mod map;
 mod settings;
-
-// mod pawn;
-// use pawn::*;
-
 mod structure;
-use structure::*;
+// use structure::*;
+mod camera;
+mod utils;
 
 fn main() {
     App::new()
@@ -37,10 +30,10 @@ fn main() {
                 }),
         )
         .add_plugins(FilterQueryInspectorPlugin::<With<structure::Structure>>::default())
+        .add_plugins(camera::CameraPlugin)
         // .add_plugins(WorldInspectorPlugin::new())
         // FilterQueryInspectorPlugin::<With<pawn::components::Pawn>>::default(),
         // .add_plugins(camera::CameraPlugin)
-        .add_plugins(PanCamPlugin::default())
         // .add_plugins(bevy::diagnostic::LogDiagnosticsPlugin::default())
         // .add_plugins(bevy::diagnostic::FrameTimeDiagnosticsPlugin::default())
         // .add_plugins(pawn::PawnPlugin)
@@ -53,92 +46,13 @@ fn main() {
         // .insert_resource(ClearColor(Color::rgba_u8(
         //     BG_COLOR.0, BG_COLOR.1, BG_COLOR.2, 0,
         // )))
-        .add_systems(Startup, spawn_camera)
-        .add_systems(Startup, spawn_base)
+        .add_systems(Startup, structure::spawn_base)
         // .add_systems(Startup, spawn_pawns)
         .add_systems(Update, close_on_esc)
-        .add_systems(Update, render_grid)
+        .add_systems(Update, utils::render_grid)
         // .add_systems(Startup, spawn_paddle)
         // .add_systems(FixedUpdate, move_paddle)
         .run();
-}
-
-fn spawn_camera(mut commands: Commands) {
-    println!("Spawning camera");
-
-    commands
-        .spawn({
-            let mut camera = Camera2dBundle::default();
-            camera.projection.scaling_mode = ScalingMode::FixedVertical(10.0);
-            camera
-        })
-        .insert(PanCam {
-            enabled: true,
-            grab_buttons: vec![MouseButton::Left, MouseButton::Middle],
-            max_scale: Some(20.0),
-            max_x: None,
-            max_y: None,
-            min_scale: 0.5,
-            min_x: None,
-            min_y: None,
-            zoom_to_cursor: true,
-        });
-}
-
-fn spawn_base(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
-    println!("Spawning base");
-
-    let mesh = Mesh::from(Rectangle::new(2.0, 2.0));
-    let material = ColorMaterial::from(Color::rgb(1., 0., 0.));
-
-    let mesh_handle = meshes.add(mesh);
-    let material_handle = materials.add(material);
-
-    commands.spawn((StructureBundle {
-        structure: Structure {
-                // x: -1,
-                // y: -1,
-                // width: 1,
-                // height: 1,
-            },
-        name: Name::new("Base"),
-        mesh_bundle: MaterialMesh2dBundle {
-            mesh: mesh_handle.into(),
-            material: material_handle,
-            transform: Transform::from_xyz(0.0, 0.0, 0.0),
-            ..default()
-        },
-    },));
-}
-
-fn render_grid(mut gizmos: Gizmos) {
-    let from = -99;
-    let to = 99;
-
-    for i in from..to {
-        gizmos.line_2d(
-            Vec2::new(from as f32, i as f32),
-            Vec2::new(to as f32, i as f32),
-            if i == 0 {
-                Color::rgb(0.4, 0.4, 0.4)
-            } else {
-                Color::rgb(0.2, 0.2, 0.2)
-            },
-        );
-        gizmos.line_2d(
-            Vec2::new(i as f32, from as f32),
-            Vec2::new(i as f32, to as f32),
-            if i == 0 {
-                Color::rgb(0.4, 0.4, 0.4)
-            } else {
-                Color::rgb(0.2, 0.2, 0.2)
-            },
-        );
-    }
 }
 
 // const PADDLE_COLOR: Color = Color::rgb(0.3, 0.3, 0.7);
