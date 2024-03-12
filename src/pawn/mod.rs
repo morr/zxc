@@ -1,11 +1,15 @@
 use bevy::prelude::*;
+
+pub mod components;
 mod systems;
 
-#[derive(Component, Debug)]
-pub struct Pawn {}
+pub use components::*;
+pub use systems::*;
 
 pub struct PawnPlugin;
 
 impl Plugin for PawnPlugin {
-    fn build(&self, app: &mut App) {}
+    fn build(&self, app: &mut App) {
+        app.add_systems(Startup, spawn_pawns);
+    }
 }

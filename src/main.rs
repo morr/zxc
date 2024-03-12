@@ -6,6 +6,7 @@ use bevy_inspector_egui::quick::FilterQueryInspectorPlugin;
 
 pub mod configs;
 pub use configs::*;
+mod pawn;
 mod settings;
 mod structure;
 // use structure::*;
@@ -23,21 +24,23 @@ fn main() {
                         // present_mode: PresentMode::AutoNoVsync,
                         present_mode: PresentMode::AutoVsync,
                         resolution: (WW as f32, WH as f32).into(),
-                        title: "Zxc".to_string(),
+                        title: "Test App".to_string(),
                         ..default()
                     }),
                     ..default()
                 }),
         )
-        .add_plugins(FilterQueryInspectorPlugin::<With<structure::Structure>>::default())
-        .add_plugins(camera::CameraPlugin)
         // .add_plugins(WorldInspectorPlugin::new())
-        // FilterQueryInspectorPlugin::<With<pawn::components::Pawn>>::default(),
-        // .add_plugins(camera::CameraPlugin)
-        // .add_plugins(bevy::diagnostic::LogDiagnosticsPlugin::default())
-        // .add_plugins(bevy::diagnostic::FrameTimeDiagnosticsPlugin::default())
-        // .add_plugins(pawn::PawnPlugin)
-        // .add_plugins(map::MapPlugin)
+        .add_plugins(FilterQueryInspectorPlugin::<With<structure::Structure>>::default())
+        .add_plugins((
+            camera::CameraPlugin,
+            pawn::PawnPlugin,
+            structure::StructurePlugin,
+        ))
+        .add_plugins((
+            bevy::diagnostic::LogDiagnosticsPlugin::default(),
+            bevy::diagnostic::FrameTimeDiagnosticsPlugin::default(),
+        ))
         .insert_resource(ClearColor(Color::rgb(0.1, 0.0, 0.15)))
         .insert_resource(AmbientLight {
             color: Color::default(),
@@ -46,8 +49,6 @@ fn main() {
         // .insert_resource(ClearColor(Color::rgba_u8(
         //     BG_COLOR.0, BG_COLOR.1, BG_COLOR.2, 0,
         // )))
-        .add_systems(Startup, structure::spawn_base)
-        // .add_systems(Startup, spawn_pawns)
         .add_systems(Update, close_on_esc)
         .add_systems(Update, utils::render_grid)
         // .add_systems(Startup, spawn_paddle)
