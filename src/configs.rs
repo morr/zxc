@@ -3,4 +3,4 @@
 pub const WW: usize = 1920;
 pub const WH: usize = 1080;
 
-pub const STARTING_PAWNS: u32 = 100;
+pub const STARTING_PAWNS: u32 = 10;

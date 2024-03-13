@@ -34,8 +34,8 @@ fn main() {
         .add_plugins(FilterQueryInspectorPlugin::<With<structure::Structure>>::default())
         .add_plugins((
             camera::CameraPlugin,
-            pawn::PawnPlugin,
             structure::StructurePlugin,
+            pawn::PawnPlugin,
         ))
         .add_plugins((
             bevy::diagnostic::LogDiagnosticsPlugin::default(),
