@@ -19,13 +19,13 @@ fn spawn_camera(mut commands: Commands) {
     commands
         .spawn({
             let mut camera = Camera2dBundle::default();
-            camera.projection.scaling_mode = ScalingMode::FixedVertical(10.0);
+            camera.projection.scaling_mode = ScalingMode::FixedVertical(20.0);
             camera
         })
         .insert(PanCam {
             enabled: true,
             grab_buttons: vec![MouseButton::Left, MouseButton::Middle],
-            max_scale: Some(20.0),
+            max_scale: Some(5.0),
             max_x: None,
             max_y: None,
             min_scale: 0.5,
