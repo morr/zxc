@@ -1,5 +1,6 @@
 use super::components::*;
-use crate::{configs, structure::Structure};
+use crate::TILE_SIZE;
+use crate::{configs, structure::Structure, utils::TranslationHelper};
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use rand::prelude::*;
 
@@ -25,17 +26,18 @@ pub fn spawn_pawns(
     let material_handle = materials.add(material);
 
     let mut rng = rand::thread_rng();
-    let radius = 2.0;
+    let radius = TILE_SIZE * 2.0;
 
     let transform = q.single();
 
     for i in 0..configs::STARTING_PAWNS {
         let random_angle: f32 = rng.gen_range(0.0..360.0);
-        let coords = Vec3::new(
+        let pos = Vec2::new(
             transform.translation.x + random_angle.cos() * radius,
             transform.translation.y + random_angle.sin() * radius,
-            0.0,
-        );
+        )
+        .world_pos_to_tile()
+        .tile_pos_to_world();
 
         commands.spawn((PawnBundle {
             structure: Pawn {},
@@ -43,7 +45,7 @@ pub fn spawn_pawns(
             mesh_bundle: MaterialMesh2dBundle {
                 mesh: mesh_handle.clone().into(),
                 material: material_handle.clone(),
-                transform: Transform::from_translation(coords),
+                transform: Transform::from_xyz(pos.x, pos.y, 0.0),
                 ..default()
             },
         },));

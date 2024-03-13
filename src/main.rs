@@ -13,6 +13,8 @@ mod structure;
 mod camera;
 mod utils;
 
+use utils::TranslationHelper;
+
 fn main() {
     App::new()
         .add_plugins(

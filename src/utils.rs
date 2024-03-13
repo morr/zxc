@@ -7,8 +7,8 @@ pub fn render_grid(mut gizmos: Gizmos) {
 
     for i in from..to {
         gizmos.line_2d(
-            Vec2::new(from as f32, i as f32),
-            Vec2::new(to as f32, i as f32),
+            Vec2::new(from as f32 * TILE_SIZE, i as f32 * TILE_SIZE),
+            Vec2::new(to as f32 * TILE_SIZE, i as f32 * TILE_SIZE),
             if i == 0 {
                 Color::rgb(0.4, 0.4, 0.4)
             } else {
@@ -16,8 +16,8 @@ pub fn render_grid(mut gizmos: Gizmos) {
             },
         );
         gizmos.line_2d(
-            Vec2::new(i as f32, from as f32),
-            Vec2::new(i as f32, to as f32),
+            Vec2::new(i as f32 * TILE_SIZE, from as f32 * TILE_SIZE),
+            Vec2::new(i as f32 * TILE_SIZE, to as f32 * TILE_SIZE),
             if i == 0 {
                 Color::rgb(0.4, 0.4, 0.4)
             } else {
