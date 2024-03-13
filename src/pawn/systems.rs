@@ -31,8 +31,11 @@ pub fn spawn_pawns(
 
     for i in 0..configs::STARTING_PAWNS {
         let random_angle: f32 = rng.gen_range(0.0..360.0);
-        let x = transform.translation.x + random_angle.cos() * radius;
-        let y = transform.translation.y + random_angle.sin() * radius;
+        let coords = Vec3::new(
+            transform.translation.x + random_angle.cos() * radius,
+            transform.translation.y + random_angle.sin() * radius,
+            0.0,
+        );
 
         commands.spawn((PawnBundle {
             structure: Pawn {},
@@ -40,7 +43,7 @@ pub fn spawn_pawns(
             mesh_bundle: MaterialMesh2dBundle {
                 mesh: mesh_handle.clone().into(),
                 material: material_handle.clone(),
-                transform: Transform::from_xyz(x, y, 0.0),
+                transform: Transform::from_translation(coords),
                 ..default()
             },
         },));
