@@ -29,14 +29,14 @@ pub fn spawn_pawns(
 
     let transform = q.single();
 
-    for _i in 1..configs::STARTING_PAWNS {
+    for i in 1..configs::STARTING_PAWNS {
         let random_angle: f32 = rng.gen_range(0.0..360.0);
         let x = transform.translation.x + random_angle.cos() * radius;
         let y = transform.translation.y + random_angle.sin() * radius;
 
         commands.spawn((PawnBundle {
             structure: Pawn {},
-            name: Name::new("Base"),
+            name: Name::new(format!("Pawn {i}")),
             mesh_bundle: MaterialMesh2dBundle {
                 mesh: mesh_handle.clone().into(),
                 material: material_handle.clone(),

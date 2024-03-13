@@ -32,6 +32,7 @@ fn main() {
         )
         // .add_plugins(WorldInspectorPlugin::new())
         .add_plugins(FilterQueryInspectorPlugin::<With<structure::Structure>>::default())
+        .add_plugins(FilterQueryInspectorPlugin::<With<pawn::Pawn>>::default())
         .add_plugins((
             camera::CameraPlugin,
             structure::StructurePlugin,

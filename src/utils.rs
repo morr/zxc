@@ -1,8 +1,8 @@
 use bevy::{gizmos::gizmos::Gizmos, prelude::*, render::color::Color};
 
 pub fn render_grid(mut gizmos: Gizmos) {
-    let from = -99;
-    let to = 99;
+    let from = -9;
+    let to = 9;
 
     for i in from..to {
         gizmos.line_2d(
