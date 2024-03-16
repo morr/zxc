@@ -61,15 +61,18 @@ pub fn spawn_pawns(
 pub fn wander_pawns(time: Res<Time>, mut q: Query<(&mut Transform, &mut Pawn, &Name), With<Pawn>>) {
     let mut rng = rand::thread_rng();
 
-    for (mut transform, mut pawn, name) in &mut q {
+    for (mut transform, mut pawn, _name) in &mut q {
         pawn.retry_pathfinding_timer.tick(time.delta());
 
         if pawn.retry_pathfinding_timer.finished() {
-            pawn.retry_pathfinding_timer =
-                Timer::new(Duration::from_secs_f32(rng.gen_range(0.5..3.0)), TimerMode::Once);
+            pawn.retry_pathfinding_timer = Timer::new(
+                Duration::from_secs_f32(rng.gen_range(0.5..3.0)),
+                TimerMode::Once,
+            );
+            let random_angle: f32 = rng.gen_range(0.0..360.0);
             pawn.move_vector = Some(Vec2::new(
-                rng.gen_range(-1.0..1.0),
-                rng.gen_range(-1.0..1.0),
+                random_angle.cos(),
+                random_angle.sin(),
             ));
         }
 
