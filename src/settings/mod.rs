@@ -5,11 +5,17 @@ pub struct Settings {
     pub time_scale: f32,
 }
 
+impl Default for Settings {
+    fn default() -> Self {
+        Self { time_scale: 1 }
+    }
+}
+
 pub struct SettingsPlugin;
 
 impl Plugin for SettingsPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(Settings { time_scale: 1.0 })
+        app.init_resource::<Settings>()
             .add_systems(FixedUpdate, update_settings);
     }
 }
