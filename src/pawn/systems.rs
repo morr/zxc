@@ -70,10 +70,7 @@ pub fn wander_pawns(time: Res<Time>, mut q: Query<(&mut Transform, &mut Pawn, &N
                 TimerMode::Once,
             );
             let random_angle: f32 = rng.gen_range(0.0..360.0);
-            pawn.move_vector = Some(Vec2::new(
-                random_angle.cos(),
-                random_angle.sin(),
-            ));
+            pawn.move_vector = Some(Vec2::new(random_angle.cos(), random_angle.sin()));
         }
 
         if let Some(move_vector) = pawn.move_vector {
