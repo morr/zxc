@@ -1,4 +1,7 @@
+use std::time::Duration;
+
 use super::components::*;
+use crate::PAWN_SPEED;
 use crate::TILE_SIZE;
 use crate::{configs, structure::Structure, utils::TranslationHelper};
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
@@ -40,7 +43,13 @@ pub fn spawn_pawns(
         .tile_pos_to_world();
 
         commands.spawn((PawnBundle {
-            structure: Pawn {},
+            pawn: Pawn {
+                move_vector: None,
+                retry_pathfinding_timer: Timer::new(
+                    Duration::from_secs(0),
+                    TimerMode::Once,
+                ),
+            },
             name: Name::new(format!("Pawn {i}")),
             mesh_bundle: MaterialMesh2dBundle {
                 mesh: mesh_handle.clone().into(),
@@ -49,5 +58,40 @@ pub fn spawn_pawns(
                 ..default()
             },
         },));
+    }
+}
+
+pub fn wander_pawns(time: Res<Time>, mut q: Query<(&mut Transform, &mut Pawn, &Name), With<Pawn>>) {
+    let mut rng = rand::thread_rng();
+
+    for (mut transform, mut pawn, name) in &mut q {
+        println!("wandering pawn {}", name);
+
+        // if pawn.move_timer.is_none() {
+        //     pawn.move_timer = Some(Timer::new(
+        //         Duration::from_secs(rng.gen_range(1..10)),
+        //         TimerMode::Once,
+        //     ));
+        // }
+        // if let Some(ref move_timer) = pawn.move_timer {
+        //     move_timer.tick(Duration::from_secs_f32(time.delta_seconds()));
+        // };
+        pawn.retry_pathfinding_timer.tick(time.delta());
+
+        if pawn.retry_pathfinding_timer.finished() {
+            println!("zzz");
+
+            pawn.retry_pathfinding_timer =
+                Timer::new(Duration::from_secs(rng.gen_range(1..10)), TimerMode::Once);
+            pawn.move_vector = Some(Vec2::new(
+                rng.gen_range(-1.0..1.0),
+                rng.gen_range(-1.0..1.0),
+            ));
+        }
+
+        if let Some(move_vector) = pawn.move_vector {
+            transform.translation.x += move_vector.x * PAWN_SPEED * time.delta_seconds();
+            transform.translation.y += move_vector.y * PAWN_SPEED * time.delta_seconds();
+        }
     }
 }
