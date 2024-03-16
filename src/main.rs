@@ -2,7 +2,7 @@ use bevy::{
     prelude::*,
     window::{close_on_esc, PresentMode},
 };
-use bevy_inspector_egui::quick::FilterQueryInspectorPlugin;
+// use bevy_inspector_egui::quick::FilterQueryInspectorPlugin;
 
 pub mod configs;
 pub use configs::*;
@@ -34,8 +34,8 @@ fn main() {
                 }),
         )
         // .add_plugins(WorldInspectorPlugin::new())
-        .add_plugins(FilterQueryInspectorPlugin::<With<structure::Structure>>::default())
-        .add_plugins(FilterQueryInspectorPlugin::<With<pawn::Pawn>>::default())
+        // .add_plugins(FilterQueryInspectorPlugin::<With<structure::Structure>>::default())
+        // .add_plugins(FilterQueryInspectorPlugin::<With<pawn::Pawn>>::default())
         .add_plugins((
             camera::CameraPlugin,
             settings::SettingsPlugin,
