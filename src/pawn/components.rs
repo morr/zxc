@@ -1,4 +1,6 @@
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
+use rand::prelude::*;
+use std::time::Duration;
 
 #[derive(Component)]
 pub struct Pawn {
@@ -14,12 +16,21 @@ pub struct PawnBundle {
     pub mesh_bundle: MaterialMesh2dBundle<ColorMaterial>,
 }
 
-// impl Default for Pawn {
-//     fn default() -> Self {
-//         Self {
-//             wave: 0,
-//             enemy_count_multiplier: 1,
-//             enemy_spawn_timer: Timer::from_seconds(30.0, TimerMode::Repeating),
+impl Default for Pawn {
+    fn default() -> Self {
+        let mut rng = rand::thread_rng();
+
+        Self {
+            // age: rng.gen_range(14..32),
+            move_vector: None,
+            retry_pathfinding_timer: Timer::new(Duration::from_secs(0), TimerMode::Once),
+        }
+    }
+}
+
+// impl Pawn {
+//     fn new() -> Self {
+//         Pawn {
 //         }
 //     }
 // }

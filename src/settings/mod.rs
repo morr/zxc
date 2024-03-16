@@ -7,7 +7,7 @@ pub struct Settings {
 
 impl Default for Settings {
     fn default() -> Self {
-        Self { time_scale: 1 }
+        Self { time_scale: 1.0 }
     }
 }
 

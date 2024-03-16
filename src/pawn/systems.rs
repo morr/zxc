@@ -44,10 +44,7 @@ pub fn spawn_pawns(
         .tile_pos_to_world();
 
         commands.spawn((PawnBundle {
-            pawn: Pawn {
-                move_vector: None,
-                retry_pathfinding_timer: Timer::new(Duration::from_secs(0), TimerMode::Once),
-            },
+            pawn: Pawn::default(),
             name: Name::new(format!("Pawn {i}")),
             mesh_bundle: MaterialMesh2dBundle {
                 mesh: mesh_handle.clone().into(),
