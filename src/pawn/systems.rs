@@ -1,6 +1,7 @@
 use std::time::Duration;
 
 use super::components::*;
+use crate::settings::Settings;
 use crate::PAWN_SPEED;
 use crate::TILE_SIZE;
 use crate::{configs, structure::Structure, utils::TranslationHelper};
@@ -58,7 +59,11 @@ pub fn spawn_pawns(
     }
 }
 
-pub fn wander_pawns(time: Res<Time>, mut q: Query<(&mut Transform, &mut Pawn, &Name), With<Pawn>>) {
+pub fn wander_pawns(
+    time: Res<Time>,
+    mut q: Query<(&mut Transform, &mut Pawn, &Name), With<Pawn>>,
+    settings: Res<Settings>,
+) {
     let mut rng = rand::thread_rng();
 
     for (mut transform, mut pawn, _name) in &mut q {
@@ -74,8 +79,10 @@ pub fn wander_pawns(time: Res<Time>, mut q: Query<(&mut Transform, &mut Pawn, &N
         }
 
         if let Some(move_vector) = pawn.move_vector {
-            transform.translation.x += move_vector.x * PAWN_SPEED * time.delta_seconds();
-            transform.translation.y += move_vector.y * PAWN_SPEED * time.delta_seconds();
+            transform.translation.x +=
+                move_vector.x * PAWN_SPEED * time.delta_seconds() * settings.time_scale;
+            transform.translation.y +=
+                move_vector.y * PAWN_SPEED * time.delta_seconds() * settings.time_scale;
         }
     }
 }

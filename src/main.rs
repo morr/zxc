@@ -13,7 +13,7 @@ mod structure;
 mod camera;
 mod utils;
 
-use utils::TranslationHelper;
+// use utils::TranslationHelper;
 
 fn main() {
     App::new()
@@ -38,6 +38,7 @@ fn main() {
         .add_plugins(FilterQueryInspectorPlugin::<With<pawn::Pawn>>::default())
         .add_plugins((
             camera::CameraPlugin,
+            settings::SettingsPlugin,
             structure::StructurePlugin,
             pawn::PawnPlugin,
         ))
