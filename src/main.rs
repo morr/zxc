@@ -15,6 +15,14 @@ mod utils;
 
 // use utils::TranslationHelper;
 
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
+enum TimeState {
+    // MainMenu,
+    #[default]
+    Running,
+    Paused,
+}
+
 fn main() {
     App::new()
         .insert_resource(Msaa::Off)
@@ -36,6 +44,7 @@ fn main() {
         // .add_plugins(WorldInspectorPlugin::new())
         // .add_plugins(FilterQueryInspectorPlugin::<With<structure::Structure>>::default())
         // .add_plugins(FilterQueryInspectorPlugin::<With<pawn::Pawn>>::default())
+        .init_state::<TimeState>()
         .add_plugins((
             camera::CameraPlugin,
             settings::SettingsPlugin,
@@ -55,8 +64,8 @@ fn main() {
         // .insert_resource(ClearColor(Color::rgba_u8(
         //     BG_COLOR.0, BG_COLOR.1, BG_COLOR.2, 0,
         // )))
-        .add_systems(Update, close_on_esc)
-        .add_systems(Update, utils::render_grid)
+        .add_systems(FixedUpdate, close_on_esc)
+        .add_systems(FixedUpdate, utils::render_grid)
         // .add_systems(Startup, spawn_paddle)
         // .add_systems(FixedUpdate, move_paddle)
         .run();
