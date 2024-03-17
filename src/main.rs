@@ -6,11 +6,11 @@ use bevy::{
 
 pub mod configs;
 pub use configs::*;
+mod camera;
 mod pawn;
 mod settings;
 mod structure;
 mod ui;
-mod camera;
 mod utils;
 
 // use utils::TranslationHelper;
