@@ -20,7 +20,7 @@ pub struct DebugLine {}
 fn render_ui(mut commands: Commands, settings: Res<Settings>, asset_server: Res<AssetServer>) {
     commands.spawn((
         TextBundle::from_section(
-            speed_line(&settings),
+            format_ui_line(&settings),
             TextStyle {
                 font: asset_server.load("fonts/FiraMono-Medium.ttf"),
                 font_size: 24.,
@@ -40,10 +40,10 @@ fn update_ui(
         println!("update ui");
 
         let mut text = q.single_mut();
-        text.sections[0].value = speed_line(&settings);
+        text.sections[0].value = format_ui_line(&settings);
     }
 }
 
-fn speed_line(settings: &Res<Settings>) -> String {
+fn format_ui_line(settings: &Res<Settings>) -> String {
     format!("Speed: {}x", settings.time_scale)
 }
