@@ -1,4 +1,4 @@
-use crate::ui::UpdateUiEvent;
+use crate::{ui::UpdateUiEvent, TimeState};
 use bevy::prelude::*;
 
 #[derive(Resource)]
@@ -22,6 +22,8 @@ impl Plugin for SettingsPlugin {
 }
 
 fn update_settings(
+    time_state: Res<State<TimeState>>,
+    mut next_state: ResMut<NextState<TimeState>>,
     mut settings: ResMut<Settings>,
     mut ev_update_ui: EventWriter<UpdateUiEvent>,
     keys: Res<ButtonInput<KeyCode>>,
@@ -31,7 +33,13 @@ fn update_settings(
         ev_update_ui.send(UpdateUiEvent {});
     }
     if keys.just_pressed(KeyCode::Minus) {
-        settings.time_scale -= 1.0;
-        ev_update_ui.send(UpdateUiEvent {});
+        if let TimeState::Running = time_state.get() {
+            if settings.time_scale == 1.0 {
+                next_state.set(TimeState::Paused);
+            } else {
+                settings.time_scale -= 1.0;
+            }
+            ev_update_ui.send(UpdateUiEvent {});
+        }
     }
 }

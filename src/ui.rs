@@ -1,4 +1,4 @@
-use crate::{settings::Settings, PausedState};
+use crate::{settings::Settings, TimeState};
 use bevy::prelude::*;
 
 pub struct UiPlugin;
@@ -20,12 +20,12 @@ pub struct DebugLine {}
 fn render_ui(
     mut commands: Commands,
     settings: Res<Settings>,
-    // app_state: Res<PausedState>,
+    time_state: Res<State<TimeState>>,
     asset_server: Res<AssetServer>,
 ) {
     commands.spawn((
         TextBundle::from_section(
-            format_ui_line(&settings),
+            format_ui_line(&settings, &time_state),
             TextStyle {
                 font: asset_server.load("fonts/FiraMono-Medium.ttf"),
                 font_size: 24.,
@@ -38,19 +38,21 @@ fn render_ui(
 
 fn update_ui(
     settings: Res<Settings>,
-    _state: Res<State<PausedState>>,
+    time_state: Res<State<TimeState>>,
     mut ev_update_ui: EventReader<UpdateUiEvent>,
     mut q: Query<&mut Text, With<DebugLine>>,
 ) {
     for _ev in ev_update_ui.read() {
         println!("update ui");
 
-        // current_state
         let mut text = q.single_mut();
-        text.sections[0].value = format_ui_line(&settings);
+        text.sections[0].value = format_ui_line(&settings, &time_state);
     }
 }
 
-fn format_ui_line(settings: &Res<Settings>) -> String {
-    format!("Speed: {}x", settings.time_scale)
+fn format_ui_line(settings: &Res<Settings>, time_state: &Res<State<TimeState>>) -> String {
+    match time_state.get() {
+        TimeState::Running => format!("Speed: {}x", settings.time_scale),
+        TimeState::Paused => "Paused".to_string(),
+    }
 }
