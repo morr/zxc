@@ -17,7 +17,7 @@ pub fn spawn_pawns(
     // q: Query<(Entity, &GlobalTransform), (With<Structure>)>,
     // q: Query<&Transform, With<Structure>>,
     // q: Query<&Name, With<Structure>>,
-    q: Query<&Transform, With<Structure>>,
+    query: Query<&Transform, With<Structure>>,
     // mut q: Query<&Structure>,
 
     // query_base: Query<&Structure>,
@@ -32,7 +32,7 @@ pub fn spawn_pawns(
     let mut rng = rand::thread_rng();
     let radius = TILE_SIZE * 2.0;
 
-    let transform = q.single();
+    let transform = query.single();
 
     for i in 0..configs::STARTING_PAWNS {
         let random_angle: f32 = rng.gen_range(0.0..360.0);
@@ -58,12 +58,12 @@ pub fn spawn_pawns(
 
 pub fn wander_pawns(
     time: Res<Time>,
-    mut q: Query<(&mut Transform, &mut Pawn, &Name), With<Pawn>>,
+    mut query: Query<(&mut Transform, &mut Pawn, &Name), With<Pawn>>,
     settings: Res<Settings>,
 ) {
     let mut rng = rand::thread_rng();
 
-    for (mut transform, mut pawn, _name) in &mut q {
+    for (mut transform, mut pawn, _name) in &mut query {
         pawn.retry_pathfinding_timer.tick(time.delta());
 
         if pawn.retry_pathfinding_timer.finished() {

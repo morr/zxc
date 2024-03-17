@@ -1,5 +1,5 @@
 use crate::{settings::Settings, TimeState};
-use bevy::prelude::*;
+use bevy::{ecs::query::QuerySingleError, prelude::*};
 
 pub struct UiPlugin;
 
@@ -7,7 +7,8 @@ impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<UpdateUiEvent>()
             .add_systems(Startup, render_ui)
-            .add_systems(FixedUpdate, update_ui);
+            .add_systems(FixedUpdate, update_ui)
+            .add_systems(FixedUpdate, hide_help);
     }
 }
 
@@ -15,7 +16,10 @@ impl Plugin for UiPlugin {
 pub struct UpdateUiEvent {}
 
 #[derive(Component)]
-pub struct DebugLine {}
+pub struct DebugText {}
+
+#[derive(Component)]
+pub struct HelpText {}
 
 fn render_ui(
     mut commands: Commands,
@@ -23,54 +27,30 @@ fn render_ui(
     time_state: Res<State<TimeState>>,
     asset_server: Res<AssetServer>,
 ) {
-    let font = asset_server.load("fonts/FiraMono-Medium.ttf");
     commands.spawn((
         TextBundle::from_section(
             format_ui_line(&settings, &time_state),
             TextStyle {
-                font: font.clone(),
+                font: asset_server.load("fonts/FiraMono-Medium.ttf"),
                 font_size: 24.,
                 color: Color::WHITE,
             },
         ),
-        DebugLine {},
+        DebugText {},
     ));
-    commands.spawn(
-        TextBundle::from_section(
-            "\"space\" - pause\n\"=\"/\"-\" - change game speed\n\"esc\" - hide help",
-            TextStyle {
-                font: font.clone(),
-                font_size: 16.,
-                color: Color::WHITE,
-            },
-        )
-        .with_style(Style {
-            // position_type: PositionType::Absolute,
-            left: Val::Px(0.0),
-            top: Val::Px(25.0),
-            ..default()
-        }),
-    );
+    spawn_help(&mut commands, &asset_server);
 }
-
-// ,
-// position: UiRect {
-//     bottom: Val::Px(5.0),
-//     right: Val::Px(15.0),
-//     ..default()
-// },
-// ..default()
 
 fn update_ui(
     settings: Res<Settings>,
     time_state: Res<State<TimeState>>,
     mut ev_update_ui: EventReader<UpdateUiEvent>,
-    mut q: Query<&mut Text, With<DebugLine>>,
+    mut query: Query<&mut Text, With<DebugText>>,
 ) {
     for _ev in ev_update_ui.read() {
         println!("update ui");
 
-        let mut text = q.single_mut();
+        let mut text = query.single_mut();
         text.sections[0].value = format_ui_line(&settings, &time_state);
     }
 }
@@ -80,4 +60,45 @@ fn format_ui_line(settings: &Res<Settings>, time_state: &Res<State<TimeState>>) 
         TimeState::Running => format!("Speed: {}x", settings.time_scale),
         TimeState::Paused => "Paused".to_string(),
     }
+}
+
+fn hide_help(
+    mut commands: Commands,
+    keys: Res<ButtonInput<KeyCode>>,
+    // query: Query<Entity>,
+    query: Query<Entity, With<HelpText>>,
+    asset_server: Res<AssetServer>,
+) {
+    if keys.just_pressed(KeyCode::KeyH) {
+        match query.get_single() {
+            Ok(entity) => {
+                commands.entity(entity).despawn();
+            }
+            Err(QuerySingleError::NoEntities(_)) => {
+                spawn_help(&mut commands, &asset_server);
+            }
+            Err(QuerySingleError::MultipleEntities(_)) => {
+                panic!("Error: There is more than one help text!");
+            }
+        }
+    }
+}
+
+fn spawn_help(commands: &mut Commands, asset_server: &Res<AssetServer>) {
+    commands.spawn((
+        TextBundle::from_section(
+            "\"space\" - pause\n\"=\"/\"-\" - change game speed\n\"h\" - toggle help",
+            TextStyle {
+                font: asset_server.load("fonts/FiraMono-Medium.ttf"),
+                font_size: 16.,
+                color: Color::WHITE,
+            },
+        )
+        .with_style(Style {
+            left: Val::Px(0.0),
+            top: Val::Px(25.0),
+            ..default()
+        }),
+        HelpText {},
+    ));
 }
