@@ -65,7 +65,7 @@ fn main() {
         //     BG_COLOR.0, BG_COLOR.1, BG_COLOR.2, 0,
         // )))
         .add_systems(FixedUpdate, close_on_esc)
-        .add_systems(FixedUpdate, utils::render_grid)
+        .add_systems(Update, utils::render_grid)
         // .add_systems(Startup, spawn_paddle)
         // .add_systems(FixedUpdate, move_paddle)
         .run();
