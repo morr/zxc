@@ -29,7 +29,13 @@ fn update_settings(
     keys: Res<ButtonInput<KeyCode>>,
 ) {
     if keys.just_pressed(KeyCode::Equal) {
-        settings.time_scale += 1.0;
+        match time_state.get() {
+            TimeState::Running => settings.time_scale += 1.0,
+            TimeState::Paused =>                 next_state.set(TimeState::Running),
+
+        }
+
+        ;
         ev_update_ui.send(UpdateUiEvent {});
     }
     if keys.just_pressed(KeyCode::Minus) {
