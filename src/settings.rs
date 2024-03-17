@@ -28,14 +28,19 @@ fn update_settings(
     mut ev_update_ui: EventWriter<UpdateUiEvent>,
     keys: Res<ButtonInput<KeyCode>>,
 ) {
+    if keys.just_pressed(KeyCode::Space) {
+        match time_state.get() {
+            TimeState::Running => next_state.set(TimeState::Paused),
+            TimeState::Paused => next_state.set(TimeState::Running),
+        };
+        ev_update_ui.send(UpdateUiEvent {});
+    }
+
     if keys.just_pressed(KeyCode::Equal) {
         match time_state.get() {
             TimeState::Running => settings.time_scale += 1.0,
-            TimeState::Paused =>                 next_state.set(TimeState::Running),
-
-        }
-
-        ;
+            TimeState::Paused => next_state.set(TimeState::Running),
+        };
         ev_update_ui.send(UpdateUiEvent {});
     }
     if keys.just_pressed(KeyCode::Minus) {
