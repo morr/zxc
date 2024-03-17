@@ -20,7 +20,7 @@ impl Plugin for SettingsPlugin {
     }
 }
 
-fn update_settings(keys: Res<ButtonInput<KeyCode>>, mut settings: ResMut<Settings>) {
+fn update_settings(mut settings: ResMut<Settings>, keys: Res<ButtonInput<KeyCode>>) {
     if keys.just_pressed(KeyCode::Equal) {
         settings.time_scale += 1.0;
     }

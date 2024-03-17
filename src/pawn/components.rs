@@ -4,7 +4,7 @@ use std::time::Duration;
 
 #[derive(Component)]
 pub struct Pawn {
-    // pub age: u32,
+    pub age: u32,
     pub move_vector: Option<Vec2>,
     pub retry_pathfinding_timer: Timer,
 }
@@ -21,7 +21,7 @@ impl Default for Pawn {
         let mut rng = rand::thread_rng();
 
         Self {
-            // age: rng.gen_range(14..32),
+            age: rng.gen_range(14..32),
             move_vector: None,
             retry_pathfinding_timer: Timer::new(Duration::from_secs(0), TimerMode::Once),
         }

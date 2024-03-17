@@ -9,7 +9,7 @@ pub use configs::*;
 mod pawn;
 mod settings;
 mod structure;
-// use structure::*;
+mod ui;
 mod camera;
 mod utils;
 
@@ -40,6 +40,7 @@ fn main() {
             camera::CameraPlugin,
             settings::SettingsPlugin,
             structure::StructurePlugin,
+            ui::UiPlugin,
             pawn::PawnPlugin,
         ))
         .add_plugins((
