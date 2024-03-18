@@ -1,3 +1,5 @@
+use crate::TILE_SIZE;
+
 use super::components::*;
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 
@@ -8,7 +10,7 @@ pub fn spawn_base(
 ) {
     println!("Spawning base");
 
-    let mesh = Mesh::from(Rectangle::new(2.0, 2.0));
+    let mesh = Mesh::from(Rectangle::new(TILE_SIZE * 2.0, TILE_SIZE * 2.0));
     let material = ColorMaterial::from(Color::rgb(1., 0., 0.));
 
     let mesh_handle = meshes.add(mesh);

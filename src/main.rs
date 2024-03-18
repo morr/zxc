@@ -12,7 +12,6 @@ mod settings;
 mod structure;
 mod ui;
 mod utils;
-
 // use utils::TranslationHelper;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
