@@ -6,7 +6,7 @@ pub const WH: usize = 1600;
 
 pub const GRID_COLS: usize = 250;
 pub const GRID_ROWS: usize = 250;
-pub const TILE_SIZE: f32 = 25.;
+pub const TILE_SIZE: f32 = 32.;
 
 pub const STARTING_PAWNS: u32 = 5;
 pub const PAWN_SPEED: f32 = TILE_SIZE;
