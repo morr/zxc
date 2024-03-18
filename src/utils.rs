@@ -5,9 +5,9 @@ pub fn render_grid(mut gizmos: Gizmos) {
     for i in 0..GRID_ROWS {
         let color = {
             if i == 0 {
-                Color::rgb(1.0, 1.0, 1.0)
+                Color::rgb(1.0, 0.0, 0.0)
             } else if i == GRID_ROWS / 2 {
-                Color::rgb(0.8, 0.0, 0.0)
+                Color::rgb(1.0, 1.0, 1.0)
             } else {
                 Color::rgb(0.2, 0.2, 0.2)
             }
@@ -23,9 +23,9 @@ pub fn render_grid(mut gizmos: Gizmos) {
     for i in 0..GRID_COLS {
         let color = {
             if i == 0 {
-                Color::rgb(1.0, 1.0, 1.0)
+                Color::rgb(0.0, 1.0, 0.0)
             } else if i == GRID_COLS / 2 {
-                Color::rgb(0.0, 0.8, 0.0)
+                Color::rgb(1.0, 1.0, 1.0)
             } else {
                 Color::rgb(0.2, 0.2, 0.2)
             }
