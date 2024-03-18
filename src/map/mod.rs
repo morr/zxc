@@ -1,9 +1,9 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 
 pub mod components;
 use components::*;
 
-use crate::{GRID_COLS, GRID_ROWS};
+use crate::{GRID_COLS, GRID_ROWS, TILE_SIZE, TILE_Z_INDEX};
 
 pub struct MapPlugin;
 impl Plugin for MapPlugin {
@@ -24,10 +24,28 @@ impl Plugin for MapPlugin {
     }
 }
 
-fn spawn_map(mut commands: Commands) {
+fn spawn_map(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
+    let mesh = Mesh::from(Rectangle::new(TILE_SIZE, TILE_SIZE));
+    let material = ColorMaterial::from(Color::rgb(0.5, 0.5, 0.5));
+
+    let mesh_handle = meshes.add(mesh);
+    let material_handle = materials.add(material);
+
     for x in 0..GRID_COLS {
         for y in 0..GRID_ROWS {
-            commands.spawn(TileComponent);
+            commands.spawn((
+                MaterialMesh2dBundle {
+                    mesh: mesh_handle.clone().into(),
+                    material: material_handle.clone(),
+                    transform: Transform::from_xyz(x as f32 * TILE_SIZE, y as f32 * TILE_SIZE, TILE_Z_INDEX),
+                    ..default()
+                },
+                TileComponent,
+            ));
         }
     }
 }
