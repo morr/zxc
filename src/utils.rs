@@ -1,28 +1,40 @@
-use crate::TILE_SIZE;
+use crate::{GRID_COLS, GRID_ROWS, TILE_SIZE};
 use bevy::prelude::*;
 
 pub fn render_grid(mut gizmos: Gizmos) {
-    let from = -9;
-    let to = 9;
+    for i in 0..GRID_ROWS {
+        let color = {
+            if i == 0 {
+                Color::rgb(1.0, 1.0, 1.0)
+            } else if i == GRID_ROWS / 2 {
+                Color::rgb(0.8, 0.0, 0.0)
+            } else {
+                Color::rgb(0.2, 0.2, 0.2)
+            }
+        };
 
-    for i in from..to {
         gizmos.line_2d(
-            Vec2::new(from as f32 * TILE_SIZE, i as f32 * TILE_SIZE),
-            Vec2::new(to as f32 * TILE_SIZE, i as f32 * TILE_SIZE),
-            if i == 0 {
-                Color::rgb(0.4, 0.4, 0.4)
-            } else {
-                Color::rgb(0.2, 0.2, 0.2)
-            },
+            Vec2::new(0 as f32 * TILE_SIZE, i as f32 * TILE_SIZE),
+            Vec2::new(GRID_COLS as f32 * TILE_SIZE, i as f32 * TILE_SIZE),
+            color,
         );
-        gizmos.line_2d(
-            Vec2::new(i as f32 * TILE_SIZE, from as f32 * TILE_SIZE),
-            Vec2::new(i as f32 * TILE_SIZE, to as f32 * TILE_SIZE),
+    }
+
+    for i in 0..GRID_COLS {
+        let color = {
             if i == 0 {
-                Color::rgb(0.4, 0.4, 0.4)
+                Color::rgb(1.0, 1.0, 1.0)
+            } else if i == GRID_COLS / 2 {
+                Color::rgb(0.0, 0.8, 0.0)
             } else {
                 Color::rgb(0.2, 0.2, 0.2)
-            },
+            }
+        };
+
+        gizmos.line_2d(
+            Vec2::new(i as f32 * TILE_SIZE, 0 as f32 * TILE_SIZE),
+            Vec2::new(i as f32 * TILE_SIZE, GRID_ROWS as f32 * TILE_SIZE),
+            color,
         );
     }
 }
