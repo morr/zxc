@@ -25,7 +25,10 @@ pub fn render_grid(mut gizmos: Gizmos) {
 
         gizmos.line_2d(
             Vec2::new(tile_pos_to_world(0.0), tile_pos_to_world(i as f32)),
-            Vec2::new(tile_pos_to_world(GRID_COLS as f32), tile_pos_to_world(i as f32)),
+            Vec2::new(
+                tile_pos_to_world(GRID_COLS as f32),
+                tile_pos_to_world(i as f32),
+            ),
             color,
         );
     }
@@ -41,7 +44,10 @@ pub fn render_grid(mut gizmos: Gizmos) {
 
         gizmos.line_2d(
             Vec2::new(tile_pos_to_world(i as f32), tile_pos_to_world(0.0)),
-            Vec2::new(tile_pos_to_world(i as f32), tile_pos_to_world(GRID_ROWS as f32)),
+            Vec2::new(
+                tile_pos_to_world(i as f32),
+                tile_pos_to_world(GRID_ROWS as f32),
+            ),
             color,
         );
     }
@@ -55,15 +61,15 @@ pub trait TranslationHelper {
 impl TranslationHelper for Transform {
     fn world_pos_to_tile(&self) -> Vec2 {
         Vec2::new(
-            (self.translation.x / TILE_SIZE).floor(),
-            (self.translation.y / TILE_SIZE).floor(),
+            world_pos_to_tile(self.translation.x),
+            world_pos_to_tile(self.translation.y),
         )
     }
 
     fn tile_pos_to_world(&self) -> Vec2 {
         Vec2::new(
-            self.translation.x * TILE_SIZE - TILE_SIZE / 2.,
-            self.translation.y * TILE_SIZE - TILE_SIZE / 2.,
+            tile_pos_to_world(self.translation.x),
+            tile_pos_to_world(self.translation.y),
         )
     }
 }
@@ -71,42 +77,36 @@ impl TranslationHelper for Transform {
 impl TranslationHelper for GlobalTransform {
     fn world_pos_to_tile(&self) -> Vec2 {
         Vec2::new(
-            (self.translation().x / TILE_SIZE).floor(),
-            (self.translation().y / TILE_SIZE).floor(),
+            world_pos_to_tile(self.translation().x),
+            world_pos_to_tile(self.translation().y),
         )
     }
 
     fn tile_pos_to_world(&self) -> Vec2 {
         Vec2::new(
-            self.translation().x * TILE_SIZE - TILE_SIZE / 2.,
-            self.translation().y * TILE_SIZE - TILE_SIZE / 2.,
+            tile_pos_to_world(self.translation().x),
+            tile_pos_to_world(self.translation().y),
         )
     }
 }
 
 impl TranslationHelper for Vec3 {
     fn world_pos_to_tile(&self) -> Vec2 {
-        Vec2::new((self.x / TILE_SIZE).floor(), (self.y / TILE_SIZE).floor())
+        Vec2::new(world_pos_to_tile(self.x), world_pos_to_tile(self.y))
     }
 
     fn tile_pos_to_world(&self) -> Vec2 {
-        Vec2::new(
-            self.x * TILE_SIZE - TILE_SIZE / 2.,
-            self.y * TILE_SIZE - TILE_SIZE / 2.,
-        )
+        Vec2::new(tile_pos_to_world(self.x), tile_pos_to_world(self.y))
     }
 }
 
 impl TranslationHelper for Vec2 {
     fn world_pos_to_tile(&self) -> Vec2 {
-        Vec2::new((self.x / TILE_SIZE).floor(), (self.y / TILE_SIZE).floor())
+        Vec2::new(world_pos_to_tile(self.x), world_pos_to_tile(self.y))
     }
 
     fn tile_pos_to_world(&self) -> Vec2 {
-        Vec2::new(
-            self.x * TILE_SIZE + TILE_SIZE / 2.,
-            self.y * TILE_SIZE + TILE_SIZE / 2.,
-        )
+        Vec2::new(tile_pos_to_world(self.x), tile_pos_to_world(self.y))
     }
 }
 
@@ -114,14 +114,7 @@ pub fn world_pos_to_tile(value: f32) -> f32 {
     (value / TILE_SIZE).floor()
 }
 
-// pub fn tile_pos_to_world<T: Into<f32>>(value: T) -> f32 {
-//     value.into() * TILE_SIZE + TILE_SIZE / 2.
-// }
-
 pub fn tile_pos_to_world(value: f32) -> f32 {
-    value * TILE_SIZE + TILE_SIZE / 2.
+    // value * TILE_SIZE + TILE_SIZE / 2
+    value * TILE_SIZE
 }
-
-// pub fn tile_pos_to_world(value: u32) -> f32 {
-//     value as f32 * TILE_SIZE + TILE_SIZE / 2.
-// }
