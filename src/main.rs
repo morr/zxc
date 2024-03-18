@@ -5,6 +5,7 @@ use bevy::{
 // use bevy_inspector_egui::quick::FilterQueryInspectorPlugin;
 
 mod camera;
+mod debug;
 mod pawn;
 mod settings;
 pub use settings::*;
@@ -65,7 +66,7 @@ fn main() {
         //     BG_COLOR.0, BG_COLOR.1, BG_COLOR.2, 0,
         // )))
         .add_systems(FixedUpdate, close_on_esc)
-        .add_systems(Update, utils::render_grid)
+        .add_systems(Update, debug::render_grid)
         // .add_systems(Startup, spawn_paddle)
         // .add_systems(FixedUpdate, move_paddle)
         .run();

@@ -87,7 +87,10 @@ fn hide_help(
 fn spawn_help(commands: &mut Commands, asset_server: &Res<AssetServer>) {
     commands.spawn((
         TextBundle::from_section(
-            "\"space\" - pause\n\"=\"/\"-\" - change game speed\n\"h\" - toggle help",
+            "\"space\" - pause
+\"=\"/\"-\" - change game speed
+\"h\" - toggle help
+\"g\" - toggle grid",
             TextStyle {
                 font: asset_server.load("fonts/FiraMono-Medium.ttf"),
                 font_size: 16.,
