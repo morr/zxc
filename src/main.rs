@@ -8,6 +8,7 @@ mod camera;
 mod pawn;
 mod settings;
 pub use settings::*;
+mod map;
 mod structure;
 mod ui;
 mod utils;
@@ -46,6 +47,7 @@ fn main() {
         .add_plugins((
             camera::CameraPlugin,
             settings::SettingsPlugin,
+            map::MapPlugin,
             structure::StructurePlugin,
             ui::UiPlugin,
             pawn::PawnPlugin,

@@ -1,7 +1,11 @@
 use bevy::prelude::*;
 
-pub struct MapPlugin;
+pub mod components;
+use components::*;
 
+use crate::{GRID_COLS, GRID_ROWS};
+
+pub struct MapPlugin;
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
         // let mut rng = rand::thread_rng();
@@ -16,5 +20,14 @@ impl Plugin for MapPlugin {
         //     )
         //     .add_systems(Update, handle_player_chunk_update_event)
         //     .add_event::<ResetTerrainEvent>();
+        app.add_systems(Startup, spawn_map);
+    }
+}
+
+fn spawn_map(mut commands: Commands) {
+    for x in 0..GRID_COLS {
+        for y in 0..GRID_ROWS {
+            commands.spawn(TileComponent);
+        }
     }
 }
