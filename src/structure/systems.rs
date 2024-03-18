@@ -1,4 +1,4 @@
-use crate::{STRUCTURE_Z_INDEX, TILE_SIZE};
+use crate::{utils::tile_pos_to_world, GRID_COLS, GRID_ROWS, STRUCTURE_Z_INDEX, TILE_SIZE};
 
 use super::components::*;
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
@@ -22,7 +22,11 @@ pub fn spawn_base(
         mesh_bundle: MaterialMesh2dBundle {
             mesh: mesh_handle.into(),
             material: material_handle,
-            transform: Transform::from_xyz(0.0, 0.0, STRUCTURE_Z_INDEX),
+            transform: Transform::from_xyz(
+                tile_pos_to_world(GRID_COLS as f32 / 2.0),
+                tile_pos_to_world(GRID_ROWS as f32 / 2.0),
+                STRUCTURE_Z_INDEX,
+            ),
             ..default()
         },
     },));
