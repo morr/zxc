@@ -1,8 +1,11 @@
 use bevy::{
     app::prelude::*, core_pipeline::core_2d::Camera2dBundle, ecs::system::Commands,
-    input::mouse::MouseButton,
+    input::mouse::MouseButton, math::Vec3, transform::components::Transform,
 };
 use bevy_pancam::{PanCam, PanCamPlugin};
+
+use crate::utils::world_pos_to_tile;
+use crate::{utils::tile_pos_to_world, GRID_COLS, GRID_ROWS};
 
 pub struct CameraPlugin;
 
@@ -17,7 +20,17 @@ fn spawn_camera(mut commands: Commands) {
     // println!("Spawning camera");
 
     commands
-        .spawn(Camera2dBundle::default())
+        .spawn(Camera2dBundle {
+            transform: Transform {
+                translation: Vec3::new(
+                    tile_pos_to_world(GRID_COLS as f32 / 2.0),
+                    tile_pos_to_world(GRID_ROWS as f32 / 2.0),
+                    0.0,
+                ),
+                ..Default::default()
+            },
+            ..Default::default()
+        })
         // .spawn({
         //     let mut camera = Camera2dBundle::default();
         //     println!("{:?}", camera.projection);
