@@ -3,7 +3,7 @@ use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 pub mod components;
 use components::*;
 
-use crate::{GRID_COLS, GRID_ROWS, TILE_SIZE, TILE_Z_INDEX};
+use crate::{utils::tile_pos_to_world, GRID_COLS, GRID_ROWS, TILE_SIZE, TILE_Z_INDEX};
 
 pub struct MapPlugin;
 impl Plugin for MapPlugin {
@@ -41,7 +41,11 @@ fn spawn_map(
                 MaterialMesh2dBundle {
                     mesh: mesh_handle.clone().into(),
                     material: material_handle.clone(),
-                    transform: Transform::from_xyz(x as f32 * TILE_SIZE, y as f32 * TILE_SIZE, TILE_Z_INDEX),
+                    transform: Transform::from_xyz(
+                        tile_pos_to_world(x as f32),
+                        tile_pos_to_world(y as f32),
+                        TILE_Z_INDEX,
+                    ),
                     ..default()
                 },
                 TileComponent,

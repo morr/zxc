@@ -89,3 +89,11 @@ impl TranslationHelper for Vec2 {
         )
     }
 }
+
+pub fn world_pos_to_tile(value: f32) -> f32 {
+    (value / TILE_SIZE).floor()
+}
+
+pub fn tile_pos_to_world(value: f32) -> f32 {
+    value * TILE_SIZE + TILE_SIZE / 2.
+}
