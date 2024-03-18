@@ -26,21 +26,42 @@ impl Plugin for MapPlugin {
 
 fn spawn_map(
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    // mut meshes: ResMut<Assets<Mesh>>,
+    // mut materials: ResMut<Assets<ColorMaterial>>,
+    asset_server: Res<AssetServer>,
 ) {
-    let mesh = Mesh::from(Rectangle::new(TILE_SIZE, TILE_SIZE));
-    let material = ColorMaterial::from(Color::rgb(0.5, 0.5, 0.5));
+    // let mesh = Mesh::from(Rectangle::new(TILE_SIZE, TILE_SIZE));
+    // let material = ColorMaterial::from(Color::rgb(0.5, 0.5, 0.5));
 
-    let mesh_handle = meshes.add(mesh);
-    let material_handle = materials.add(material);
+    // let mesh_handle = meshes.add(mesh);
+    // let material_handle = materials.add(material);
+
+    let texture_handle = asset_server.load("sprites/grass.png");
 
     for x in 0..GRID_COLS {
         for y in 0..GRID_ROWS {
+            // commands.spawn((
+            //     MaterialMesh2dBundle {
+            //         mesh: mesh_handle.clone().into(),
+            //         material: material_handle.clone(),
+            //         transform: Transform::from_xyz(
+            //             tile_pos_to_world(x as f32),
+            //             tile_pos_to_world(y as f32),
+            //             TILE_Z_INDEX,
+            //         ),
+            //         ..default()
+            //     },
+            //     TileComponent,
+            // ));
             commands.spawn((
-                MaterialMesh2dBundle {
-                    mesh: mesh_handle.clone().into(),
-                    material: material_handle.clone(),
+                SpriteBundle {
+                    texture: texture_handle.clone(),
+                    sprite: Sprite {
+                        custom_size: Some(Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32)),
+                        ..default()
+                    },
+                    // mesh: mesh_handle.clone().into(),
+                    // material: material_handle.clone(),
                     transform: Transform::from_xyz(
                         tile_pos_to_world(x as f32),
                         tile_pos_to_world(y as f32),
