@@ -2,11 +2,21 @@ use crate::{GRID_COLS, GRID_ROWS, TILE_SIZE};
 use bevy::prelude::*;
 
 pub fn render_grid(mut gizmos: Gizmos) {
-    for i in 0..GRID_ROWS {
+    gizmos.line_2d(
+        Vec2::new(0.0, 0.0),
+        Vec2::new(GRID_COLS as f32 * TILE_SIZE, 0.0),
+        Color::rgb(1.0, 0.0, 0.0),
+    );
+
+    gizmos.line_2d(
+        Vec2::new(0.0, 0.0),
+        Vec2::new(0.0, GRID_ROWS as f32 * TILE_SIZE),
+        Color::rgb(0.0, 1.0, 0.0),
+    );
+
+    for i in 1..GRID_ROWS {
         let color = {
-            if i == 0 {
-                Color::rgb(1.0, 0.0, 0.0)
-            } else if i == GRID_ROWS / 2 {
+            if i == GRID_ROWS / 2 {
                 Color::rgb(1.0, 1.0, 1.0)
             } else {
                 Color::rgb(0.2, 0.2, 0.2)
@@ -14,17 +24,15 @@ pub fn render_grid(mut gizmos: Gizmos) {
         };
 
         gizmos.line_2d(
-            Vec2::new(0 as f32 * TILE_SIZE, i as f32 * TILE_SIZE),
-            Vec2::new(GRID_COLS as f32 * TILE_SIZE, i as f32 * TILE_SIZE),
+            Vec2::new(tile_pos_to_world(0.0), tile_pos_to_world(i as f32)),
+            Vec2::new(tile_pos_to_world(GRID_COLS as f32), tile_pos_to_world(i as f32)),
             color,
         );
     }
 
-    for i in 0..GRID_COLS {
+    for i in 1..GRID_COLS {
         let color = {
-            if i == 0 {
-                Color::rgb(0.0, 1.0, 0.0)
-            } else if i == GRID_COLS / 2 {
+            if i == GRID_COLS / 2 {
                 Color::rgb(1.0, 1.0, 1.0)
             } else {
                 Color::rgb(0.2, 0.2, 0.2)
@@ -32,8 +40,8 @@ pub fn render_grid(mut gizmos: Gizmos) {
         };
 
         gizmos.line_2d(
-            Vec2::new(i as f32 * TILE_SIZE, 0 as f32 * TILE_SIZE),
-            Vec2::new(i as f32 * TILE_SIZE, GRID_ROWS as f32 * TILE_SIZE),
+            Vec2::new(tile_pos_to_world(i as f32), tile_pos_to_world(0.0)),
+            Vec2::new(tile_pos_to_world(i as f32), tile_pos_to_world(GRID_ROWS as f32)),
             color,
         );
     }
@@ -106,6 +114,14 @@ pub fn world_pos_to_tile(value: f32) -> f32 {
     (value / TILE_SIZE).floor()
 }
 
+// pub fn tile_pos_to_world<T: Into<f32>>(value: T) -> f32 {
+//     value.into() * TILE_SIZE + TILE_SIZE / 2.
+// }
+
 pub fn tile_pos_to_world(value: f32) -> f32 {
     value * TILE_SIZE + TILE_SIZE / 2.
 }
+
+// pub fn tile_pos_to_world(value: u32) -> f32 {
+//     value as f32 * TILE_SIZE + TILE_SIZE / 2.
+// }
