@@ -4,12 +4,16 @@ use bevy::prelude::*;
 pub const WW: usize = 1600;
 pub const WH: usize = 1600;
 
-pub const GRID_COLS: usize = 1000;
-pub const GRID_ROWS: usize = 1000;
+pub const GRID_COLS: usize = 10;
+pub const GRID_ROWS: usize = 10;
 
 pub const STARTING_PAWNS: u32 = 5;
 pub const TILE_SIZE: f32 = 100.;
 pub const PAWN_SPEED: f32 = TILE_SIZE;
+
+pub const TILE_Z_INDEX: f32 = 0.0;
+pub const STRUCTURE_Z_INDEX: f32 = 10.0;
+pub const PAWN_Z_INDEX: f32 = 20.0;
 
 #[derive(Resource)]
 pub struct Settings {
