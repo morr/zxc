@@ -1,6 +1,6 @@
 use bevy::{
     app::prelude::*, core_pipeline::core_2d::Camera2dBundle, ecs::system::Commands,
-    input::mouse::MouseButton, render::camera::ScalingMode,
+    input::mouse::MouseButton,
 };
 use bevy_pancam::{PanCam, PanCamPlugin};
 
@@ -17,9 +17,7 @@ fn spawn_camera(mut commands: Commands) {
     // println!("Spawning camera");
 
     commands
-        .spawn(Camera2dBundle {
-            ..Default::default()
-        })
+        .spawn(Camera2dBundle::default())
         // .spawn({
         //     let mut camera = Camera2dBundle::default();
         //     println!("{:?}", camera.projection);

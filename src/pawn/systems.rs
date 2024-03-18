@@ -2,9 +2,8 @@ use std::time::Duration;
 
 use super::components::*;
 use crate::settings::Settings;
-use crate::PAWN_SPEED;
-use crate::TILE_SIZE;
-use crate::{configs, structure::Structure, utils::TranslationHelper};
+use crate::{PAWN_SPEED, TILE_SIZE, STARTING_PAWNS};
+use crate::{structure::Structure, utils::TranslationHelper};
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use rand::prelude::*;
 
@@ -34,7 +33,7 @@ pub fn spawn_pawns(
 
     let transform = query.single();
 
-    for i in 0..configs::STARTING_PAWNS {
+    for i in 0..STARTING_PAWNS {
         let random_angle: f32 = rng.gen_range(0.0..360.0);
         let pos = Vec2::new(
             transform.translation.x + random_angle.cos() * radius,

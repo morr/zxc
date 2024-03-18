@@ -4,11 +4,10 @@ use bevy::{
 };
 // use bevy_inspector_egui::quick::FilterQueryInspectorPlugin;
 
-pub mod configs;
-pub use configs::*;
 mod camera;
 mod pawn;
 mod settings;
+pub use settings::*;
 mod structure;
 mod ui;
 mod utils;

@@ -1,6 +1,13 @@
 use crate::{ui::UpdateUiEvent, TimeState};
 use bevy::prelude::*;
 
+pub const WW: usize = 1600;
+pub const WH: usize = 1600;
+
+pub const STARTING_PAWNS: u32 = 5;
+pub const TILE_SIZE: f32 = 100.;
+pub const PAWN_SPEED: f32 = TILE_SIZE;
+
 #[derive(Resource)]
 pub struct Settings {
     pub time_scale: f32,
