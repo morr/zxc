@@ -111,6 +111,7 @@ fn spawn_help(commands: &mut Commands, asset_server: &Res<AssetServer>) {
             },
         )
         .with_style(Style {
+                position_type:PositionType::Absolute, 
             left: Val::Px(0.0),
             top: Val::Px(25.0),
             ..default()
