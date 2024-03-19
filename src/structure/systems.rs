@@ -51,9 +51,7 @@ pub fn spawn_base(
             // },
         },
         ShowAabbGizmo {
-                           color: Some(Color::WHITE),
-                       },
+            color: Some(Color::WHITE),
+        },
     ));
-
-    Aabb::enclosing([Vec3::X, Vec3::Z * 2.0, Vec3::Y * -0.5]).unwrap();
 }

@@ -39,7 +39,7 @@ fn spawn_camera(mut commands: Commands) {
         .insert(PanCam {
             enabled: true,
             grab_buttons: vec![MouseButton::Left, MouseButton::Middle],
-            max_scale: Some(5.0),
+            max_scale: Some(20.0),
             max_x: None,
             max_y: None,
             min_scale: 0.5,
