@@ -3,6 +3,7 @@ use std::time::Duration;
 use super::components::*;
 use crate::settings::Settings;
 use crate::story_time::TimeScale;
+use crate::structure::{BASE_HEIGHT, BASE_WIDTH};
 use crate::{structure::Structure, utils::TranslationHelper};
 use crate::{PAWN_SPEED, PAWN_Z_INDEX, STARTING_PAWNS, TILE_SIZE};
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
@@ -30,7 +31,7 @@ pub fn spawn_pawns(
     let material_handle = materials.add(material);
 
     let mut rng = rand::thread_rng();
-    let radius = TILE_SIZE * 2.0;
+    let radius = TILE_SIZE * f32::max(BASE_WIDTH, BASE_HEIGHT);
 
     let transform = query.single();
 

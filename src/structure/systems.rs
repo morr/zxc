@@ -10,10 +10,9 @@ pub fn spawn_base(
 ) {
     println!("Spawning base");
 
-    let struct_size = 2.0;
     let mesh = Mesh::from(Rectangle::new(
-        struct_size * TILE_SIZE,
-        struct_size * TILE_SIZE,
+        BASE_WIDTH * TILE_SIZE,
+        BASE_HEIGHT * TILE_SIZE,
     ));
     let material = ColorMaterial::from(Color::rgb(1., 0., 0.));
 
