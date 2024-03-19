@@ -1,4 +1,7 @@
-use crate::{settings::Settings, TimeState};
+use crate::{
+    settings::Settings,
+    story_time::{TimeScale, TimeState},
+};
 use bevy::{ecs::query::QuerySingleError, prelude::*};
 
 mod debug_grid;
@@ -27,13 +30,13 @@ pub struct HelpText {}
 
 fn render_ui(
     mut commands: Commands,
-    settings: Res<Settings>,
     time_state: Res<State<TimeState>>,
+    time_scale: Res<TimeScale>,
     asset_server: Res<AssetServer>,
 ) {
     commands.spawn((
         TextBundle::from_section(
-            format_ui_line(&settings, &time_state),
+            format_ui_line(&time_state, &time_scale),
             TextStyle {
                 font: asset_server.load("fonts/FiraMono-Medium.ttf"),
                 font_size: 24.,
@@ -46,8 +49,8 @@ fn render_ui(
 }
 
 fn update_ui(
-    settings: Res<Settings>,
     time_state: Res<State<TimeState>>,
+    time_scale: Res<TimeScale>,
     mut ev_update_ui: EventReader<UpdateUiEvent>,
     mut query: Query<&mut Text, With<DebugText>>,
 ) {
@@ -55,13 +58,13 @@ fn update_ui(
         println!("update ui");
 
         let mut text = query.single_mut();
-        text.sections[0].value = format_ui_line(&settings, &time_state);
+        text.sections[0].value = format_ui_line(&time_state, &time_scale);
     }
 }
 
-fn format_ui_line(settings: &Res<Settings>, time_state: &Res<State<TimeState>>) -> String {
+fn format_ui_line(time_state: &Res<State<TimeState>>, time_scale: &Res<TimeScale>) -> String {
     match time_state.get() {
-        TimeState::Running => format!("Speed: {}x", settings.time_scale),
+        TimeState::Running => format!("Speed: {}x", time_scale.0),
         TimeState::Paused => "Paused".to_string(),
     }
 }
@@ -111,7 +114,7 @@ fn spawn_help(commands: &mut Commands, asset_server: &Res<AssetServer>) {
             },
         )
         .with_style(Style {
-                position_type:PositionType::Absolute, 
+            position_type: PositionType::Absolute,
             left: Val::Px(0.0),
             top: Val::Px(25.0),
             ..default()

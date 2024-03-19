@@ -2,6 +2,7 @@ use std::time::Duration;
 
 use super::components::*;
 use crate::settings::Settings;
+use crate::story_time::TimeScale;
 use crate::{structure::Structure, utils::TranslationHelper};
 use crate::{PAWN_SPEED, PAWN_Z_INDEX, STARTING_PAWNS, TILE_SIZE};
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
@@ -58,7 +59,7 @@ pub fn spawn_pawns(
 pub fn wander_pawns(
     time: Res<Time>,
     mut query: Query<(&mut Transform, &mut Pawn, &Name), With<Pawn>>,
-    settings: Res<Settings>,
+    time_scale: Res<TimeScale>,
 ) {
     let mut rng = rand::thread_rng();
 
@@ -76,9 +77,9 @@ pub fn wander_pawns(
 
         if let Some(move_vector) = pawn.move_vector {
             transform.translation.x +=
-                move_vector.x * PAWN_SPEED * time.delta_seconds() * settings.time_scale;
+                move_vector.x * PAWN_SPEED * time.delta_seconds() * time_scale.0;
             transform.translation.y +=
-                move_vector.y * PAWN_SPEED * time.delta_seconds() * settings.time_scale;
+                move_vector.y * PAWN_SPEED * time.delta_seconds() * time_scale.0;
         }
     }
 }

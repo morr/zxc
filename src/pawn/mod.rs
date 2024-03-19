@@ -9,6 +9,8 @@ pub use systems::*;
 use crate::structure::spawn_base;
 use crate::*;
 
+use self::story_time::TimeState;
+
 pub struct PawnPlugin;
 
 impl Plugin for PawnPlugin {
