@@ -1,7 +1,7 @@
-use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
+use bevy::prelude::*;
 
-pub const BASE_WIDTH: f32 = 7.0;
-pub const BASE_HEIGHT: f32 = 13.0;
+pub const BASE_WIDTH: f32 = 8.0;
+pub const BASE_HEIGHT: f32 = 14.0;
 
 #[derive(Component)]
 pub struct Structure {}

@@ -53,7 +53,10 @@ pub fn spawn_pawns(
                 transform: Transform::from_xyz(pos.x, pos.y, PAWN_Z_INDEX),
                 ..default()
             },
-        },));
+        },         ShowAabbGizmo {
+            color: Some(Color::WHITE),
+        },
+));
     }
 }
 
