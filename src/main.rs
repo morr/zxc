@@ -5,22 +5,16 @@ use bevy::{
 // use bevy_inspector_egui::quick::FilterQueryInspectorPlugin;
 
 mod camera;
+mod map;
 mod pawn;
 mod settings;
-pub use settings::*;
-mod map;
+mod story_time;
 mod structure;
 mod ui;
 mod utils;
-// use utils::TranslationHelper;
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
-enum TimeState {
-    // MainMenu,
-    #[default]
-    Running,
-    Paused,
-}
+// use utils::TranslationHelper;
+pub use settings::*;
 
 fn main() {
     App::new()
@@ -43,7 +37,6 @@ fn main() {
         // .add_plugins(WorldInspectorPlugin::new())
         // .add_plugins(FilterQueryInspectorPlugin::<With<structure::Structure>>::default())
         // .add_plugins(FilterQueryInspectorPlugin::<With<pawn::Pawn>>::default())
-        .init_state::<TimeState>()
         .add_plugins((
             camera::CameraPlugin,
             settings::SettingsPlugin,
@@ -51,6 +44,7 @@ fn main() {
             structure::StructurePlugin,
             ui::UiPlugin,
             pawn::PawnPlugin,
+            story_time::StoryTimePlugin,
         ))
         .add_plugins((
             bevy::diagnostic::LogDiagnosticsPlugin::default(),
