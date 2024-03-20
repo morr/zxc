@@ -13,7 +13,7 @@ pub const GRID_COLS: usize = 250;
 pub const GRID_ROWS: usize = 250;
 pub const TILE_SIZE: f32 = 32.;
 
-pub const STARTING_PAWNS: u32 = 5;
+pub const STARTING_PAWNS: u32 = 20;
 pub const PAWN_SPEED: f32 = TILE_SIZE;
 
 pub const TILE_Z_INDEX: f32 = 0.0;
