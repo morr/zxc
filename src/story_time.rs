@@ -2,7 +2,6 @@ use bevy::prelude::*;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
 pub enum TimeState {
-    // MainMenu,
     #[default]
     Running,
     Paused,
@@ -16,13 +15,8 @@ impl Default for TimeScale {
     }
 }
 
-#[derive(Resource, Deref, DerefMut)]
+#[derive(Resource, Deref, DerefMut, Default)]
 pub struct ElapsedTime(pub f32);
-impl Default for ElapsedTime {
-    fn default() -> Self {
-        Self(0.0)
-    }
-}
 
 pub struct StoryTimePlugin;
 
@@ -37,7 +31,6 @@ impl Plugin for StoryTimePlugin {
 
 fn track_time(time: Res<Time>, time_scale: Res<TimeScale>, mut elapsed_time: ResMut<ElapsedTime>) {
     elapsed_time.0 += time.delta_seconds() * time_scale.0;
-    println!("{:?}", elapsed_time.0);
 }
 
 pub fn toggle_story_time(
@@ -50,7 +43,7 @@ pub fn toggle_story_time(
     };
 }
 
-pub fn increase_story_time(
+pub fn increase_time_scale(
     time_state: &Res<State<TimeState>>,
     next_state: &mut ResMut<NextState<TimeState>>,
     time_scale: &mut ResMut<TimeScale>,
@@ -61,7 +54,7 @@ pub fn increase_story_time(
     };
 }
 
-pub fn decrease_story_time(
+pub fn decrease_time_scale(
     time_state: &Res<State<TimeState>>,
     next_state: &mut ResMut<NextState<TimeState>>,
     time_scale: &mut ResMut<TimeScale>,

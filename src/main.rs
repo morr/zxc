@@ -1,5 +1,4 @@
 use bevy::{
-    gizmos::aabb::AabbGizmoPlugin,
     prelude::*,
     window::{close_on_esc, PresentMode},
 };

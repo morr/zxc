@@ -1,6 +1,6 @@
 use crate::{
     story_time::{
-        decrease_story_time, increase_story_time, toggle_story_time, TimeScale, TimeState,
+        decrease_time_scale, increase_time_scale, toggle_story_time, TimeScale, TimeState,
     },
     ui::UpdateUiEvent,
 };
@@ -53,12 +53,12 @@ fn update_settings(
     }
 
     if keys.just_pressed(KeyCode::Equal) {
-        increase_story_time(&time_state, &mut next_state, &mut time_scale);
+        increase_time_scale(&time_state, &mut next_state, &mut time_scale);
         ev_update_ui.send(UpdateUiEvent {});
     }
 
     if keys.just_pressed(KeyCode::Minus) {
-        if decrease_story_time(&time_state, &mut next_state, &mut time_scale) {
+        if decrease_time_scale(&time_state, &mut next_state, &mut time_scale) {
             ev_update_ui.send(UpdateUiEvent {});
         }
     }
