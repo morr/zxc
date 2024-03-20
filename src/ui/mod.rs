@@ -1,4 +1,4 @@
-use crate::story_time::{TimeScale, TimeState};
+use crate::story_time::{ElapsedTime, TimeScale, TimeState};
 use bevy::{ecs::query::QuerySingleError, prelude::*};
 
 mod debug_grid;
@@ -9,61 +9,69 @@ pub struct UiPlugin;
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(DebugGridPlugin)
-            .add_event::<UpdateUiEvent>()
+            // .add_event::<UpdateUiEvent>()
             .add_systems(Startup, render_ui)
             .add_systems(FixedUpdate, update_ui)
             .add_systems(FixedUpdate, handle_ui_keys);
     }
 }
 
-#[derive(Event)]
-pub struct UpdateUiEvent {}
+// #[derive(Event)]
+// pub struct UpdateUiEvent {}
 
 #[derive(Component)]
-pub struct DebugText {}
+pub struct TimeText {}
 
 #[derive(Component)]
 pub struct HelpText {}
 
 fn render_ui(
     mut commands: Commands,
+    elapsed_time: Res<ElapsedTime>,
     time_state: Res<State<TimeState>>,
     time_scale: Res<TimeScale>,
     asset_server: Res<AssetServer>,
 ) {
     commands.spawn((
         TextBundle::from_section(
-            format_ui_line(&time_state, &time_scale),
+            format_ui_line(&elapsed_time, &time_state, &time_scale),
             TextStyle {
                 font: asset_server.load("fonts/FiraMono-Medium.ttf"),
                 font_size: 24.,
                 color: Color::WHITE,
             },
         ),
-        DebugText {},
+        TimeText {},
     ));
     spawn_help(&mut commands, &asset_server);
 }
 
 fn update_ui(
+    elapsed_time: Res<ElapsedTime>,
     time_state: Res<State<TimeState>>,
     time_scale: Res<TimeScale>,
-    mut ev_update_ui: EventReader<UpdateUiEvent>,
-    mut query: Query<&mut Text, With<DebugText>>,
+    // mut ev_update_ui: EventReader<UpdateUiEvent>,
+    mut debug_query: Query<&mut Text, With<TimeText>>,
 ) {
-    for _ev in ev_update_ui.read() {
-        println!("update ui");
+    // for _ev in ev_update_ui.read() {
+    //     println!("update ui");
 
-        let mut text = query.single_mut();
-        text.sections[0].value = format_ui_line(&time_state, &time_scale);
-    }
+    let mut text = debug_query.single_mut();
+    text.sections[0].value = format_ui_line(&elapsed_time, &time_state, &time_scale);
+    // }
 }
 
-fn format_ui_line(time_state: &Res<State<TimeState>>, time_scale: &Res<TimeScale>) -> String {
-    match time_state.get() {
+fn format_ui_line(
+    elapsed_time: &Res<ElapsedTime>,
+    time_state: &Res<State<TimeState>>,
+    time_scale: &Res<TimeScale>,
+) -> String {
+    let speed_part = match time_state.get() {
         TimeState::Running => format!("Speed: {}x", time_scale.0),
         TimeState::Paused => "Paused".to_string(),
-    }
+    };
+
+    format!("Seconds: {} {}", elapsed_time.0.floor(), speed_part)
 }
 
 fn handle_ui_keys(

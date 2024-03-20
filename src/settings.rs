@@ -1,8 +1,5 @@
-use crate::{
-    story_time::{
-        decrease_time_scale, increase_time_scale, toggle_story_time, TimeScale, TimeState,
-    },
-    ui::UpdateUiEvent,
+use crate::story_time::{
+    decrease_time_scale, increase_time_scale, toggle_story_time, TimeScale, TimeState,
 };
 use bevy::prelude::*;
 
@@ -44,22 +41,23 @@ fn update_settings(
     time_state: Res<State<TimeState>>,
     mut next_state: ResMut<NextState<TimeState>>,
     mut time_scale: ResMut<TimeScale>,
-    mut ev_update_ui: EventWriter<UpdateUiEvent>,
+    // mut ev_update_ui: EventWriter<UpdateUiEvent>,
     keys: Res<ButtonInput<KeyCode>>,
 ) {
     if keys.just_pressed(KeyCode::Space) {
         toggle_story_time(&time_state, &mut next_state);
-        ev_update_ui.send(UpdateUiEvent {});
+        // ev_update_ui.send(UpdateUiEvent {});
     }
 
     if keys.just_pressed(KeyCode::Equal) {
         increase_time_scale(&time_state, &mut next_state, &mut time_scale);
-        ev_update_ui.send(UpdateUiEvent {});
+        // ev_update_ui.send(UpdateUiEvent {});
     }
 
     if keys.just_pressed(KeyCode::Minus) {
-        if decrease_time_scale(&time_state, &mut next_state, &mut time_scale) {
-            ev_update_ui.send(UpdateUiEvent {});
-        }
+        decrease_time_scale(&time_state, &mut next_state, &mut time_scale);
+        // if decrease_time_scale(&time_state, &mut next_state, &mut time_scale) {
+        //   ev_update_ui.send(UpdateUiEvent {});
+        // }
     }
 }
