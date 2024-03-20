@@ -106,11 +106,11 @@ fn handle_ui_keys(
         let mut visibility = query.single_mut();
 
         match *visibility {
-            Visibility::Visible => {
-                *visibility = Visibility::Hidden;
+            Visibility::Hidden => {
+                *visibility = Visibility::Visible;
             }
             _ => {
-                *visibility = Visibility::Visible;
+                *visibility = Visibility::Hidden;
             }
         }
         // match query.get_single() {
