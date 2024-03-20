@@ -1,7 +1,6 @@
-use crate::{
-    settings::Settings,
-    story_time::{TimeScale, TimeState},
-};
+use crate::
+    story_time::{TimeScale, TimeState}
+;
 use bevy::{ecs::query::QuerySingleError, prelude::*};
 
 mod debug_grid;

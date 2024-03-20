@@ -44,19 +44,21 @@ pub fn spawn_pawns(
         .world_pos_to_tile()
         .tile_pos_to_world();
 
-        commands.spawn((PawnBundle {
-            pawn: Pawn::default(),
-            name: Name::new(format!("Pawn {i}")),
-            mesh_bundle: MaterialMesh2dBundle {
-                mesh: mesh_handle.clone().into(),
-                material: material_handle.clone(),
-                transform: Transform::from_xyz(pos.x, pos.y, PAWN_Z_INDEX),
-                ..default()
+        commands.spawn((
+            PawnBundle {
+                pawn: Pawn::default(),
+                name: Name::new(format!("Pawn {i}")),
+                mesh_bundle: MaterialMesh2dBundle {
+                    mesh: mesh_handle.clone().into(),
+                    material: material_handle.clone(),
+                    transform: Transform::from_xyz(pos.x, pos.y, PAWN_Z_INDEX),
+                    ..default()
+                },
             },
-        },         ShowAabbGizmo {
-            color: Some(Color::WHITE),
-        },
-));
+            ShowAabbGizmo {
+                color: Some(Color::WHITE),
+            },
+        ));
     }
 }
 

@@ -1,7 +1,7 @@
 use crate::{utils::tile_pos_to_world, GRID_COLS, GRID_ROWS, STRUCTURE_Z_INDEX, TILE_SIZE};
 
 use super::components::*;
-use bevy::{prelude::*, render::primitives::Aabb};
+use bevy::prelude::*;
 
 pub fn spawn_base(
     mut commands: Commands,

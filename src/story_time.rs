@@ -1,5 +1,3 @@
-use std::ops::AddAssign;
-
 use bevy::prelude::*;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
@@ -12,25 +10,34 @@ pub enum TimeState {
 
 #[derive(Resource, Deref, DerefMut)]
 pub struct TimeScale(pub f32);
-
 impl Default for TimeScale {
     fn default() -> Self {
         Self(1.0)
     }
 }
 
-// impl AddAssign for TimeScale {
-//     fn add_assign(&mut self, other: f32) {
-//         *self = Self(self.0 + other);
-//     }
-// }
+#[derive(Resource, Deref, DerefMut)]
+pub struct ElapsedTime(pub f32);
+impl Default for ElapsedTime {
+    fn default() -> Self {
+        Self(0.0)
+    }
+}
 
 pub struct StoryTimePlugin;
 
 impl Plugin for StoryTimePlugin {
     fn build(&self, app: &mut App) {
-        app.init_state::<TimeState>().init_resource::<TimeScale>();
+        app.init_state::<TimeState>()
+            .init_resource::<TimeScale>()
+            .init_resource::<ElapsedTime>()
+            .add_systems(FixedUpdate, track_time.run_if(in_state(TimeState::Running)));
     }
+}
+
+fn track_time(time: Res<Time>, time_scale: Res<TimeScale>, mut elapsed_time: ResMut<ElapsedTime>) {
+    elapsed_time.0 += time.delta_seconds() * time_scale.0;
+    println!("{:?}", elapsed_time.0);
 }
 
 pub fn toggle_story_time(
