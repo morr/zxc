@@ -1,6 +1,9 @@
 use crate::story_time::{ElapsedTime, TimeScale, TimeState};
 use bevy::{ecs::query::QuerySingleError, prelude::*};
 
+pub mod components;
+pub use components::*;
+
 mod debug_grid;
 use self::debug_grid::*;
 
@@ -15,15 +18,6 @@ impl Plugin for UiPlugin {
             .add_systems(FixedUpdate, handle_ui_keys);
     }
 }
-
-// #[derive(Event)]
-// pub struct UpdateUiEvent {}
-
-#[derive(Component)]
-pub struct TimeText {}
-
-#[derive(Component)]
-pub struct HelpText {}
 
 fn render_ui(
     mut commands: Commands,
