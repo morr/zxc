@@ -1,13 +1,12 @@
+use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
+use rand::prelude::*;
 use std::time::Duration;
 
 use super::components::*;
-use crate::settings::Settings;
 use crate::story_time::TimeScale;
 use crate::structure::{BASE_HEIGHT, BASE_WIDTH};
 use crate::{structure::Structure, utils::TranslationHelper};
 use crate::{PAWN_SPEED, PAWN_Z_INDEX, STARTING_PAWNS, TILE_SIZE};
-use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
-use rand::prelude::*;
 
 pub fn spawn_pawns(
     mut commands: Commands,
