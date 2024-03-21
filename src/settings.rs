@@ -3,8 +3,8 @@ use crate::story_time::{
 };
 use bevy::prelude::*;
 
-pub const WW: usize = 1200;
-pub const WH: usize = 1200;
+pub const WW: usize = 900;
+pub const WH: usize = 600;
 
 pub const GRID_COLS: usize = 250;
 pub const GRID_ROWS: usize = 250;
