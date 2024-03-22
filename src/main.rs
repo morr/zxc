@@ -24,11 +24,13 @@ fn main() {
                 .set(ImagePlugin::default_nearest())
                 .set(WindowPlugin {
                     primary_window: Some(Window {
+                        position: WindowPosition::At(IVec2::new(0, 0)),
                         mode: bevy::window::WindowMode::Windowed,
                         // present_mode: PresentMode::AutoNoVsync,
                         present_mode: PresentMode::AutoVsync,
                         resolution: (WW as f32, WH as f32).into(),
-                        title: "Test App".to_string(),
+                        // title: "Test App".to_string(),
+                        // focused: true,
                         ..default()
                     }),
                     ..default()
@@ -46,10 +48,10 @@ fn main() {
             pawn::PawnPlugin,
             story_time::StoryTimePlugin,
         ))
-        .add_plugins((
-            bevy::diagnostic::LogDiagnosticsPlugin::default(),
-            bevy::diagnostic::FrameTimeDiagnosticsPlugin::default(),
-        ))
+        // .add_plugins((
+        //     bevy::diagnostic::LogDiagnosticsPlugin::default(),
+        //     bevy::diagnostic::FrameTimeDiagnosticsPlugin::default(),
+        // ))
         .insert_resource(ClearColor(Color::rgb(0.1, 0.0, 0.15)))
         .insert_resource(AmbientLight {
             color: Color::default(),
