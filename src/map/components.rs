@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-#[derive(Component)]
+#[derive(Component, Debug)]
 pub struct Tile {
     pub x: u32,
     pub y: u32,

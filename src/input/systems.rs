@@ -31,12 +31,12 @@ pub fn mouse_movement(
 
         if is_changed {
             event_writer.send(HoverTileEvent { x, y });
-            println!("HoverTileEvent {}x{}", x, y);
+            // println!("HoverTileEvent {}x{}", x, y);
             prev_hovered_tile_pos.0 = Some(UVec2::new(x, y));
         }
     }
 
-//     for ev in motion_evr.read() {
-//         println!("Mouse moved: X: {} px, Y: {} px", ev.delta.x, ev.delta.y);
-//     }
+    //     for ev in motion_evr.read() {
+    //         println!("Mouse moved: X: {} px, Y: {} px", ev.delta.x, ev.delta.y);
+    //     }
 }
