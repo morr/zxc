@@ -8,7 +8,7 @@ mod debug_grid;
 mod systems;
 pub use systems::*;
 
-use crate::camera::MainCamera;
+use crate::{camera::MainCamera, map::components::TileHoverEvent, utils::world_pos_to_tile};
 
 pub struct UiPlugin;
 
@@ -34,6 +34,7 @@ fn my_cursor_system(
     q_window: Query<&Window, With<PrimaryWindow>>,
     // query to get camera transform
     q_camera: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
+    mut event_writer: EventWriter<TileHoverEvent>,
 ) {
     // get the camera info and transform
     // assuming there is exactly one main camera entity, so Query::single() is OK
@@ -49,7 +50,12 @@ fn my_cursor_system(
         .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
         .map(|ray| ray.origin.truncate())
     {
+        event_writer.send(TileHoverEvent {
+            x: world_pos_to_tile(world_position.x),
+            y: world_pos_to_tile(world_position.y),
+        });
+
         // mycoords.0 = world_position;
-        eprintln!("World coords: {}/{}", world_position.x, world_position.y);
+        // eprintln!("Tile {}", world_position.world_pos_to_tile());
     }
 }
