@@ -34,7 +34,7 @@ fn spawn_camera(mut commands: Commands) {
                 },
                 ..Default::default()
             },
-            MainCamera
+            MainCamera,
         ))
         // .spawn({
         //     let mut camera = Camera2dBundle::default();

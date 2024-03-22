@@ -9,7 +9,7 @@ pub struct TileComponent {
 pub struct TileHovered;
 
 #[derive(Event)]
-pub struct TileHoverEvent {
+pub struct HoverTileEvent {
     pub x: u32,
     pub y: u32,
 }
