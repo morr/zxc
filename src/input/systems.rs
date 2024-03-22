@@ -3,7 +3,7 @@ use bevy::{prelude::*, window::PrimaryWindow};
 use super::*;
 
 pub fn mouse_movement(
-    // mut mycoords: ResMut<MyWorldCoords>,
+    // mut motion_evr: EventReader<MouseMotion>
     // query to get the window (so we can read the current cursor position)
     // hovered_tile_pos: &mut ResMut<HoveredTilePos>,
     q_window: Query<&Window, With<PrimaryWindow>>,
@@ -12,11 +12,7 @@ pub fn mouse_movement(
     mut event_writer: EventWriter<HoverTileEvent>,
     mut prev_hovered_tile_pos: ResMut<PrevHoveredTilePos>,
 ) {
-    // get the camera info and transform
-    // assuming there is exactly one main camera entity, so Query::single() is OK
     let (camera, camera_transform) = q_camera.single();
-
-    // There is only one primary window, so we can similarly get it from the query:
     let window = q_window.single();
 
     // check if the cursor is inside the window and get its position
@@ -39,10 +35,8 @@ pub fn mouse_movement(
             prev_hovered_tile_pos.0 = Some(UVec2::new(x, y));
         }
     }
-}
 
-// fn track_mouse_movement(mut motion_evr: EventReader<MouseMotion>) {
 //     for ev in motion_evr.read() {
 //         println!("Mouse moved: X: {} px, Y: {} px", ev.delta.x, ev.delta.y);
 //     }
-// }
+}

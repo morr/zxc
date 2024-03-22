@@ -14,6 +14,5 @@ impl Plugin for InputPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<PrevHoveredTilePos>()
             .add_systems(Update, mouse_movement);
-        // .add_systems(Update, track_mouse_movement);
     }
 }
