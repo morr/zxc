@@ -20,7 +20,6 @@ pub fn spawn_pawns(
     // q: Query<&Name, With<Structure>>,
     query: Query<&Transform, With<Structure>>,
     // mut q: Query<&Structure>,
-
     // query_base: Query<&Structure>,
 ) {
     println!("Spawning pawns");
