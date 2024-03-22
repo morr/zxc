@@ -2,12 +2,6 @@ use bevy::{prelude::*, window::PrimaryWindow};
 
 use super::*;
 
-// fn track_mouse_movement(mut motion_evr: EventReader<MouseMotion>) {
-//     for ev in motion_evr.read() {
-//         println!("Mouse moved: X: {} px, Y: {} px", ev.delta.x, ev.delta.y);
-//     }
-// }
-
 pub fn mouse_movement(
     // mut mycoords: ResMut<MyWorldCoords>,
     // query to get the window (so we can read the current cursor position)
@@ -16,6 +10,7 @@ pub fn mouse_movement(
     // query to get camera transform
     q_camera: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
     mut event_writer: EventWriter<HoverTileEvent>,
+    mut prev_hovered_tile_pos: ResMut<PrevHoveredTilePos>,
 ) {
     // get the camera info and transform
     // assuming there is exactly one main camera entity, so Query::single() is OK
@@ -33,9 +28,21 @@ pub fn mouse_movement(
     {
         let x = world_pos_to_tile(world_position.x);
         let y = world_pos_to_tile(world_position.y);
-        event_writer.send(HoverTileEvent { x, y });
+        let is_changed = match prev_hovered_tile_pos.0 {
+            Some(vec) => vec.x != x || vec.y != y,
+            None => true,
+        };
 
-        // mycoords.0 = world_position;
-        println!("HoverTileEvent {}x{}", x, y);
+        if is_changed {
+            event_writer.send(HoverTileEvent { x, y });
+            println!("HoverTileEvent {}x{}", x, y);
+            prev_hovered_tile_pos.0 = Some(UVec2::new(x, y));
+        }
     }
 }
+
+// fn track_mouse_movement(mut motion_evr: EventReader<MouseMotion>) {
+//     for ev in motion_evr.read() {
+//         println!("Mouse moved: X: {} px, Y: {} px", ev.delta.x, ev.delta.y);
+//     }
+// }
