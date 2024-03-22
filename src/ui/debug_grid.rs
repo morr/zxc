@@ -43,11 +43,8 @@ pub fn render_grid(mut gizmos: Gizmos) {
         };
 
         gizmos.line_2d(
-            Vec2::new(tile_pos_to_world(0.0), tile_pos_to_world(i as f32)),
-            Vec2::new(
-                tile_pos_to_world(GRID_COLS as f32),
-                tile_pos_to_world(i as f32),
-            ),
+            Vec2::new(tile_pos_to_world(0), tile_pos_to_world(i)),
+            Vec2::new(tile_pos_to_world(GRID_COLS), tile_pos_to_world(i)),
             color,
         );
     }
@@ -62,11 +59,8 @@ pub fn render_grid(mut gizmos: Gizmos) {
         };
 
         gizmos.line_2d(
-            Vec2::new(tile_pos_to_world(i as f32), tile_pos_to_world(0.0)),
-            Vec2::new(
-                tile_pos_to_world(i as f32),
-                tile_pos_to_world(GRID_ROWS as f32),
-            ),
+            Vec2::new(tile_pos_to_world(i), tile_pos_to_world(0)),
+            Vec2::new(tile_pos_to_world(i), tile_pos_to_world(GRID_ROWS)),
             color,
         );
     }

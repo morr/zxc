@@ -27,8 +27,8 @@ fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
                         ..default()
                     },
                     transform: Transform::from_xyz(
-                        tile_pos_to_world(x as f32),
-                        tile_pos_to_world(y as f32),
+                        tile_pos_to_world(x),
+                        tile_pos_to_world(y),
                         TILE_Z_INDEX,
                     ),
                     ..default()
