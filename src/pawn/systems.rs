@@ -2,7 +2,7 @@ use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use rand::prelude::*;
 use std::time::Duration;
 
-use super::components::*;
+use super::*;
 use crate::story_time::TimeScale;
 use crate::structure::Structure;
 use crate::structure::{BASE_HEIGHT, BASE_WIDTH};
