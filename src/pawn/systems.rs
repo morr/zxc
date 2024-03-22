@@ -4,8 +4,9 @@ use std::time::Duration;
 
 use super::components::*;
 use crate::story_time::TimeScale;
+use crate::structure::Structure;
 use crate::structure::{BASE_HEIGHT, BASE_WIDTH};
-use crate::{structure::Structure, utils::TranslationHelper};
+use crate::utils::wold_pos_align_to_tile;
 use crate::{PAWN_SPEED, PAWN_Z_INDEX, STARTING_PAWNS, TILE_SIZE};
 
 pub fn spawn_pawns(
@@ -36,12 +37,8 @@ pub fn spawn_pawns(
 
     for i in 0..STARTING_PAWNS {
         let random_angle: f32 = rng.gen_range(0.0..360.0);
-        let pos = Vec2::new(
-            transform.translation.x + random_angle.cos() * radius,
-            transform.translation.y + random_angle.sin() * radius,
-        )
-        .world_pos_to_tile()
-        .tile_pos_to_world();
+        let x = transform.translation.x + random_angle.cos() * radius;
+        let y = transform.translation.y + random_angle.sin() * radius;
 
         commands.spawn((
             PawnBundle {
@@ -50,7 +47,11 @@ pub fn spawn_pawns(
                 mesh_bundle: MaterialMesh2dBundle {
                     mesh: mesh_handle.clone().into(),
                     material: material_handle.clone(),
-                    transform: Transform::from_xyz(pos.x, pos.y, PAWN_Z_INDEX),
+                    transform: Transform::from_xyz(
+                        wold_pos_align_to_tile(x),
+                        wold_pos_align_to_tile(y),
+                        PAWN_Z_INDEX,
+                    ),
                     ..default()
                 },
             },
