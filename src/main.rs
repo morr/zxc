@@ -5,6 +5,7 @@ use bevy::{
 // use bevy_inspector_egui::quick::FilterQueryInspectorPlugin;
 
 mod camera;
+mod input;
 mod map;
 mod pawn;
 mod settings;
@@ -45,6 +46,7 @@ fn main() {
             map::MapPlugin,
             structure::StructurePlugin,
             ui::UiPlugin,
+            input::InputPlugin,
             pawn::PawnPlugin,
             story_time::StoryTimePlugin,
         ))
