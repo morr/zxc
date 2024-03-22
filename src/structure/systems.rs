@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use super::components::*;
+use super::*;
 use crate::{utils::tile_pos_to_world, GRID_COLS, GRID_ROWS, STRUCTURE_Z_INDEX, TILE_SIZE};
 
 pub fn spawn_base(
