@@ -51,7 +51,7 @@ pub fn spawn_base(
             // },
         },
         ShowAabbGizmo {
-            color: Some(Color::WHITE),
+            color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
         },
     ));
 }
