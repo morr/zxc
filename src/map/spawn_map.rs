@@ -14,12 +14,12 @@ pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
                 SpriteBundle {
                     texture: texture_handle.clone(),
                     sprite: Sprite {
-                        custom_size: Some(Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32)),
+                        custom_size: Some(Vec2::new(TILE_SIZE, TILE_SIZE)),
                         ..default()
                     },
                     transform: Transform::from_xyz(
-                        tile_pos_to_world(x),
-                        tile_pos_to_world(y),
+                        tile_pos_to_world(x) + TILE_SIZE / 2.,
+                        tile_pos_to_world(y) + TILE_SIZE / 2.,
                         TILE_Z_INDEX,
                     ),
                     ..default()
