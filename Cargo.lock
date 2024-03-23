@@ -524,6 +524,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_flowfield_tiles_plugin"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "75fd900a3317faff3891eeea06e0d8d1ebe466965fbd64b58918897e2cffa7b7"
+dependencies = [
+ "bevy",
+]
+
+[[package]]
 name = "bevy_framepace"
 version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4124,6 +4133,7 @@ name = "zxc"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "bevy_flowfield_tiles_plugin",
  "bevy_framepace",
  "bevy_pancam",
  "rand",
