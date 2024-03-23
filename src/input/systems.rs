@@ -1,6 +1,6 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
-use crate::map::components::ClickTileEvent;
+use crate::{map::components::ClickTileEvent, utils::TranslationHelper};
 
 use super::*;
 
@@ -35,19 +35,17 @@ pub fn mouse_input(
         .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
         .map(|ray| ray.origin.truncate())
     {
-        let x = world_pos_to_tile(world_position.x);
-        let y = world_pos_to_tile(world_position.y);
+        let event = HoverTileEvent(world_position.world_pos_to_tile());
 
         let is_new_hover = match prev_hovered_tile_pos.0 {
-            Some(vec) => vec.x != x || vec.y != y,
+            Some(vec) => vec != event.0,
             None => true,
         };
 
         if is_new_hover {
-            let event = HoverTileEvent { x, y };
             println!("{:?}", event);
+            prev_hovered_tile_pos.0 = Some(event.0.clone());
             hover_event_writer.send(event);
-            prev_hovered_tile_pos.0 = Some(UVec2::new(x, y));
         }
     }
 
@@ -61,10 +59,7 @@ pub fn mouse_input(
             .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
             .map(|ray| ray.origin.truncate())
         {
-            let x = world_pos_to_tile(world_position.x);
-            let y = world_pos_to_tile(world_position.y);
-
-            let event = ClickTileEvent { x, y };
+            let event = ClickTileEvent(world_position.world_pos_to_tile());
             println!("{:?}", event);
             click_event_writer.send(event);
         }

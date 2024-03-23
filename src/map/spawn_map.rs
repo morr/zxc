@@ -24,7 +24,7 @@ pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
                     ),
                     ..default()
                 },
-                Tile { x, y },
+                Tile(UVec2::new(x, y)),
             ));
         }
     }

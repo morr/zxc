@@ -14,16 +14,14 @@ pub fn highlight_hovered_tile(
         remove_tile_hovered_from_other_tiles(&query_tiles_hovered, &mut commands);
 
         if let Some(pos) = current_hovered_tile_pos.0 {
-            if pos.x != event.x || pos.y != event.y {
+            if pos != event.0 {
                 print!("skipping hover");
                 return;
             }
         }
 
         for (tile, entity) in query_tiles.iter() {
-            if tile.x == event.x && tile.y == event.y {
-                // println!("hovered {:?}", tile);
-
+            if tile.0 == event.0 {
                 commands
                     .entity(entity)
                     .insert(TileHovered {})

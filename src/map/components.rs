@@ -5,25 +5,16 @@ use bevy_flowfield_tiles_plugin::flowfields::{
 };
 
 #[derive(Component, Debug)]
-pub struct Tile {
-    pub x: u32,
-    pub y: u32,
-}
+pub struct Tile(pub UVec2);
 
 #[derive(Component)]
 pub struct TileHovered;
 
 #[derive(Event, Debug)]
-pub struct HoverTileEvent {
-    pub x: u32,
-    pub y: u32,
-}
+pub struct HoverTileEvent(pub UVec2);
 
 #[derive(Event, Debug)]
-pub struct ClickTileEvent {
-    pub x: u32,
-    pub y: u32,
-}
+pub struct ClickTileEvent(pub UVec2);
 
 #[derive(Component)]
 pub struct Actor;
