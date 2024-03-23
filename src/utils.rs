@@ -8,11 +8,12 @@ pub fn world_pos_to_tile(value: f32) -> u32 {
 
 pub fn tile_pos_to_world(value: u32) -> f32 {
     // value * TILE_SIZE + TILE_SIZE / 2
-    value as f32 * TILE_SIZE
+    value as f32 * TILE_SIZE // - TILE_SIZE / 2.
 }
 
 pub fn wold_pos_align_to_tile(value: f32) -> f32 {
     tile_pos_to_world(world_pos_to_tile(value))
+    // world_pos_to_tile(value) as f32 * TILE_SIZE
 }
 
 // pub trait TranslationHelper {

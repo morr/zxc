@@ -48,7 +48,7 @@ fn spawn_camera(mut commands: Commands) {
             max_scale: Some(20.0),
             max_x: None,
             max_y: None,
-            min_scale: 0.5,
+            min_scale: 0.1, // 0.5,
             min_x: None,
             min_y: None,
             zoom_to_cursor: true,

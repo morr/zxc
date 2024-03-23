@@ -9,7 +9,7 @@ pub fn spawn_base(
     // mut meshes: ResMut<Assets<Mesh>>,
     // mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    println!("Spawning base");
+    // println!("Spawning base");
 
     // let mesh = Mesh::from(Rectangle::new(
     //     BASE_WIDTH * TILE_SIZE,

@@ -22,7 +22,7 @@ pub fn spawn_pawns(
     // mut q: Query<&Structure>,
     // query_base: Query<&Structure>,
 ) {
-    println!("Spawning pawns");
+    // println!("Spawning pawns");
 
     let mesh = Mesh::from(Circle::new(TILE_SIZE / 2.0));
     let material = ColorMaterial::from(Color::hex("E178C5").unwrap());
