@@ -21,7 +21,7 @@ pub struct Actor;
 
 #[derive(Default, Component)]
 pub struct Pathing {
-    pub target_position: Option<Vec2>,
+    pub target_position: Option<UVec2>,
     pub metadata: Option<RouteMetadata>,
     pub portal_route: Option<Vec<(SectorID, FieldCell)>>,
     pub has_los: bool,

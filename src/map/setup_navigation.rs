@@ -20,16 +20,12 @@ pub fn setup_navigation(mut commands: Commands) {
 
 pub fn pathfinding_on_click(
     mut event_reader: EventReader<ClickTileEvent>,
-    // mouse_button_input: Res<ButtonInput<MouseButton>>,
-    // windows: Query<&Window, With<PrimaryWindow>>,
-    // camera_q: Query<(&Camera, &GlobalTransform)>,
-    // dimensions_q: Query<&MapDimensions>,
     mut actor_q: Query<&mut Pathing, With<Actor>>,
 ) {
     for event in event_reader.read() {
         let mut pathing = actor_q.get_single_mut().unwrap();
 
-        // pathing.target_position = Some(world_position);
+        pathing.target_position = Some(event.0);
         pathing.metadata = None;
         pathing.portal_route = None;
         pathing.has_los = false;
