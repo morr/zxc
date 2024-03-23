@@ -8,8 +8,6 @@ mod debug_grid;
 mod systems;
 pub use systems::*;
 
-use crate::map::components::HoverTileEvent;
-
 pub struct UiPlugin;
 
 impl Plugin for UiPlugin {

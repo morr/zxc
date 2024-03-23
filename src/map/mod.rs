@@ -9,8 +9,6 @@ use bevy_flowfield_tiles_plugin::plugin::FlowFieldTilesPlugin;
 use components::*;
 use systems::*;
 
-use self::setup_navigation::user_input;
-
 pub struct MapPlugin;
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
@@ -22,7 +20,7 @@ impl Plugin for MapPlugin {
                 Startup,
                 setup_navigation::setup_navigation.after(spawn_map::spawn_map),
             )
-            .add_systems(Update, user_input)
+            .add_systems(Update, setup_navigation::pathfinding_on_click)
             .add_systems(Update, highlight_hovered_tile);
     }
 }
