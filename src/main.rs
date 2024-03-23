@@ -41,6 +41,7 @@ fn main() {
         // .add_plugins(WorldInspectorPlugin::new())
         // .add_plugins(FilterQueryInspectorPlugin::<With<structure::Structure>>::default())
         // .add_plugins(FilterQueryInspectorPlugin::<With<pawn::Pawn>>::default())
+        .add_plugins(bevy_framepace::FramepacePlugin) // this fixes bevy input lag https://github.com/bevyengine/bevy/issues/3317
         .add_plugins((
             camera::CameraPlugin,
             settings::SettingsPlugin,
