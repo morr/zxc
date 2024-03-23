@@ -14,7 +14,7 @@ enum HorizontalMovement {
     Right,
 }
 
-pub fn smoothened_mouse_movement(
+pub fn mouse_movement_smoothened(
     mut motion_evr: EventReader<MouseMotion>,
     // query to get the window (so we can read the current cursor position)
     // hovered_tile_pos: &mut ResMut<HoveredTilePos>,
@@ -78,7 +78,7 @@ pub fn smoothened_mouse_movement(
 }
 
 // pub fn mouse_movement(
-//     // mut motion_evr: EventReader<MouseMotion>
+//     // mut motion_evr: EventReader<MouseMotion>,
 //     // query to get the window (so we can read the current cursor position)
 //     // hovered_tile_pos: &mut ResMut<HoveredTilePos>,
 //     q_window: Query<&Window, With<PrimaryWindow>>,
