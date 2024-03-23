@@ -18,3 +18,11 @@ pub fn setup_navigation(mut commands: Commands) {
         actor_size,
     ));
 }
+
+pub fn user_input(
+    // mouse_button_input: Res<ButtonInput<MouseButton>>,
+    // windows: Query<&Window, With<PrimaryWindow>>,
+    // camera_q: Query<(&Camera, &GlobalTransform)>,
+    // dimensions_q: Query<&MapDimensions>,
+    // mut actor_q: Query<&mut Pathing, With<Actor>>,
+) {}

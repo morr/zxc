@@ -2,6 +2,8 @@ use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use rand::prelude::*;
 use std::time::Duration;
 
+use self::map::components::{Actor, Pathing};
+
 use super::*;
 use crate::story_time::TimeScale;
 use crate::structure::Structure;
@@ -39,8 +41,8 @@ pub fn spawn_pawns(
         let x = transform.translation.x + random_angle.cos() * radius;
         let y = transform.translation.y + random_angle.sin() * radius;
 
-        commands.spawn((
-            PawnBundle {
+        commands
+            .spawn(PawnBundle {
                 pawn: Pawn::default(),
                 name: Name::new(format!("Pawn {i}")),
                 mesh_bundle: MaterialMesh2dBundle {
@@ -53,11 +55,11 @@ pub fn spawn_pawns(
                     ),
                     ..default()
                 },
-            },
-            ShowAabbGizmo {
+            })
+            .insert(ShowAabbGizmo {
                 color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
-            },
-        ));
+            })
+            .insert((Actor, Pathing::default()));
     }
 }
 
