@@ -29,6 +29,7 @@ fn main() {
                         mode: bevy::window::WindowMode::Windowed,
                         // present_mode: PresentMode::AutoNoVsync,
                         present_mode: PresentMode::AutoVsync,
+                        // present_mode: PresentMode::Immediate,
                         resolution: (WW as f32, WH as f32).into(),
                         // title: "Test App".to_string(),
                         // focused: true,

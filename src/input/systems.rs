@@ -25,6 +25,7 @@ pub fn smoothened_mouse_movement(
     mut prev_hovered_tile_pos: ResMut<PrevHoveredTilePos>,
 ) {
     for ev in motion_evr.read() {
+        println!("{:?}", ev);
         let horizontal_movement = match ev.delta.x {
             x if x < 0.0 => HorizontalMovement::Left,
             x if x > 0.0 => HorizontalMovement::Right,
