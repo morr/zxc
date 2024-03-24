@@ -26,9 +26,68 @@ pub fn pathfinding_on_click(
     }
 }
 
-pub fn listen_for_pathfinding_requests(mut event_reader: EventReader<PathfindRequestEvent>) {
-    for event in event_reader.read() {
-        println!("{:?}", event);
+pub fn listen_for_pathfinding_requests(
+    navmesh: Res<Navmesh>,
+    mut pathfind_event_reader: EventReader<PathfindRequestEvent>,
+    mut pathfind_event_writer: EventWriter<PathfindAnswerEvent>,
+
+) {
+    if pathfind_event_reader.is_empty() { return; }
+
+    let navmesh = &navmesh.0;
+
+    for request in pathfind_event_reader.read() {
+        println!("{:?}", request);
+
+        let Vec2 { x, y } = request.start;
+        let x = x as usize;
+        let y = y as usize;
+
+        let Vec2 { x: end_x, y: end_y } = request.end;
+        let end_x = end_x as usize;
+        let end_y = end_y as usize;
+
+        let result = astar(
+            &UsizeVec { x, y },
+            |&UsizeVec { x, y }| {
+                let up = (x, y.saturating_add(1));
+                let down = (x, y.saturating_sub(1));
+                let left = (x.saturating_sub(1), y);
+                let right = (x.saturating_add(1), y);
+
+                let neighbors = [up, down, left, right]
+                    .iter()
+                    .filter(|&(x, y)| {
+                        navmesh
+                            .get(*x)
+                            .and_hen(|row| row.get(*y))
+                            .map(|tile| tile.walkable || (*x == end_x && *y == end_y))
+                            .unwrap_or(false)
+                    })
+                    .map(|(x, y)| (UsizeVec { x: *x, y: *y }, 0)) // Modify this line
+                    .collect::<Vec<_>>();
+
+                neighbors
+            },
+            |&tile| {
+                (Vec2::new(tile.x as f32, tile.y as f32) - Vec2::new(end_x as f32, end_y as f32))
+                    .length() as i32
+            },
+            |UsizeVec { x, y }| x == &end_x && y == &end_y,
+        )
+        .map(|(data, _)| {
+            data.iter()
+                .map(|item| Vec2::new(item.x as f32, item.y as f32))
+                .collect::<Vec<_>>()
+        });
+
+        pathfinding_event_writer.send(PathfindAnswer {
+            path: result,
+            entity: request.entity,
+            target: request.end,
+        });
+t
+
     }
 }
 
