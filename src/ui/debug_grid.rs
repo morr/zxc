@@ -1,4 +1,6 @@
-use crate::{utils::tile_pos_to_world, GRID_COLS, GRID_COLS_HALF, GRID_ROWS, GRID_ROWS_HALF, TILE_SIZE};
+use crate::{
+    utils::tile_pos_to_world, GRID_COLS, GRID_COLS_HALF, GRID_ROWS, GRID_ROWS_HALF, TILE_SIZE,
+};
 use bevy::prelude::*;
 
 pub struct DebugGridPlugin;

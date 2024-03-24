@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use super::*;
-use crate::{utils::tile_pos_to_world, GRID_COLS, GRID_COLS_HALF, GRID_ROWS, GRID_ROWS_HALF, TILE_SIZE, TILE_Z_INDEX};
+use crate::{utils::tile_pos_to_world, GRID_COLS_HALF, GRID_ROWS_HALF, TILE_SIZE, TILE_Z_INDEX};
 
 pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
     // https://itch.io/game-assets/free/tag-textures
@@ -13,8 +13,8 @@ pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
             let x = i_x as f32;
             let y = i_y as f32;
 
-            commands.spawn((
-                SpriteBundle {
+            commands
+                .spawn(SpriteBundle {
                     texture: texture_handle.clone(),
                     sprite: Sprite {
                         custom_size: Some(Vec2::new(TILE_SIZE, TILE_SIZE)),
@@ -26,9 +26,8 @@ pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
                         TILE_Z_INDEX,
                     ),
                     ..default()
-                },
-                Tile(Vec2::new(x, y)),
-            ));
+                })
+                .insert(Tile(Vec2::new(x, y)));
         }
     }
 }

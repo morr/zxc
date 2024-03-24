@@ -27,13 +27,11 @@ pub fn pathfinding_on_click(
 ) {
     for event in event_reader.read() {
         let map_dimensions = dimensions_q.get_single().unwrap();
-        println!("{:?}", map_dimensions.get_size());
 
         if map_dimensions
             .get_sector_and_field_cell_from_xy(Vec2::new(event.0.x as f32, event.0.y as f32))
             .is_some()
         {
-            println!("pathfinding...");
             let mut pathing = actor_q.get_single_mut().unwrap();
 
             pathing.target_position = Some(event.0);
