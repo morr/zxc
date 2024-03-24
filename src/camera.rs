@@ -26,8 +26,9 @@ fn spawn_camera(mut commands: Commands) {
             Camera2dBundle {
                 transform: Transform {
                     translation: Vec3::new(
-                        tile_pos_to_world((GRID_COLS as f32 / 2.0) as u32),
-                        tile_pos_to_world((GRID_ROWS as f32 / 2.0) as u32),
+                        0.0, 0.0,
+                        // tile_pos_to_world((GRID_COLS as f32 / 2.0) as u32),
+                        // tile_pos_to_world((GRID_ROWS as f32 / 2.0) as u32),
                         0.0,
                     ),
                     ..Default::default()
