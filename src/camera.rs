@@ -31,6 +31,15 @@ fn spawn_camera(mut commands: Commands) {
                     ),
                     ..Default::default()
                 },
+                projection: OrthographicProjection {
+                    // don't forget to set `near` and `far`
+                    near: -1000.0,
+                    far: 1000.0,
+                    // initial zoom
+                    scale: 1.25,
+                    // ... any other settings you want to change ...
+                    ..default()
+                },
                 ..Default::default()
             },
             MainCamera,
