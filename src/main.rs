@@ -7,6 +7,7 @@ use bevy::{
 mod camera;
 mod input;
 mod map;
+mod navigation;
 mod pawn;
 mod settings;
 mod story_time;
@@ -46,6 +47,7 @@ fn main() {
             camera::CameraPlugin,
             settings::SettingsPlugin,
             map::MapPlugin,
+            navigation::NavigationPlugin,
             structure::StructurePlugin,
             ui::UiPlugin,
             input::InputPlugin,
