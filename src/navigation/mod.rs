@@ -13,6 +13,7 @@ impl Plugin for NavigationPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<Navmesh>()
             .add_event::<PathfindRequestEvent>()
+            .add_event::<PathfindAnswerEvent>()
             .add_systems(Startup, generate_navmesh.after(spawn_map))
             .add_systems(
                 Update,
