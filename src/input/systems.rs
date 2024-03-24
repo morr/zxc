@@ -4,18 +4,6 @@ use crate::{map::components::ClickTileEvent, utils::TranslationHelper};
 
 use super::*;
 
-// enum VerticalMovement {
-//     None,
-//     Up,
-//     Down,
-// }
-//
-// enum HorizontalMovement {
-//     None,
-//     Left,
-//     Right,
-// }
-
 pub fn mouse_input(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     // mut mouse_motion_evr: EventReader<MouseMotion>,
@@ -66,6 +54,18 @@ pub fn mouse_input(
     }
 }
 
+// enum VerticalMovement {
+//     None,
+//     Up,
+//     Down,
+// }
+//
+// enum HorizontalMovement {
+//     None,
+//     Left,
+//     Right,
+// }
+//
 // for ev in mouse_motion_evr.read() {
 //     let horizontal_movement = match ev.delta.x {
 //         x if x < 0.0 => HorizontalMovement::Left,

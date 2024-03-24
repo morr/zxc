@@ -7,8 +7,8 @@ use super::*;
 use crate::{GRID_COLS, GRID_ROWS};
 
 pub fn setup_navigation(mut commands: Commands) {
-    let map_length = GRID_COLS;
-    let map_depth = GRID_ROWS;
+    let map_length = GRID_COLS as u32;
+    let map_depth = GRID_ROWS as u32;
     let sector_resolution = 25;
     let actor_size = 1.0;
 

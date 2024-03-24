@@ -2,13 +2,13 @@ use bevy::prelude::*;
 
 use crate::TILE_SIZE;
 
-pub fn world_pos_to_tile(value: f32) -> u32 {
-    (value / TILE_SIZE).floor() as u32
+pub fn world_pos_to_tile(value: f32) -> f32 {
+    (value / TILE_SIZE).floor()
 }
 
-pub fn tile_pos_to_world(value: u32) -> f32 {
+pub fn tile_pos_to_world(value: f32) -> f32 {
     // value * TILE_SIZE + TILE_SIZE / 2
-    value as f32 * TILE_SIZE // - TILE_SIZE / 2.
+    value * TILE_SIZE // - TILE_SIZE / 2.
 }
 
 pub fn wold_pos_align_to_tile(value: f32) -> f32 {
@@ -17,7 +17,7 @@ pub fn wold_pos_align_to_tile(value: f32) -> f32 {
 }
 
 pub trait TranslationHelper {
-    fn world_pos_to_tile(&self) -> UVec2;
+    fn world_pos_to_tile(&self) -> Vec2;
     // fn tile_pos_to_world(&self) -> Vec2;
 }
 //
@@ -64,8 +64,8 @@ pub trait TranslationHelper {
 // }
 //
 impl TranslationHelper for Vec2 {
-    fn world_pos_to_tile(&self) -> UVec2 {
-        UVec2::new(world_pos_to_tile(self.x), world_pos_to_tile(self.y))
+    fn world_pos_to_tile(&self) -> Vec2 {
+        Vec2::new(world_pos_to_tile(self.x), world_pos_to_tile(self.y))
     }
 
     // fn tile_pos_to_world(&self) -> Vec2 {

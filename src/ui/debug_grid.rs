@@ -33,9 +33,9 @@ pub fn render_grid(mut gizmos: Gizmos) {
         Color::rgb(0.0, 1.0, 0.0),
     );
 
-    for i in 1..GRID_ROWS {
+    for i in 1..(GRID_ROWS as u32) {
         let color = {
-            if i == GRID_ROWS / 2 {
+            if i == (GRID_ROWS / 2.0) as u32 {
                 Color::rgba(1.0, 1.0, 1.0, 0.5)
             } else {
                 Color::rgba(0.2, 0.2, 0.2, 0.5)
@@ -43,15 +43,15 @@ pub fn render_grid(mut gizmos: Gizmos) {
         };
 
         gizmos.line_2d(
-            Vec2::new(tile_pos_to_world(0), tile_pos_to_world(i)),
-            Vec2::new(tile_pos_to_world(GRID_COLS), tile_pos_to_world(i)),
+            Vec2::new(tile_pos_to_world(0.0), tile_pos_to_world(i as f32)),
+            Vec2::new(tile_pos_to_world(GRID_COLS), tile_pos_to_world(i as f32)),
             color,
         );
     }
 
-    for i in 1..GRID_COLS {
+    for i in 1..(GRID_COLS as u32) {
         let color = {
-            if i == GRID_COLS / 2 {
+            if i == (GRID_COLS / 2.0) as u32 {
                 Color::rgba(1.0, 1.0, 1.0, 0.5)
             } else {
                 Color::rgba(0.2, 0.2, 0.2, 0.5)
@@ -59,8 +59,8 @@ pub fn render_grid(mut gizmos: Gizmos) {
         };
 
         gizmos.line_2d(
-            Vec2::new(tile_pos_to_world(i), tile_pos_to_world(0)),
-            Vec2::new(tile_pos_to_world(i), tile_pos_to_world(GRID_ROWS)),
+            Vec2::new(tile_pos_to_world(i as f32), tile_pos_to_world(0.0)),
+            Vec2::new(tile_pos_to_world(i as f32), tile_pos_to_world(GRID_ROWS)),
             color,
         );
     }

@@ -6,7 +6,7 @@ pub mod systems;
 use components::*;
 use systems::*;
 
-use crate::{camera::MainCamera, map::components::HoverTileEvent, utils::world_pos_to_tile};
+use crate::{camera::MainCamera, map::components::HoverTileEvent};
 
 pub struct InputPlugin;
 

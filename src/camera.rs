@@ -4,8 +4,6 @@ use bevy::{
 };
 use bevy_pancam::{PanCam, PanCamPlugin};
 
-use crate::{utils::tile_pos_to_world, GRID_COLS, GRID_ROWS};
-
 #[derive(Component)]
 pub struct MainCamera;
 

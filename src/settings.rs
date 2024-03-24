@@ -6,8 +6,8 @@ use bevy::prelude::*;
 pub const WW: usize = 900;
 pub const WH: usize = 600;
 
-pub const GRID_COLS: u32 = 250;
-pub const GRID_ROWS: u32 = 250;
+pub const GRID_COLS: f32 = 250.0;
+pub const GRID_ROWS: f32 = 250.0;
 pub const TILE_SIZE: f32 = 32.;
 
 pub const STARTING_PAWNS: u32 = 1;
