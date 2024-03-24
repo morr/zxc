@@ -1,22 +1,32 @@
 use bevy::prelude::*;
 
-use crate::map::components::ClickTileEvent;
+use crate::{map::components::ClickTileEvent, pawn::{Pawn, PawnStatus}, utils::TranslationHelper};
 
 use super::*;
 
 pub fn generate_navmesh() {}
 
 pub fn pathfinding_on_click(
-    mut event_reader: EventReader<ClickTileEvent>,
+    mut click_event_reader: EventReader<ClickTileEvent>,
+    mut query_pawns: Query<(Entity, &Transform, &mut PawnStatus), (With<Pawn>)>,
+    mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
     // dimensions_q: Query<&MapDimensions>,
     // mut actor_q: Query<&mut Pathing, With<Actor>>,
 ) {
-    for event in event_reader.read() {
-        println!("{:?}", event);
+    for click_event in click_event_reader.read() {
+        for (entity, transform, mut pawn_status) in &mut query_pawns {
+            *pawn_status = PawnStatus::Pathfinding;
+
+            pathfind_event_writer.send(PathfindRequestEvent {
+                start: transform.translation.truncate().world_pos_to_tile(),
+                end: click_event.0,
+                entity,
+            });
+        }
     }
 }
 
-pub fn listen_for_pathfinding_requests(mut event_reader: EventReader<PathfindingRequestEvent>) {
+pub fn listen_for_pathfinding_requests(mut event_reader: EventReader<PathfindRequestEvent>) {
     for event in event_reader.read() {
         println!("{:?}", event);
     }
