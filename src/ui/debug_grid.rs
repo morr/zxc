@@ -21,6 +21,37 @@ pub enum DebugGridState {
 }
 
 pub fn render_grid(mut gizmos: Gizmos) {
+    let grid_rows_half = GRID_ROWS / 2.0;
+    let grid_cols_half = GRID_COLS / 2.0;
+
+    for i in (-1 * grid_rows_half as i32)..(grid_rows_half as i32) {
+        gizmos.line_2d(
+            Vec2::new(
+                tile_pos_to_world(-1.0 * grid_cols_half),
+                tile_pos_to_world(i as f32),
+            ),
+            Vec2::new(
+                tile_pos_to_world(grid_cols_half),
+                tile_pos_to_world(i as f32),
+            ),
+            Color::rgba(0.2, 0.2, 0.2, 0.5),
+        );
+    }
+
+    for i in (-1 * grid_cols_half as i32)..(grid_cols_half as i32) {
+        gizmos.line_2d(
+            Vec2::new(
+                tile_pos_to_world(i as f32),
+                tile_pos_to_world(-1.0 * grid_rows_half),
+            ),
+            Vec2::new(
+                tile_pos_to_world(i as f32),
+                tile_pos_to_world(grid_rows_half),
+            ),
+            Color::rgba(0.2, 0.2, 0.2, 0.5),
+        );
+    }
+
     gizmos.line_2d(
         Vec2::new(0.0, 0.0),
         Vec2::new(GRID_COLS as f32 * TILE_SIZE, 0.0),
@@ -32,36 +63,4 @@ pub fn render_grid(mut gizmos: Gizmos) {
         Vec2::new(0.0, GRID_ROWS as f32 * TILE_SIZE),
         Color::rgb(0.0, 1.0, 0.0),
     );
-
-    for i in 1..(GRID_ROWS as u32) {
-        let color = {
-            if i == (GRID_ROWS / 2.0) as u32 {
-                Color::rgba(1.0, 1.0, 1.0, 0.5)
-            } else {
-                Color::rgba(0.2, 0.2, 0.2, 0.5)
-            }
-        };
-
-        gizmos.line_2d(
-            Vec2::new(tile_pos_to_world(0.0), tile_pos_to_world(i as f32)),
-            Vec2::new(tile_pos_to_world(GRID_COLS), tile_pos_to_world(i as f32)),
-            color,
-        );
-    }
-
-    for i in 1..(GRID_COLS as u32) {
-        let color = {
-            if i == (GRID_COLS / 2.0) as u32 {
-                Color::rgba(1.0, 1.0, 1.0, 0.5)
-            } else {
-                Color::rgba(0.2, 0.2, 0.2, 0.5)
-            }
-        };
-
-        gizmos.line_2d(
-            Vec2::new(tile_pos_to_world(i as f32), tile_pos_to_world(0.0)),
-            Vec2::new(tile_pos_to_world(i as f32), tile_pos_to_world(GRID_ROWS)),
-            color,
-        );
-    }
 }
