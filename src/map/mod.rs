@@ -20,7 +20,13 @@ impl Plugin for MapPlugin {
                 Startup,
                 setup_navigation::setup_navigation.after(spawn_map::spawn_map),
             )
-            .add_systems(Update, setup_navigation::pathfinding_on_click)
+            .add_systems(
+                Update,
+                (
+                    setup_navigation::pathfinding_on_click,
+                    setup_navigation::get_or_request_route,
+                ),
+            )
             .add_systems(Update, highlight_hovered_tile);
     }
 }

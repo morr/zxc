@@ -14,7 +14,6 @@ mod structure;
 mod ui;
 mod utils;
 
-// use utils::TranslationHelper;
 pub use settings::*;
 
 fn main() {
@@ -25,7 +24,8 @@ fn main() {
                 .set(ImagePlugin::default_nearest())
                 .set(WindowPlugin {
                     primary_window: Some(Window {
-                        position: WindowPosition::At(IVec2::new(0, 0)),
+                        // position: WindowPosition::At(IVec2::new(1000, 0)),
+                        position: WindowPosition::Automatic,
                         mode: bevy::window::WindowMode::Windowed,
                         // present_mode: PresentMode::AutoNoVsync,
                         present_mode: PresentMode::AutoVsync,

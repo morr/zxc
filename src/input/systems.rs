@@ -31,7 +31,7 @@ pub fn mouse_input(
         };
 
         if is_new_hover {
-            println!("{:?}", event);
+            // println!("{:?}", event);
             prev_hovered_tile_pos.0 = Some(event.0.clone());
             hover_event_writer.send(event);
         }
@@ -48,7 +48,7 @@ pub fn mouse_input(
             .map(|ray| ray.origin.truncate())
         {
             let event = ClickTileEvent(world_position.world_pos_to_tile());
-            println!("{:?}", event);
+            // println!("{:?}", event);
             click_event_writer.send(event);
         }
     }
