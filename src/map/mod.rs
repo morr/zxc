@@ -25,6 +25,7 @@ impl Plugin for MapPlugin {
                 (
                     setup_navigation::pathfinding_on_click,
                     setup_navigation::get_or_request_route,
+                    setup_navigation::actor_steering,
                 ),
             )
             .add_systems(Update, highlight_hovered_tile);

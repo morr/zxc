@@ -1,9 +1,16 @@
 use bevy::prelude::*;
 use bevy_flowfield_tiles_plugin::{
     bundle::FlowFieldTilesBundle,
-    flowfields::{fields::RouteCache, sectors::MapDimensions},
+    flowfields::{
+        fields::{
+            flow_field::{get_2d_direction_unit_vector_from_bits, has_line_of_sight},
+            Field, FlowFieldCache, RouteCache,
+        },
+        sectors::MapDimensions,
+    },
     plugin::flow_layer::EventPathRequest,
 };
+use bevy_xpbd_2d::components::LinearVelocity;
 
 use super::*;
 use crate::{utils::TranslationHelper, GRID_COLS, GRID_ROWS};
@@ -71,7 +78,6 @@ pub fn get_or_request_route(
                         ) {
                             pathing.metadata = Some(*metadata);
                             pathing.portal_route = Some(route.clone());
-                            // println!("{:?}", pathing);
                         } else {
                             // request a route
                             event.send(EventPathRequest::new(
@@ -81,6 +87,58 @@ pub fn get_or_request_route(
                                 goal_id,
                             ));
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+const SPEED: f32 = 64.0;
+pub fn actor_steering(
+    mut actor_q: Query<(&mut LinearVelocity, &mut Transform, &mut Pathing), With<Actor>>,
+    flow_cache_q: Query<(&FlowFieldCache, &MapDimensions)>,
+    time_step: Res<Time>,
+) {
+    let (flow_cache, map_dimensions) = flow_cache_q.get_single().unwrap();
+    for (mut velocity, tform, mut pathing) in actor_q.iter_mut() {
+        // lookup the overarching route
+        if let Some(route) = pathing.portal_route.as_mut() {
+            // find the current actors postion in grid space
+            if let Some((curr_actor_sector, curr_actor_field_cell)) =
+                map_dimensions.get_sector_and_field_cell_from_xy(tform.translation.truncate())
+            {
+                // trim the actor stored route as it makes progress
+                // this ensures it doesn't use a previous goal from
+                // a sector it has already been through when it needs
+                // to pass through it again as part of a different part of the route
+                if let Some(f) = route.first() {
+                    if curr_actor_sector != f.0 {
+                        route.remove(0);
+                    }
+                }
+                // lookup the relevant sector-goal of this sector
+                'routes: for (sector, goal) in route.iter() {
+                    if *sector == curr_actor_sector {
+                        // get the flow field
+                        if let Some(field) = flow_cache.get_field(*sector, *goal) {
+                            // based on actor field cell find the directional vector it should move in
+                            let cell_value = field.get_field_cell_value(curr_actor_field_cell);
+                            if has_line_of_sight(cell_value) {
+                                pathing.has_los = true;
+                                let dir =
+                                    pathing.target_position.unwrap() - tform.translation.truncate();
+                                velocity.0 = dir.normalize() * SPEED * time_step.delta_seconds();
+                                break 'routes;
+                            }
+                            let dir = get_2d_direction_unit_vector_from_bits(cell_value);
+                            if dir.x == 0.0 && dir.y == 0.0 {
+                                warn!("Stuck");
+                                pathing.portal_route = None;
+                            }
+                            velocity.0 = dir * SPEED * time_step.delta_seconds();
+                        }
+                        break 'routes;
                     }
                 }
             }

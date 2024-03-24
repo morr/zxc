@@ -60,6 +60,9 @@ pub fn spawn_pawns(
                 color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
             })
             .insert((Actor, Pathing::default()));
+            // .insert(RigidBody::Dynamic)
+            // .insert(Collider::rectangle(1.0, 1.0))
+            // .insert(CollisionLayers::new([Layer::Actor], [Layer::Terrain]));
     }
 }
 
