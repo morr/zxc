@@ -4,4 +4,4 @@ use bevy::prelude::*;
 // pub struct PrevHoveredTilePos;
 
 #[derive(Resource, Deref, DerefMut, Default)]
-pub struct PrevHoveredTilePos(pub Option<Vec2>);
+pub struct PrevHoveredTilePos(pub Option<IVec2>);

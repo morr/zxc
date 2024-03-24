@@ -33,8 +33,8 @@ pub fn spawn_base(
                     ..default()
                 },
                 transform: Transform::from_xyz(
-                    tile_pos_to_world(0.0),
-                    tile_pos_to_world(0.0),
+                    tile_pos_to_world(0),
+                    tile_pos_to_world(0),
                     STRUCTURE_Z_INDEX,
                 ),
                 ..default()

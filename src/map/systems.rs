@@ -8,11 +8,8 @@ pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
     // https://screamingbrainstudios.itch.io/tiny-texture-pack/download/eyJpZCI6MTAzMzEyOSwiZXhwaXJlcyI6MTcxMDc5ODI3OX0%3d.%2f%2bodleBeo8EbYeM%2bKnn3UZPKq2U%3d
     let texture_handle = asset_server.load("sprites/grass.png");
 
-    for i_x in (-1 * GRID_COLS_HALF as i32)..(GRID_COLS_HALF as i32) {
-        for i_y in (-1 * GRID_ROWS_HALF as i32)..(GRID_ROWS_HALF as i32) {
-            let x = i_x as f32;
-            let y = i_y as f32;
-
+    for x in (-1 * GRID_COLS_HALF)..GRID_COLS_HALF {
+        for y in (-1 * GRID_ROWS_HALF)..GRID_ROWS_HALF {
             commands
                 .spawn(SpriteBundle {
                     texture: texture_handle.clone(),
@@ -27,7 +24,7 @@ pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
                     ),
                     ..default()
                 })
-                .insert(Tile(Vec2::new(x, y)));
+                .insert(Tile(IVec2::new(x, y)));
         }
     }
 }

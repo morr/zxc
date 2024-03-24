@@ -1,16 +1,16 @@
 use bevy::prelude::*;
 
 #[derive(Component, Debug)]
-pub struct Tile(pub Vec2);
+pub struct Tile(pub IVec2);
 
 #[derive(Component)]
 pub struct TileHovered;
 
 #[derive(Event, Debug)]
-pub struct HoverTileEvent(pub Vec2);
+pub struct HoverTileEvent(pub IVec2);
 
 #[derive(Event, Debug)]
-pub struct ClickTileEvent(pub Vec2);
+pub struct ClickTileEvent(pub IVec2);
 
 // #[derive(Component)]
 // pub struct Actor;
