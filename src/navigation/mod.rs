@@ -11,7 +11,7 @@ use crate::map::systems::spawn_map;
 pub struct NavigationPlugin;
 impl Plugin for NavigationPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<Navmesh>()
+        app.init_resource::<NavMesh>()
             .add_event::<PathfindRequestEvent>()
             .add_event::<PathfindAnswerEvent>()
             .add_systems(Startup, generate_navmesh.after(spawn_map))
