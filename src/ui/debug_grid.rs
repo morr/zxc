@@ -1,4 +1,4 @@
-use crate::{utils::tile_pos_to_world, GRID_COLS, GRID_ROWS, TILE_SIZE};
+use crate::{utils::tile_pos_to_world, GRID_COLS, GRID_COLS_HALF, GRID_ROWS, GRID_ROWS_HALF, TILE_SIZE};
 use bevy::prelude::*;
 
 pub struct DebugGridPlugin;
@@ -21,32 +21,29 @@ pub enum DebugGridState {
 }
 
 pub fn render_grid(mut gizmos: Gizmos) {
-    let grid_rows_half = GRID_ROWS / 2.0;
-    let grid_cols_half = GRID_COLS / 2.0;
-
-    for i in (-1 * grid_rows_half as i32)..(grid_rows_half as i32) {
+    for i in (-1 * GRID_ROWS_HALF as i32)..(GRID_ROWS_HALF as i32) {
         gizmos.line_2d(
             Vec2::new(
-                tile_pos_to_world(-1.0 * grid_cols_half),
+                tile_pos_to_world(-1.0 * GRID_COLS_HALF),
                 tile_pos_to_world(i as f32),
             ),
             Vec2::new(
-                tile_pos_to_world(grid_cols_half),
+                tile_pos_to_world(GRID_COLS_HALF),
                 tile_pos_to_world(i as f32),
             ),
             Color::rgba(0.2, 0.2, 0.2, 0.5),
         );
     }
 
-    for i in (-1 * grid_cols_half as i32)..(grid_cols_half as i32) {
+    for i in (-1 * GRID_COLS_HALF as i32)..(GRID_COLS_HALF as i32) {
         gizmos.line_2d(
             Vec2::new(
                 tile_pos_to_world(i as f32),
-                tile_pos_to_world(-1.0 * grid_rows_half),
+                tile_pos_to_world(-1.0 * GRID_ROWS_HALF),
             ),
             Vec2::new(
                 tile_pos_to_world(i as f32),
-                tile_pos_to_world(grid_rows_half),
+                tile_pos_to_world(GRID_ROWS_HALF),
             ),
             Color::rgba(0.2, 0.2, 0.2, 0.5),
         );

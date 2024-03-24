@@ -3,11 +3,15 @@ use crate::story_time::{
 };
 use bevy::prelude::*;
 
-pub const WW: usize = 900;
-pub const WH: usize = 600;
+pub const WW: usize = 1200;
+pub const WH: usize = 800;
 
 pub const GRID_COLS: f32 = 250.0;
 pub const GRID_ROWS: f32 = 250.0;
+
+pub const GRID_COLS_HALF: f32 = GRID_COLS / 2.0;
+pub const GRID_ROWS_HALF: f32 = GRID_ROWS / 2.0;
+
 pub const TILE_SIZE: f32 = 32.;
 
 pub const STARTING_PAWNS: u32 = 1;
