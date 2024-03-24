@@ -2,8 +2,6 @@ use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use rand::prelude::*;
 use std::time::Duration;
 
-use self::map::components::{Actor, Pathing};
-
 use super::*;
 use crate::story_time::TimeScale;
 use crate::structure::Structure;
@@ -58,11 +56,11 @@ pub fn spawn_pawns(
             })
             .insert(ShowAabbGizmo {
                 color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
-            })
-            .insert((Actor, Pathing::default()));
-            // .insert(RigidBody::Dynamic)
-            // .insert(Collider::rectangle(1.0, 1.0))
-            // .insert(CollisionLayers::new([Layer::Actor], [Layer::Terrain]));
+            });
+        // .insert((Actor, Pathing::default()));
+        // .insert(RigidBody::Dynamic)
+        // .insert(Collider::rectangle(1.0, 1.0))
+        // .insert(CollisionLayers::new([Layer::Actor], [Layer::Terrain]));
     }
 }
 
