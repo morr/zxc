@@ -43,6 +43,7 @@ pub fn spawn_pawns(
             .spawn(PawnBundle {
                 pawn: Pawn::default(),
                 name: Name::new(format!("Pawn {i}")),
+                status: PawnStatus::Idle,
                 mesh_bundle: MaterialMesh2dBundle {
                     mesh: mesh_handle.clone().into(),
                     material: material_handle.clone(),

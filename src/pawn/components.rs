@@ -9,11 +9,20 @@ pub struct Pawn {
     pub retry_pathfinding_timer: Timer,
 }
 
+#[derive(Component, Debug, Clone, Eq, PartialEq, Hash, Default, States)]
+pub enum PawnStatus {
+    #[default]
+    Idle,
+    Pathfinding,
+    Walking
+}
+
 #[derive(Bundle)]
 pub struct PawnBundle {
     pub pawn: Pawn,
     pub name: Name,
     pub mesh_bundle: MaterialMesh2dBundle<ColorMaterial>,
+    pub status: PawnStatus
 }
 
 impl Default for Pawn {
