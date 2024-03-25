@@ -95,7 +95,6 @@ pub fn listen_for_pathfinding_answers(
             pawn.move_path = path.clone().into();
             *pawn_status = PawnStatus::Moving;
         } else {
-            error!("PathfindingError {:?}", event);
             *pawn_status = PawnStatus::PathfindingError;
         }
     }
