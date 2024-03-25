@@ -2,12 +2,12 @@ use bevy::{prelude::*, utils::HashSet};
 
 use crate::{GRID_COLS, GRID_COLS_HALF, GRID_ROWS, GRID_ROWS_HALF};
 
-const INITIAL_NAV_WEIGHT: f32 = 1.0;
+const INITIAL_NAV_COST: i32 = 1;
 const INITIAL_PASSABLE: bool = true;
 
 #[derive(Debug)]
 pub struct NavTile {
-    pub weight: f32,
+    pub cost: i32,
     pub occupied_by: HashSet<Entity>,
     pub passable: bool,
 }
@@ -15,7 +15,7 @@ pub struct NavTile {
 impl Default for NavTile {
     fn default() -> Self {
         Self {
-            weight: INITIAL_NAV_WEIGHT,
+            cost: INITIAL_NAV_COST,
             occupied_by: HashSet::default(),
             passable: INITIAL_PASSABLE,
         }
