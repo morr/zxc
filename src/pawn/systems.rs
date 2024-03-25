@@ -4,11 +4,10 @@ use rand::prelude::*;
 use self::utils::TileTranslationHelper;
 
 use super::*;
-use crate::story_time::TimeScale;
 use crate::structure::Structure;
 use crate::structure::{BASE_HEIGHT, BASE_WIDTH};
-use crate::utils::wold_pos_align_to_tile;
-use crate::{PAWN_SPEED, PAWN_Z_INDEX, STARTING_PAWNS, TILE_SIZE};
+use crate::utils::wold_pos_to_tile_aligned;
+use crate::{PAWN_Z_INDEX, STARTING_PAWNS, TILE_SIZE};
 
 pub fn spawn_pawns(
     mut commands: Commands,
@@ -49,8 +48,8 @@ pub fn spawn_pawns(
                     mesh: mesh_handle.clone().into(),
                     material: material_handle.clone(),
                     transform: Transform::from_xyz(
-                        wold_pos_align_to_tile(x),
-                        wold_pos_align_to_tile(y),
+                        wold_pos_to_tile_aligned(x),
+                        wold_pos_to_tile_aligned(y),
                         PAWN_Z_INDEX,
                     ),
                     ..default()
@@ -67,7 +66,7 @@ pub fn spawn_pawns(
 }
 
 pub fn move_pawns(
-    time: Res<Time>,
+    // time: Res<Time>,
     mut query_pawns: Query<(Entity, &mut Pawn, &mut Transform), With<Pawn>>,
     mut gizmos: Gizmos,
 ) {
@@ -77,17 +76,17 @@ pub fn move_pawns(
 
             // show the pawn's path
             for path_target in pawn.move_path.iter() {
-                let previous_world = previous.tile_pos_to_world();
-                let current_world = path_target.tile_pos_to_world();
+                let previous_world = previous.tile_pos_to_world_aligned();
+                let current_world = path_target.tile_pos_to_world_aligned();
 
                 gizmos.line_2d(
                     previous_world,
                     current_world,
                     Color::Rgba {
-                        red: 1.,
-                        green: 1.,
-                        blue: 1.,
-                        alpha: 0.125,
+                        red: 1.0,
+                        green: 1.0,
+                        blue: 0.25,
+                        alpha: 0.25,
                     },
                 );
                 previous = path_target;

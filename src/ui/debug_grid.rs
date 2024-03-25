@@ -23,17 +23,17 @@ pub enum DebugGridState {
 }
 
 pub fn render_grid(mut gizmos: Gizmos) {
-    for i in (-1 * GRID_ROWS_HALF)..GRID_ROWS_HALF {
+    for i in -GRID_ROWS_HALF..GRID_ROWS_HALF {
         gizmos.line_2d(
-            Vec2::new(tile_pos_to_world(-1 * GRID_COLS_HALF), tile_pos_to_world(i)),
+            Vec2::new(tile_pos_to_world(-GRID_COLS_HALF), tile_pos_to_world(i)),
             Vec2::new(tile_pos_to_world(GRID_COLS_HALF), tile_pos_to_world(i)),
             Color::rgba(0.2, 0.2, 0.2, 0.5),
         );
     }
 
-    for i in (-1 * GRID_COLS_HALF)..GRID_COLS_HALF {
+    for i in -GRID_COLS_HALF..GRID_COLS_HALF {
         gizmos.line_2d(
-            Vec2::new(tile_pos_to_world(i), tile_pos_to_world(-1 * GRID_ROWS_HALF)),
+            Vec2::new(tile_pos_to_world(i), tile_pos_to_world(-GRID_ROWS_HALF)),
             Vec2::new(tile_pos_to_world(i), tile_pos_to_world(GRID_ROWS_HALF)),
             Color::rgba(0.2, 0.2, 0.2, 0.5),
         );
