@@ -25,7 +25,7 @@ pub fn pathfinding_on_click(
             *pawn_status = PawnStatus::Pathfinding;
 
             pathfind_event_writer.send(PathfindRequestEvent {
-                start: transform.translation.truncate().world_pos_to_tile(),
+                start: transform.translation.truncate().world_pos_to_grid(),
                 end: click_event.0,
                 entity,
             });

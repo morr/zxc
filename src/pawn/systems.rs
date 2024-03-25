@@ -2,12 +2,12 @@ use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use rand::prelude::*;
 
 use self::story_time::TimeScale;
-use self::utils::{tile_pos_center_to_world, TileTranslationHelper};
+use self::utils::{grid_tile_center_to_world, GridTranslationHelper};
 
 use super::*;
 use crate::structure::Structure;
 use crate::structure::{BASE_HEIGHT, BASE_WIDTH};
-use crate::utils::world_pos_to_tile;
+use crate::utils::world_pos_to_grid;
 use crate::{PAWN_Z_INDEX, STARTING_PAWNS, TILE_SIZE};
 
 pub fn spawn_pawns(
@@ -49,8 +49,8 @@ pub fn spawn_pawns(
                     mesh: mesh_handle.clone().into(),
                     material: material_handle.clone(),
                     transform: Transform::from_xyz(
-                        tile_pos_center_to_world(world_pos_to_tile(x)),
-                        tile_pos_center_to_world(world_pos_to_tile(y)),
+                        grid_tile_center_to_world(world_pos_to_grid(x)),
+                        grid_tile_center_to_world(world_pos_to_grid(y)),
                         // world_pos_to_tile_aligned(x),
                         // world_pos_to_tile(x),
                         // world_pos_to_tile_aligned(y),
@@ -87,7 +87,7 @@ pub fn move_pawns(
         let mut prev_world = transform.translation.truncate();
         for path_target in pawn.move_path.iter() {
             // let iter_world = path_target.tile_pos_to_world_aligned();
-            let iter_world = path_target.tile_pos_edge_to_world();
+            let iter_world = path_target.grid_tile_edge_to_world();
 
             gizmos.line_2d(
                 prev_world,
@@ -103,7 +103,7 @@ pub fn move_pawns(
         }
 
         // move pawn
-        let move_target_world = pawn.move_path.front().unwrap().tile_pos_edge_to_world();
+        let move_target_world = pawn.move_path.front().unwrap().grid_tile_edge_to_world();
 
         gizmos.circle_2d(
             move_target_world,

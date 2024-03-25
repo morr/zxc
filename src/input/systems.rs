@@ -23,7 +23,7 @@ pub fn mouse_input(
         .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
         .map(|ray| ray.origin.truncate())
     {
-        let event = HoverTileEvent(world_position.world_pos_to_tile());
+        let event = HoverTileEvent(world_position.world_pos_to_grid());
 
         let is_new_hover = match prev_hovered_tile_pos.0 {
             Some(vec) => vec != event.0,
@@ -47,7 +47,7 @@ pub fn mouse_input(
             .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
             .map(|ray| ray.origin.truncate())
         {
-            let event = ClickTileEvent(world_position.world_pos_to_tile());
+            let event = ClickTileEvent(world_position.world_pos_to_grid());
             // println!("{:?}", event);
             click_event_writer.send(event);
         }

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use super::*;
-use crate::{utils::tile_pos_edge_to_world, STRUCTURE_Z_INDEX, TILE_SIZE};
+use crate::{utils::grid_tile_edge_to_world, STRUCTURE_Z_INDEX, TILE_SIZE};
 
 pub fn spawn_base(
     mut commands: Commands,
@@ -33,8 +33,8 @@ pub fn spawn_base(
                     ..default()
                 },
                 transform: Transform::from_xyz(
-                    tile_pos_edge_to_world(0),
-                    tile_pos_edge_to_world(0),
+                    grid_tile_edge_to_world(0),
+                    grid_tile_edge_to_world(0),
                     STRUCTURE_Z_INDEX,
                 ),
                 ..default()
