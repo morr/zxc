@@ -1,7 +1,8 @@
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use rand::prelude::*;
 
-use self::utils::{TileTranslationHelper, WorldTranslationHelper};
+use self::story_time::TimeScale;
+use self::utils::TileTranslationHelper;
 
 use super::*;
 use crate::structure::Structure;
@@ -66,30 +67,54 @@ pub fn spawn_pawns(
 }
 
 pub fn move_pawns(
-    // time: Res<Time>,
     mut query_pawns: Query<(Entity, &mut Pawn, &mut Transform), With<Pawn>>,
     mut gizmos: Gizmos,
+    time: Res<Time>,
+    time_scale: Res<TimeScale>,
 ) {
     for (entity, mut pawn, mut transform) in &mut query_pawns {
-        if !pawn.move_path.is_empty() {
-            let mut previous_world = transform.translation.truncate();
+        if pawn.move_path.is_empty() {
+            continue;
+        }
 
-            // show the pawn's path
-            for path_target in pawn.move_path.iter() {
-                let current_world = path_target.tile_pos_to_world_aligned();
+        let current_world = transform.translation.truncate();
 
-                gizmos.line_2d(
-                    previous_world,
-                    current_world,
-                    Color::Rgba {
-                        red: 1.0,
-                        green: 1.0,
-                        blue: 0.25,
-                        alpha: 0.25,
-                    },
-                );
-                previous_world = current_world;
-            }
+        // show the pawn's path
+        let mut prev_world = transform.translation.truncate();
+        for path_target in pawn.move_path.iter() {
+            let iter_world = path_target.tile_pos_to_world_aligned();
+
+            gizmos.line_2d(
+                prev_world,
+                iter_world,
+                Color::Rgba {
+                    red: 1.0,
+                    green: 1.0,
+                    blue: 0.25,
+                    alpha: 0.25,
+                },
+            );
+            prev_world = iter_world;
+        }
+
+        // move pawn
+        let move_target_world = pawn.move_path.front().unwrap().tile_pos_to_world();
+
+        gizmos.circle_2d(
+            move_target_world,
+            4.0,
+            Color::Rgba {
+                red: 1.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 1.0,
+            },
+        );
+
+        let direction = (move_target_world - current_world).normalize_or_zero();
+        transform.translation += direction.extend(0.) * PAWN_SPEED * time.delta_seconds() * time_scale.0;
+        if (move_target_world - current_world).length() < 0.2 {
+            pawn.move_path.pop_front();
         }
     }
 }
