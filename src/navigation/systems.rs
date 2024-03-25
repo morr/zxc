@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, VecDeque};
 
 use bevy::prelude::*;
 use pathfinding::prelude::astar;
@@ -67,7 +67,7 @@ pub fn listen_for_pathfinding_requests(
             },
             |&pos| pos == event.end,
         )
-            .map(|(vec, _cost)| vec);
+        .map(|(vec, _cost)| vec);
 
         if path.is_none() {
             error!("PathfindingError {:?}", event);
@@ -92,8 +92,12 @@ pub fn listen_for_pathfinding_answers(
         };
 
         if let Some(path) = &event.path {
-            pawn.move_path = path.clone().into();
-            *pawn_status = PawnStatus::Moving;
+            if path.len() == 1 {
+                *pawn_status = PawnStatus::Idle;
+            } else {
+                pawn.move_path = path.iter().skip(1).cloned().collect();
+                *pawn_status = PawnStatus::Moving;
+            }
         } else {
             *pawn_status = PawnStatus::PathfindingError;
         }
