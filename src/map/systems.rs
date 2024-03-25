@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use super::*;
-use crate::{utils::tile_pos_to_world, GRID_COLS_HALF, GRID_ROWS_HALF, TILE_SIZE, TILE_Z_INDEX};
+use crate::{utils::tile_pos_edge_to_world, GRID_COLS_HALF, GRID_ROWS_HALF, TILE_SIZE, TILE_Z_INDEX};
 
 pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
     // https://itch.io/game-assets/free/tag-textures
@@ -18,8 +18,8 @@ pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
                         ..default()
                     },
                     transform: Transform::from_xyz(
-                        tile_pos_to_world(x) + TILE_SIZE / 2.,
-                        tile_pos_to_world(y) + TILE_SIZE / 2.,
+                        tile_pos_edge_to_world(x) + TILE_SIZE / 2.,
+                        tile_pos_edge_to_world(y) + TILE_SIZE / 2.,
                         TILE_Z_INDEX,
                     ),
                     ..default()

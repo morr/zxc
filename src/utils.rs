@@ -2,9 +2,13 @@ use bevy::prelude::*;
 
 use crate::TILE_SIZE;
 
-pub fn tile_pos_to_world(value: i32) -> f32 {
+pub fn tile_pos_edge_to_world(value: i32) -> f32 {
     // value as f32 * TILE_SIZE - TILE_SIZE / 2.0
     value as f32 * TILE_SIZE
+}
+
+pub fn tile_pos_center_to_world(value: i32) -> f32 {
+    tile_pos_edge_to_world(value) + TILE_SIZE / 2.0
 }
 
 // pub fn tile_pos_to_world_aligned(value: i32) -> f32 {
@@ -77,7 +81,7 @@ impl WorldTranslationHelper for Vec2 {
 
 impl TileTranslationHelper for IVec2 {
     fn tile_pos_to_world(&self) -> Vec2 {
-        Vec2::new(tile_pos_to_world(self.x), tile_pos_to_world(self.y))
+        Vec2::new(tile_pos_edge_to_world(self.x), tile_pos_edge_to_world(self.y))
     }
 
     // fn tile_pos_to_world_aligned(&self) -> Vec2 {
