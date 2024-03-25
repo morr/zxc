@@ -69,10 +69,12 @@ pub fn listen_for_pathfinding_requests(
         )
             .map(|(vec, _cost)| vec);
 
+        if path.is_none() {
+            error!("PathfindingError {:?}", event);
+        }
+
         pathfind_event_writer.send(PathfindAnswerEvent {
             entity: event.entity,
-            start: event.start,
-            end: event.end,
             path,
         });
     }
@@ -80,13 +82,21 @@ pub fn listen_for_pathfinding_requests(
 
 pub fn listen_for_pathfinding_answers(
     mut pathfind_event_reader: EventReader<PathfindAnswerEvent>,
+    mut q_pawns: Query<(&mut Pawn, &mut PawnStatus), With<Pawn>>,
 ) {
     for event in pathfind_event_reader.read() {
         println!("{:?}", event);
 
+        let Ok((mut pawn, mut pawn_status)) = q_pawns.get_mut(event.entity) else {
+            continue;
+        };
+
         if let Some(path) = &event.path {
+            pawn.move_path = path.clone().into();
+            *pawn_status = PawnStatus::Moving;
         } else {
-            error!("pathfind failed {:?}", event);
+            error!("PathfindingError {:?}", event);
+            *pawn_status = PawnStatus::PathfindingError;
         }
     }
 }

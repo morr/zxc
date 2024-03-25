@@ -1,28 +1,12 @@
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use rand::prelude::*;
-use std::time::Duration;
+use std::{collections::VecDeque, time::Duration};
 
 #[derive(Component)]
 pub struct Pawn {
     pub age: u32,
-    pub move_vector: Option<Vec2>,
+    pub move_path: VecDeque<IVec2>,
     pub retry_pathfinding_timer: Timer,
-}
-
-#[derive(Component, Debug, Clone, Eq, PartialEq, Hash, Default, States)]
-pub enum PawnStatus {
-    #[default]
-    Idle,
-    Pathfinding,
-    Walking
-}
-
-#[derive(Bundle)]
-pub struct PawnBundle {
-    pub pawn: Pawn,
-    pub name: Name,
-    pub mesh_bundle: MaterialMesh2dBundle<ColorMaterial>,
-    pub status: PawnStatus
 }
 
 impl Default for Pawn {
@@ -31,7 +15,7 @@ impl Default for Pawn {
 
         Self {
             age: rng.gen_range(14..32),
-            move_vector: None,
+            move_path: VecDeque::new(),
             retry_pathfinding_timer: Timer::new(Duration::from_secs(0), TimerMode::Once),
         }
     }
@@ -43,3 +27,21 @@ impl Default for Pawn {
 //         }
 //     }
 // }
+
+
+#[derive(Component, Debug, Clone, Eq, PartialEq, Hash, Default, States)]
+pub enum PawnStatus {
+    #[default]
+    Idle,
+    Pathfinding,
+    PathfindingError,
+    Moving
+}
+
+#[derive(Bundle)]
+pub struct PawnBundle {
+    pub pawn: Pawn,
+    pub name: Name,
+    pub mesh_bundle: MaterialMesh2dBundle<ColorMaterial>,
+    pub status: PawnStatus,
+}
