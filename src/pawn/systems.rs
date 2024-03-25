@@ -2,7 +2,7 @@ use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use rand::prelude::*;
 
 use self::story_time::TimeScale;
-use self::utils::TileTranslationHelper;
+use self::utils::{tile_pos_center_to_world, TileTranslationHelper};
 
 use super::*;
 use crate::structure::Structure;
@@ -49,8 +49,8 @@ pub fn spawn_pawns(
                     mesh: mesh_handle.clone().into(),
                     material: material_handle.clone(),
                     transform: Transform::from_xyz(
-                        x,
-                        y,
+                        tile_pos_center_to_world(world_pos_to_tile(x)),
+                        tile_pos_center_to_world(world_pos_to_tile(y)),
                         // world_pos_to_tile_aligned(x),
                         // world_pos_to_tile(x),
                         // world_pos_to_tile_aligned(y),
