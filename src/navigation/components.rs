@@ -2,8 +2,8 @@ use bevy::{prelude::*, utils::HashSet};
 
 use crate::{GRID_COLS, GRID_COLS_HALF, GRID_ROWS, GRID_ROWS_HALF};
 
-const DEFAULT_NAV_WEIGHT: f32 = 1.0;
-const DEFAULT_PASSABLE: bool = true;
+const INITIAL_NAV_WEIGHT: f32 = 1.0;
+const INITIAL_PASSABLE: bool = true;
 
 #[derive(Debug)]
 pub struct NavTile {
@@ -15,9 +15,9 @@ pub struct NavTile {
 impl Default for NavTile {
     fn default() -> Self {
         Self {
-            weight: DEFAULT_NAV_WEIGHT,
+            weight: INITIAL_NAV_WEIGHT,
             occupied_by: HashSet::default(),
-            passable: true,
+            passable: INITIAL_PASSABLE,
         }
     }
 }
@@ -40,14 +40,15 @@ impl Default for NavMesh {
 }
 
 impl NavMesh {
-    fn get(&self, x: i32, y: i32) -> Option<&NavTile> {
+    pub fn get(&self, x: i32, y: i32) -> Option<&NavTile> {
         // self.0.get((x + GRID_COLS_HALF) as usize).and_then(|row| row.get((y + GRID_ROWS_HALF) as usize))
+
         self.0
             .get((x + GRID_COLS_HALF) as usize)?
             .get((y + GRID_ROWS_HALF) as usize)
     }
 
-    fn get_if_passable(&self, x: i32, y: i32) -> Option<&NavTile> {
+    pub fn get_if_passable(&self, x: i32, y: i32) -> Option<&NavTile> {
         let result = self.get(x, y);
 
         if result?.passable {

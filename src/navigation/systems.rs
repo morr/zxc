@@ -1,4 +1,7 @@
+use std::collections::HashMap;
+
 use bevy::prelude::*;
+use pathfinding::prelude::astar;
 
 use crate::{
     map::components::ClickTileEvent,
@@ -31,7 +34,7 @@ pub fn pathfinding_on_click(
 }
 
 pub fn listen_for_pathfinding_requests(
-    navmesh: Res<Navmesh>,
+    navmesh: Res<NavMesh>,
     mut pathfind_event_reader: EventReader<PathfindRequestEvent>,
     // mut pathfind_event_writer: EventWriter<PathfindAnswerEvent>,
 ) {
@@ -39,10 +42,42 @@ pub fn listen_for_pathfinding_requests(
         return;
     }
 
-    let _navmesh = &navmesh.0;
+    // let navmesh = navmesh;
 
     for request in pathfind_event_reader.read() {
         println!("{:?}", request);
+
+        let result = astar(
+            &request.start,
+            |&IVec2 { x, y }| {
+                let left = (x - 1, y); // look at saturating_add/sub
+                let top = (x, y - 1);
+                let right = (x + 1, y); // look at saturating_add/sub
+                let bottom = (x, y + 1);
+
+                [left, top, right, bottom]
+                    .iter()
+                    .filter_map(|&(x, y)| {
+                        navmesh
+                            .get_if_passable(x, y)
+                            .map(|navtile| (IVec2 { x, y }, navtile.weight))
+                    })
+                    .collect::<Vec<_>>()
+            },
+             |&pos| {
+                (Vec2::new(pos.x as f32, pos.y as f32) - Vec2::new(request.end.x as f32, request.end.y as f32))
+                    .length()
+
+            },
+             |&pos| { pos == request.end }
+        );
+
+
+        // .map(|v| v)
+        // .collect::<(IVec2, f32)>();
+        // .collect();
+
+        // let b = a.collect();
 
         // let Vec2 { x, y } = request.start;
         // let x = x as usize;
@@ -51,7 +86,7 @@ pub fn listen_for_pathfinding_requests(
         // let Vec2 { x: end_x, y: end_y } = request.end;
         // let end_x = end_x as usize;
         // let end_y = end_y as usize;
-        //
+
         // let result = astar(
         //     &UsizeVec { x, y },
         //     |&UsizeVec { x, y }| {
