@@ -2,7 +2,10 @@ use bevy::{prelude::*, utils::HashSet};
 
 use crate::{GRID_COLS, GRID_COLS_HALF, GRID_ROWS, GRID_ROWS_HALF};
 
-const INITIAL_NAV_COST: i32 = 1;
+pub const COST_MULTIPLIER: f32 = 100.0;
+const DEFAULT_COST: i32 = 1;
+
+const INITIAL_NAV_COST: i32 = (DEFAULT_COST as f32 * COST_MULTIPLIER) as i32;
 const INITIAL_PASSABLE: bool = true;
 
 #[derive(Debug)]

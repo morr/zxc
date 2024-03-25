@@ -39,17 +39,21 @@ pub fn listen_for_pathfinding_requests(
     mut pathfind_event_writer: EventWriter<PathfindAnswerEvent>,
 ) {
     for event in pathfind_event_reader.read() {
-        println!("{:?}", event);
+        // println!("{:?}", event);
 
         let path = astar(
             &event.start,
             |&IVec2 { x, y }| {
-                let left = (x - 1, y); // look at saturating_add/sub
-                let top = (x, y - 1);
-                let right = (x + 1, y); // look at saturating_add/sub
-                let bottom = (x, y + 1);
-
-                [left, top, right, bottom]
+                [
+                    (x - 1, y), // left
+                    (x - 1, y - 1), // left-top
+                    (x, y - 1), // top
+                    (x + 1, y - 1), // top-right
+                    (x + 1, y), // right
+                    (x + 1, y + 1), // right-bototm
+                    (x, y + 1), // bottom
+                    (x - 1, y + 1), // bottom-left
+                ]
                     .iter()
                     .filter_map(|&(x, y)| {
                         navmesh
@@ -61,9 +65,12 @@ pub fn listen_for_pathfinding_requests(
             // try (distance_x + distance_y) / 3 as it is suggested in docs
             // https://docs.rs/pathfinding/latest/pathfinding/directed/astar/fn.astar.html
             |&pos| {
-                (Vec2::new(pos.x as f32, pos.y as f32)
+                let length = (Vec2::new(pos.x as f32, pos.y as f32)
                     - Vec2::new(event.end.x as f32, event.end.y as f32))
-                .length() as i32
+                .length();
+
+                println!("{} {}", length, (length * COST_MULTIPLIER) as i32);
+                (length * COST_MULTIPLIER) as i32
             },
             |&pos| pos == event.end,
         )
@@ -85,7 +92,7 @@ pub fn listen_for_pathfinding_answers(
     mut q_pawns: Query<(&mut Pawn, &mut PawnStatus), With<Pawn>>,
 ) {
     for event in pathfind_event_reader.read() {
-        println!("{:?}", event);
+        // println!("{:?}", event);
 
         let Ok((mut pawn, mut pawn_status)) = q_pawns.get_mut(event.entity) else {
             continue;
