@@ -1,6 +1,6 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
-use crate::{map::components::ClickTileEvent, utils::TranslationHelper};
+use crate::{map::components::ClickTileEvent, utils::WorldTranslationHelper};
 
 use super::*;
 

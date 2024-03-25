@@ -1,6 +1,7 @@
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use rand::prelude::*;
-use std::time::Duration;
+
+use self::utils::TileTranslationHelper;
 
 use super::*;
 use crate::story_time::TimeScale;
@@ -65,6 +66,35 @@ pub fn spawn_pawns(
     }
 }
 
+pub fn move_pawns(
+    time: Res<Time>,
+    mut query_pawns: Query<(Entity, &mut Pawn, &mut Transform), With<Pawn>>,
+    mut gizmos: Gizmos,
+) {
+    for (entity, mut pawn, mut transform) in &mut query_pawns {
+        if !pawn.move_path.is_empty() {
+            let mut previous = pawn.move_path.front().unwrap();
+
+            // show the pawn's path
+            for path_target in pawn.move_path.iter() {
+                let previous_world = previous.tile_pos_to_world();
+                let current_world = path_target.tile_pos_to_world();
+
+                gizmos.line_2d(
+                    previous_world,
+                    current_world,
+                    Color::Rgba {
+                        red: 1.,
+                        green: 1.,
+                        blue: 1.,
+                        alpha: 0.125,
+                    },
+                );
+                previous = path_target;
+            }
+        }
+    }
+}
 // pub fn wander_pawns(
 //     time: Res<Time>,
 //     mut query: Query<(&mut Transform, &mut Pawn, &Name), With<Pawn>>,

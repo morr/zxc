@@ -6,7 +6,7 @@ use pathfinding::prelude::astar;
 use crate::{
     map::components::ClickTileEvent,
     pawn::{Pawn, PawnStatus},
-    utils::TranslationHelper,
+    utils::WorldTranslationHelper,
 };
 
 use super::*;
