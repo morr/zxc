@@ -1,7 +1,7 @@
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use rand::prelude::*;
 
-use self::utils::TileTranslationHelper;
+use self::utils::{TileTranslationHelper, WorldTranslationHelper};
 
 use super::*;
 use crate::structure::Structure;
@@ -72,28 +72,32 @@ pub fn move_pawns(
 ) {
     for (entity, mut pawn, mut transform) in &mut query_pawns {
         if !pawn.move_path.is_empty() {
-            let mut previous = pawn.move_path.front().unwrap();
+            // let mut previous = &transform.translation.truncate().world_pos_to_tile();
+            let mut previous: Option<&IVec2> = None;
 
             // show the pawn's path
             for path_target in pawn.move_path.iter() {
-                let previous_world = previous.tile_pos_to_world_aligned();
-                let current_world = path_target.tile_pos_to_world_aligned();
+                if let Some(previous_tile) = previous {
+                    let previous_world = previous_tile.tile_pos_to_world_aligned();
+                    let current_world = path_target.tile_pos_to_world_aligned();
 
-                gizmos.line_2d(
-                    previous_world,
-                    current_world,
-                    Color::Rgba {
-                        red: 1.0,
-                        green: 1.0,
-                        blue: 0.25,
-                        alpha: 0.25,
-                    },
-                );
-                previous = path_target;
+                    gizmos.line_2d(
+                        previous_world,
+                        current_world,
+                        Color::Rgba {
+                            red: 1.0,
+                            green: 1.0,
+                            blue: 0.25,
+                            alpha: 0.25,
+                        },
+                    );
+                }
+                previous = Some(path_target);
             }
         }
     }
 }
+
 // pub fn wander_pawns(
 //     time: Res<Time>,
 //     mut query: Query<(&mut Transform, &mut Pawn, &Name), With<Pawn>>,

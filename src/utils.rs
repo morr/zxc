@@ -8,7 +8,7 @@ pub fn tile_pos_to_world(value: i32) -> f32 {
 }
 
 pub fn tile_pos_to_world_aligned(value: i32) -> f32 {
-    tile_pos_to_world(value) - TILE_SIZE / 2.0
+    tile_pos_to_world(value) + TILE_SIZE / 2.0
 }
 
 pub fn world_pos_to_tile(value: f32) -> i32 {
