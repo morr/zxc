@@ -87,7 +87,7 @@ pub fn move_pawns(
         let mut prev_world = transform.translation.truncate();
         for path_target in pawn.move_path.iter() {
             // let iter_world = path_target.tile_pos_to_world_aligned();
-            let iter_world = path_target.tile_pos_to_world();
+            let iter_world = path_target.tile_pos_edge_to_world();
 
             gizmos.line_2d(
                 prev_world,
@@ -103,7 +103,7 @@ pub fn move_pawns(
         }
 
         // move pawn
-        let move_target_world = pawn.move_path.front().unwrap().tile_pos_to_world();
+        let move_target_world = pawn.move_path.front().unwrap().tile_pos_edge_to_world();
 
         gizmos.circle_2d(
             move_target_world,

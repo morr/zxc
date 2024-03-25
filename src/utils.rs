@@ -27,8 +27,8 @@ pub trait WorldTranslationHelper {
     fn world_pos_to_tile(&self) -> IVec2;
 }
 pub trait TileTranslationHelper {
-    fn tile_pos_to_world(&self) -> Vec2;
-    // fn tile_pos_to_world_aligned(&self) -> Vec2;
+    fn tile_pos_edge_to_world(&self) -> Vec2;
+    fn tile_pos_center_to_world(&self) -> Vec2;
 }
 //
 // impl TranslationHelper for Transform {
@@ -80,11 +80,11 @@ impl WorldTranslationHelper for Vec2 {
 }
 
 impl TileTranslationHelper for IVec2 {
-    fn tile_pos_to_world(&self) -> Vec2 {
+    fn tile_pos_edge_to_world(&self) -> Vec2 {
         Vec2::new(tile_pos_edge_to_world(self.x), tile_pos_edge_to_world(self.y))
     }
 
-    // fn tile_pos_to_world_aligned(&self) -> Vec2 {
-    //     Vec2::new(tile_pos_to_world_aligned(self.x), tile_pos_to_world_aligned(self.y))
-    // }
+    fn tile_pos_center_to_world(&self) -> Vec2 {
+        Vec2::new(tile_pos_center_to_world(self.x), tile_pos_center_to_world(self.y))
+    }
 }
