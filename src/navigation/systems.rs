@@ -64,8 +64,12 @@ pub fn listen_for_pathfinding_requests(
                     })
                     .collect::<Vec<_>>()
             },
+            // try (distance_x + distance_y) / 3 as it is suggested in docs
+            // https://docs.rs/pathfinding/latest/pathfinding/directed/astar/fn.astar.html
             |&pos| {
-                (Vec2::new(pos.x as f32, pos.y as f32) - Vec2::new(request.end.x as f32, request.end.y as f32)).length() as i32
+                (Vec2::new(pos.x as f32, pos.y as f32)
+                    - Vec2::new(request.end.x as f32, request.end.y as f32))
+                .length() as i32
             },
             |&pos| pos == request.end,
         );
