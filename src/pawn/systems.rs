@@ -7,7 +7,7 @@ use self::utils::TileTranslationHelper;
 use super::*;
 use crate::structure::Structure;
 use crate::structure::{BASE_HEIGHT, BASE_WIDTH};
-use crate::utils::wold_pos_to_tile_aligned;
+use crate::utils::world_pos_to_tile;
 use crate::{PAWN_Z_INDEX, STARTING_PAWNS, TILE_SIZE};
 
 pub fn spawn_pawns(
@@ -49,8 +49,12 @@ pub fn spawn_pawns(
                     mesh: mesh_handle.clone().into(),
                     material: material_handle.clone(),
                     transform: Transform::from_xyz(
-                        wold_pos_to_tile_aligned(x),
-                        wold_pos_to_tile_aligned(y),
+                        x,
+                        y,
+                        // world_pos_to_tile_aligned(x),
+                        // world_pos_to_tile(x),
+                        // world_pos_to_tile_aligned(y),
+                        // world_pos_to_tile(y),
                         PAWN_Z_INDEX,
                     ),
                     ..default()
@@ -82,7 +86,8 @@ pub fn move_pawns(
         // show the pawn's path
         let mut prev_world = transform.translation.truncate();
         for path_target in pawn.move_path.iter() {
-            let iter_world = path_target.tile_pos_to_world_aligned();
+            // let iter_world = path_target.tile_pos_to_world_aligned();
+            let iter_world = path_target.tile_pos_to_world();
 
             gizmos.line_2d(
                 prev_world,
