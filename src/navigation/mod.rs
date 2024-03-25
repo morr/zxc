@@ -20,6 +20,7 @@ impl Plugin for NavigationPlugin {
                 (
                     listen_for_pathfinding_requests,
                     pathfinding_on_click,
+                    listen_for_pathfinding_answers,
                     // setup_navigation::get_or_request_route,
                     // setup_navigation::actor_steering,
                 ),

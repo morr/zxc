@@ -68,7 +68,8 @@ pub struct PathfindRequestEvent {
 
 #[derive(Debug, Event)]
 pub struct PathfindAnswerEvent {
-    pub path: Option<Vec<Vec2>>,
     pub entity: Entity,
-    pub target: IVec2,
+    pub start: IVec2,
+    pub end: IVec2,
+    pub path: Option<Vec<IVec2>>,
 }
