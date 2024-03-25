@@ -86,8 +86,7 @@ pub fn move_pawns(
         // show the pawn's path
         let mut prev_world = transform.translation.truncate();
         for path_target in pawn.move_path.iter() {
-            // let iter_world = path_target.tile_pos_to_world_aligned();
-            let iter_world = path_target.grid_tile_edge_to_world();
+            let iter_world = path_target.grid_tile_center_to_world();
 
             gizmos.line_2d(
                 prev_world,
@@ -103,21 +102,15 @@ pub fn move_pawns(
         }
 
         // move pawn
-        let move_target_world = pawn.move_path.front().unwrap().grid_tile_edge_to_world();
+        let move_target_world = pawn.move_path.front().unwrap().grid_tile_center_to_world();
 
-        gizmos.circle_2d(
-            move_target_world,
-            4.0,
-            Color::Rgba {
-                red: 1.0,
-                green: 0.0,
-                blue: 0.0,
-                alpha: 1.0,
-            },
-        );
+        for i in 1..10 {
+            gizmos.circle_2d(move_target_world, i as f32 * 0.5, Color::RED);
+        }
 
         let direction = (move_target_world - current_world).normalize_or_zero();
-        transform.translation += direction.extend(0.) * PAWN_SPEED * time.delta_seconds() * time_scale.0;
+        transform.translation +=
+            direction.extend(0.) * PAWN_SPEED * time.delta_seconds() * time_scale.0;
         if (move_target_world - current_world).length() < 0.2 {
             pawn.move_path.pop_front();
         }
