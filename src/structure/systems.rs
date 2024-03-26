@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use super::*;
 use crate::{
     navigation::components::NavMesh,
-    utils::{grid_tile_edge_to_world, GridTranslationHelper},
+    utils::GridTranslationHelper,
     STRUCTURE_Z_INDEX, TILE_SIZE,
 };
 
@@ -12,7 +12,7 @@ pub fn spawn_base(
     asset_server: Res<AssetServer>,
     // mut meshes: ResMut<Assets<Mesh>>,
     // mut materials: ResMut<Assets<ColorMaterial>>,
-    // mut navmesh: ResMut<NavMesh>,
+    mut navmesh: ResMut<NavMesh>,
 ) {
     // println!("Spawning base");
 
@@ -59,9 +59,15 @@ pub fn spawn_base(
         });
 
     // mark navmesh tiles as occupied
-    // for x in x as usize..x as usize + BASE_WIDTH {
-    //     for y in y as usize..y as usize + BASE_HEIGHT {
-    //         navmesh.0[x][y]. = false;
-    //     }
-    // }
+    for x in (grid_pos.x - (BASE_WIDTH / 2.0) as i32)..(grid_pos.x + (BASE_WIDTH / 2.0) as i32) {
+        for y in
+            (grid_pos.y - (BASE_HEIGHT / 2.0) as i32)..(grid_pos.x + (BASE_HEIGHT / 2.0) as i32)
+        {
+            if let Some(navtile) = navmesh.get_mut(x, y) {
+                navtile.passable = false
+            } else {
+                error!("NavTile {}/{} not found", x, y);
+            }
+        }
+    }
 }
