@@ -64,6 +64,20 @@ impl Navmesh {
             None
         }
     }
+
+    pub fn for_each_tile_mut<F>(&self, mut lambda: F)
+    where
+        F: FnMut(&Navtile, IVec2),
+    {
+        for (x, row) in self.0.iter().enumerate() {
+            for (y, tile) in row.iter().enumerate() {
+                lambda(
+                    tile,
+                    IVec2::new(x as i32 - GRID_COLS_HALF, y as i32 - GRID_ROWS_HALF),
+                );
+            }
+        }
+    }
 }
 
 #[derive(Debug, Event)]
