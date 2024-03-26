@@ -1,9 +1,5 @@
 use super::*;
 
-// use crate::{
-//     navigation::components::Navmesh, utils::GridTranslationHelper, TILE_SIZE, TILE_Z_INDEX,
-// };
-
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
 pub enum DebugMovepathState {
     // MainMenu,
@@ -15,58 +11,45 @@ pub enum DebugMovepathState {
 pub struct DebugMovepathPlugin;
 impl Plugin for DebugMovepathPlugin {
     fn build(&self, app: &mut App) {
-        // app.add_event::<StateChangeEvent<DebugMovepathState>>()
-        //     .init_state::<DebugMovepathState>()
-        //     .add_systems(FixedUpdate, handle_state_changes);
+        app.init_state::<DebugMovepathState>().add_systems(
+            Update,
+            render_movepath.run_if(in_state(DebugMovepathState::Visible)),
+        );
     }
 }
 
-// fn handle_state_changes(
-//     mut commands: Comands,
-//     navmesh: Res<Navmesh>,
-//     mut meshes: ResMut<Assets<Mesh>>,
-//     mut materials: ResMut<Assets<ColorMaterial>>,
-//     mut event_reader: EventReader<StateChangeEvent<DebugNavmeshState>>,
-//     query_tiles_hovered: Query<Entity, With<DebugNavmeshTile>>,
-// ) {
-//     for event in event_reader.read() {
-//         // println!("{:?}", event);
-//
-//         let mesh = Mesh::from(Rectangle::new(TILE_SIZE, TILE_SIZE));
-//         let passable_material = ColorMaterial::from(Color::rgba(0.0, 0.0, 0.75, 0.5));
-//         let impassable_material = ColorMaterial::from(Color::rgba(1.0, 0.0, 0.0, 0.75));
-//
-//         let mesh_handle = meshes.add(mesh);
-//         let material_passable_handle = materials.add(passable_material);
-//         let material_impassable_handle = materials.add(impassable_material);
-//
-//         match event.0 {
-//             DebugNavmeshState::Visible => {
-//                 navmesh.for_each_tile_mut(|navtile, tile_pos| {
-//                     commands
-//                         .spawn(MaterialMesh2dBundle {
-//                             mesh: mesh_handle.clone().into(),
-//                             material: if navtile.passable {
-//                                 material_passable_handle.clone()
-//                             } else {
-//                                 material_impassable_handle.clone()
-//                             },
-//                             transform: Transform::from_translation(
-//                                 tile_pos
-//                                     .grid_tile_center_to_world()
-//                                     .extend(TILE_Z_INDEX + 1.0),
-//                             ),
-//                             ..default()
-//                         })
-//                         .insert(DebugNavmeshTile);
-//                 });
-//             }
-//             DebugNavmeshState::Hidden => {
-//                 for entity in query_tiles_hovered.iter() {
-//                     commands.entity(entity).despawn_recursive();
-//                 }
-//             }
-//         }
-//     }
-// }
-// m
+pub fn render_movepath(
+    query_pawns: Query<(&Pawn, &Transform), With<Pawn>>,
+    mut gizmos: Gizmos,
+) {
+    for (pawn, transform) in &query_pawns {
+        if pawn.move_path.is_empty() {
+            continue;
+        }
+
+        let current_world = transform.translation.truncate();
+
+        // show the pawn's path
+        let mut prev_world = transform.translation.truncate();
+        for path_target in pawn.move_path.iter() {
+            let iter_world = path_target.grid_tile_center_to_world();
+
+            gizmos.line_2d(
+                prev_world,
+                iter_world,
+                Color::Rgba {
+                    red: 1.0,
+                    green: 1.0,
+                    blue: 0.25,
+                    alpha: 0.25,
+                },
+            );
+            prev_world = iter_world;
+        }
+
+        // move pawn
+        let move_target_world = pawn.move_path.front().unwrap().grid_tile_center_to_world();
+
+        gizmos.arrow_2d(current_world, move_target_world, Color::RED);
+    }
+}

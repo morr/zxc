@@ -67,39 +67,16 @@ pub fn spawn_pawns(
 
 pub fn move_pawns(
     mut query_pawns: Query<(Entity, &mut Pawn, &mut Transform), With<Pawn>>,
-    mut gizmos: Gizmos,
     time: Res<Time>,
     time_scale: Res<TimeScale>,
 ) {
-    for (entity, mut pawn, mut transform) in &mut query_pawns {
+    for (_entity, mut pawn, mut transform) in &mut query_pawns {
         if pawn.move_path.is_empty() {
             continue;
         }
 
         let current_world = transform.translation.truncate();
-
-        // show the pawn's path
-        let mut prev_world = transform.translation.truncate();
-        for path_target in pawn.move_path.iter() {
-            let iter_world = path_target.grid_tile_center_to_world();
-
-            gizmos.line_2d(
-                prev_world,
-                iter_world,
-                Color::Rgba {
-                    red: 1.0,
-                    green: 1.0,
-                    blue: 0.25,
-                    alpha: 0.25,
-                },
-            );
-            prev_world = iter_world;
-        }
-
-        // move pawn
         let move_target_world = pawn.move_path.front().unwrap().grid_tile_center_to_world();
-
-        gizmos.arrow_2d(current_world, move_target_world, Color::RED);
 
         let direction = (move_target_world - current_world).normalize_or_zero();
         transform.translation +=

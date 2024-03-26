@@ -1,4 +1,4 @@
-use self::{debug_grid::DebugGridState, debug_navmesh::DebugNavmeshState};
+use self::{debug_grid::DebugGridState, debug_movepath::DebugMovepathState, debug_navmesh::DebugNavmeshState};
 use super::*;
 
 pub fn render_ui(
@@ -25,7 +25,8 @@ pub fn render_ui(
 \"=\"/\"-\" - change game speed
 \"h\" - toggle help
 \"g\" - toggle grid
-\"n\" - toggle navmesh",
+\"n\" - toggle navmesh
+\"m\" - toggle movepath",
             TextStyle {
                 font: asset_server.load("fonts/FiraMono-Medium.ttf"),
                 font_size: 16.,
@@ -80,6 +81,8 @@ pub fn handle_ui_keys(
     debug_navmesh_state: Res<State<DebugNavmeshState>>,
     mut next_debug_navmesh_state: ResMut<NextState<DebugNavmeshState>>,
     mut state_change_event_writer: EventWriter<StateChangeEvent<DebugNavmeshState>>,
+    debug_movepath_state: Res<State<DebugMovepathState>>,
+    mut next_debug_movepath_state: ResMut<NextState<DebugMovepathState>>,
 ) {
     if keys.just_pressed(KeyCode::KeyH) {
         // commands.entity(query.single_mut()).iis
@@ -120,5 +123,12 @@ pub fn handle_ui_keys(
         };
         next_debug_navmesh_state.set(new_state.clone());
         state_change_event_writer.send(StateChangeEvent(new_state));
+    }
+
+    if keys.just_pressed(KeyCode::KeyM) {
+        match debug_movepath_state.get() {
+            DebugMovepathState::Visible => next_debug_movepath_state.set(DebugMovepathState::Hidden),
+            DebugMovepathState::Hidden => next_debug_movepath_state.set(DebugMovepathState::Visible),
+        };
     }
 }
