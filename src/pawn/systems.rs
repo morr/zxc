@@ -104,9 +104,7 @@ pub fn move_pawns(
         // move pawn
         let move_target_world = pawn.move_path.front().unwrap().grid_tile_center_to_world();
 
-        for i in 1..10 {
-            gizmos.circle_2d(move_target_world, i as f32 * 0.5, Color::RED);
-        }
+        gizmos.arrow_2d(current_world, move_target_world, Color::RED);
 
         let direction = (move_target_world - current_world).normalize_or_zero();
         transform.translation +=
