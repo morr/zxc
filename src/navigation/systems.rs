@@ -43,70 +43,40 @@ pub fn listen_for_pathfinding_requests(
             &event.start,
             |&IVec2 { x, y }| {
                 [
-                    (x - 1, y), // left
+                    (x - 1, y),     // left
                     (x - 1, y - 1), // left-top
-                    (x, y - 1), // top
+                    (x, y - 1),     // top
                     (x + 1, y - 1), // top-right
-                    (x + 1, y), // right
+                    (x + 1, y),     // right
                     (x + 1, y + 1), // right-bototm
-                    (x, y + 1), // bottom
+                    (x, y + 1),     // bottom
                     (x - 1, y + 1), // bottom-left
                 ]
-                    .iter()
-                    .filter_map(|&(nx, ny)| {
-                        navmesh
-                            .get_if_passable(nx, ny)
-                            .and_then(|navtile| {
-                                if x == nx || y == ny || (navmesh.get_if_passable(x, ny).is_some() && navmesh.get_if_passable(nx, y).is_some()) {
-                                    Some((IVec2 { x: nx, y: ny }, navtile.cost))
-                                } else {
-                                    None
-                                }
-                            })
+                .iter()
+                .filter_map(|&(nx, ny)| {
+                    navmesh.get_if_passable(nx, ny).and_then(|navtile| {
+                        let is_diagonal = x != nx && y != ny;
+
+                        if !is_diagonal
+                            || (navmesh.get_if_passable(x, ny).is_some()
+                                && navmesh.get_if_passable(nx, y).is_some())
+                        {
+                            let cost = if is_diagonal {
+                                // this is not strictly correct calculation
+                                // instead of cost * sqrt(2) it should be
+                                // (tile1.cost + sqrt(2))/2 + (tile2.cost + sqrt(2)/2
+                                (navtile.cost as f32 * f32::sqrt(2.0)).floor() as i32
+                            } else {
+                                navtile.cost
+                            };
+
+                            Some((IVec2 { x: nx, y: ny }, cost))
+                        } else {
+                            None
+                        }
                     })
-                    .collect::<Vec<_>>()
-
-                // [
-                //     (x - 1, y), // left
-                //     (x - 1, y - 1), // left-top
-                //     (x, y - 1), // top
-                //     (x + 1, y - 1), // top-right
-                //     (x + 1, y), // right
-                //     (x + 1, y + 1), // right-bototm
-                //     (x, y + 1), // bottom
-                //     (x - 1, y + 1), // bottom-left
-                // ]
-                //     .iter()
-                //     .filter_map(|&(x, y)| {
-                //         navmesh
-                //             .get_if_passable(x, y)
-                //             .map(|navtile| (IVec2 { x, y }, navtile.cost))
-                //     })
-                //     .collect::<Vec<_>>()
-
-                //  let neighbors = vec![
-                //      (x - 1, y), // left
-                //      (x, y - 1), // top
-                //      (x + 1, y), // right
-                //      (x, y + 1), // bottom
-                //  ];
-                //
-                //  let mut valid_neighbors = Vec::new();
-                //
-                //  for &(nx, ny) in &neighbors {
-                //      let neighbor_tile = navmesh.get_if_passable(nx, ny);
-                //
-                //      if let Some(tile) = neighbor_tile {
-                //          if neighbor_tile.passable {
-                //              valid_neighbors.push((IVec2 { x: nx, y: ny }, tile.cost));
-                //          }
-                //
-                //          // if (x == nx || y == ny) || (tile.passable && navmesh.get_if_passable(x, ny).is_some() && navmesh.get_if_passable(nx, y).is_some()) {
-                //          //     valid_neighbors.push((IVec2 { x: nx, y: ny }, tile.cost));
-                //          // }
-                //      }
-                //  }
-                // valid_neighbors
+                })
+                .collect::<Vec<_>>()
             },
             // try (distance_x + distance_y) / 3 as it is suggested in docs
             // https://docs.rs/pathfinding/latest/pathfinding/directed/astar/fn.astar.html
