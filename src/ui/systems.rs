@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 use super::components::*;
 use super::debug_grid::*;
+use super::debug_navmesh::DebugNavMeshState;
 use crate::story_time::{ElapsedTime, TimeScale, TimeState};
 
 pub fn render_ui(
@@ -27,7 +28,8 @@ pub fn render_ui(
             "\"space\" - pause
 \"=\"/\"-\" - change game speed
 \"h\" - toggle help
-\"g\" - toggle grid",
+\"g\" - toggle grid
+\"n\" - toggle navmesh",
             TextStyle {
                 font: asset_server.load("fonts/FiraMono-Medium.ttf"),
                 font_size: 16.,
@@ -79,6 +81,8 @@ pub fn handle_ui_keys(
     mut query: Query<&mut Visibility, With<HelpText>>,
     debug_grid_state: Res<State<DebugGridState>>,
     mut next_debug_grid_state: ResMut<NextState<DebugGridState>>,
+    debug_nav_mesh_state: Res<State<DebugNavMeshState>>,
+    mut next_debug_nav_mesh_state: ResMut<NextState<DebugNavMeshState>>,
 ) {
     if keys.just_pressed(KeyCode::KeyH) {
         // commands.entity(query.single_mut()).iis
@@ -109,6 +113,13 @@ pub fn handle_ui_keys(
         match debug_grid_state.get() {
             DebugGridState::Visible => next_debug_grid_state.set(DebugGridState::Hidden),
             DebugGridState::Hidden => next_debug_grid_state.set(DebugGridState::Visible),
+        };
+    }
+
+    if keys.just_pressed(KeyCode::KeyN) {
+        match debug_nav_mesh_state.get() {
+            DebugNavMeshState::Visible => next_debug_nav_mesh_state.set(DebugNavMeshState::Hidden),
+            DebugNavMeshState::Hidden => next_debug_nav_mesh_state.set(DebugNavMeshState::Visible),
         };
     }
 }
