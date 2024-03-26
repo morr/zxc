@@ -44,11 +44,15 @@ impl Default for NavMesh {
 
 impl NavMesh {
     pub fn get(&self, x: i32, y: i32) -> Option<&NavTile> {
-        // self.0.get((x + GRID_COLS_HALF) as usize).and_then(|row| row.get((y + GRID_ROWS_HALF) as usize))
-
         self.0
             .get((x + GRID_COLS_HALF) as usize)?
             .get((y + GRID_ROWS_HALF) as usize)
+    }
+
+    pub fn get_mut(&mut self, x: i32, y: i32) -> Option<&mut NavTile> {
+        self.0
+            .get_mut((x + GRID_COLS_HALF) as usize)?
+            .get_mut((y + GRID_ROWS_HALF) as usize)
     }
 
     pub fn get_if_passable(&self, x: i32, y: i32) -> Option<&NavTile> {
