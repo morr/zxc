@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use super::components::*;
 use super::debug_grid::*;
 use super::debug_navmesh::DebugNavmeshState;
+use super::debug_navmesh::StateChangeEvent;
 use crate::story_time::{ElapsedTime, TimeScale, TimeState};
 
 pub fn render_ui(
@@ -83,6 +84,7 @@ pub fn handle_ui_keys(
     mut next_debug_grid_state: ResMut<NextState<DebugGridState>>,
     debug_navmesh_state: Res<State<DebugNavmeshState>>,
     mut next_debug_navmesh_state: ResMut<NextState<DebugNavmeshState>>,
+    mut state_change_event_writer: EventWriter<StateChangeEvent<DebugNavmeshState>>,
 ) {
     if keys.just_pressed(KeyCode::KeyH) {
         // commands.entity(query.single_mut()).iis
@@ -117,9 +119,11 @@ pub fn handle_ui_keys(
     }
 
     if keys.just_pressed(KeyCode::KeyN) {
-        match debug_navmesh_state.get() {
-            DebugNavmeshState::Visible => next_debug_navmesh_state.set(DebugNavmeshState::Hidden),
-            DebugNavmeshState::Hidden => next_debug_navmesh_state.set(DebugNavmeshState::Visible),
+        let new_state = match debug_navmesh_state.get() {
+            DebugNavmeshState::Visible => DebugNavmeshState::Hidden,
+            DebugNavmeshState::Hidden => DebugNavmeshState::Visible,
         };
+        next_debug_navmesh_state.set(new_state.clone());
+        state_change_event_writer.send(StateChangeEvent(new_state));
     }
 }
