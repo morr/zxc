@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use super::components::*;
 use super::debug_grid::*;
-use super::debug_navmesh::DebugNavMeshState;
+use super::debug_navmesh::DebugNavmeshState;
 use crate::story_time::{ElapsedTime, TimeScale, TimeState};
 
 pub fn render_ui(
@@ -81,8 +81,8 @@ pub fn handle_ui_keys(
     mut query: Query<&mut Visibility, With<HelpText>>,
     debug_grid_state: Res<State<DebugGridState>>,
     mut next_debug_grid_state: ResMut<NextState<DebugGridState>>,
-    debug_nav_mesh_state: Res<State<DebugNavMeshState>>,
-    mut next_debug_nav_mesh_state: ResMut<NextState<DebugNavMeshState>>,
+    debug_navmesh_state: Res<State<DebugNavmeshState>>,
+    mut next_debug_navmesh_state: ResMut<NextState<DebugNavmeshState>>,
 ) {
     if keys.just_pressed(KeyCode::KeyH) {
         // commands.entity(query.single_mut()).iis
@@ -117,9 +117,9 @@ pub fn handle_ui_keys(
     }
 
     if keys.just_pressed(KeyCode::KeyN) {
-        match debug_nav_mesh_state.get() {
-            DebugNavMeshState::Visible => next_debug_nav_mesh_state.set(DebugNavMeshState::Hidden),
-            DebugNavMeshState::Hidden => next_debug_nav_mesh_state.set(DebugNavMeshState::Visible),
+        match debug_navmesh_state.get() {
+            DebugNavmeshState::Visible => next_debug_navmesh_state.set(DebugNavmeshState::Hidden),
+            DebugNavmeshState::Hidden => next_debug_navmesh_state.set(DebugNavmeshState::Visible),
         };
     }
 }

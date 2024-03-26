@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use super::*;
 use crate::{
-    navigation::components::NavMesh,
+    navigation::components::Navmesh,
     utils::GridTranslationHelper,
     STRUCTURE_Z_INDEX, TILE_SIZE,
 };
@@ -12,7 +12,7 @@ pub fn spawn_base(
     asset_server: Res<AssetServer>,
     // mut meshes: ResMut<Assets<Mesh>>,
     // mut materials: ResMut<Assets<ColorMaterial>>,
-    mut navmesh: ResMut<NavMesh>,
+    mut navmesh: ResMut<Navmesh>,
 ) {
     // println!("Spawning base");
 

@@ -9,13 +9,13 @@ const INITIAL_NAV_COST: i32 = (DEFAULT_COST as f32 * COST_MULTIPLIER) as i32;
 const INITIAL_PASSABLE: bool = true;
 
 #[derive(Debug)]
-pub struct NavTile {
+pub struct Navtile {
     pub cost: i32,
     pub occupied_by: HashSet<Entity>,
     pub passable: bool,
 }
 
-impl Default for NavTile {
+impl Default for Navtile {
     fn default() -> Self {
         Self {
             cost: INITIAL_NAV_COST,
@@ -26,36 +26,36 @@ impl Default for NavTile {
 }
 
 #[derive(Resource)]
-pub struct NavMesh(pub Vec<Vec<NavTile>>);
+pub struct Navmesh(pub Vec<Vec<Navtile>>);
 
-impl Default for NavMesh {
+impl Default for Navmesh {
     fn default() -> Self {
         Self(
             (0..GRID_COLS)
                 .map(|_| {
                     (0..GRID_ROWS)
-                        .map(|_| NavTile::default())
-                        .collect::<Vec<NavTile>>()
+                        .map(|_| Navtile::default())
+                        .collect::<Vec<Navtile>>()
                 })
-                .collect::<Vec<Vec<NavTile>>>(),
+                .collect::<Vec<Vec<Navtile>>>(),
         )
     }
 }
 
-impl NavMesh {
-    pub fn get(&self, x: i32, y: i32) -> Option<&NavTile> {
+impl Navmesh {
+    pub fn get(&self, x: i32, y: i32) -> Option<&Navtile> {
         self.0
             .get((x + GRID_COLS_HALF) as usize)?
             .get((y + GRID_ROWS_HALF) as usize)
     }
 
-    pub fn get_mut(&mut self, x: i32, y: i32) -> Option<&mut NavTile> {
+    pub fn get_mut(&mut self, x: i32, y: i32) -> Option<&mut Navtile> {
         self.0
             .get_mut((x + GRID_COLS_HALF) as usize)?
             .get_mut((y + GRID_ROWS_HALF) as usize)
     }
 
-    pub fn get_if_passable(&self, x: i32, y: i32) -> Option<&NavTile> {
+    pub fn get_if_passable(&self, x: i32, y: i32) -> Option<&Navtile> {
         let result = self.get(x, y);
 
         if result?.passable {

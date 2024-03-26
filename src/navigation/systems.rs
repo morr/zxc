@@ -32,7 +32,7 @@ pub fn pathfinding_on_click(
 }
 
 pub fn listen_for_pathfinding_requests(
-    navmesh: Res<NavMesh>,
+    navmesh: Res<Navmesh>,
     mut pathfind_event_reader: EventReader<PathfindRequestEvent>,
     mut pathfind_event_writer: EventWriter<PathfindAnswerEvent>,
 ) {
