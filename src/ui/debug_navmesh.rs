@@ -33,13 +33,14 @@ fn handle_state_changes(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut event_reader: EventReader<StateChangeEvent<DebugNavmeshState>>,
+    query_tiles_hovered: Query<Entity, With<DebugNavmeshTile>>,
 ) {
     for event in event_reader.read() {
         // println!("{:?}", event);
 
         let mesh = Mesh::from(Rectangle::new(TILE_SIZE, TILE_SIZE));
-        let passable_material = ColorMaterial::from(Color::rgba(0.0, 0.0, 0.5, 0.5));
-        let impassable_material = ColorMaterial::from(Color::rgba(0.5, 0.0, 0.0, 0.5));
+        let passable_material = ColorMaterial::from(Color::rgba(0.0, 0.0, 0.75, 0.5));
+        let impassable_material = ColorMaterial::from(Color::rgba(1.0, 0.0, 0.0, 0.75));
 
         let mesh_handle = meshes.add(mesh);
         let material_passable_handle = materials.add(passable_material);
@@ -67,7 +68,9 @@ fn handle_state_changes(
                 });
             }
             DebugNavmeshState::Hidden => {
-                // commands.entity(entity).despawn();
+                for entity in query_tiles_hovered.iter() {
+                    commands.entity(entity).despawn_recursive();
+                }
             }
         }
     }
