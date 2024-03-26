@@ -55,22 +55,24 @@ pub fn listen_for_pathfinding_requests(
                 .iter()
                 .filter_map(|&(nx, ny)| {
                     navmesh.get_if_passable(nx, ny).and_then(|navtile| {
-                        let is_diagonal = x != nx && y != ny;
+                        let is_diagonal_movement = x != nx && y != ny;
 
-                        if !is_diagonal
+                        if !is_diagonal_movement
+                            // check that both adjacent tiles are passable
                             || (navmesh.get_if_passable(x, ny).is_some()
                                 && navmesh.get_if_passable(nx, y).is_some())
                         {
-                            let cost = if is_diagonal {
-                                // this is not strictly correct calculation
-                                // instead of cost * sqrt(2) it should be
-                                // (tile1.cost + sqrt(2))/2 + (tile2.cost + sqrt(2)/2
-                                (navtile.cost as f32 * f32::sqrt(2.0)).floor() as i32
-                            } else {
-                                navtile.cost
-                            };
-
-                            Some((IVec2 { x: nx, y: ny }, cost))
+                            Some((
+                                IVec2 { x: nx, y: ny },
+                                if is_diagonal_movement {
+                                    // this is not strictly correct calculation
+                                    // instead of cost * sqrt(2) it should be
+                                    // (tile1.cost + sqrt(2))/2 + (tile2.cost + sqrt(2))/2
+                                    (navtile.cost as f32 * f32::sqrt(2.0)).floor() as i32
+                                } else {
+                                    navtile.cost
+                                },
+                            ))
                         } else {
                             None
                         }
