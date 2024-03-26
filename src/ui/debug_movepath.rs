@@ -2,9 +2,8 @@ use super::*;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
 pub enum DebugMovepathState {
-    // MainMenu,
-    #[default]
     Hidden,
+    #[default]
     Visible,
 }
 

@@ -16,7 +16,6 @@ impl Plugin for DebugGridPlugin {
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
 pub enum DebugGridState {
-    // MainMenu,
     #[default]
     Hidden,
     Visible,
