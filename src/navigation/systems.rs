@@ -1,5 +1,3 @@
-use std::collections::{HashMap, VecDeque};
-
 use bevy::prelude::*;
 use pathfinding::prelude::astar;
 
@@ -59,10 +57,10 @@ pub fn listen_for_pathfinding_requests(
                         navmesh
                             .get_if_passable(nx, ny)
                             .and_then(|navtile| {
-                                if x != nx && y != ny {
-                                    None
-                                } else {
+                                if x == nx || y == ny || (navmesh.get_if_passable(x, ny).is_some() && navmesh.get_if_passable(nx, y).is_some()) {
                                     Some((IVec2 { x: nx, y: ny }, navtile.cost))
+                                } else {
+                                    None
                                 }
                             })
                     })
