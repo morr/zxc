@@ -1,14 +1,9 @@
-use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
-use rand::prelude::*;
+use bevy::sprite::MaterialMesh2dBundle;
+use rand::Rng;
 
-use self::story_time::TimeScale;
-use self::utils::{grid_tile_center_to_world, GridTranslationHelper};
+use self::structure::{Structure, BASE_HEIGHT, BASE_WIDTH};
 
 use super::*;
-use crate::structure::Structure;
-use crate::structure::{BASE_HEIGHT, BASE_WIDTH};
-use crate::utils::world_pos_to_grid;
-use crate::{PAWN_Z_INDEX, STARTING_PAWNS, TILE_SIZE};
 
 pub fn spawn_pawns(
     mut commands: Commands,

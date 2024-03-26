@@ -1,8 +1,7 @@
-use bevy::{
-    prelude::*,
-    window::{close_on_esc, PresentMode},
-};
-// use bevy_inspector_egui::quick::FilterQueryInspectorPlugin;
+use bevy::window::PresentMode;
+
+mod prelude;
+pub use prelude::*;
 
 mod camera;
 mod input;
@@ -14,8 +13,6 @@ mod story_time;
 mod structure;
 mod ui;
 mod utils;
-
-pub use settings::*;
 
 fn main() {
     App::new()
@@ -66,7 +63,7 @@ fn main() {
         // .insert_resource(ClearColor(Color::rgba_u8(
         //     BG_COLOR.0, BG_COLOR.1, BG_COLOR.2, 0,
         // )))
-        .add_systems(FixedUpdate, close_on_esc)
+        .add_systems(FixedUpdate, bevy::window::close_on_esc)
         // .add_systems(Startup, spawn_paddle)
         // .add_systems(FixedUpdate, move_paddle)
         .run();

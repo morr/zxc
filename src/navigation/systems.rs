@@ -1,13 +1,12 @@
-use bevy::prelude::*;
-use pathfinding::prelude::astar;
+use pathfinding::directed::astar::astar;
+
+use super::*;
 
 use crate::{
     map::components::ClickTileEvent,
     pawn::{Pawn, PawnStatus},
     utils::WorldTranslationHelper,
 };
-
-use super::*;
 
 pub fn generate_navmesh() {}
 

@@ -1,8 +1,6 @@
-use bevy::{
-    app::prelude::*, core_pipeline::core_2d::Camera2dBundle, ecs::system::Commands,
-    input::mouse::MouseButton, math::Vec3, prelude::*, transform::components::Transform,
-};
-use bevy_pancam::{PanCam, PanCamPlugin};
+use super::*;
+use bevy_pancam::PanCam;
+use bevy_pancam::PanCamPlugin;
 
 #[derive(Component)]
 pub struct MainCamera;
@@ -11,7 +9,7 @@ pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(PanCamPlugin::default())
+        app.add_plugins(PanCamPlugin)
             .add_systems(Startup, spawn_camera);
     }
 }

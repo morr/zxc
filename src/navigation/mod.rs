@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use crate::prelude::*;
 
 pub mod components;
 pub mod systems;

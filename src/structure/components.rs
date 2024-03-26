@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use super::*;
 
 pub const BASE_WIDTH: f32 = 8.0;
 pub const BASE_HEIGHT: f32 = 14.0;

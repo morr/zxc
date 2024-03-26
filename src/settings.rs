@@ -1,7 +1,4 @@
-use crate::story_time::{
-    decrease_time_scale, increase_time_scale, toggle_story_time, TimeScale, TimeState,
-};
-use bevy::prelude::*;
+use super::*;
 
 pub const WW: i32 = 1600;
 pub const WH: i32 = 900;

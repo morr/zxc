@@ -1,6 +1,6 @@
-use bevy::{prelude::*, utils::HashSet};
+use bevy::utils::HashSet;
 
-use crate::{GRID_COLS, GRID_COLS_HALF, GRID_ROWS, GRID_ROWS_HALF};
+use super::*;
 
 pub const COST_MULTIPLIER: f32 = 100.0;
 const DEFAULT_COST: i32 = 1;

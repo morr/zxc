@@ -1,6 +1,8 @@
-use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
-use rand::prelude::*;
+use bevy::sprite::MaterialMesh2dBundle;
+use rand::Rng;
 use std::{collections::VecDeque, time::Duration};
+
+use super::*;
 
 #[derive(Component)]
 pub struct Pawn {
@@ -28,14 +30,13 @@ impl Default for Pawn {
 //     }
 // }
 
-
 #[derive(Component, Debug, Clone, Eq, PartialEq, Hash, Default, States)]
 pub enum PawnStatus {
     #[default]
     Idle,
     Pathfinding,
     PathfindingError,
-    Moving
+    Moving,
 }
 
 #[derive(Bundle)]

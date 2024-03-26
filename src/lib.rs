@@ -9,4 +9,5 @@ pub mod structure;
 pub mod ui;
 pub mod utils;
 
-pub use settings::*;
+mod prelude;
+pub use prelude::*;

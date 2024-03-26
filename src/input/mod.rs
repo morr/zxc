@@ -1,12 +1,10 @@
-use bevy::prelude::*;
+use crate::prelude::*;
 
 pub mod components;
 pub mod systems;
 
 use components::*;
 use systems::*;
-
-use crate::{camera::MainCamera, map::components::HoverTileEvent};
 
 pub struct InputPlugin;
 

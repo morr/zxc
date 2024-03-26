@@ -1,8 +1,8 @@
-use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
+use bevy::sprite::MaterialMesh2dBundle;
 
-use crate::{
-    navigation::components::Navmesh, utils::GridTranslationHelper, TILE_SIZE, TILE_Z_INDEX,
-};
+use crate::navigation::components::Navmesh;
+
+use super::*;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
 pub enum DebugNavmeshState {
@@ -15,11 +15,8 @@ pub enum DebugNavmeshState {
 #[derive(Component)]
 pub struct DebugNavmeshTile;
 
-#[derive(Debug, Event)]
-pub struct StateChangeEvent<T>(pub T);
-
-pub struct DebugNavMeshPlugin;
-impl Plugin for DebugNavMeshPlugin {
+pub struct DebugNavmeshPlugin;
+impl Plugin for DebugNavmeshPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<StateChangeEvent<DebugNavmeshState>>()
             .init_state::<DebugNavmeshState>()

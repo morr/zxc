@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use super::*;
 
 #[derive(Component)]
 pub struct TimeText {}

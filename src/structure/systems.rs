@@ -1,11 +1,6 @@
-use bevy::prelude::*;
+use crate::navigation::components::Navmesh;
 
 use super::*;
-use crate::{
-    navigation::components::Navmesh,
-    utils::GridTranslationHelper,
-    STRUCTURE_Z_INDEX, TILE_SIZE,
-};
 
 pub fn spawn_base(
     mut commands: Commands,

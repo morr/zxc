@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use super::*;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
 pub enum TimeState {
