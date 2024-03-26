@@ -10,23 +10,11 @@ use crate::{
 pub fn spawn_base(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    // mut meshes: ResMut<Assets<Mesh>>,
-    // mut materials: ResMut<Assets<ColorMaterial>>,
     mut navmesh: ResMut<Navmesh>,
 ) {
-    // println!("Spawning base");
-
-    // let mesh = Mesh::from(Rectangle::new(
-    //     BASE_WIDTH * TILE_SIZE,
-    //     BASE_HEIGHT * TILE_SIZE,
-    // ));
-    // let material = ColorMaterial::from(Color::rgb(1., 0., 0.));
-
-    // let mesh_handle = meshes.add(mesh);
-    // let material_handle = materials.add(material);
     // https://fin-nio.itch.io/pixel-houses
     let texture_handle = asset_server.load("sprites/castle_complete.png");
-    let grid_pos = IVec2::new(2, 0);
+    let grid_pos = IVec2::new(0, 0);
 
     commands
         .spawn(StructureBundle {
@@ -43,16 +31,6 @@ pub fn spawn_base(
                 ),
                 ..default()
             },
-            // mesh_bundle: MaterialMesh2dBundle {
-            //     mesh: mesh_handle.into(),
-            //     material: material_handle,
-            //     transform: Transform::from_xyz(
-            //         tile_pos_to_world(GRID_COLS as f32 / 2.0),
-            //         tile_pos_to_world(GRID_ROWS as f32 / 2.0),
-            //         STRUCTURE_Z_INDEX,
-            //     ),
-            //     ..default()
-            // },
         })
         .insert(ShowAabbGizmo {
             color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
