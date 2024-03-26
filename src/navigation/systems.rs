@@ -69,7 +69,7 @@ pub fn listen_for_pathfinding_requests(
                     - Vec2::new(event.end.x as f32, event.end.y as f32))
                 .length();
 
-                println!("{} {}", length, (length * COST_MULTIPLIER) as i32);
+                // println!("{} {}", length, (length * COST_MULTIPLIER) as i32);
                 (length * COST_MULTIPLIER) as i32
             },
             |&pos| pos == event.end,

@@ -3,8 +3,8 @@ use crate::story_time::{
 };
 use bevy::prelude::*;
 
-pub const WW: i32 = 800;
-pub const WH: i32 = 600;
+pub const WW: i32 = 1600;
+pub const WH: i32 = 900;
 
 pub const GRID_COLS: i32 = 250;
 pub const GRID_ROWS: i32 = 250;

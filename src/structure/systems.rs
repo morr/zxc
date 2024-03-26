@@ -1,13 +1,18 @@
 use bevy::prelude::*;
 
 use super::*;
-use crate::{utils::grid_tile_edge_to_world, STRUCTURE_Z_INDEX, TILE_SIZE};
+use crate::{
+    navigation::components::NavMesh,
+    utils::{grid_tile_edge_to_world, GridTranslationHelper},
+    STRUCTURE_Z_INDEX, TILE_SIZE,
+};
 
 pub fn spawn_base(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     // mut meshes: ResMut<Assets<Mesh>>,
     // mut materials: ResMut<Assets<ColorMaterial>>,
+    // mut navmesh: ResMut<NavMesh>,
 ) {
     // println!("Spawning base");
 
@@ -21,9 +26,10 @@ pub fn spawn_base(
     // let material_handle = materials.add(material);
     // https://fin-nio.itch.io/pixel-houses
     let texture_handle = asset_server.load("sprites/castle_complete.png");
+    let grid_pos = IVec2::new(2, 0);
 
-    commands.spawn((
-        StructureBundle {
+    commands
+        .spawn(StructureBundle {
             structure: Structure {},
             name: Name::new("Base"),
             sprite_bundle: SpriteBundle {
@@ -32,10 +38,8 @@ pub fn spawn_base(
                     custom_size: Some(Vec2::new(BASE_WIDTH * TILE_SIZE, BASE_HEIGHT * TILE_SIZE)),
                     ..default()
                 },
-                transform: Transform::from_xyz(
-                    grid_tile_edge_to_world(0),
-                    grid_tile_edge_to_world(0),
-                    STRUCTURE_Z_INDEX,
+                transform: Transform::from_translation(
+                    grid_pos.grid_tile_edge_to_world().extend(STRUCTURE_Z_INDEX),
                 ),
                 ..default()
             },
@@ -49,9 +53,15 @@ pub fn spawn_base(
             //     ),
             //     ..default()
             // },
-        },
-        ShowAabbGizmo {
+        })
+        .insert(ShowAabbGizmo {
             color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
-        },
-    ));
+        });
+
+    // mark navmesh tiles as occupied
+    // for x in x as usize..x as usize + BASE_WIDTH {
+    //     for y in y as usize..y as usize + BASE_HEIGHT {
+    //         navmesh.0[x][y]. = false;
+    //     }
+    // }
 }
