@@ -35,6 +35,7 @@ pub struct PawnBundle {
     pub pawn: Pawn,
     pub name: Name,
     pub mesh_bundle: MaterialMesh2dBundle<ColorMaterial>,
+    pub movement: Movement,
+    // pub movement_bundle: MovementBundle
     // pub status: PawnStatus,
-    pub movement_bundle: MovementBundle
 }

@@ -54,10 +54,11 @@ pub fn spawn_pawns(
                     ),
                     ..default()
                 },
-                movement_bundle: MovementBundle {
-                    movement: Movement::new(PAWN_SPEED),
-                    // pathfind_status: PathfindStatus(PathfindStatusEnum::Idle),
-                },
+                movement: Movement::new(PAWN_SPEED),
+                // movement_bundle: MovementBundle {
+                //     movement: Movement::new(PAWN_SPEED),
+                //     // pathfind_status: PathfindStatus(PathfindStatusEnum::Idle),
+                // },
             })
             .insert(ShowAabbGizmo {
                 color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),

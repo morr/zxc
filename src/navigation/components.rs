@@ -28,7 +28,7 @@ pub struct PathfindAnswerEvent {
 //     Pathfinding,
 //     // Error,
 // }
-//
+
 // #[derive(Component)]
 // pub struct PathfindStatus(pub PathfindStatusEnum);
 

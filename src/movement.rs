@@ -10,10 +10,19 @@ impl Plugin for MovementPlugin {
     }
 }
 
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
+pub enum MovementStatus {
+    #[default]
+    Idle,
+    Pathfinding,
+    Moving,
+}
+
 #[derive(Component)]
 pub struct Movement {
     pub path: VecDeque<IVec2>,
     pub speed: f32,
+    pub status: MovementStatus,
 }
 
 impl Movement {
@@ -21,15 +30,16 @@ impl Movement {
         Self {
             path: VecDeque::new(),
             speed,
+            status: MovementStatus::Idle,
         }
     }
 }
 
-#[derive(Bundle)]
-pub struct MovementBundle {
-    pub movement: Movement,
-    // pub pathfind_status: PathfindStatus,
-}
+// #[derive(Bundle)]
+// pub struct MovementBundle {
+//     pub movement: Movement,
+//     // pub pathfind_status: PathfindStatus,
+// }
 
 pub fn apply_movement(
     mut query_movement: Query<(&mut Movement, &mut Transform), With<Movement>>,
