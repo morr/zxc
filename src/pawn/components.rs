@@ -21,20 +21,20 @@ impl Default for Pawn {
     }
 }
 
-#[derive(Component, Debug, Clone, Eq, PartialEq, Hash, Default, States)]
-pub enum PawnStatus {
-    #[default]
-    Idle,
-    Pathfinding,
-    PathfindingError,
-    Moving,
-}
+// #[derive(Component, Debug, Clone, Eq, PartialEq, Hash, Default, States)]
+// pub enum PawnStatus {
+//     #[default]
+//     Idle,
+//     Pathfinding,
+//     PathfindingError,
+//     Moving,
+// }
 
 #[derive(Bundle)]
 pub struct PawnBundle {
     pub pawn: Pawn,
     pub name: Name,
     pub mesh_bundle: MaterialMesh2dBundle<ColorMaterial>,
-    pub status: PawnStatus,
+    // pub status: PawnStatus,
     pub movement: Movement
 }

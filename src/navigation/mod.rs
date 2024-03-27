@@ -14,7 +14,6 @@ impl Plugin for NavigationPlugin {
         app.init_resource::<Navmesh>()
             .add_event::<PathfindRequestEvent>()
             .add_event::<PathfindAnswerEvent>()
-            .add_systems(Startup, generate_navmesh.after(spawn_map))
             .add_systems(
                 Update,
                 (

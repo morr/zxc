@@ -2,24 +2,20 @@ use pathfinding::directed::astar::astar;
 
 use super::*;
 
-use crate::{
-    map::components::ClickTileEvent,
-    pawn::{Pawn, PawnStatus},
-    utils::WorldTranslationHelper,
-};
-
-pub fn generate_navmesh() {}
+use crate::{map::components::ClickTileEvent, pawn::Pawn, utils::WorldTranslationHelper};
 
 pub fn pathfinding_on_click(
     mut click_event_reader: EventReader<ClickTileEvent>,
-    mut query_pawns: Query<(Entity, &Transform, &mut PawnStatus), With<Pawn>>,
+    // mut query_pawns: Query<(Entity, &Transform, &mut PawnStatus), With<Pawn>>,
+    mut query_pawns: Query<(Entity, &Transform), With<Pawn>>,
     mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
     // dimensions_q: Query<&MapDimensions>,
     // mut actor_q: Query<&mut Pathing, With<Actor>>,
 ) {
     for click_event in click_event_reader.read() {
-        for (entity, transform, mut pawn_status) in &mut query_pawns {
-            *pawn_status = PawnStatus::Pathfinding;
+        // for (entity, transform, mut pawn_status) in &mut query_pawns {
+        for (entity, transform) in &mut query_pawns {
+            // *pawn_status = PawnStatus::Pathfinding;
 
             pathfind_event_writer.send(PathfindRequestEvent {
                 start: transform.translation.truncate().world_pos_to_grid(),
@@ -106,24 +102,26 @@ pub fn listen_for_pathfinding_requests(
 
 pub fn listen_for_pathfinding_answers(
     mut pathfind_event_reader: EventReader<PathfindAnswerEvent>,
-    mut query_movement: Query<(&mut Movement, &mut PawnStatus), With<Movement>>,
+    // mut query_movement: Query<(&mut Movement, &mut PawnStatus), With<Movement>>,
+    mut query_movement: Query<&mut Movement, With<Movement>>,
 ) {
     for event in pathfind_event_reader.read() {
         // println!("{:?}", event);
 
-        let Ok((mut movement, mut pawn_status)) = query_movement.get_mut(event.entity) else {
+        // let Ok((mut movement, mut pawn_status)) = query_movement.get_mut(event.entity) else {
+        let Ok(mut movement) = query_movement.get_mut(event.entity) else {
             continue;
         };
 
         if let Some(path) = &event.path {
             if path.len() == 1 {
-                *pawn_status = PawnStatus::Idle;
+                // *pawn_status = PawnStatus::Idle;
             } else {
                 movement.path = path.iter().skip(1).cloned().collect();
-                *pawn_status = PawnStatus::Moving;
+                // *pawn_status = PawnStatus::Moving;
             }
         } else {
-            *pawn_status = PawnStatus::PathfindingError;
+            // *pawn_status = PawnStatus::PathfindingError;
         }
     }
 }
