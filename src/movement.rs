@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use crate::{navigation::components::PathfindStatus, prelude::*};
+use crate::prelude::*;
 
 pub struct MovementPlugin;
 
@@ -28,7 +28,7 @@ impl Movement {
 #[derive(Bundle)]
 pub struct MovementBundle {
     pub movement: Movement,
-    pub pathfind_status: PathfindStatus,
+    // pub pathfind_status: PathfindStatus,
 }
 
 pub fn apply_movement(

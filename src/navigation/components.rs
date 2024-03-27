@@ -21,16 +21,16 @@ pub struct PathfindAnswerEvent {
     pub path: Option<Vec<IVec2>>,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
-pub enum PathfindStatusEnum {
-    #[default]
-    Idle,
-    Pathfinding,
-    Error,
-}
-
-#[derive(Component)]
-pub struct PathfindStatus(pub PathfindStatusEnum);
+// #[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
+// pub enum PathfindStatusEnum {
+//     #[default]
+//     Idle,
+//     Pathfinding,
+//     // Error,
+// }
+//
+// #[derive(Component)]
+// pub struct PathfindStatus(pub PathfindStatusEnum);
 
 #[derive(Debug)]
 pub struct Navtile {
