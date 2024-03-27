@@ -21,13 +21,6 @@ impl Default for Pawn {
     }
 }
 
-// impl Pawn {
-//     fn new() -> Self {
-//         Pawn {
-//         }
-//     }
-// }
-
 #[derive(Component, Debug, Clone, Eq, PartialEq, Hash, Default, States)]
 pub enum PawnStatus {
     #[default]
@@ -43,4 +36,5 @@ pub struct PawnBundle {
     pub name: Name,
     pub mesh_bundle: MaterialMesh2dBundle<ColorMaterial>,
     pub status: PawnStatus,
+    pub moveable: Moveable
 }

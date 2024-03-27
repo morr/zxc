@@ -10,7 +10,7 @@ impl Plugin for MovementPlugin {
     }
 }
 
-#[derive(Component, Default)]
+#[derive(Component)]
 pub struct Moveable {
     pub path: VecDeque<IVec2>,
     pub speed: f32,

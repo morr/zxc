@@ -54,8 +54,8 @@ pub fn spawn_pawns(
                     ),
                     ..default()
                 },
+                moveable: Moveable::new(PAWN_SPEED)
             })
-            .insert(Moveable::new(PAWN_SPEED))
             .insert(ShowAabbGizmo {
                 color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
             });
