@@ -106,12 +106,12 @@ pub fn listen_for_pathfinding_requests(
 
 pub fn listen_for_pathfinding_answers(
     mut pathfind_event_reader: EventReader<PathfindAnswerEvent>,
-    mut q_pawns: Query<(&mut Pawn, &mut PawnStatus), With<Pawn>>,
+    mut query_moveable: Query<(&mut Moveable, &mut PawnStatus), With<Moveable>>,
 ) {
     for event in pathfind_event_reader.read() {
         // println!("{:?}", event);
 
-        let Ok((mut pawn, mut pawn_status)) = q_pawns.get_mut(event.entity) else {
+        let Ok((mut moveable, mut pawn_status)) = query_moveable.get_mut(event.entity) else {
             continue;
         };
 
@@ -119,7 +119,7 @@ pub fn listen_for_pathfinding_answers(
             if path.len() == 1 {
                 *pawn_status = PawnStatus::Idle;
             } else {
-                pawn.move_path = path.iter().skip(1).cloned().collect();
+                moveable.path = path.iter().skip(1).cloned().collect();
                 *pawn_status = PawnStatus::Moving;
             }
         } else {

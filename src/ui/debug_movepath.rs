@@ -18,19 +18,18 @@ impl Plugin for DebugMovepathPlugin {
 }
 
 pub fn render_movepath(
-    query_pawns: Query<(&Pawn, &Transform), With<Pawn>>,
+    query_pawns: Query<(&Moveable, &Transform), With<Moveable>>,
     mut gizmos: Gizmos,
 ) {
-    for (pawn, transform) in &query_pawns {
-        if pawn.move_path.is_empty() {
+    for (moveable, transform) in &query_pawns {
+        if moveable.path.is_empty() {
             continue;
         }
 
         let current_world = transform.translation.truncate();
 
-        // show the pawn's path
         let mut prev_world = transform.translation.truncate();
-        for path_target in pawn.move_path.iter() {
+        for path_target in moveable.path.iter() {
             let iter_world = path_target.grid_tile_center_to_world();
 
             gizmos.line_2d(
@@ -46,8 +45,7 @@ pub fn render_movepath(
             prev_world = iter_world;
         }
 
-        // move pawn
-        let move_target_world = pawn.move_path.front().unwrap().grid_tile_center_to_world();
+        let move_target_world = moveable.path.front().unwrap().grid_tile_center_to_world();
 
         gizmos.arrow_2d(current_world, move_target_world, Color::RED);
     }

@@ -12,7 +12,7 @@ pub const GRID_ROWS_HALF: i32 = (GRID_ROWS as f32 / 2.0) as i32;
 pub const TILE_SIZE: f32 = 32.;
 
 pub const STARTING_PAWNS: u32 = 1;
-pub const PAWN_SPEED: f32 = TILE_SIZE;
+pub const PAWN_SPEED: f32 = TILE_SIZE * 10.0;
 
 pub const TILE_Z_INDEX: f32 = 0.0;
 pub const STRUCTURE_Z_INDEX: f32 = 10.0;

@@ -31,7 +31,7 @@ pub fn mouse_input(
         };
 
         if is_new_hover {
-            println!("{:?}", event);
+            // println!("{:?}", event);
             prev_hovered_tile_pos.0 = Some(event.0);
             hover_event_writer.send(event);
         }

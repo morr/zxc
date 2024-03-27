@@ -6,6 +6,7 @@ pub use prelude::*;
 mod camera;
 mod input;
 mod map;
+mod movement;
 mod navigation;
 mod pawn;
 mod settings;
@@ -49,6 +50,7 @@ fn main() {
             ui::UiPlugin,
             input::InputPlugin,
             pawn::PawnPlugin,
+            movement::MovementPlugin,
             story_time::StoryTimePlugin,
         ))
         // .add_plugins((

@@ -3,6 +3,7 @@ pub use bevy::prelude::*;
 pub use crate::camera::*;
 pub use crate::input::*;
 pub use crate::map::*;
+pub use crate::movement::*;
 pub use crate::navigation::*;
 pub use crate::pawn::*;
 pub use crate::settings::*;

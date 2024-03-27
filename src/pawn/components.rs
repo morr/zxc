@@ -1,13 +1,12 @@
 use bevy::sprite::MaterialMesh2dBundle;
 use rand::Rng;
-use std::{collections::VecDeque, time::Duration};
+use std::time::Duration;
 
 use super::*;
 
 #[derive(Component)]
 pub struct Pawn {
     pub age: u32,
-    pub move_path: VecDeque<IVec2>,
     pub retry_pathfinding_timer: Timer,
 }
 
@@ -17,7 +16,6 @@ impl Default for Pawn {
 
         Self {
             age: rng.gen_range(14..32),
-            move_path: VecDeque::new(),
             retry_pathfinding_timer: Timer::new(Duration::from_secs(0), TimerMode::Once),
         }
     }
