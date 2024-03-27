@@ -6,8 +6,6 @@ pub mod systems;
 use components::*;
 use systems::*;
 
-use crate::map::systems::spawn_map;
-
 pub struct NavigationPlugin;
 impl Plugin for NavigationPlugin {
     fn build(&self, app: &mut App) {

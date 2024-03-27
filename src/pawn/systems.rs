@@ -1,7 +1,7 @@
 use bevy::sprite::MaterialMesh2dBundle;
 use rand::Rng;
 
-use self::structure::{Structure, BASE_HEIGHT, BASE_WIDTH};
+use self::{navigation::components::{PathfindStatus, PathfindStatusEnum}, structure::{Structure, BASE_HEIGHT, BASE_WIDTH}};
 
 use super::*;
 
@@ -54,7 +54,10 @@ pub fn spawn_pawns(
                     ),
                     ..default()
                 },
-                movement: Movement::new(PAWN_SPEED)
+                movement_bundle: MovementBundle {
+                    movement: Movement::new(PAWN_SPEED),
+                    pathfind_status: PathfindStatus(PathfindStatusEnum::Idle)
+                }
             })
             .insert(ShowAabbGizmo {
                 color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
