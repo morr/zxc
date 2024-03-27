@@ -2,12 +2,12 @@ use pathfinding::directed::astar::astar;
 
 use super::*;
 
-use crate::{map::components::ClickTileEvent, pawn::Pawn, utils::WorldTranslationHelper};
+use crate::{map::components::ClickTileEvent, utils::WorldTranslationHelper};
 
 pub fn pathfinding_on_click(
     mut click_event_reader: EventReader<ClickTileEvent>,
     // mut query_pawns: Query<(Entity, &Transform, &mut PawnStatus), With<Pawn>>,
-    mut query_pawns: Query<(Entity, &Transform), With<Pawn>>,
+    mut query_pawns: Query<(Entity, &Transform), With<Movement>>,
     mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
     // dimensions_q: Query<&MapDimensions>,
     // mut actor_q: Query<&mut Pathing, With<Actor>>,
