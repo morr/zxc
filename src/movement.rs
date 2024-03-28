@@ -46,13 +46,17 @@ impl Movement {
 // }
 
 pub fn apply_movement(
-    mut query_movement: Query<(&mut Movement, &mut Transform), With<Movement>>,
+    mut commands: Commands,
+    mut query_movement: Query<(Entity, &mut Movement, &mut Transform), With<MovementMoving>>,
     time: Res<Time>,
     time_scale: Res<TimeScale>,
 ) {
-    for (mut movement, mut transform) in &mut query_movement {
+    for (entity, mut movement, mut transform) in &mut query_movement {
         let distance_to_move = movement.speed * time.delta_seconds() * time_scale.0;
         move_to_target_location(&mut movement, &mut transform, distance_to_move);
+        if movement.path.is_empty() {
+            commands.entity(entity).remove::<MovementMoving>();
+        }
     }
 }
 
