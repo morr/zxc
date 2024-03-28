@@ -19,7 +19,7 @@ pub enum MovementStatus {
     PathfindingError,
 }
 
-#[derive(Component)]
+#[derive(Debug, Component)]
 pub struct Movement {
     pub path: VecDeque<IVec2>,
     pub speed: f32,

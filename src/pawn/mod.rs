@@ -13,7 +13,8 @@ pub struct PawnPlugin;
 
 impl Plugin for PawnPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, spawn_pawns.after(spawn_base));
+        app.add_systems(Startup, spawn_pawns.after(spawn_base))
+            .add_systems(FixedUpdate, update_pawn_color);
         // .add_systems(
         //     FixedUpdate,
         //     wander_pawns.run_if(in_state(TimeState::Running)),

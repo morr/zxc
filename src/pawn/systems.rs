@@ -70,6 +70,14 @@ pub fn spawn_pawns(
     }
 }
 
+pub fn update_pawn_color(
+    query: Query<&Movement, (With<Movement>, Changed<Movement>)>,
+) {
+    for movement in query.iter() {
+        println!("{:?}", movement);
+    }
+}
+
 // pub fn wander_pawns(
 //     time: Res<Time>,
 //     mut query: Query<(&mut Transform, &mut Pawn, &Name), With<Pawn>>,
