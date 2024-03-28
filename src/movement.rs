@@ -14,8 +14,9 @@ impl Plugin for MovementPlugin {
 pub enum MovementStatus {
     #[default]
     Idle,
-    Pathfinding,
     Moving,
+    Pathfinding,
+    PathfindingError,
 }
 
 #[derive(Component)]
@@ -24,6 +25,9 @@ pub struct Movement {
     pub speed: f32,
     pub status: MovementStatus,
 }
+
+#[derive(Component)]
+pub struct MovementMoving;
 
 impl Movement {
     pub fn new(speed: f32) -> Self {
