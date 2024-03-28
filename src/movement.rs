@@ -55,6 +55,7 @@ pub fn apply_movement(
         let distance_to_move = movement.speed * time.delta_seconds() * time_scale.0;
         move_to_target_location(&mut movement, &mut transform, distance_to_move);
         if movement.path.is_empty() {
+            movement.status = MovementStatus::Idle;
             commands.entity(entity).remove::<MovementMoving>();
         }
     }
