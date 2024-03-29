@@ -67,7 +67,5 @@ fn main() {
         //     BG_COLOR.0, BG_COLOR.1, BG_COLOR.2, 0,
         // )))
         .add_systems(FixedUpdate, bevy::window::close_on_esc)
-        // .add_systems(Startup, spawn_paddle)
-        // .add_systems(FixedUpdate, move_paddle)
         .run();
 }
