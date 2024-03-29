@@ -25,7 +25,8 @@ impl FromWorld for AssetsCollection {
 
         Self {
             pawn_idle: materials.add(ColorMaterial::from(Color::hex("f6f8fa").unwrap())),
-            pawn_moving: materials.add(ColorMaterial::from(Color::hex("e178c5").unwrap())),
+            pawn_moving: materials.add(ColorMaterial::from(Color::hex("1193cf").unwrap())),
+            // pawn_moving: materials.add(ColorMaterial::from(Color::hex("e178c5").unwrap())),
             pawn_pathfinding: materials.add(ColorMaterial::from(Color::hex("fb8f44").unwrap())),
             pawn_pathfinding_error: materials.add(ColorMaterial::from(Color::RED)),
         }
