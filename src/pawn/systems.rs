@@ -61,6 +61,8 @@ pub fn update_pawn_color(
     mut query: Query<&mut Handle<ColorMaterial>>,
 ) {
     for event in event_reader.read() {
+        // println!("{:?}", event);
+
         if let Ok(mut material_handle) = query.get_mut(event.0) {
             *material_handle = match event.1 {
                 MovementState::Idle => assets.pawn_idle.clone(),
