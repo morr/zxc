@@ -12,7 +12,9 @@ impl Plugin for DebugMovepathPlugin {
     fn build(&self, app: &mut App) {
         app.init_state::<DebugMovepathState>().add_systems(
             Update,
-            render_movepath.run_if(in_state(DebugMovepathState::Visible)),
+            render_movepath
+                .run_if(in_state(WorldState::Playing))
+                .run_if(in_state(DebugMovepathState::Visible)),
         );
     }
 }
