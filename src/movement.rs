@@ -45,6 +45,7 @@ impl Movement {
         movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementState>>,
     ) {
         self.state = MovementState::Idle;
+        self.path = [].into();
         commands.entity(entity).remove::<MovementMoving>();
         movement_state_event_writer.send(EntityStateChangeEvent(entity, MovementState::Idle));
     }
@@ -68,6 +69,7 @@ impl Movement {
         movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementState>>,
     ) {
         self.state = MovementState::Pathfinding;
+        self.path = [].into();
         movement_state_event_writer
             .send(EntityStateChangeEvent(entity, MovementState::Pathfinding));
     }
@@ -78,6 +80,7 @@ impl Movement {
         movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementState>>,
     ) {
         self.state = MovementState::PathfindingError;
+        self.path = [].into();
         movement_state_event_writer.send(EntityStateChangeEvent(
             entity,
             MovementState::PathfindingError,
