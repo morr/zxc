@@ -26,7 +26,6 @@ pub fn listen_for_pathfinding_requests(
     navmesh: Res<Navmesh>,
     mut pathfind_event_reader: EventReader<PathfindRequestEvent>,
     mut pathfind_event_writer: EventWriter<PathfindAnswerEvent>,
-    mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementStatus>>,
 ) {
     for event in pathfind_event_reader.read() {
         // println!("{:?}", event);

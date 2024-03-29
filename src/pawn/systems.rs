@@ -72,12 +72,13 @@ pub fn spawn_pawns(
 }
 
 pub fn update_pawn_color(
-    mut commands: Commands,
+    // mut commands: Commands,
     mut event_reader: EventReader<EntityStateChangeEvent<MovementStatus>>,
 ) {
-    // for _movement in query.iter() {
-        // println!("{:?}", movement);
-    // }
+    for event in event_reader.read() {
+        println!("{:?}", event);
+        // commands.entity(event.0).remove::<ColorMaterial>();
+    }
 }
 
 // pub fn wander_pawns(
