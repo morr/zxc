@@ -7,7 +7,6 @@ pub use components::*;
 pub use systems::*;
 
 use crate::structure::spawn_base;
-use crate::*;
 
 pub struct PawnPlugin;
 
