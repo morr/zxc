@@ -8,7 +8,7 @@ use super::*;
 pub fn spawn_pawns(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    assets: ResMut<AssetsCollection>,
+    assets: Res<AssetsCollection>,
     // mut materials: ResMut<Assets<ColorMaterial>>,
     // q: Query<(&Structure, &Transform)>,
     // q: Query<(Entity, &GlobalTransform), (With<Structure>)>,
@@ -71,9 +71,7 @@ pub fn spawn_pawns(
     }
 }
 
-pub fn update_pawn_color(
-    query: Query<&Movement, (With<Movement>, Changed<Movement>)>,
-) {
+pub fn update_pawn_color(query: Query<&Movement, (With<Movement>, Changed<Movement>)>) {
     for _movement in query.iter() {
         // println!("{:?}", movement);
     }

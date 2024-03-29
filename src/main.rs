@@ -50,6 +50,7 @@ fn main() {
         .add_plugins((
             camera::CameraPlugin,
             settings::SettingsPlugin,
+            assets::AssetsPlugin,
             map::MapPlugin,
             navigation::NavigationPlugin,
             structure::StructurePlugin,
