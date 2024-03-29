@@ -8,7 +8,8 @@ use super::*;
 pub fn spawn_pawns(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    assets: ResMut<AssetsCollection>,
+    // mut materials: ResMut<Assets<ColorMaterial>>,
     // q: Query<(&Structure, &Transform)>,
     // q: Query<(Entity, &GlobalTransform), (With<Structure>)>,
     // q: Query<(Entity, &GlobalTransform), (With<Structure>)>,
@@ -21,9 +22,9 @@ pub fn spawn_pawns(
     // println!("Spawning pawns");
 
     let mesh = Mesh::from(Circle::new(TILE_SIZE / 2.0));
-    let material = ColorMaterial::from(Color::hex("E178C5").unwrap());
+    // let material = ColorMaterial::from(Color::hex("E178C5").unwrap());
     let mesh_handle: Handle<Mesh> = meshes.add(mesh);
-    let material_handle = materials.add(material);
+    // let material_handle = materials.add(material);
 
     let mut rng = rand::thread_rng();
     let radius = TILE_SIZE * f32::max(BASE_WIDTH, BASE_HEIGHT);
@@ -42,7 +43,7 @@ pub fn spawn_pawns(
                 // status: PawnStatus::Idle,
                 mesh_bundle: MaterialMesh2dBundle {
                     mesh: mesh_handle.clone().into(),
-                    material: material_handle.clone(),
+                    material: assets.pawn_idle.clone(),
                     transform: Transform::from_xyz(
                         grid_tile_center_to_world(world_pos_to_grid(x)),
                         grid_tile_center_to_world(world_pos_to_grid(y)),
@@ -74,7 +75,7 @@ pub fn update_pawn_color(
     query: Query<&Movement, (With<Movement>, Changed<Movement>)>,
 ) {
     for movement in query.iter() {
-        println!("{:?}", movement);
+        // println!("{:?}", movement);
     }
 }
 

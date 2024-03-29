@@ -3,6 +3,7 @@ use bevy::window::PresentMode;
 mod prelude;
 pub use prelude::*;
 
+mod assets;
 mod camera;
 mod input;
 mod map;

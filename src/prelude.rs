@@ -1,5 +1,6 @@
 pub use bevy::prelude::*;
 
+pub use crate::assets::*;
 pub use crate::camera::*;
 pub use crate::input::*;
 pub use crate::map::*;
