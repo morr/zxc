@@ -15,6 +15,9 @@ pub use crate::utils::*;
 #[derive(Debug, Event)]
 pub struct StateChangeEvent<T>(pub T);
 
+#[derive(Debug, Event)]
+pub struct EntityStateChangeEvent<T>(pub Entity, pub T);
+
 #[derive(Clone, Eq, PartialEq, Debug, Hash, Default, States)]
 pub enum WorldState {
     #[default]

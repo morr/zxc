@@ -13,7 +13,9 @@ pub struct PawnPlugin;
 
 impl Plugin for PawnPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnExit(WorldState::Loading), spawn_pawns.after(spawn_base))
+        app
+            .add_event::<EntityStateChangeEvent<MovementStatus>>()
+            .add_systems(OnExit(WorldState::Loading), spawn_pawns.after(spawn_base))
             .add_systems(
                 FixedUpdate,
                 update_pawn_color.run_if(in_state(WorldState::Playing)),

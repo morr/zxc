@@ -8,10 +8,11 @@ pub fn pathfinding_on_click(
     mut click_event_reader: EventReader<ClickTileEvent>,
     mut query_pawns: Query<(Entity, &Transform, &mut Movement), With<Movement>>,
     mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
+    mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementStatus>>,
 ) {
     for click_event in click_event_reader.read() {
         for (entity, transform, mut movement) in &mut query_pawns {
-            movement.to_pathfinding();
+            movement.to_pathfinding(entity, &mut movement_state_event_writer);
             pathfind_event_writer.send(PathfindRequestEvent {
                 start: transform.translation.truncate().world_pos_to_grid(),
                 end: click_event.0,
@@ -25,6 +26,7 @@ pub fn listen_for_pathfinding_requests(
     navmesh: Res<Navmesh>,
     mut pathfind_event_reader: EventReader<PathfindRequestEvent>,
     mut pathfind_event_writer: EventWriter<PathfindAnswerEvent>,
+    mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementStatus>>,
 ) {
     for event in pathfind_event_reader.read() {
         // println!("{:?}", event);
@@ -99,6 +101,7 @@ pub fn listen_for_pathfinding_answers(
     mut commands: Commands,
     mut pathfind_event_reader: EventReader<PathfindAnswerEvent>,
     mut query_movement: Query<(Entity, &mut Movement), With<Movement>>,
+    mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementStatus>>,
 ) {
     for event in pathfind_event_reader.read() {
         // println!("{:?}", event);
@@ -109,16 +112,17 @@ pub fn listen_for_pathfinding_answers(
 
         if let Some(path) = &event.path {
             if path.len() == 1 {
-                movement.to_idle(entity, &mut commands);
+                movement.to_idle(entity, &mut commands, &mut movement_state_event_writer);
             } else {
                 movement.to_moving(
                     path.iter().skip(1).cloned().collect(),
                     entity,
                     &mut commands,
+                    &mut movement_state_event_writer,
                 );
             }
         } else {
-            movement.to_pathfinding_error();
+            movement.to_pathfinding_error(entity, &mut movement_state_event_writer);
         }
     }
 }

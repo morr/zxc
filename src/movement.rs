@@ -19,15 +19,15 @@ pub enum MovementStatus {
     PathfindingError,
 }
 
+#[derive(Component)]
+pub struct MovementMoving;
+
 #[derive(Debug, Component)]
 pub struct Movement {
     pub path: VecDeque<IVec2>,
     pub speed: f32,
     pub status: MovementStatus,
 }
-
-#[derive(Component)]
-pub struct MovementMoving;
 
 impl Movement {
     pub fn new(speed: f32) -> Self {
@@ -38,23 +38,50 @@ impl Movement {
         }
     }
 
-    pub fn to_idle(&mut self, entity: Entity, commands: &mut Commands) {
+    pub fn to_idle(
+        &mut self,
+        entity: Entity,
+        commands: &mut Commands,
+        movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementStatus>>,
+    ) {
         self.status = MovementStatus::Idle;
         commands.entity(entity).remove::<MovementMoving>();
+        movement_state_event_writer.send(EntityStateChangeEvent(entity, MovementStatus::Idle));
     }
 
-    pub fn to_moving(&mut self, path: VecDeque<IVec2>, entity: Entity, commands: &mut Commands) {
-        self.path = path;
+    pub fn to_moving(
+        &mut self,
+        path: VecDeque<IVec2>,
+        entity: Entity,
+        commands: &mut Commands,
+        movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementStatus>>,
+    ) {
         self.status = MovementStatus::Moving;
+        self.path = path;
         commands.entity(entity).insert(MovementMoving);
+        movement_state_event_writer.send(EntityStateChangeEvent(entity, MovementStatus::Moving));
     }
 
-    pub fn to_pathfinding(&mut self) {
+    pub fn to_pathfinding(
+        &mut self,
+        entity: Entity,
+        movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementStatus>>,
+    ) {
         self.status = MovementStatus::Pathfinding;
+        movement_state_event_writer
+            .send(EntityStateChangeEvent(entity, MovementStatus::Pathfinding));
     }
 
-    pub fn to_pathfinding_error(&mut self) {
+    pub fn to_pathfinding_error(
+        &mut self,
+        entity: Entity,
+        movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementStatus>>,
+    ) {
         self.status = MovementStatus::PathfindingError;
+        movement_state_event_writer.send(EntityStateChangeEvent(
+            entity,
+            MovementStatus::PathfindingError,
+        ));
     }
 }
 
@@ -69,12 +96,13 @@ pub fn apply_movement(
     mut query_movement: Query<(Entity, &mut Movement, &mut Transform), With<MovementMoving>>,
     time: Res<Time>,
     time_scale: Res<TimeScale>,
+    mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementStatus>>,
 ) {
     for (entity, mut movement, mut transform) in &mut query_movement {
         let distance_to_move = movement.speed * time.delta_seconds() * time_scale.0;
         move_to_target_location(&mut movement, &mut transform, distance_to_move);
         if movement.path.is_empty() {
-            movement.to_idle(entity, &mut commands);
+            movement.to_idle(entity, &mut commands, &mut movement_state_event_writer);
         }
     }
 }
