@@ -20,7 +20,7 @@ impl Plugin for DebugNavmeshPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<StateChangeEvent<DebugNavmeshState>>()
             .init_state::<DebugNavmeshState>()
-            .add_systems(FixedUpdate, handle_state_changes);
+            .add_systems(FixedUpdate, handle_state_changes.run_if(in_state(WorldState::Playing)));
     }
 }
 
@@ -28,7 +28,7 @@ fn handle_state_changes(
     mut commands: Commands,
     navmesh: Res<Navmesh>,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    assets: Res<AssetsCollection>,
     mut event_reader: EventReader<StateChangeEvent<DebugNavmeshState>>,
     query_tiles_hovered: Query<Entity, With<DebugNavmeshTile>>,
 ) {
@@ -36,12 +36,7 @@ fn handle_state_changes(
         // println!("{:?}", event);
 
         let mesh = Mesh::from(Rectangle::new(TILE_SIZE, TILE_SIZE));
-        let passable_material = ColorMaterial::from(Color::rgba(0.0, 0.0, 0.75, 0.5));
-        let impassable_material = ColorMaterial::from(Color::rgba(1.0, 0.0, 0.0, 0.75));
-
         let mesh_handle = meshes.add(mesh);
-        let material_passable_handle = materials.add(passable_material);
-        let material_impassable_handle = materials.add(impassable_material);
 
         match event.0 {
             DebugNavmeshState::Visible => {
@@ -50,9 +45,9 @@ fn handle_state_changes(
                         .spawn(MaterialMesh2dBundle {
                             mesh: mesh_handle.clone().into(),
                             material: if navtile.passable {
-                                material_passable_handle.clone()
+                                assets.navmesh_passable.clone()
                             } else {
-                                material_impassable_handle.clone()
+                                assets.navmesh_impassable.clone()
                             },
                             transform: Transform::from_translation(
                                 tile_pos
