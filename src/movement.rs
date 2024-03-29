@@ -37,6 +37,25 @@ impl Movement {
             status: MovementStatus::Idle,
         }
     }
+
+    pub fn to_idle(&mut self, entity: Entity, commands: &mut Commands) {
+        self.status = MovementStatus::Idle;
+        commands.entity(entity).remove::<MovementMoving>();
+    }
+
+    pub fn to_moving(&mut self, path: VecDeque<IVec2>, entity: Entity, commands: &mut Commands) {
+        self.path = path;
+        self.status = MovementStatus::Moving;
+        commands.entity(entity).insert(MovementMoving);
+    }
+
+    pub fn to_pathfinding(&mut self) {
+        self.status = MovementStatus::Pathfinding;
+    }
+
+    pub fn to_pathfinding_error(&mut self) {
+        self.status = MovementStatus::PathfindingError;
+    }
 }
 
 // #[derive(Bundle)]
@@ -55,8 +74,7 @@ pub fn apply_movement(
         let distance_to_move = movement.speed * time.delta_seconds() * time_scale.0;
         move_to_target_location(&mut movement, &mut transform, distance_to_move);
         if movement.path.is_empty() {
-            movement.status = MovementStatus::Idle;
-            commands.entity(entity).remove::<MovementMoving>();
+            movement.to_idle(entity, &mut commands);
         }
     }
 }

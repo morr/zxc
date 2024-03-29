@@ -11,7 +11,7 @@ pub fn pathfinding_on_click(
 ) {
     for click_event in click_event_reader.read() {
         for (entity, transform, mut movement) in &mut query_pawns {
-            movement.status = MovementStatus::Pathfinding;
+            movement.to_pathfinding();
             pathfind_event_writer.send(PathfindRequestEvent {
                 start: transform.translation.truncate().world_pos_to_grid(),
                 end: click_event.0,
@@ -109,14 +109,16 @@ pub fn listen_for_pathfinding_answers(
 
         if let Some(path) = &event.path {
             if path.len() == 1 {
-                movement.status = MovementStatus::Idle;
+                movement.to_idle(entity, &mut commands);
             } else {
-                movement.path = path.iter().skip(1).cloned().collect();
-                movement.status = MovementStatus::Moving;
-                commands.entity(entity).insert(MovementMoving);
+                movement.to_moving(
+                    path.iter().skip(1).cloned().collect(),
+                    entity,
+                    &mut commands,
+                );
             }
         } else {
-            movement.status = MovementStatus::PathfindingError;
+            movement.to_pathfinding_error();
         }
     }
 }
