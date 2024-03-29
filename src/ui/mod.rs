@@ -18,7 +18,12 @@ impl Plugin for UiPlugin {
             .add_plugins(debug_navmesh::DebugNavmeshPlugin)
             .add_plugins(debug_movepath::DebugMovepathPlugin)
             // .add_event::<UpdateUiEvent>()
-            .add_systems(Startup, render_ui)
-            .add_systems(Update, (update_ui, handle_ui_keys));
+            .add_systems(OnExit(WorldState::Loading), render_ui)
+            .add_systems(
+                Update,
+                (update_ui, handle_ui_keys)
+                    .chain()
+                    .run_if(in_state(WorldState::Playing)),
+            );
     }
 }

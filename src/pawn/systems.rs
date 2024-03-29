@@ -74,7 +74,7 @@ pub fn spawn_pawns(
 pub fn update_pawn_color(
     query: Query<&Movement, (With<Movement>, Changed<Movement>)>,
 ) {
-    for movement in query.iter() {
+    for _movement in query.iter() {
         // println!("{:?}", movement);
     }
 }
