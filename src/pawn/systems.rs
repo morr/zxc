@@ -1,7 +1,7 @@
 use bevy::sprite::MaterialMesh2dBundle;
 use rand::Rng;
 
-use self::structure::{Structure, BASE_HEIGHT, BASE_WIDTH};
+use crate::structure::{Structure, BASE_HEIGHT, BASE_WIDTH};
 
 use super::*;
 
@@ -9,15 +9,7 @@ pub fn spawn_pawns(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     assets: Res<AssetsCollection>,
-    // mut materials: ResMut<Assets<ColorMaterial>>,
-    // q: Query<(&Structure, &Transform)>,
-    // q: Query<(Entity, &GlobalTransform), (With<Structure>)>,
-    // q: Query<(Entity, &GlobalTransform), (With<Structure>)>,
-    // q: Query<&Transform, With<Structure>>,
-    // q: Query<&Name, With<Structure>>,
     query: Query<&Transform, With<Structure>>,
-    // mut q: Query<&Structure>,
-    // query_base: Query<&Structure>,
 ) {
     // println!("Spawning pawns");
 
@@ -47,10 +39,6 @@ pub fn spawn_pawns(
                     transform: Transform::from_xyz(
                         grid_tile_center_to_world(world_pos_to_grid(x)),
                         grid_tile_center_to_world(world_pos_to_grid(y)),
-                        // world_pos_to_tile_aligned(x),
-                        // world_pos_to_tile(x),
-                        // world_pos_to_tile_aligned(y),
-                        // world_pos_to_tile(y),
                         PAWN_Z_INDEX,
                     ),
                     ..default()
@@ -64,20 +52,23 @@ pub fn spawn_pawns(
             .insert(ShowAabbGizmo {
                 color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
             });
-        // .insert((Actor, Pathing::default()));
-        // .insert(RigidBody::Dynamic)
-        // .insert(Collider::rectangle(1.0, 1.0))
-        // .insert(CollisionLayers::new([Layer::Actor], [Layer::Terrain]));
     }
 }
 
 pub fn update_pawn_color(
-    // mut commands: Commands,
+    assets: Res<AssetsCollection>,
     mut event_reader: EventReader<EntityStateChangeEvent<MovementState>>,
+    mut query: Query<&mut Handle<ColorMaterial>>,
 ) {
     for event in event_reader.read() {
-        println!("{:?}", event);
-        // commands.entity(event.0).remove::<ColorMaterial>();
+        if let Ok(mut material_handle) = query.get_mut(event.0) {
+            *material_handle = match event.1 {
+                MovementState::Idle => assets.pawn_idle.clone(),
+                MovementState::Moving => assets.pawn_moving.clone(),
+                MovementState::Pathfinding => assets.pawn_pathfinding.clone(),
+                MovementState::PathfindingError => assets.pawn_pathfinding_error.clone(),
+            };
+        }
     }
 }
 

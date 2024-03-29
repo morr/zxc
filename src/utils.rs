@@ -3,7 +3,6 @@ use super::*;
 use crate::TILE_SIZE;
 
 pub fn grid_tile_edge_to_world(value: i32) -> f32 {
-    // value as f32 * TILE_SIZE - TILE_SIZE / 2.0
     value as f32 * TILE_SIZE
 }
 
