@@ -73,7 +73,7 @@ pub fn spawn_pawns(
 
 pub fn update_pawn_color(
     // mut commands: Commands,
-    mut event_reader: EventReader<EntityStateChangeEvent<MovementStatus>>,
+    mut event_reader: EventReader<EntityStateChangeEvent<MovementState>>,
 ) {
     for event in event_reader.read() {
         println!("{:?}", event);

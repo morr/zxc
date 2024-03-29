@@ -8,7 +8,7 @@ pub fn pathfinding_on_click(
     mut click_event_reader: EventReader<ClickTileEvent>,
     mut query_pawns: Query<(Entity, &Transform, &mut Movement), With<Movement>>,
     mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
-    mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementStatus>>,
+    mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
 ) {
     for click_event in click_event_reader.read() {
         for (entity, transform, mut movement) in &mut query_pawns {
@@ -100,7 +100,7 @@ pub fn listen_for_pathfinding_answers(
     mut commands: Commands,
     mut pathfind_event_reader: EventReader<PathfindAnswerEvent>,
     mut query_movement: Query<(Entity, &mut Movement), With<Movement>>,
-    mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementStatus>>,
+    mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
 ) {
     for event in pathfind_event_reader.read() {
         // println!("{:?}", event);
