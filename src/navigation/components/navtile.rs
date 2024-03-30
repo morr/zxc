@@ -41,20 +41,18 @@ impl Default for Navtiles {
 }
 
 impl Navtiles {
-    pub fn get(&self, x: i32, y: i32) -> Option<&Navtile> {
-        self.0
-            .get(grid_tile_to_navmesh_index(x))?
-            .get(grid_tile_to_navmesh_index(y))
+    pub fn get(&self, x: i32, y: i32) -> &Navtile {
+        &self.0[grid_tile_to_navmesh_index(x)][grid_tile_to_navmesh_index(y)]
     }
 
-    pub fn get_mut(&mut self, x: i32, y: i32) -> Option<&mut Navtile> {
-        self.0
-            .get_mut(grid_tile_to_navmesh_index(x))?
-            .get_mut(grid_tile_to_navmesh_index(y))
+    pub fn get_mut(&mut self, x: i32, y: i32) -> &mut Navtile {
+        &mut self.0[grid_tile_to_navmesh_index(x)][grid_tile_to_navmesh_index(y)]
     }
 
     pub fn get_if_passable(&self, x: i32, y: i32) -> Option<&Navtile> {
-        let result = self.get(x, y);
+        let result = self.0
+            .get(grid_tile_to_navmesh_index(x))?
+            .get(grid_tile_to_navmesh_index(y));
 
         if result?.is_passable() {
             result

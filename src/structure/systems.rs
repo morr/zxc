@@ -34,11 +34,7 @@ pub fn spawn_base(
         for y in
            (grid_pos.y - (BASE_HEIGHT / 2.0) as i32)..(grid_pos.x + (BASE_HEIGHT / 2.0) as i32)
         {
-            if let Some(navtile) = navmesh.navtiles.get_mut(x, y) {
-                navtile.cost = None;
-            } else {
-                error!("NavTile {}/{} not found", x, y);
-            }
+            navmesh.navtiles.get_mut(x, y).cost = None;
         }
     }
 }
