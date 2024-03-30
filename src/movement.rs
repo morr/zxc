@@ -6,11 +6,14 @@ pub struct MovementPlugin;
 
 impl Plugin for MovementPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, apply_movement.run_if(in_state(TimeState::Running)));
+        app
+            .register_type::<Movement>()
+            .add_systems(Update, apply_movement.run_if(in_state(TimeState::Running)));
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States, InspectorOptions, Reflect)]
+#[reflect(InspectorOptions)]
 pub enum MovementState {
     #[default]
     Idle,
@@ -22,7 +25,8 @@ pub enum MovementState {
 #[derive(Component)]
 pub struct MovementMoving;
 
-#[derive(Debug, Component)]
+#[derive(Debug, Component, InspectorOptions, Reflect)]
+#[reflect(InspectorOptions)]
 pub struct Movement {
     pub path: VecDeque<IVec2>,
     pub speed: f32,

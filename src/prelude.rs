@@ -1,4 +1,6 @@
 pub use bevy::prelude::*;
+pub use bevy_asset_loader::prelude::*;
+pub use bevy_inspector_egui::prelude::*;
 
 pub use crate::assets::*;
 pub use crate::camera::*;
