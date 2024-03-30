@@ -4,9 +4,8 @@ use super::*;
 pub struct Navtile {
     // pub x: i32,
     // pub y: i32,
-    pub cost: i32,
+    pub cost: Option<i32>,
     // pub occupied_by: HashSet<Entity>,
-    pub passable: bool,
 }
 
 impl Navtile {
@@ -15,10 +14,13 @@ impl Navtile {
         Self {
             // x,
             // y,
-            cost: INITIAL_NAV_COST,
+            cost: Some(INITIAL_NAV_COST),
             // occupied_by: HashSet::default(),
-            passable: INITIAL_PASSABLE,
         }
+    }
+
+    pub fn is_passable(&self) -> bool {
+        self.cost.is_some()
     }
 }
 
@@ -54,7 +56,7 @@ impl Navtiles {
     pub fn get_if_passable(&self, x: i32, y: i32) -> Option<&Navtile> {
         let result = self.get(x, y);
 
-        if result?.passable {
+        if result?.is_passable() {
             result
         } else {
             None

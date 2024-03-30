@@ -33,7 +33,7 @@ fn generate_successors(navtiles: &Navtiles) -> Vec<Vec<Vec<(IVec2, i32)>>> {
             col.iter()
                 .enumerate()
                 .map(|(y, navtile)| {
-                    if navtile.passable {
+                    if navtile.is_passable() {
                         tile_successors(
                             navmesh_index_to_grid_tile(x),
                             navmesh_index_to_grid_tile(y),
@@ -75,9 +75,9 @@ fn tile_successors(x: i32, y: i32, navtiles: &Navtiles) -> Vec<(IVec2, i32)> {
                         // this is not strictly correct calculation
                         // instead of cost * sqrt(2) it should be
                         // (tile1.cost + sqrt(2))/2 + (tile2.cost + sqrt(2))/2
-                        (navtile.cost as f32 * f32::sqrt(2.0)).floor() as i32
+                        (navtile.cost.unwrap() as f32 * f32::sqrt(2.0)).floor() as i32
                     } else {
-                        navtile.cost
+                        navtile.cost.unwrap()
                     },
                 ))
             } else {

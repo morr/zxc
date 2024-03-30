@@ -32,10 +32,10 @@ pub fn spawn_base(
     // mark navmesh tiles as occupied
     for x in (grid_pos.x - (BASE_WIDTH / 2.0) as i32)..(grid_pos.x + (BASE_WIDTH / 2.0) as i32) {
         for y in
-            (grid_pos.y - (BASE_HEIGHT / 2.0) as i32)..(grid_pos.x + (BASE_HEIGHT / 2.0) as i32)
+           (grid_pos.y - (BASE_HEIGHT / 2.0) as i32)..(grid_pos.x + (BASE_HEIGHT / 2.0) as i32)
         {
             if let Some(navtile) = navmesh.navtiles.get_mut(x, y) {
-                navtile.passable = false
+                navtile.cost = None;
             } else {
                 error!("NavTile {}/{} not found", x, y);
             }
