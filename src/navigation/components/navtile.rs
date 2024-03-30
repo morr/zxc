@@ -43,8 +43,8 @@ impl Default for Navtiles {
 impl Navtiles {
     pub fn get(&self, x: i32, y: i32) -> Option<&Navtile> {
         self.0
-            .get((x + GRID_SIZE_HALF) as usize)?
-            .get((y + GRID_SIZE_HALF) as usize)
+            .get(grid_tile_to_navmesh_index(x))?
+            .get(grid_tile_to_navmesh_index(y))
     }
 
     pub fn get_mut(&mut self, x: i32, y: i32) -> Option<&mut Navtile> {
