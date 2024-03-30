@@ -11,8 +11,6 @@ impl Default for Navmesh {
         let navtiles = Navtiles::default();
         let successors = generate_successors(&navtiles);
 
-        // println!("{:?}", successors[0][0].len());
-
         Self {
             navtiles,
             successors,
