@@ -52,31 +52,35 @@ impl Default for Navtile {
 }
 
 #[derive(Resource)]
-pub struct Navmesh(pub Vec<Vec<Navtile>>);
+pub struct Navmesh {
+    tiles: Vec<Vec<Navtile>>,
+    successors: Vec<Vec<Vec<(IVec2, i32)>>>,
+}
 
 impl Default for Navmesh {
     fn default() -> Self {
-        Self(
-            (0..GRID_COLS)
-                .map(|_| {
-                    (0..GRID_ROWS)
-                        .map(|_| Navtile::default())
-                        .collect::<Vec<Navtile>>()
-                })
-                .collect::<Vec<Vec<Navtile>>>(),
-        )
+        let tiles = (0..GRID_COLS)
+            .map(|_| {
+                (0..GRID_ROWS)
+                    .map(|_| Navtile::default())
+                    .collect::<Vec<Navtile>>()
+            })
+            .collect::<Vec<Vec<Navtile>>>();
+        let successors = generate_successors(&tiles);
+
+        Self { tiles, successors }
     }
 }
 
 impl Navmesh {
     pub fn get(&self, x: i32, y: i32) -> Option<&Navtile> {
-        self.0
+        self.tiles
             .get((x + GRID_COLS_HALF) as usize)?
             .get((y + GRID_ROWS_HALF) as usize)
     }
 
     pub fn get_mut(&mut self, x: i32, y: i32) -> Option<&mut Navtile> {
-        self.0
+        self.tiles
             .get_mut((x + GRID_COLS_HALF) as usize)?
             .get_mut((y + GRID_ROWS_HALF) as usize)
     }
@@ -95,7 +99,7 @@ impl Navmesh {
     where
         F: FnMut(&Navtile, IVec2),
     {
-        for (x, row) in self.0.iter().enumerate() {
+        for (x, row) in self.tiles.iter().enumerate() {
             for (y, tile) in row.iter().enumerate() {
                 lambda(
                     tile,
@@ -104,4 +108,19 @@ impl Navmesh {
             }
         }
     }
+}
+
+fn generate_successors(tiles: &Vec<Vec<Navtile>>) -> Vec<Vec<Vec<(IVec2, i32)>>> {
+    let a = tiles.iter().map(|row| {
+    });
+    //         (0..GRID_ROWS)
+    //             .map(|_| Navtile::default())
+    //             .collect::<Vec<Navtile>>()
+    //     })
+    //     .collect::<Vec<Vec<Navtile>>>();
+    Vec::new()
+}
+
+fn tile_successors(tiles: &Vec<Vec<Navtile>>) -> Vec<(IVec2, i32)> {
+    Vec::new()
 }
