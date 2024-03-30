@@ -3,11 +3,9 @@ use super::*;
 pub const WW: i32 = 1600;
 pub const WH: i32 = 900;
 
-pub const GRID_COLS: i32 = 1000;
-pub const GRID_ROWS: i32 = 1000;
+pub const GRID_SIZE: i32 = 1000;
 
-pub const GRID_COLS_HALF: i32 = (GRID_COLS as f32 / 2.0) as i32;
-pub const GRID_ROWS_HALF: i32 = (GRID_ROWS as f32 / 2.0) as i32;
+pub const GRID_SIZE_HALF: i32 = (GRID_SIZE as f32 / 2.0) as i32;
 
 pub const TILE_SIZE: f32 = 32.;
 

@@ -11,11 +11,11 @@ pub fn grid_tile_center_to_world(value: i32) -> f32 {
 }
 
 pub fn grid_tile_to_navmesh_index(value: i32) -> usize {
-    (value + GRID_COLS_HALF) as usize
+    (value + GRID_SIZE_HALF) as usize
 }
 
 pub fn navmesh_index_to_grid_tile(value: usize) -> i32 {
-    value as i32 - GRID_COLS_HALF
+    value as i32 - GRID_SIZE_HALF
 }
 
 // pub fn tile_pos_to_world_aligned(value: i32) -> f32 {

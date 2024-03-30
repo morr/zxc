@@ -27,9 +27,9 @@ pub struct Navtiles(pub Vec<Vec<Navtile>>);
 impl Default for Navtiles {
     fn default() -> Self {
         Self(
-            (0..GRID_COLS)
+            (0..GRID_SIZE)
                 .map(|_x| {
-                    (0..GRID_ROWS)
+                    (0..GRID_SIZE)
                         .map(|_y| Navtile::new())
                         .collect::<Vec<Navtile>>()
                 })
@@ -41,8 +41,8 @@ impl Default for Navtiles {
 impl Navtiles {
     pub fn get(&self, x: i32, y: i32) -> Option<&Navtile> {
         self.0
-            .get((x + GRID_COLS_HALF) as usize)?
-            .get((y + GRID_ROWS_HALF) as usize)
+            .get((x + GRID_SIZE_HALF) as usize)?
+            .get((y + GRID_SIZE_HALF) as usize)
     }
 
     pub fn get_mut(&mut self, x: i32, y: i32) -> Option<&mut Navtile> {

@@ -5,8 +5,8 @@ pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
     // https://screamingbrainstudios.itch.io/tiny-texture-pack/download/eyJpZCI6MTAzMzEyOSwiZXhwaXJlcyI6MTcxMDc5ODI3OX0%3d.%2f%2bodleBeo8EbYeM%2bKnn3UZPKq2U%3d
     let texture_handle = asset_server.load("sprites/grass.png");
 
-    for x in (-1 * GRID_COLS_HALF)..GRID_COLS_HALF {
-        for y in (-1 * GRID_ROWS_HALF)..GRID_ROWS_HALF {
+    for x in -GRID_SIZE_HALF..GRID_SIZE_HALF {
+        for y in -GRID_SIZE_HALF..GRID_SIZE_HALF {
             commands
                 .spawn(SpriteBundle {
                     texture: texture_handle.clone(),
