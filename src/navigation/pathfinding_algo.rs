@@ -28,43 +28,44 @@ pub fn astar_pathfinding(
         astar(
             tile_start,
             |&IVec2 { x, y }| {
-                [
-                    (x - 1, y),     // left
-                    (x - 1, y - 1), // left-top
-                    (x, y - 1),     // top
-                    (x + 1, y - 1), // top-right
-                    (x + 1, y),     // right
-                    (x + 1, y + 1), // right-bototm
-                    (x, y + 1),     // bottom
-                    (x - 1, y + 1), // bottom-left
-                ]
-                .iter()
-                .filter_map(|&(nx, ny)| {
-                    navmesh.navtiles.get_if_passable(nx, ny).and_then(|navtile| {
-                        let is_diagonal_movement = x != nx && y != ny;
-
-                        if !is_diagonal_movement
-                                // check that both adjacent tiles are passable
-                                || (navmesh.navtiles.get_if_passable(x, ny).is_some()
-                                    && navmesh.navtiles.get_if_passable(nx, y).is_some())
-                        {
-                            Some((
-                                IVec2 { x: nx, y: ny },
-                                if is_diagonal_movement {
-                                    // this is not strictly correct calculation
-                                    // instead of cost * sqrt(2) it should be
-                                    // (tile1.cost + sqrt(2))/2 + (tile2.cost + sqrt(2))/2
-                                    (navtile.cost as f32 * f32::sqrt(2.0)).floor() as i32
-                                } else {
-                                    navtile.cost
-                                },
-                            ))
-                        } else {
-                            None
-                        }
-                    })
-                })
-                .collect::<Vec<_>>()
+                navmesh.tile_successors(x, y)
+                // [
+                //     (x - 1, y),     // left
+                //     (x - 1, y - 1), // left-top
+                //     (x, y - 1),     // top
+                //     (x + 1, y - 1), // top-right
+                //     (x + 1, y),     // right
+                //     (x + 1, y + 1), // right-bototm
+                //     (x, y + 1),     // bottom
+                //     (x - 1, y + 1), // bottom-left
+                // ]
+                // .iter()
+                // .filter_map(|&(nx, ny)| {
+                //     navmesh.navtiles.get_if_passable(nx, ny).and_then(|navtile| {
+                //         let is_diagonal_movement = x != nx && y != ny;
+                //
+                //         if !is_diagonal_movement
+                //                 // check that both adjacent tiles are passable
+                //                 || (navmesh.navtiles.get_if_passable(x, ny).is_some()
+                //                     && navmesh.navtiles.get_if_passable(nx, y).is_some())
+                //         {
+                //             Some((
+                //                 IVec2 { x: nx, y: ny },
+                //                 if is_diagonal_movement {
+                //                     // this is not strictly correct calculation
+                //                     // instead of cost * sqrt(2) it should be
+                //                     // (tile1.cost + sqrt(2))/2 + (tile2.cost + sqrt(2))/2
+                //                     (navtile.cost as f32 * f32::sqrt(2.0)).floor() as i32
+                //                 } else {
+                //                     navtile.cost
+                //                 },
+                //             ))
+                //         } else {
+                //             None
+                //         }
+                //     })
+                // })
+                // .collect::<Vec<_>>()
             },
             // try (distance_x + distance_y) / 3 as it is suggested in docs
             // https://docs.rs/pathfinding/latest/pathfinding/directed/astar/fn.astar.html
