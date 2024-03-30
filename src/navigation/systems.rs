@@ -1,5 +1,3 @@
-use pathfinding::directed::astar::astar;
-
 use super::*;
 
 use crate::{map::components::ClickTileEvent, utils::WorldTranslationHelper};
@@ -33,68 +31,7 @@ pub fn listen_for_pathfinding_requests(
     for event in pathfind_event_reader.read() {
         // println!("{:?}", event);
 
-        let path = if navmesh.get_if_passable(event.end.x, event.end.y).is_some() {
-            astar(
-                &event.start,
-                |&IVec2 { x, y }| {
-                    [
-                        (x - 1, y),     // left
-                        (x - 1, y - 1), // left-top
-                        (x, y - 1),     // top
-                        (x + 1, y - 1), // top-right
-                        (x + 1, y),     // right
-                        (x + 1, y + 1), // right-bototm
-                        (x, y + 1),     // bottom
-                        (x - 1, y + 1), // bottom-left
-                    ]
-                    .iter()
-                    .filter_map(|&(nx, ny)| {
-                        navmesh.get_if_passable(nx, ny).and_then(|navtile| {
-                            let is_diagonal_movement = x != nx && y != ny;
-
-                            if !is_diagonal_movement
-                            // check that both adjacent tiles are passable
-                            || (navmesh.get_if_passable(x, ny).is_some()
-                                && navmesh.get_if_passable(nx, y).is_some())
-                            {
-                                Some((
-                                    IVec2 { x: nx, y: ny },
-                                    if is_diagonal_movement {
-                                        // this is not strictly correct calculation
-                                        // instead of cost * sqrt(2) it should be
-                                        // (tile1.cost + sqrt(2))/2 + (tile2.cost + sqrt(2))/2
-                                        (navtile.cost as f32 * f32::sqrt(2.0)).floor() as i32
-                                    } else {
-                                        navtile.cost
-                                    },
-                                ))
-                            } else {
-                                None
-                            }
-                        })
-                    })
-                    .collect::<Vec<_>>()
-                },
-                // try (distance_x + distance_y) / 3 as it is suggested in docs
-                // https://docs.rs/pathfinding/latest/pathfinding/directed/astar/fn.astar.html
-                |&pos| {
-                    let length = (Vec2::new(pos.x as f32, pos.y as f32)
-                        - Vec2::new(event.end.x as f32, event.end.y as f32))
-                    .length();
-
-                    // println!("{} {}", length, (length * COST_MULTIPLIER) as i32);
-                    (length * COST_MULTIPLIER) as i32
-                },
-                |&pos| pos == event.end,
-            )
-            .map(|(vec, _cost)| vec)
-        } else {
-            None
-        };
-
-        // if path.is_none() {
-        //     error!("PathfindingError {:?}", event);
-        // }
+        let path = pathfind_algo::astar_pathfinding(&navmesh, &event.start, &event.end);
 
         pathfind_event_writer.send(PathfindAnswerEvent {
             entity: event.entity,

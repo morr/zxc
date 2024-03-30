@@ -2,6 +2,7 @@ use crate::prelude::*;
 
 pub mod components;
 pub mod systems;
+pub mod pathfind_algo;
 
 use components::*;
 use systems::*;
