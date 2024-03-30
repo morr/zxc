@@ -10,7 +10,7 @@ pub struct Pawn {
 
 impl Default for Pawn {
     fn default() -> Self {
-        let mut rng = rand::thread_rng();
+        // let mut rng = rand::thread_rng();
 
         Self {
             // age: rng.gen_range(14..32),

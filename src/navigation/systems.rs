@@ -86,9 +86,9 @@ pub fn listen_for_pathfinding_requests(
         )
         .map(|(vec, _cost)| vec);
 
-        if path.is_none() {
-            error!("PathfindingError {:?}", event);
-        }
+        // if path.is_none() {
+        //     error!("PathfindingError {:?}", event);
+        // }
 
         pathfind_event_writer.send(PathfindAnswerEvent {
             entity: event.entity,
