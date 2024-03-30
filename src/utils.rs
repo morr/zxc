@@ -10,6 +10,14 @@ pub fn grid_tile_center_to_world(value: i32) -> f32 {
     grid_tile_edge_to_world(value) + TILE_SIZE / 2.0
 }
 
+pub fn grid_tile_to_navmesh_index(value: i32) -> usize {
+    (value + GRID_COLS_HALF) as usize
+}
+
+pub fn navmesh_index_to_grid_tile(value: usize) -> i32 {
+    value as i32 - GRID_COLS_HALF
+}
+
 // pub fn tile_pos_to_world_aligned(value: i32) -> f32 {
 //     tile_pos_to_world(value) + TILE_SIZE / 2.0
 // }
@@ -38,11 +46,17 @@ impl WorldTranslationHelper for Vec2 {
 
 impl GridTranslationHelper for IVec2 {
     fn grid_tile_edge_to_world(&self) -> Vec2 {
-        Vec2::new(grid_tile_edge_to_world(self.x), grid_tile_edge_to_world(self.y))
+        Vec2::new(
+            grid_tile_edge_to_world(self.x),
+            grid_tile_edge_to_world(self.y),
+        )
     }
 
     fn grid_tile_center_to_world(&self) -> Vec2 {
-        Vec2::new(grid_tile_center_to_world(self.x), grid_tile_center_to_world(self.y))
+        Vec2::new(
+            grid_tile_center_to_world(self.x),
+            grid_tile_center_to_world(self.y),
+        )
     }
 }
 

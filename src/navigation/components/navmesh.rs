@@ -20,7 +20,7 @@ impl Default for Navmesh {
 
 impl Navmesh {
     pub fn tile_successors(&self, x: i32, y: i32) -> Vec<(IVec2, i32)> {
-        self.successors[(x + GRID_COLS_HALF) as usize][(y + GRID_ROWS_HALF) as usize].clone()
+        self.successors[grid_tile_to_navmesh_index(x)][grid_tile_to_navmesh_index(y)].clone()
     }
 }
 
@@ -35,8 +35,8 @@ fn generate_successors(navtiles: &Navtiles) -> Vec<Vec<Vec<(IVec2, i32)>>> {
                 .map(|(y, navtile)| {
                     if navtile.passable {
                         tile_successors(
-                            x as i32 - GRID_COLS_HALF,
-                            y as i32 - GRID_ROWS_HALF,
+                            navmesh_index_to_grid_tile(x),
+                            navmesh_index_to_grid_tile(y),
                             navtiles,
                         )
                     } else {

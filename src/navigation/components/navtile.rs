@@ -47,8 +47,8 @@ impl Navtiles {
 
     pub fn get_mut(&mut self, x: i32, y: i32) -> Option<&mut Navtile> {
         self.0
-            .get_mut((x + GRID_COLS_HALF) as usize)?
-            .get_mut((y + GRID_ROWS_HALF) as usize)
+            .get_mut(grid_tile_to_navmesh_index(x))?
+            .get_mut(grid_tile_to_navmesh_index(y))
     }
 
     pub fn get_if_passable(&self, x: i32, y: i32) -> Option<&Navtile> {
@@ -69,7 +69,7 @@ impl Navtiles {
             for (y, tile) in row.iter().enumerate() {
                 lambda(
                     tile,
-                    IVec2::new(x as i32 - GRID_COLS_HALF, y as i32 - GRID_ROWS_HALF),
+                    IVec2::new(navmesh_index_to_grid_tile(x), navmesh_index_to_grid_tile(y)),
                 );
             }
         }
