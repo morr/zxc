@@ -112,17 +112,18 @@ pub fn listen_for_pathfinding_answers(
     mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
 ) {
     for event in pathfind_event_reader.read() {
-        println!("{:?}", event);
+        // println!("{:?}", event);
 
         let Ok((entity, mut movement)) = query_movement.get_mut(event.entity) else {
             continue;
         };
         if let MovementState::Pathfinding(end_tile) = movement.state {
+            // check if it an is outdated pathfinding answer
             if end_tile != event.end {
-                println!(
-                    "end_tile != event.end, end_tile={}, event.end={}",
-                    end_tile, event.end
-                );
+                // println!(
+                //     "end_tile != event.end, end_tile={}, event.end={}",
+                //     end_tile, event.end
+                // );
                 return;
             }
 
