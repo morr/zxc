@@ -1,6 +1,6 @@
 use bevy::sprite::MaterialMesh2dBundle;
 
-use crate::navigation::components::Navmesh;
+use crate::navigation::components::navmesh::Navmesh;
 
 use super::*;
 
@@ -40,7 +40,7 @@ fn handle_state_changes(
 
         match event.0 {
             DebugNavmeshState::Visible => {
-                navmesh.for_each_tile_mut(|navtile, tile_pos| {
+                navmesh.navtiles.for_each_tile_mut(|navtile, tile_pos| {
                     commands
                         .spawn(MaterialMesh2dBundle {
                             mesh: mesh_handle.clone().into(),

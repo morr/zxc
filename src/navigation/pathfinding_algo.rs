@@ -24,7 +24,7 @@ pub fn astar_pathfinding(
     tile_start: &IVec2,
     tile_end: &IVec2,
 ) -> Option<Vec<IVec2>> {
-    if navmesh.get_if_passable(tile_end.x, tile_end.y).is_some() {
+    if navmesh.navtiles.get_if_passable(tile_end.x, tile_end.y).is_some() {
         astar(
             tile_start,
             |&IVec2 { x, y }| {
@@ -40,13 +40,13 @@ pub fn astar_pathfinding(
                 ]
                 .iter()
                 .filter_map(|&(nx, ny)| {
-                    navmesh.get_if_passable(nx, ny).and_then(|navtile| {
+                    navmesh.navtiles.get_if_passable(nx, ny).and_then(|navtile| {
                         let is_diagonal_movement = x != nx && y != ny;
 
                         if !is_diagonal_movement
                                 // check that both adjacent tiles are passable
-                                || (navmesh.get_if_passable(x, ny).is_some()
-                                    && navmesh.get_if_passable(nx, y).is_some())
+                                || (navmesh.navtiles.get_if_passable(x, ny).is_some()
+                                    && navmesh.navtiles.get_if_passable(nx, y).is_some())
                         {
                             Some((
                                 IVec2 { x: nx, y: ny },

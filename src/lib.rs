@@ -11,5 +11,5 @@ pub mod structure;
 pub mod ui;
 pub mod utils;
 
-mod prelude;
+pub mod prelude;
 pub use prelude::*;

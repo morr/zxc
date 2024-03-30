@@ -1,20 +1,6 @@
 use bevy::window::PresentMode;
 
-mod prelude;
-pub use prelude::*;
-
-mod assets;
-mod camera;
-mod input;
-mod map;
-mod movement;
-mod navigation;
-mod pawn;
-mod settings;
-mod story_time;
-mod structure;
-mod ui;
-mod utils;
+use zxc::*;
 
 fn main() {
     App::new()
@@ -45,16 +31,16 @@ fn main() {
         )
         .add_plugins((
             camera::CameraPlugin,
+            story_time::StoryTimePlugin,
             settings::SettingsPlugin,
             assets::AssetsPlugin,
             map::MapPlugin,
+            movement::MovementPlugin,
             navigation::NavigationPlugin,
             structure::StructurePlugin,
             ui::UiPlugin,
             input::InputPlugin,
             pawn::PawnPlugin,
-            movement::MovementPlugin,
-            story_time::StoryTimePlugin,
         ))
         // .add_plugins((
         //     bevy::diagnostic::LogDiagnosticsPlugin::default(),

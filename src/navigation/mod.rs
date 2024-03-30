@@ -7,6 +7,8 @@ pub mod systems;
 use components::*;
 use systems::*;
 
+use self::navmesh::Navmesh;
+
 pub struct NavigationPlugin;
 impl Plugin for NavigationPlugin {
     fn build(&self, app: &mut App) {

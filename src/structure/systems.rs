@@ -1,4 +1,4 @@
-use crate::navigation::components::Navmesh;
+use crate::navigation::components::navmesh::Navmesh;
 
 use super::*;
 
@@ -36,7 +36,7 @@ pub fn spawn_base(
         for y in
             (grid_pos.y - (BASE_HEIGHT / 2.0) as i32)..(grid_pos.x + (BASE_HEIGHT / 2.0) as i32)
         {
-            if let Some(navtile) = navmesh.get_mut(x, y) {
+            if let Some(navtile) = navmesh.navtiles.get_mut(x, y) {
                 navtile.passable = false
             } else {
                 error!("NavTile {}/{} not found", x, y);
