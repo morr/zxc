@@ -36,14 +36,18 @@ pub struct PathfindAnswerEvent {
 
 #[derive(Debug)]
 pub struct Navtile {
+    pub x: i32,
+    pub y: i32,
     pub cost: i32,
     pub occupied_by: HashSet<Entity>,
     pub passable: bool,
 }
 
-impl Default for Navtile {
-    fn default() -> Self {
+impl Navtile {
+    fn new(x: i32, y: i32) -> Self {
         Self {
+            x,
+            y,
             cost: INITIAL_NAV_COST,
             occupied_by: HashSet::default(),
             passable: INITIAL_PASSABLE,
@@ -60,9 +64,9 @@ pub struct Navmesh {
 impl Default for Navmesh {
     fn default() -> Self {
         let tiles = (0..GRID_COLS)
-            .map(|_| {
+            .map(|x| {
                 (0..GRID_ROWS)
-                    .map(|_| Navtile::default())
+                    .map(|y| Navtile::new(x, y))
                     .collect::<Vec<Navtile>>()
             })
             .collect::<Vec<Vec<Navtile>>>();
@@ -111,8 +115,7 @@ impl Navmesh {
 }
 
 fn generate_successors(tiles: &Vec<Vec<Navtile>>) -> Vec<Vec<Vec<(IVec2, i32)>>> {
-    let a = tiles.iter().map(|row| {
-    });
+    let a = tiles.iter().map(|row| {});
     //         (0..GRID_ROWS)
     //             .map(|_| Navtile::default())
     //             .collect::<Vec<Navtile>>()
