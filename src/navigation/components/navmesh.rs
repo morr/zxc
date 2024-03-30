@@ -26,9 +26,18 @@ impl Navmesh {
     }
 
     pub fn update_cost(&mut self, x_range: Range<i32>, y_range: Range<i32>, cost: Option<i32>) {
-        for x in x_range {
+        // update cost of navtiles
+        for x in x_range.clone() {
             for y in y_range.clone() {
                 self.navtiles.get_mut(x, y).cost = cost;
+            }
+        }
+
+        // regenerate successors
+        for x in (x_range.start - 1)..(x_range.end + 1) {
+            for y in (y_range.start - 1)..(y_range.end + 1) {
+                self.successors[grid_tile_to_navmesh_index(x)][grid_tile_to_navmesh_index(y)] =
+                    tile_successors(x, y, &self.navtiles);
             }
         }
     }
