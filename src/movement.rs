@@ -1,7 +1,6 @@
 use std::collections::VecDeque;
 
 use crate::*;
-use crate::navigation::components::PathfindRequestEvent;
 
 pub struct MovementPlugin;
 

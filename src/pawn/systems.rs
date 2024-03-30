@@ -1,10 +1,7 @@
 use bevy::sprite::MaterialMesh2dBundle;
 use rand::Rng;
 
-use crate::{
-    navigation::components::PathfindRequestEvent,
-    structure::{Structure, BASE_HEIGHT, BASE_WIDTH},
-};
+use self::structure::{Structure, BASE_HEIGHT, BASE_WIDTH};
 
 use super::*;
 

@@ -1,13 +1,6 @@
 use crate::*;
 
-pub mod components;
-pub mod pathfinding_algo;
-pub mod systems;
-
-use components::*;
-use systems::*;
-
-use self::navmesh::Navmesh;
+expose_submodules!(components, systems, pathfinding_algo);
 
 pub struct NavigationPlugin;
 impl Plugin for NavigationPlugin {

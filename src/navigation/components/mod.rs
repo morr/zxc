@@ -1,7 +1,6 @@
 use super::*;
 
-pub mod navtile;
-pub mod navmesh;
+expose_submodules!(navtile, navmesh);
 
 pub const COST_MULTIPLIER: f32 = 100.0;
 const DEFAULT_COST: i32 = 1;

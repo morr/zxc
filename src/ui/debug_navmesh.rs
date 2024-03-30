@@ -1,7 +1,5 @@
 use bevy::sprite::MaterialMesh2dBundle;
 
-use crate::navigation::components::navmesh::Navmesh;
-
 use super::*;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]

@@ -1,5 +1,3 @@
-use self::navtile::Navtiles;
-
 use super::*;
 
 #[derive(Resource)]

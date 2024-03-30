@@ -1,5 +1,3 @@
-use crate::navigation::components::navmesh::Navmesh;
-
 use super::*;
 
 pub fn spawn_base(
