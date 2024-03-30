@@ -24,15 +24,12 @@ fn main() {
                 .set(ImagePlugin::default_nearest())
                 .set(WindowPlugin {
                     primary_window: Some(Window {
-                        // position: WindowPosition::At(IVec2::new(1000, 0)),
                         position: WindowPosition::Automatic,
                         mode: bevy::window::WindowMode::Windowed,
-                        // present_mode: PresentMode::AutoNoVsync,
-                        present_mode: PresentMode::AutoVsync,
-                        // present_mode: PresentMode::Immediate,
+                        present_mode: PresentMode::AutoNoVsync,
+                        // present_mode: PresentMode::AutoVsync,
                         resolution: (WW as f32, WH as f32).into(),
                         // title: "Test App".to_string(),
-                        // focused: true,
                         ..default()
                     }),
                     ..default()

@@ -1,8 +1,8 @@
 use crate::prelude::*;
 
 pub mod components;
-pub mod systems;
 pub mod pathfind_algo;
+pub mod systems;
 
 use components::*;
 use systems::*;
@@ -13,6 +13,10 @@ impl Plugin for NavigationPlugin {
         app.init_resource::<Navmesh>()
             .add_event::<PathfindRequestEvent>()
             .add_event::<PathfindAnswerEvent>()
+            .add_systems(
+                FixedUpdate,
+                pathfind_algo::measure_pathfinding.run_if(in_state(WorldState::Playing)),
+            )
             .add_systems(
                 Update,
                 (

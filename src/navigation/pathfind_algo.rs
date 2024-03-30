@@ -1,6 +1,24 @@
 use super::*;
 use pathfinding::directed::astar::astar;
 
+macro_rules! measure_time {
+    ($code:block) => {{
+        let start_time = std::time::Instant::now();
+        let result = { $code };
+        let elapsed_time = start_time.elapsed();
+        println!("Elapsed time: {:?}", elapsed_time);
+        result
+    }};
+}
+
+pub fn measure_pathfinding(navmesh: Res<Navmesh>) {
+    measure_time!({
+        // for _ in 0..100 {
+            astar_pathfinding(&navmesh, &IVec2 { x: -255, y: -255 }, &IVec2 { x: 255, y: 255 });
+        // }
+    })
+}
+
 pub fn astar_pathfinding(
     navmesh: &Res<Navmesh>,
     tile_start: &IVec2,
