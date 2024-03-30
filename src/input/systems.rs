@@ -1,7 +1,5 @@
 use bevy::window::PrimaryWindow;
 
-use crate::map::components::{ClickTileEvent, HoverTileEvent};
-
 use super::*;
 
 pub fn mouse_input(

@@ -1,7 +1,5 @@
 use super::*;
 
-use crate::{map::components::ClickTileEvent, utils::WorldTranslationHelper};
-
 pub fn pathfinding_on_click(
     mut commands: Commands,
     mut click_event_reader: EventReader<ClickTileEvent>,
