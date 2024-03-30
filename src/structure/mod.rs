@@ -1,10 +1,5 @@
 use crate::*;
-
-pub mod components;
-pub mod systems;
-
-pub use components::*;
-pub use systems::*;
+expose_submodules!(components, systems);
 
 pub struct StructurePlugin;
 

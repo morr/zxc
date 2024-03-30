@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use bevy::sprite::MaterialMesh2dBundle;
 use rand::Rng;
 

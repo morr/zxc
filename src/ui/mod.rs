@@ -1,14 +1,5 @@
 use crate::*;
-
-pub mod components;
-pub use components::*;
-
-mod debug_grid;
-mod debug_movepath;
-mod debug_navmesh;
-
-mod systems;
-pub use systems::*;
+expose_submodules!(components, systems, debug_grid, debug_movepath, debug_navmesh);
 
 pub struct UiPlugin;
 

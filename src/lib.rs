@@ -2,6 +2,15 @@ pub use bevy::prelude::*;
 pub use bevy_asset_loader::prelude::*;
 pub use bevy_inspector_egui::prelude::*;
 
+macro_rules! expose_submodules {
+    ( $( $x:ident ),* ) => {
+        $(
+            mod $x;
+            pub use self::$x::*;
+        )*
+    };
+}
+
 pub mod assets;
 pub mod camera;
 pub mod input;

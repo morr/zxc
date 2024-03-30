@@ -1,10 +1,6 @@
 use crate::*;
 
-pub mod components;
-pub mod systems;
-
-use components::*;
-use systems::*;
+expose_submodules!(components, systems);
 
 pub struct InputPlugin;
 
