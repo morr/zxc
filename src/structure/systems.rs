@@ -29,12 +29,9 @@ pub fn spawn_base(
             color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
         });
 
-    // mark navmesh tiles as occupied
-    for x in (grid_pos.x - (BASE_WIDTH / 2.0) as i32)..(grid_pos.x + (BASE_WIDTH / 2.0) as i32) {
-        for y in
-           (grid_pos.y - (BASE_HEIGHT / 2.0) as i32)..(grid_pos.x + (BASE_HEIGHT / 2.0) as i32)
-        {
-            navmesh.navtiles.get_mut(x, y).cost = None;
-        }
-    }
+    navmesh.update_cost(
+        (grid_pos.x - (BASE_WIDTH / 2.0) as i32)..(grid_pos.x + (BASE_WIDTH / 2.0) as i32),
+        (grid_pos.y - (BASE_HEIGHT / 2.0) as i32)..(grid_pos.x + (BASE_HEIGHT / 2.0) as i32),
+        None
+    )
 }

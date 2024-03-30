@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 use super::*;
 
 #[derive(Resource)]
@@ -21,6 +23,14 @@ impl Default for Navmesh {
 impl Navmesh {
     pub fn tile_successors(&self, x: i32, y: i32) -> Vec<(IVec2, i32)> {
         self.successors[grid_tile_to_navmesh_index(x)][grid_tile_to_navmesh_index(y)].clone()
+    }
+
+    pub fn update_cost(&mut self, x_range: Range<i32>, y_range: Range<i32>, cost: Option<i32>) {
+        for x in x_range {
+            for y in y_range.clone() {
+                self.navtiles.get_mut(x, y).cost = cost;
+            }
+        }
     }
 }
 
@@ -63,11 +73,11 @@ fn tile_successors(x: i32, y: i32, navtiles: &Navtiles) -> Vec<(IVec2, i32)> {
     .filter_map(|&(nx, ny)| {
         let is_diagonal_movement = x != nx && y != ny;
 
-        navtiles.get_if_passable(nx, ny).and_then(|navtile| {
+        navtiles.get_passable(nx, ny).and_then(|navtile| {
             if !is_diagonal_movement
                 // check that both adjacent tiles are passable
-                || (navtiles.get_if_passable(x, ny).is_some()
-                    && navtiles.get_if_passable(nx, y).is_some())
+                || (navtiles.get_passable(x, ny).is_some()
+                    && navtiles.get_passable(nx, y).is_some())
             {
                 let tile_cost = navtile.cost.unwrap();
 
