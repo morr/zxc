@@ -2,18 +2,13 @@ use super::*;
 
 #[derive(Debug)]
 pub struct Navtile {
-    // pub x: i32,
-    // pub y: i32,
     pub cost: Option<i32>,
     // pub occupied_by: HashSet<Entity>,
 }
 
 impl Navtile {
-    // fn new(x: i32, y: i32) -> Self {
     fn new() -> Self {
         Self {
-            // x,
-            // y,
             cost: Some(INITIAL_NAV_COST),
             // occupied_by: HashSet::default(),
         }
