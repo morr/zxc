@@ -31,7 +31,7 @@ pub fn listen_for_pathfinding_requests(
     for event in pathfind_event_reader.read() {
         // println!("{:?}", event);
 
-        let path = pathfind_algo::astar_pathfinding(&navmesh, &event.start, &event.end);
+        let path = pathfinding_algo::astar_pathfinding(&navmesh, &event.start, &event.end);
 
         pathfind_event_writer.send(PathfindAnswerEvent {
             entity: event.entity,
