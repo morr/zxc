@@ -6,8 +6,7 @@ pub struct MovementPlugin;
 
 impl Plugin for MovementPlugin {
     fn build(&self, app: &mut App) {
-        app
-            .register_type::<Movement>()
+        app.register_type::<Movement>()
             .add_systems(Update, apply_movement.run_if(in_state(TimeState::Running)));
     }
 }
@@ -18,7 +17,7 @@ pub enum MovementState {
     #[default]
     Idle,
     Moving,
-    Pathfinding,
+    Pathfinding(IVec2),
     PathfindingError,
 }
 
@@ -51,7 +50,7 @@ impl Movement {
         self.state = MovementState::Idle;
         self.path = [].into();
         commands.entity(entity).remove::<MovementMoving>();
-        movement_state_event_writer.send(EntityStateChangeEvent(entity, MovementState::Idle));
+        movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
     }
 
     pub fn to_moving(
@@ -64,7 +63,7 @@ impl Movement {
         self.state = MovementState::Moving;
         self.path = path;
         commands.entity(entity).insert(MovementMoving);
-        movement_state_event_writer.send(EntityStateChangeEvent(entity, MovementState::Moving));
+        movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
     }
 
     pub fn to_pathfinding(
@@ -75,15 +74,14 @@ impl Movement {
         pathfind_event_writer: &mut EventWriter<PathfindRequestEvent>,
         movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementState>>,
     ) {
-        self.state = MovementState::Pathfinding;
+        self.state = MovementState::Pathfinding(end_tile);
         self.path = [].into();
         pathfind_event_writer.send(PathfindRequestEvent {
             start: start_tile,
             end: end_tile,
             entity,
         });
-        movement_state_event_writer
-            .send(EntityStateChangeEvent(entity, MovementState::Pathfinding));
+        movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
     }
 
     pub fn to_pathfinding_error(
@@ -93,10 +91,7 @@ impl Movement {
     ) {
         self.state = MovementState::PathfindingError;
         self.path = [].into();
-        movement_state_event_writer.send(EntityStateChangeEvent(
-            entity,
-            MovementState::PathfindingError,
-        ));
+        movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
     }
 }
 

@@ -72,7 +72,7 @@ pub fn update_pawn_color(
             *material_handle = match event.1 {
                 MovementState::Idle => assets.pawn_idle.clone(),
                 MovementState::Moving => assets.pawn_moving.clone(),
-                MovementState::Pathfinding => assets.pawn_pathfinding.clone(),
+                MovementState::Pathfinding(_end_tile) => assets.pawn_pathfinding.clone(),
                 MovementState::PathfindingError => assets.pawn_pathfinding_error.clone(),
             };
         }

@@ -113,6 +113,9 @@ pub fn listen_for_pathfinding_answers(
         let Ok((entity, mut movement)) = query_movement.get_mut(event.entity) else {
             continue;
         };
+        // if movement.state != MovementState::Pathfinding {
+        //     return;
+        // }
 
         if let Some(path) = &event.path {
             if path.len() == 1 {
