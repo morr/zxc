@@ -1,5 +1,4 @@
-use crate::prelude::*;
-use bevy_asset_loader::prelude::*;
+use crate::*;
 
 pub struct AssetsPlugin;
 
