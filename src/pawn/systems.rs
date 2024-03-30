@@ -80,6 +80,8 @@ pub fn update_pawn_color(
 }
 
 pub fn wander_idle_pawns(
+    mut commands: Commands,
+
     // time: Res<Time>,
     mut query: Query<(Entity, &Transform, &mut Movement), With<Movement>>,
     // time_scale: Res<TimeScale>,
@@ -103,6 +105,7 @@ pub fn wander_idle_pawns(
             entity,
             world_pos.world_pos_to_grid(),
             (world_pos + move_vector * tiles_to_move).world_pos_to_grid(),
+            &mut commands,
             &mut pathfind_event_writer,
             &mut movement_state_event_writer,
         );

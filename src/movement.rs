@@ -47,9 +47,8 @@ impl Movement {
         commands: &mut Commands,
         movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementState>>,
     ) {
+        self.stop_moving(entity, commands);
         self.state = MovementState::Idle;
-        self.path = [].into();
-        commands.entity(entity).remove::<MovementMoving>();
         movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
     }
 
@@ -71,11 +70,15 @@ impl Movement {
         entity: Entity,
         start_tile: IVec2,
         end_tile: IVec2,
+        commands: &mut Commands,
         pathfind_event_writer: &mut EventWriter<PathfindRequestEvent>,
         movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementState>>,
     ) {
+        if self.state == MovementState::Moving {
+            self.stop_moving(entity, commands);
+        }
+
         self.state = MovementState::Pathfinding(end_tile);
-        self.path = [].into();
         pathfind_event_writer.send(PathfindRequestEvent {
             start: start_tile,
             end: end_tile,
@@ -92,6 +95,11 @@ impl Movement {
         self.state = MovementState::PathfindingError;
         self.path = [].into();
         movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+    }
+
+    fn stop_moving(&mut self, entity: Entity, commands: &mut Commands) {
+        self.path = [].into();
+        commands.entity(entity).remove::<MovementMoving>();
     }
 }
 
