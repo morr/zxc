@@ -1,7 +1,12 @@
+use std::time::Duration;
+
 use bevy::sprite::MaterialMesh2dBundle;
 use rand::Rng;
 
-use crate::structure::{Structure, BASE_HEIGHT, BASE_WIDTH};
+use crate::{
+    navigation::components::PathfindRequestEvent,
+    structure::{Structure, BASE_HEIGHT, BASE_WIDTH},
+};
 
 use super::*;
 
@@ -74,30 +79,51 @@ pub fn update_pawn_color(
     }
 }
 
-// pub fn wander_pawns(
-//     time: Res<Time>,
-//     mut query: Query<(&mut Transform, &mut Pawn, &Name), With<Pawn>>,
-//     time_scale: Res<TimeScale>,
-// ) {
-//     let mut rng = rand::thread_rng();
-//
-//     for (mut transform, mut pawn, _name) in &mut query {
-//         pawn.retry_pathfinding_timer.tick(time.delta());
-//
-//         if pawn.retry_pathfinding_timer.finished() {
-//             pawn.retry_pathfinding_timer = Timer::new(
-//                 Duration::from_secs_f32(rng.gen_range(0.5..3.0)),
-//                 TimerMode::Once,
-//             );
-//             let random_angle: f32 = rng.gen_range(0.0..360.0);
-//             pawn.move_path = Some(Vec2::new(random_angle.cos(), random_angle.sin()));
-//         }
-//
-//         if let Some(move_vector) = pawn.move_vector {
-//             transform.translation.x +=
-//                 move_vector.x * PAWN_SPEED * time.delta_seconds() * time_scale.0;
-//             transform.translation.y +=
-//                 move_vector.y * PAWN_SPEED * time.delta_seconds() * time_scale.0;
-//         }
-//     }
-// }
+pub fn wander_idle_pawns(
+    // time: Res<Time>,
+    mut query: Query<(Entity, &Transform, &mut Movement), With<Movement>>,
+    // time_scale: Res<TimeScale>,
+    mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
+    mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
+) {
+    let mut rng = rand::thread_rng();
+
+    for (entity, transform, mut movement) in &mut query {
+        if movement.state != MovementState::Idle {
+            continue;
+        }
+
+        let world_pos = transform.translation.truncate();
+
+        let random_angle: f32 = rng.gen_range(0.0..360.0);
+        let tiles_to_move = rng.gen_range(3.0..20.0) * TILE_SIZE;
+        let move_vector = Vec2::new(random_angle.cos(), random_angle.sin());
+
+        movement.to_pathfinding(
+            entity,
+            world_pos.world_pos_to_grid(),
+            (world_pos + move_vector * tiles_to_move).world_pos_to_grid(),
+            &mut pathfind_event_writer,
+            &mut movement_state_event_writer,
+        );
+
+        // pawn.retry_pathfinding_timer.tick(time.delta());
+        //
+        // if pawn.retry_pathfinding_timer.finished() {
+        //     pawn.retry_pathfinding_timer = Timer::new(
+        //         Duration::from_secs_f32(rng.gen_range(0.5..3.0)),
+        //         TimerMode::Once,
+        //     );
+        //     let random_angle: f32 = rng.gen_range(0.0..360.0);
+        //     let tile_to_move = rng.gen_range(1..15);
+        //     let move_path = Vec2::new(random_angle.cos(), random_angle.sin());
+        // }
+
+        // if let Some(move_vector) = pawn.move_vector {
+        //     transform.translation.x +=
+        //         move_vector.x * PAWN_SPEED * time.delta_seconds() * time_scale.0;
+        //     transform.translation.y +=
+        //         move_vector.y * PAWN_SPEED * time.delta_seconds() * time_scale.0;
+        // }
+    }
+}

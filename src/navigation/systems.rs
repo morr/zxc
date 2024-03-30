@@ -12,12 +12,13 @@ pub fn pathfinding_on_click(
 ) {
     for click_event in click_event_reader.read() {
         for (entity, transform, mut movement) in &mut query_pawns {
-            movement.to_pathfinding(entity, &mut movement_state_event_writer);
-            pathfind_event_writer.send(PathfindRequestEvent {
-                start: transform.translation.truncate().world_pos_to_grid(),
-                end: click_event.0,
+            movement.to_pathfinding(
                 entity,
-            });
+                transform.translation.truncate().world_pos_to_grid(),
+                click_event.0,
+                &mut pathfind_event_writer,
+                &mut movement_state_event_writer
+            );
         }
     }
 }

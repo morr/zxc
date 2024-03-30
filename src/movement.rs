@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use crate::prelude::*;
+use crate::{navigation::components::PathfindRequestEvent, prelude::*};
 
 pub struct MovementPlugin;
 
@@ -66,10 +66,18 @@ impl Movement {
     pub fn to_pathfinding(
         &mut self,
         entity: Entity,
+        start_tile: IVec2,
+        end_tile: IVec2,
+        pathfind_event_writer: &mut EventWriter<PathfindRequestEvent>,
         movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementState>>,
     ) {
         self.state = MovementState::Pathfinding;
         self.path = [].into();
+        pathfind_event_writer.send(PathfindRequestEvent {
+            start: start_tile,
+            end: end_tile,
+            entity,
+        });
         movement_state_event_writer
             .send(EntityStateChangeEvent(entity, MovementState::Pathfinding));
     }

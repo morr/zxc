@@ -1,13 +1,11 @@
 use bevy::sprite::MaterialMesh2dBundle;
-use rand::Rng;
-use std::time::Duration;
 
 use super::*;
 
 #[derive(Component)]
 pub struct Pawn {
-    pub age: u32,
-    pub retry_pathfinding_timer: Timer,
+    // pub age: u32,
+    // pub retry_pathfinding_timer: Timer,
 }
 
 impl Default for Pawn {
@@ -15,8 +13,8 @@ impl Default for Pawn {
         let mut rng = rand::thread_rng();
 
         Self {
-            age: rng.gen_range(14..32),
-            retry_pathfinding_timer: Timer::new(Duration::from_secs(0), TimerMode::Once),
+            // age: rng.gen_range(14..32),
+            // retry_pathfinding_timer: Timer::new(Duration::from_secs(0), TimerMode::Once),
         }
     }
 }
