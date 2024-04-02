@@ -11,13 +11,13 @@ macro_rules! measure_time {
     }};
 }
 
-pub fn measure_pathfinding(navmesh: Res<Navmesh>) {
-    measure_time!({
-        // for _ in 0..100 {
-            astar_pathfinding(&navmesh, &IVec2 { x: -255, y: -255 }, &IVec2 { x: 255, y: 255 });
-        // }
-    })
-}
+// pub fn measure_pathfinding(navmesh: Res<Navmesh>) {
+//     measure_time!({
+//         // for _ in 0..100 {
+//             astar_pathfinding(&navmesh, &IVec2 { x: -255, y: -255 }, &IVec2 { x: 255, y: 255 });
+//         // }
+//     })
+// }
 
 pub fn astar_pathfinding(
     navmesh: &Res<Navmesh>,

@@ -1,5 +1,6 @@
 use crate::*;
 
+
 expose_submodules!(components, systems, pathfinding_algo);
 
 pub struct NavigationPlugin;
@@ -8,10 +9,10 @@ impl Plugin for NavigationPlugin {
         app.init_resource::<Navmesh>()
             .add_event::<PathfindRequestEvent>()
             .add_event::<PathfindAnswerEvent>()
-            .add_systems(
-                FixedUpdate,
-                pathfinding_algo::measure_pathfinding.run_if(in_state(WorldState::Playing)),
-            )
+            // .add_systems(
+            //     FixedUpdate,
+            //     pathfinding_algo::measure_pathfinding.run_if(in_state(WorldState::Playing)),
+            // )
             .add_systems(
                 Update,
                 (
