@@ -1,9 +1,13 @@
-use bevy::tasks::{AsyncComputeTaskPool, Task};
+use bevy::tasks::{block_on, poll_once, AsyncComputeTaskPool, Task};
 
 use super::*;
 
 #[derive(Component)]
-pub struct PathfindingTask(Task<Option<Vec<IVec2>>>);
+pub struct PathfindingTask {
+    task: Task<Option<Vec<IVec2>>>,
+    pub start: IVec2,
+    pub end: IVec2,
+}
 
 pub fn pathfinding_on_click(
     mut commands: Commands,
@@ -13,18 +17,20 @@ pub fn pathfinding_on_click(
 ) {
     for click_event in click_event_reader.read() {
         for (entity, transform) in &mut query_pawns {
-            let start_tile = transform.translation.truncate().world_pos_to_grid();
-            let end_tile = click_event.0;
+            let start = transform.translation.truncate().world_pos_to_grid();
+            let end = click_event.0;
 
             let navmesh_arc = arc_navmesh.0.clone();
             let thread_pool = AsyncComputeTaskPool::get();
 
             let task = thread_pool.spawn(async move {
                 let navmesh = navmesh_arc.read().unwrap();
-                astar_pathfinding(&navmesh, &start_tile, &end_tile)
+                astar_pathfinding(&navmesh, &start, &end)
             });
 
-            commands.entity(entity).insert(PathfindingTask(task));
+            commands
+                .entity(entity)
+                .insert(PathfindingTask { task, start, end });
         }
     }
 }
@@ -58,7 +64,8 @@ pub fn listen_for_pathfinding_requests(
     for event in pathfind_event_reader.read() {
         // println!("{:?}", event);
 
-        let path = pathfinding_algo::astar_pathfinding(&arc_navmesh.read(), &event.start, &event.end);
+        let path =
+            pathfinding_algo::astar_pathfinding(&arc_navmesh.read(), &event.start, &event.end);
 
         pathfind_event_writer.send(PathfindAnswerEvent {
             entity: event.entity,
@@ -66,6 +73,49 @@ pub fn listen_for_pathfinding_requests(
             end: event.end,
             path,
         });
+    }
+}
+
+pub fn listen_for_pathfinding_tasks(
+    mut commands: Commands,
+    mut tasks: Query<(Entity, &mut Movement, &mut PathfindingTask)>,
+    mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
+) {
+    for (entity, mut movement, mut task) in &mut tasks {
+        if let Some(result) = block_on(poll_once(&mut task.task)) {
+            commands.entity(entity).remove::<PathfindingTask>();
+
+            if let MovementState::Pathfinding(end_tile) = movement.state {
+                // check if it an is outdated pathfinding answer
+                if end_tile != task.end {
+                    // println!(
+                    //     "end_tile != task.end, end_tile={}, task.end={}",
+                    //     end_tile, task.end
+                    // );
+                    return;
+                }
+
+                if let Some(path) = &result {
+                    if path.len() == 1 {
+                        movement.to_idle(entity, &mut commands, &mut movement_state_event_writer);
+                    } else {
+                        movement.to_moving(
+                            path.iter().skip(1).cloned().collect(),
+                            entity,
+                            &mut commands,
+                            &mut movement_state_event_writer,
+                        );
+                    }
+                } else {
+                    movement.to_pathfinding_error(entity, &mut movement_state_event_writer);
+                }
+            } else {
+                println!(
+                    "movement.state != MovementState::Pathfinding, movement.state={:?}",
+                    movement.state
+                );
+            }
+        }
     }
 }
 

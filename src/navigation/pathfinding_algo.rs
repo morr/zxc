@@ -24,7 +24,11 @@ pub fn astar_pathfinding(
     tile_start: &IVec2,
     tile_end: &IVec2,
 ) -> Option<Vec<IVec2>> {
-    if navmesh.navtiles.get_passable(tile_end.x, tile_end.y).is_some() {
+    if navmesh
+        .navtiles
+        .get_passable(tile_end.x, tile_end.y)
+        .is_some()
+    {
         astar(
             tile_start,
             |&IVec2 { x, y }| {
