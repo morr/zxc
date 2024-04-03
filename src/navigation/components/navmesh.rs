@@ -6,6 +6,10 @@ use super::*;
 pub struct ArcNavmesh(pub Arc<RwLock<Navmesh>>);
 
 impl ArcNavmesh {
+    pub fn clone(&self) -> Arc<RwLock<Navmesh>> {
+        self.0.clone()
+    }
+
     pub fn read(&self) -> RwLockReadGuard<Navmesh> {
         self.0.read().unwrap()
     }
@@ -13,15 +17,6 @@ impl ArcNavmesh {
     pub fn write(&self) -> RwLockWriteGuard<Navmesh> {
         self.0.write().unwrap()
     }
-
-    // pub fn read(&self) -> &Navmesh {
-    //     &*self.0.read().unwrap()
-    // }
-
-    // pub fn write(&self) -> &mut Navmesh {
-    //     let mut guard = self.0.write().unwrap();
-    //     &mut *guard
-    // }
 }
 
 pub struct Navmesh {

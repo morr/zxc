@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use bevy::tasks::{AsyncComputeTaskPool, Task};
 
 use super::*;
@@ -7,48 +5,50 @@ use super::*;
 #[derive(Component)]
 pub struct PathfindingTask(Task<Option<Vec<IVec2>>>);
 
-// pub fn pathfinding_on_click(
-//     mut commands: Commands,
-//     mut click_event_reader: EventReader<ClickTileEvent>,
-//     mut query_pawns: Query<(Entity, &Transform), With<Movement>>,
-//     arc_navmesh: Res<ArcNavmesh>,
-// ) {
-//     for click_event in click_event_reader.read() {
-//         for (entity, transform) in &mut query_pawns {
-//             // let start_tile = transform.translation.truncate().world_pos_to_grid();
-//             // let end_tile = click_event.0;
-//             // let shared_navmesh = Arc::new(&navmesh);
-//             //
-//             // let thread_pool = AsyncComputeTaskPool::get();
-//             // let task = thread_pool.spawn(async move {
-//             //     astar_pathfinding(&(*shared_navmesh.clone()), &start_tile, &end_tile)
-//             // });
-//             //
-//             // commands.entity(entity).insert(PathfindingTask(task));
-//         }
-//     }
-// }
-
 pub fn pathfinding_on_click(
     mut commands: Commands,
     mut click_event_reader: EventReader<ClickTileEvent>,
-    mut query_pawns: Query<(Entity, &Transform, &mut Movement), With<Movement>>,
-    mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
-    mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
+    mut query_pawns: Query<(Entity, &Transform), With<Movement>>,
+    arc_navmesh: Res<ArcNavmesh>,
 ) {
     for click_event in click_event_reader.read() {
-        for (entity, transform, mut movement) in &mut query_pawns {
-            movement.to_pathfinding(
-                entity,
-                transform.translation.truncate().world_pos_to_grid(),
-                click_event.0,
-                &mut commands,
-                &mut pathfind_event_writer,
-                &mut movement_state_event_writer,
-            );
+        for (entity, transform) in &mut query_pawns {
+            let start_tile = transform.translation.truncate().world_pos_to_grid();
+            let end_tile = click_event.0;
+
+            let navmesh_arc = arc_navmesh.0.clone();
+            let thread_pool = AsyncComputeTaskPool::get();
+
+            let task = thread_pool.spawn(async move {
+                let navmesh = navmesh_arc.read().unwrap();
+                astar_pathfinding(&navmesh, &start_tile, &end_tile)
+            });
+
+            commands.entity(entity).insert(PathfindingTask(task));
         }
     }
 }
+
+// pub fn pathfinding_on_click(
+//     mut commands: Commands,
+//     mut click_event_reader: EventReader<ClickTileEvent>,
+//     mut query_pawns: Query<(Entity, &Transform, &mut Movement), With<Movement>>,
+//     mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
+//     mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
+// ) {
+//     for click_event in click_event_reader.read() {
+//         for (entity, transform, mut movement) in &mut query_pawns {
+//             movement.to_pathfinding(
+//                 entity,
+//                 transform.translation.truncate().world_pos_to_grid(),
+//                 click_event.0,
+//                 &mut commands,
+//                 &mut pathfind_event_writer,
+//                 &mut movement_state_event_writer,
+//             );
+//         }
+//     }
+// }
 
 pub fn listen_for_pathfinding_requests(
     arc_navmesh: Res<ArcNavmesh>,
