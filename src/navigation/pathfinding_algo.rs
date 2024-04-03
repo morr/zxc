@@ -1,15 +1,15 @@
 use super::*;
 use pathfinding::directed::astar::astar;
 
-macro_rules! measure_time {
-    ($code:block) => {{
-        let start_time = std::time::Instant::now();
-        let result = { $code };
-        let elapsed_time = start_time.elapsed();
-        println!("Elapsed time: {:?}", elapsed_time);
-        result
-    }};
-}
+// macro_rules! measure_time {
+//     ($code:block) => {{
+//         let start_time = std::time::Instant::now();
+//         let result = { $code };
+//         let elapsed_time = start_time.elapsed();
+//         println!("Elapsed time: {:?}", elapsed_time);
+//         result
+//     }};
+// }
 
 // pub fn measure_pathfinding(navmesh: Res<Navmesh>) {
 //     measure_time!({
@@ -21,16 +21,16 @@ macro_rules! measure_time {
 
 pub fn astar_pathfinding(
     navmesh: &Navmesh,
-    tile_start: &IVec2,
-    tile_end: &IVec2,
+    start_tile: &IVec2,
+    end_tile: &IVec2,
 ) -> Option<Vec<IVec2>> {
     if navmesh
         .navtiles
-        .get_passable(tile_end.x, tile_end.y)
+        .get_passable(end_tile.x, end_tile.y)
         .is_some()
     {
         astar(
-            tile_start,
+            start_tile,
             |&IVec2 { x, y }| {
                 navmesh.tile_successors(x, y)
                 // [
@@ -75,16 +75,17 @@ pub fn astar_pathfinding(
             // https://docs.rs/pathfinding/latest/pathfinding/directed/astar/fn.astar.html
             |&pos| {
                 let length = (Vec2::new(pos.x as f32, pos.y as f32)
-                    - Vec2::new(tile_end.x as f32, tile_end.y as f32))
+                    - Vec2::new(end_tile.x as f32, end_tile.y as f32))
                 .length();
 
                 // println!("{} {}", length, (length * COST_MULTIPLIER) as i32);
                 (length * COST_MULTIPLIER) as i32
             },
-            |pos| pos == tile_end,
+            |pos| pos == end_tile,
         )
         .map(|(vec, _cost)| vec)
     } else {
         None
     }
 }
+

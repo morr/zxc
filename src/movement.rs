@@ -1,5 +1,7 @@
 use std::collections::VecDeque;
 
+use bevy::tasks::AsyncComputeTaskPool;
+
 use crate::*;
 
 pub struct MovementPlugin;
@@ -65,6 +67,35 @@ impl Movement {
         movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
     }
 
+    pub fn to_pathfinding_async(
+        &mut self,
+        entity: Entity,
+        start_tile: IVec2,
+        end_tile: IVec2,
+        arc_navmesh: &Res<ArcNavmesh>,
+        commands: &mut Commands,
+        // pathfind_event_writer: &mut EventWriter<PathfindRequestEvent>,
+        movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementState>>,
+    ) {
+        if self.state == MovementState::Moving {
+            self.stop_moving(entity, commands);
+        }
+        self.state = MovementState::Pathfinding(end_tile);
+        movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+
+        let navmesh_arc = arc_navmesh.0.clone();
+        let thread_pool = AsyncComputeTaskPool::get();
+
+        let task = thread_pool.spawn(async move {
+            let navmesh = navmesh_arc.read().unwrap();
+            astar_pathfinding(&navmesh, &start_tile, &end_tile)
+        });
+
+        commands
+            .entity(entity)
+            .insert(PathfindingTask { task, start_tile, end_tile });
+    }
+
     pub fn to_pathfinding(
         &mut self,
         entity: Entity,
@@ -80,8 +111,8 @@ impl Movement {
 
         self.state = MovementState::Pathfinding(end_tile);
         pathfind_event_writer.send(PathfindRequestEvent {
-            start: start_tile,
-            end: end_tile,
+            start_tile,
+            end_tile,
             entity,
         });
         movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
@@ -102,12 +133,6 @@ impl Movement {
         commands.entity(entity).remove::<MovementMoving>();
     }
 }
-
-// #[derive(Bundle)]
-// pub struct MovementBundle {
-//     pub movement: Movement,
-//     // pub pathfind_status: PathfindStatus,
-// }
 
 pub fn apply_movement(
     mut commands: Commands,

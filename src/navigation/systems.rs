@@ -1,36 +1,24 @@
-use bevy::tasks::{block_on, poll_once, AsyncComputeTaskPool, Task};
+use bevy::tasks::{block_on, poll_once};
 
 use super::*;
-
-#[derive(Component)]
-pub struct PathfindingTask {
-    task: Task<Option<Vec<IVec2>>>,
-    pub start: IVec2,
-    pub end: IVec2,
-}
 
 pub fn pathfinding_on_click(
     mut commands: Commands,
     mut click_event_reader: EventReader<ClickTileEvent>,
-    mut query_pawns: Query<(Entity, &Transform), With<Movement>>,
+    mut query_pawns: Query<(Entity, &Transform, &mut Movement), With<Movement>>,
     arc_navmesh: Res<ArcNavmesh>,
+    mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
 ) {
     for click_event in click_event_reader.read() {
-        for (entity, transform) in &mut query_pawns {
-            let start = transform.translation.truncate().world_pos_to_grid();
-            let end = click_event.0;
-
-            let navmesh_arc = arc_navmesh.0.clone();
-            let thread_pool = AsyncComputeTaskPool::get();
-
-            let task = thread_pool.spawn(async move {
-                let navmesh = navmesh_arc.read().unwrap();
-                astar_pathfinding(&navmesh, &start, &end)
-            });
-
-            commands
-                .entity(entity)
-                .insert(PathfindingTask { task, start, end });
+        for (entity, transform, mut movement) in &mut query_pawns {
+            movement.to_pathfinding_async(
+                entity,
+                transform.translation.truncate().world_pos_to_grid(),
+                click_event.0,
+                &arc_navmesh,
+                &mut commands,
+                &mut movement_state_event_writer,
+            );
         }
     }
 }
@@ -64,13 +52,16 @@ pub fn listen_for_pathfinding_requests(
     for event in pathfind_event_reader.read() {
         // println!("{:?}", event);
 
-        let path =
-            pathfinding_algo::astar_pathfinding(&arc_navmesh.read(), &event.start, &event.end);
+        let path = pathfinding_algo::astar_pathfinding(
+            &arc_navmesh.read(),
+            &event.start_tile,
+            &event.end_tile,
+        );
 
         pathfind_event_writer.send(PathfindAnswerEvent {
             entity: event.entity,
-            start: event.start,
-            end: event.end,
+            start_tile: event.start_tile,
+            end_tile: event.end_tile,
             path,
         });
     }
@@ -87,7 +78,7 @@ pub fn listen_for_pathfinding_tasks(
 
             if let MovementState::Pathfinding(end_tile) = movement.state {
                 // check if it an is outdated pathfinding answer
-                if end_tile != task.end {
+                if end_tile != task.end_tile {
                     // println!(
                     //     "end_tile != task.end, end_tile={}, task.end={}",
                     //     end_tile, task.end
@@ -133,7 +124,7 @@ pub fn listen_for_pathfinding_answers(
         };
         if let MovementState::Pathfinding(end_tile) = movement.state {
             // check if it an is outdated pathfinding answer
-            if end_tile != event.end {
+            if end_tile != event.end_tile {
                 // println!(
                 //     "end_tile != event.end, end_tile={}, event.end={}",
                 //     end_tile, event.end
