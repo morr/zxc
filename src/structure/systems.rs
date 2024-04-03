@@ -3,7 +3,7 @@ use super::*;
 pub fn spawn_base(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut navmesh: ResMut<Navmesh>,
+    arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     // https://fin-nio.itch.io/pixel-houses
     let texture_handle = asset_server.load("sprites/castle_complete.png");
@@ -29,9 +29,9 @@ pub fn spawn_base(
             color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
         });
 
-    navmesh.update_cost(
+    arc_navmesh.write().update_cost(
         (grid_pos.x - (BASE_WIDTH / 2.0) as i32)..(grid_pos.x + (BASE_WIDTH / 2.0) as i32),
         (grid_pos.y - (BASE_HEIGHT / 2.0) as i32)..(grid_pos.x + (BASE_HEIGHT / 2.0) as i32),
-        None
+        None,
     )
 }

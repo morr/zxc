@@ -1,8 +1,29 @@
-use std::ops::Range;
+use std::{ops::Range, sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard}};
 
 use super::*;
 
-#[derive(Resource)]
+#[derive(Resource, Default)]
+pub struct ArcNavmesh(pub Arc<RwLock<Navmesh>>);
+
+impl ArcNavmesh {
+    pub fn read(&self) -> RwLockReadGuard<Navmesh> {
+        self.0.read().unwrap()
+    }
+
+    pub fn write(&self) -> RwLockWriteGuard<Navmesh> {
+        self.0.write().unwrap()
+    }
+
+    // pub fn read(&self) -> &Navmesh {
+    //     &*self.0.read().unwrap()
+    // }
+
+    // pub fn write(&self) -> &mut Navmesh {
+    //     let mut guard = self.0.write().unwrap();
+    //     &mut *guard
+    // }
+}
+
 pub struct Navmesh {
     pub navtiles: Navtiles,
     successors: Vec<Vec<Vec<(IVec2, i32)>>>,

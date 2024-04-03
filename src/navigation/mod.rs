@@ -1,12 +1,11 @@
 use crate::*;
 
-
 expose_submodules!(components, systems, pathfinding_algo);
 
 pub struct NavigationPlugin;
 impl Plugin for NavigationPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<Navmesh>()
+        app.init_resource::<ArcNavmesh>()
             .add_event::<PathfindRequestEvent>()
             .add_event::<PathfindAnswerEvent>()
             // .add_systems(

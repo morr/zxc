@@ -1,4 +1,33 @@
+use std::sync::Arc;
+
+use bevy::tasks::{AsyncComputeTaskPool, Task};
+
 use super::*;
+
+#[derive(Component)]
+pub struct PathfindingTask(Task<Option<Vec<IVec2>>>);
+
+// pub fn pathfinding_on_click(
+//     mut commands: Commands,
+//     mut click_event_reader: EventReader<ClickTileEvent>,
+//     mut query_pawns: Query<(Entity, &Transform), With<Movement>>,
+//     arc_navmesh: Res<ArcNavmesh>,
+// ) {
+//     for click_event in click_event_reader.read() {
+//         for (entity, transform) in &mut query_pawns {
+//             // let start_tile = transform.translation.truncate().world_pos_to_grid();
+//             // let end_tile = click_event.0;
+//             // let shared_navmesh = Arc::new(&navmesh);
+//             //
+//             // let thread_pool = AsyncComputeTaskPool::get();
+//             // let task = thread_pool.spawn(async move {
+//             //     astar_pathfinding(&(*shared_navmesh.clone()), &start_tile, &end_tile)
+//             // });
+//             //
+//             // commands.entity(entity).insert(PathfindingTask(task));
+//         }
+//     }
+// }
 
 pub fn pathfinding_on_click(
     mut commands: Commands,
@@ -22,14 +51,14 @@ pub fn pathfinding_on_click(
 }
 
 pub fn listen_for_pathfinding_requests(
-    navmesh: Res<Navmesh>,
+    arc_navmesh: Res<ArcNavmesh>,
     mut pathfind_event_reader: EventReader<PathfindRequestEvent>,
     mut pathfind_event_writer: EventWriter<PathfindAnswerEvent>,
 ) {
     for event in pathfind_event_reader.read() {
         // println!("{:?}", event);
 
-        let path = pathfinding_algo::astar_pathfinding(&navmesh, &event.start, &event.end);
+        let path = pathfinding_algo::astar_pathfinding(&arc_navmesh.read(), &event.start, &event.end);
 
         pathfind_event_writer.send(PathfindAnswerEvent {
             entity: event.entity,

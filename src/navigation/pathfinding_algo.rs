@@ -20,7 +20,7 @@ macro_rules! measure_time {
 // }
 
 pub fn astar_pathfinding(
-    navmesh: &Res<Navmesh>,
+    navmesh: &Navmesh,
     tile_start: &IVec2,
     tile_end: &IVec2,
 ) -> Option<Vec<IVec2>> {

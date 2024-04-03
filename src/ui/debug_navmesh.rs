@@ -24,7 +24,7 @@ impl Plugin for DebugNavmeshPlugin {
 
 fn handle_state_changes(
     mut commands: Commands,
-    navmesh: Res<Navmesh>,
+    arc_navmesh: Res<ArcNavmesh>,
     mut meshes: ResMut<Assets<Mesh>>,
     assets: Res<AssetsCollection>,
     mut event_reader: EventReader<StateChangeEvent<DebugNavmeshState>>,
@@ -38,7 +38,7 @@ fn handle_state_changes(
 
         match event.0 {
             DebugNavmeshState::Visible => {
-                navmesh.navtiles.for_each_tile_mut(|navtile, tile_pos| {
+                arc_navmesh.read().navtiles.for_each_tile_mut(|navtile, tile_pos| {
                     commands
                         .spawn(MaterialMesh2dBundle {
                             mesh: mesh_handle.clone().into(),
