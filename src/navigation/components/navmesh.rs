@@ -1,4 +1,7 @@
-use std::{ops::Range, sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard}};
+use std::{
+    ops::Range,
+    sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard},
+};
 
 use super::*;
 

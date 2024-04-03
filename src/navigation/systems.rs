@@ -1,8 +1,8 @@
-use bevy::tasks::{block_on, poll_once};
+use bevy::tasks::{block_on, futures_lite::future};
 
 use super::*;
 
-pub fn pathfinding_on_click(
+pub fn pathfinding_async_on_click(
     mut commands: Commands,
     mut click_event_reader: EventReader<ClickTileEvent>,
     mut query_pawns: Query<(Entity, &Transform, &mut Movement), With<Movement>>,
@@ -67,13 +67,15 @@ pub fn listen_for_pathfinding_requests(
     }
 }
 
-pub fn listen_for_pathfinding_tasks(
+pub fn listen_for_pathfinding_async_tasks(
     mut commands: Commands,
-    mut tasks: Query<(Entity, &mut Movement, &mut PathfindingTask)>,
+    mut tasks: Query<(Entity, &mut Movement, &mut PathfindingTask), With<PathfindingTask>>,
     mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
 ) {
     for (entity, mut movement, mut task) in &mut tasks {
-        if let Some(result) = block_on(poll_once(&mut task.task)) {
+        if let Some(result) = block_on(future::poll_once(&mut task.task)) {
+            // println!("{:?}", task);
+
             commands.entity(entity).remove::<PathfindingTask>();
 
             if let MovementState::Pathfinding(end_tile) = movement.state {

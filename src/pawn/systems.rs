@@ -76,7 +76,6 @@ pub fn update_pawn_color(
 
 pub fn wander_idle_pawns(
     mut commands: Commands,
-
     // time: Res<Time>,
     mut query: Query<(Entity, &Transform, &mut Movement), With<Movement>>,
     // time_scale: Res<TimeScale>,

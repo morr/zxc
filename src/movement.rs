@@ -91,9 +91,11 @@ impl Movement {
             astar_pathfinding(&navmesh, &start_tile, &end_tile)
         });
 
-        commands
-            .entity(entity)
-            .insert(PathfindingTask { task, start_tile, end_tile });
+        commands.entity(entity).insert(PathfindingTask {
+            task,
+            start_tile,
+            end_tile,
+        });
     }
 
     pub fn to_pathfinding(
