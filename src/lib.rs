@@ -21,6 +21,7 @@ pub mod pawn;
 pub mod settings;
 pub mod story_time;
 pub mod structure;
+pub mod tasks_queues;
 pub mod ui;
 pub mod utils;
 
@@ -33,6 +34,7 @@ pub use crate::navigation::*;
 pub use crate::pawn::*;
 pub use crate::settings::*;
 pub use crate::story_time::*;
+pub use crate::tasks_queues::*;
 pub use crate::ui::*;
 pub use crate::utils::*;
 

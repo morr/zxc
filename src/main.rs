@@ -32,6 +32,7 @@ fn main() {
         .add_plugins((
             camera::CameraPlugin,
             story_time::StoryTimePlugin,
+            tasks_queues::TaskQueuesPlugin,
             settings::SettingsPlugin,
             assets::AssetsPlugin,
             map::MapPlugin,

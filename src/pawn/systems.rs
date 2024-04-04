@@ -76,6 +76,7 @@ pub fn update_pawn_color(
 
 pub fn wander_idle_pawns(
     arc_navmesh: Res<ArcNavmesh>,
+    async_queue_counter: Res<AsyncQueueCounter>,
     mut commands: Commands,
     // time: Res<Time>,
     mut query: Query<(Entity, &Transform, &mut Movement), With<Movement>>,
@@ -109,6 +110,7 @@ pub fn wander_idle_pawns(
             world_pos.world_pos_to_grid(),
             (world_pos + move_vector * tiles_to_move).world_pos_to_grid(),
             &arc_navmesh,
+            &async_queue_counter,
             &mut commands,
             &mut movement_state_event_writer,
         );

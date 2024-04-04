@@ -4,6 +4,7 @@ use super::*;
 
 pub fn pathfinding_async_on_click(
     arc_navmesh: Res<ArcNavmesh>,
+    async_queue_counter: Res<AsyncQueueCounter>,
     mut commands: Commands,
     mut click_event_reader: EventReader<ClickTileEvent>,
     mut query_pawns: Query<(Entity, &Transform, &mut Movement), With<Movement>>,
@@ -16,6 +17,7 @@ pub fn pathfinding_async_on_click(
                 transform.translation.truncate().world_pos_to_grid(),
                 click_event.0,
                 &arc_navmesh,
+                &async_queue_counter,
                 &mut commands,
                 &mut movement_state_event_writer,
             );

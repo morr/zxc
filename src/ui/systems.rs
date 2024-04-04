@@ -17,7 +17,7 @@ pub fn render_ui(
                 color: Color::WHITE,
             },
         ),
-        TimeText {},
+        StatusText {},
     ));
     commands.spawn((
         TextBundle::from_section(
@@ -48,7 +48,7 @@ pub fn update_ui(
     time_state: Res<State<TimeState>>,
     time_scale: Res<TimeScale>,
     // mut ev_update_ui: EventReader<UpdateUiEvent>,
-    mut query: Query<&mut Text, With<TimeText>>,
+    mut query: Query<&mut Text, With<StatusText>>,
 ) {
     // for _ev in ev_update_ui.read() {
     //     println!("update ui");

@@ -1,4 +1,4 @@
-use std::collections::VecDeque;
+use std::{collections::VecDeque, sync::atomic::Ordering};
 
 use bevy::tasks::AsyncComputeTaskPool;
 
@@ -67,12 +67,14 @@ impl Movement {
         movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn to_pathfinding_async(
         &mut self,
         entity: Entity,
         start_tile: IVec2,
         end_tile: IVec2,
         arc_navmesh: &Res<ArcNavmesh>,
+        queue_counter: &Res<AsyncQueueCounter>,
         commands: &mut Commands,
         // pathfind_event_writer: &mut EventWriter<PathfindRequestEvent>,
         movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementState>>,
@@ -86,9 +88,16 @@ impl Movement {
         let navmesh_arc = arc_navmesh.0.clone();
         let thread_pool = AsyncComputeTaskPool::get();
 
+        queue_counter.0.fetch_add(1, Ordering::SeqCst);
+        let queue_counter_clone = queue_counter.0.clone();
+
         let task = thread_pool.spawn(async move {
             let navmesh = navmesh_arc.read().unwrap();
-            astar_pathfinding(&navmesh, &start_tile, &end_tile)
+
+            let result = astar_pathfinding(&navmesh, &start_tile, &end_tile);
+            queue_counter_clone.fetch_sub(1, Ordering::SeqCst);
+
+            result
         });
 
         commands.entity(entity).insert(PathfindingTask {
