@@ -31,7 +31,7 @@ pub struct SettingsPlugin;
 impl Plugin for SettingsPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<Settings>()
-            .add_systems(FixedUpdate, update_settings);
+            .add_systems(Update, update_settings);
     }
 }
 
@@ -48,11 +48,13 @@ fn update_settings(
     }
 
     if keys.just_pressed(KeyCode::Equal) {
+        println!("+");
         increase_time_scale(&time_state, &mut next_state, &mut time_scale);
         // ev_update_ui.send(UpdateUiEvent {});
     }
 
     if keys.just_pressed(KeyCode::Minus) {
+        println!("-");
         decrease_time_scale(&time_state, &mut next_state, &mut time_scale);
         // if decrease_time_scale(&time_state, &mut next_state, &mut time_scale) {
         //   ev_update_ui.send(UpdateUiEvent {});
