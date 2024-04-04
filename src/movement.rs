@@ -1,6 +1,4 @@
-use std::{collections::VecDeque, sync::atomic::Ordering};
-
-use bevy::tasks::AsyncComputeTaskPool;
+use std::collections::VecDeque;
 
 use crate::*;
 
@@ -76,7 +74,6 @@ impl Movement {
         arc_navmesh: &Res<ArcNavmesh>,
         queue_counter: &Res<AsyncQueueCounter>,
         commands: &mut Commands,
-        // pathfind_event_writer: &mut EventWriter<PathfindRequestEvent>,
         movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementState>>,
     ) {
         if self.state == MovementState::Moving {
@@ -85,19 +82,10 @@ impl Movement {
         self.state = MovementState::Pathfinding(end_tile);
         movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
 
-        let navmesh_arc = arc_navmesh.0.clone();
-        let thread_pool = AsyncComputeTaskPool::get();
-
-        queue_counter.0.fetch_add(1, Ordering::SeqCst);
-        let queue_counter_clone = queue_counter.0.clone();
-
-        let task = thread_pool.spawn(async move {
-            let navmesh = navmesh_arc.read().unwrap();
-
-            let result = astar_pathfinding(&navmesh, &start_tile, &end_tile);
-            queue_counter_clone.fetch_sub(1, Ordering::SeqCst);
-
-            result
+        let navmesh_arc_clone = arc_navmesh.0.clone();
+        let task = spawn_task(queue_counter, async move {
+            let navmesh = navmesh_arc_clone.read().unwrap();
+            astar_pathfinding(&navmesh, &start_tile, &end_tile)
         });
 
         commands.entity(entity).insert(PathfindingTask {
