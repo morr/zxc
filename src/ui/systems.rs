@@ -1,4 +1,7 @@
-use self::{debug_grid::DebugGridState, debug_movepath::DebugMovepathState, debug_navmesh::DebugNavmeshState};
+use self::{
+    debug_grid::DebugGridState, debug_movepath::DebugMovepathState,
+    debug_navmesh::DebugNavmeshState,
+};
 use super::*;
 
 pub fn render_ui(
@@ -7,10 +10,11 @@ pub fn render_ui(
     time_state: Res<State<TimeState>>,
     time_scale: Res<TimeScale>,
     asset_server: Res<AssetServer>,
+    queue_counter: Res<AsyncQueueCounter>,
 ) {
     commands.spawn((
         TextBundle::from_section(
-            format_ui_line(&elapsed_time, &time_state, &time_scale),
+            format_ui_line(&elapsed_time, &time_state, &time_scale, &queue_counter),
             TextStyle {
                 font: asset_server.load("fonts/FiraMono-Medium.ttf"),
                 font_size: 24.,
@@ -47,6 +51,7 @@ pub fn update_ui(
     elapsed_time: Res<ElapsedTime>,
     time_state: Res<State<TimeState>>,
     time_scale: Res<TimeScale>,
+    queue_counter: Res<AsyncQueueCounter>,
     // mut ev_update_ui: EventReader<UpdateUiEvent>,
     mut query: Query<&mut Text, With<StatusText>>,
 ) {
@@ -54,7 +59,7 @@ pub fn update_ui(
     //     println!("update ui");
 
     let mut text = query.single_mut();
-    text.sections[0].value = format_ui_line(&elapsed_time, &time_state, &time_scale);
+    text.sections[0].value = format_ui_line(&elapsed_time, &time_state, &time_scale, &queue_counter);
     // }
 }
 
@@ -62,15 +67,17 @@ fn format_ui_line(
     elapsed_time: &Res<ElapsedTime>,
     time_state: &Res<State<TimeState>>,
     time_scale: &Res<TimeScale>,
+    queue_counter: &Res<AsyncQueueCounter>
 ) -> String {
     let speed_part = match time_state.get() {
         TimeState::Running => format!("Speed: {}x", time_scale.0),
         TimeState::Paused => "Paused".to_string(),
     };
 
-    format!("Seconds: {} {}", elapsed_time.0.floor(), speed_part)
+    format!("Seconds: {} {} Queue: {}", elapsed_time.0.floor(), speed_part, queue_counter.0.load(std::sync::atomic::Ordering::SeqCst))
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn handle_ui_keys(
     // mut commands: Commands,
     keys: Res<ButtonInput<KeyCode>>,
@@ -96,17 +103,6 @@ pub fn handle_ui_keys(
                 *visibility = Visibility::Hidden;
             }
         }
-        // match query.get_single() {
-        //     Ok(entity) => {
-        //         commands.entity(entity).despawn();
-        //     }
-        //     Err(QuerySingleError::NoEntities(_)) => {
-        //         spawn_help(&mut commands, &asset_server);
-        //     }
-        //     Err(QuerySingleError::MultipleEntities(_)) => {
-        //         panic!("Error: There is more than one help text!");
-        //     }
-        // }
     }
 
     if keys.just_pressed(KeyCode::KeyG) {
@@ -127,8 +123,12 @@ pub fn handle_ui_keys(
 
     if keys.just_pressed(KeyCode::KeyM) {
         match debug_movepath_state.get() {
-            DebugMovepathState::Visible => next_debug_movepath_state.set(DebugMovepathState::Hidden),
-            DebugMovepathState::Hidden => next_debug_movepath_state.set(DebugMovepathState::Visible),
+            DebugMovepathState::Visible => {
+                next_debug_movepath_state.set(DebugMovepathState::Hidden)
+            }
+            DebugMovepathState::Hidden => {
+                next_debug_movepath_state.set(DebugMovepathState::Visible)
+            }
         };
     }
 }
