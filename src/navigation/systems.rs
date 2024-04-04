@@ -3,10 +3,10 @@ use bevy::tasks::{block_on, futures_lite::future};
 use super::*;
 
 pub fn pathfinding_async_on_click(
+    arc_navmesh: Res<ArcNavmesh>,
     mut commands: Commands,
     mut click_event_reader: EventReader<ClickTileEvent>,
     mut query_pawns: Query<(Entity, &Transform, &mut Movement), With<Movement>>,
-    arc_navmesh: Res<ArcNavmesh>,
     mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
 ) {
     for click_event in click_event_reader.read() {

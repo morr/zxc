@@ -98,27 +98,27 @@ impl Movement {
         });
     }
 
-    pub fn to_pathfinding(
-        &mut self,
-        entity: Entity,
-        start_tile: IVec2,
-        end_tile: IVec2,
-        commands: &mut Commands,
-        pathfind_event_writer: &mut EventWriter<PathfindRequestEvent>,
-        movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementState>>,
-    ) {
-        if self.state == MovementState::Moving {
-            self.stop_moving(entity, commands);
-        }
-
-        self.state = MovementState::Pathfinding(end_tile);
-        pathfind_event_writer.send(PathfindRequestEvent {
-            start_tile,
-            end_tile,
-            entity,
-        });
-        movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
-    }
+    // pub fn to_pathfinding(
+    //     &mut self,
+    //     entity: Entity,
+    //     start_tile: IVec2,
+    //     end_tile: IVec2,
+    //     commands: &mut Commands,
+    //     pathfind_event_writer: &mut EventWriter<PathfindRequestEvent>,
+    //     movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementState>>,
+    // ) {
+    //     if self.state == MovementState::Moving {
+    //         self.stop_moving(entity, commands);
+    //     }
+    //
+    //     self.state = MovementState::Pathfinding(end_tile);
+    //     pathfind_event_writer.send(PathfindRequestEvent {
+    //         start_tile,
+    //         end_tile,
+    //         entity,
+    //     });
+    //     movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+    // }
 
     pub fn to_pathfinding_error(
         &mut self,

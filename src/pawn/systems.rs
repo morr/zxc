@@ -75,11 +75,12 @@ pub fn update_pawn_color(
 }
 
 pub fn wander_idle_pawns(
+    arc_navmesh: Res<ArcNavmesh>,
     mut commands: Commands,
     // time: Res<Time>,
     mut query: Query<(Entity, &Transform, &mut Movement), With<Movement>>,
     // time_scale: Res<TimeScale>,
-    mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
+    // mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
     mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
 ) {
     let mut rng = rand::thread_rng();
@@ -95,12 +96,20 @@ pub fn wander_idle_pawns(
         let tiles_to_move = rng.gen_range(3.0..20.0) * TILE_SIZE;
         let move_vector = Vec2::new(random_angle.cos(), random_angle.sin());
 
-        movement.to_pathfinding(
+        // movement.to_pathfinding(
+        //     entity,
+        //     world_pos.world_pos_to_grid(),
+        //     (world_pos + move_vector * tiles_to_move).world_pos_to_grid(),
+        //     &mut commands,
+        //     &mut pathfind_event_writer,
+        //     &mut movement_state_event_writer,
+        // );
+        movement.to_pathfinding_async(
             entity,
             world_pos.world_pos_to_grid(),
             (world_pos + move_vector * tiles_to_move).world_pos_to_grid(),
+            &arc_navmesh,
             &mut commands,
-            &mut pathfind_event_writer,
             &mut movement_state_event_writer,
         );
 
