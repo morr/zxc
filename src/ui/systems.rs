@@ -74,7 +74,7 @@ fn format_ui_line(
         TimeState::Paused => "Paused".to_string(),
     };
 
-    format!("Seconds: {} {} Queue: {}", elapsed_time.0.floor(), speed_part, queue_counter.0.load(std::sync::atomic::Ordering::SeqCst))
+    format!("Seconds: {} {} Queue: {}", elapsed_time.0.floor(), speed_part, queue_counter.get());
 }
 
 #[allow(clippy::too_many_arguments)]
