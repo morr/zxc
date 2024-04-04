@@ -59,7 +59,8 @@ pub fn update_ui(
     //     println!("update ui");
 
     let mut text = query.single_mut();
-    text.sections[0].value = format_ui_line(&elapsed_time, &time_state, &time_scale, &queue_counter);
+    text.sections[0].value =
+        format_ui_line(&elapsed_time, &time_state, &time_scale, &queue_counter);
     // }
 }
 
@@ -67,14 +68,19 @@ fn format_ui_line(
     elapsed_time: &Res<ElapsedTime>,
     time_state: &Res<State<TimeState>>,
     time_scale: &Res<TimeScale>,
-    queue_counter: &Res<AsyncQueueCounter>
+    queue_counter: &Res<AsyncQueueCounter>,
 ) -> String {
     let speed_part = match time_state.get() {
         TimeState::Running => format!("Speed: {}x", time_scale.0),
         TimeState::Paused => "Paused".to_string(),
     };
 
-    format!("Seconds: {} {} Queue: {}", elapsed_time.0.floor(), speed_part, queue_counter.get());
+    format!(
+        "Seconds: {} {} Queue: {}",
+        elapsed_time.0.floor(),
+        speed_part,
+        queue_counter.get()
+    )
 }
 
 #[allow(clippy::too_many_arguments)]
