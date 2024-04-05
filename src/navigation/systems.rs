@@ -74,43 +74,52 @@ pub fn listen_for_pathfinding_async_tasks(
     mut tasks: Query<(Entity, &mut Movement, &mut PathfindingTask), With<PathfindingTask>>,
     mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
 ) {
-    for (entity, mut movement, mut task) in &mut tasks {
-        if let Some(result) = block_on(future::poll_once(&mut task.task)) {
-            // println!("{:?}", task);
-
-            commands.entity(entity).remove::<PathfindingTask>();
-
-            if let MovementState::Pathfinding(end_tile) = movement.state {
-                // check if it an is outdated pathfinding answer
-                if end_tile != task.end_tile {
-                    // println!(
-                    //     "end_tile != task.end, end_tile={}, task.end={}",
-                    //     end_tile, task.end
-                    // );
-                    return;
-                }
-
-                if let Some(path) = &result {
-                    if path.len() == 1 {
-                        movement.to_idle(entity, &mut commands, &mut movement_state_event_writer);
-                    } else {
-                        movement.to_moving(
-                            path.iter().skip(1).cloned().collect(),
-                            entity,
-                            &mut commands,
-                            &mut movement_state_event_writer,
-                        );
-                    }
-                } else {
-                    movement.to_pathfinding_error(entity, &mut movement_state_event_writer);
-                }
+    for (entity, mut movement, mut pathfinding_tasks) in &mut tasks {
+        pathfinding_tasks.0.retain(|task| {
+            if let Some(result) = block_on(future::poll_once(&mut task)) {
+            //     // println!("{:?}", task);
+            //
+            //     commands.entity(entity).remove::<PathfindingTask>();
+            //
+            //     if let MovementState::Pathfinding(end_tile) = movement.state {
+            //         // check if it an is outdated pathfinding answer
+            //         if end_tile != task.end_tile {
+            //             // println!(
+            //             //     "end_tile != task.end, end_tile={}, task.end={}",
+            //             //     end_tile, task.end
+            //             // );
+            //             return;
+            //         }
+            //
+            //         if let Some(path) = &result {
+            //             if path.len() == 1 {
+            //                 movement.to_idle(
+            //                     entity,
+            //                     &mut commands,
+            //                     &mut movement_state_event_writer,
+            //                 );
+            //             } else {
+            //                 movement.to_moving(
+            //                     path.iter().skip(1).cloned().collect(),
+            //                     entity,
+            //                     &mut commands,
+            //                     &mut movement_state_event_writer,
+            //                 );
+            //             }
+            //         } else {
+            //             movement.to_pathfinding_error(entity, &mut movement_state_event_writer);
+            //         }
+            //     } else {
+            //         println!(
+            //             "movement.state != MovementState::Pathfinding, movement.state={:?}",
+            //             movement.state
+            //         );
+            //     }
+                false
             } else {
-                println!(
-                    "movement.state != MovementState::Pathfinding, movement.state={:?}",
-                    movement.state
-                );
+                true
             }
-        }
+        });
     }
 }
 

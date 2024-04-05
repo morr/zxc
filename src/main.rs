@@ -29,6 +29,14 @@ fn main() {
         .add_loading_state(
             LoadingState::new(WorldState::Loading).continue_to_state(WorldState::Playing),
         )
+        // .add_plugins(bevy_tokio_tasks::TokioTasksPlugin {
+        //     make_runtime: Box::new(|| {
+        //         let mut runtime = tokio::runtime::Builder::new_multi_thread();
+        //         runtime.enable_all();
+        //         runtime.build().unwrap()
+        //     }),
+        //     ..bevy_tokio_tasks::TokioTasksPlugin::default()
+        // })
         .add_plugins((
             camera::CameraPlugin,
             story_time::StoryTimePlugin,

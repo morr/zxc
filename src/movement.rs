@@ -89,14 +89,19 @@ impl Movement {
         let task = spawn_task(queue_counter, async move {
             // queue_counter_clone.fetch_sub(1, std::sync::atomic::Ordering::SeqCst);
             let navmesh = navmesh_arc_clone.read().unwrap();
-            astar_pathfinding(&navmesh, &start_tile, &end_tile)
+
+            PathfindingResult {
+                start_tile,
+                end_tile,
+                path: astar_pathfinding(&navmesh, &start_tile, &end_tile),
+            }
         });
 
-        commands.entity(entity).insert(PathfindingTask {
-            task,
-            start_tile,
-            end_tile,
-        });
+        // if let Ok(mut existing_task) = commands.entity(entity).get_mut::<PathfindingTask>() {
+        //     existing_task.add(task);
+        // } else {
+        //     commands.entity(entity).insert(PathfindingTask::new(task));
+        // }
     }
 
     // pub fn to_pathfinding(
