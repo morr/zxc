@@ -18,6 +18,12 @@ pub struct PathfindingResult {
 
 #[derive(Debug, Component)]
 pub struct PathfindingTask(pub Vec<Task<PathfindingResult>>);
+// I want to monitor the size of the async queue so I store multiple tasks instead of a single
+// task. It is done so becuse inside of spawned tasks I decrement queue_counter and thus
+// the task must always be executed. But under heavy load task may not be executed
+// at all becuase if we store only single task in  Entity, the old PathfindingTask
+// may be overriden be a new PathfindingTask and thus old tasks is never polled, which
+// under heavy load may lead to the task being dropped from the queue.
 
 impl PathfindingTask {
     pub fn new(task: Task<PathfindingResult>) -> Self {
