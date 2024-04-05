@@ -75,7 +75,7 @@ pub fn listen_for_pathfinding_async_tasks(
     mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
 ) {
     for (entity, mut movement, mut task) in &mut tasks {
-        if let Some(result) = block_on(future::poll_once(&mut task.task)) {
+        if let Some(result) = block_on(future::poll_once(&mut task.0)) {
             // println!("{:?}", task);
 
             commands.entity(entity).remove::<PathfindingTask>();

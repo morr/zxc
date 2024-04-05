@@ -17,9 +17,7 @@ pub struct PathfindingResult {
 }
 
 #[derive(Debug, Component)]
-pub struct PathfindingTask {
-    pub task: Task<PathfindingResult>,
-}
+pub struct PathfindingTask(pub Task<PathfindingResult>);
 
 #[derive(Debug, Event)]
 pub struct PathfindRequestEvent {
