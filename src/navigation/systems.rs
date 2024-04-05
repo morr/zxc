@@ -82,7 +82,7 @@ pub fn listen_for_pathfinding_async_tasks(
 
             if let MovementState::Pathfinding(end_tile) = movement.state {
                 // check if it an is outdated pathfinding answer
-                if end_tile != task.end_tile {
+                if end_tile != result.end_tile {
                     // println!(
                     //     "end_tile != task.end, end_tile={}, task.end={}",
                     //     end_tile, task.end
@@ -90,7 +90,7 @@ pub fn listen_for_pathfinding_async_tasks(
                     return;
                 }
 
-                if let Some(path) = &result {
+                if let Some(path) = &result.path {
                     if path.len() == 1 {
                         movement.to_idle(entity, &mut commands, &mut movement_state_event_writer);
                     } else {

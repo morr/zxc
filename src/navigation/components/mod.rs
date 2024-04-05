@@ -9,11 +9,16 @@ const DEFAULT_COST: i32 = 1;
 
 const INITIAL_NAV_COST: i32 = (DEFAULT_COST as f32 * COST_MULTIPLIER) as i32;
 
-#[derive(Debug, Component)]
-pub struct PathfindingTask {
-    pub task: Task<Option<Vec<IVec2>>>,
+#[derive(Debug)]
+pub struct PathfindingResult {
+    pub path: Option<Vec<IVec2>>,
     pub start_tile: IVec2,
     pub end_tile: IVec2,
+}
+
+#[derive(Debug, Component)]
+pub struct PathfindingTask {
+    pub task: Task<PathfindingResult>,
 }
 
 #[derive(Debug, Event)]
