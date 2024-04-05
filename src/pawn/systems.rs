@@ -79,14 +79,22 @@ pub fn wander_idle_pawns(
     queue_counter: Res<AsyncQueueCounter>,
     mut commands: Commands,
     // time: Res<Time>,
-    mut query: Query<(Entity, &Transform, &mut Movement), With<Movement>>,
+    mut query: Query<
+        (
+            Entity,
+            &Transform,
+            &mut Movement,
+            Option<&mut PathfindingTask>,
+        ),
+        With<Movement>,
+    >,
     // time_scale: Res<TimeScale>,
     // mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
     mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
 ) {
     let mut rng = rand::thread_rng();
 
-    for (entity, transform, mut movement) in &mut query {
+    for (entity, transform, mut movement, mut maybe_pathfinding_task) in &mut query {
         if movement.state != MovementState::Idle {
             continue;
         }
@@ -111,6 +119,7 @@ pub fn wander_idle_pawns(
             (world_pos + move_vector * tiles_to_move).world_pos_to_grid(),
             &arc_navmesh,
             &queue_counter,
+            maybe_pathfinding_task.as_deref_mut(),
             &mut commands,
             &mut movement_state_event_writer,
         );

@@ -19,6 +19,16 @@ pub struct PathfindingResult {
 #[derive(Debug, Component)]
 pub struct PathfindingTask(pub Vec<Task<PathfindingResult>>);
 
+impl PathfindingTask {
+    pub fn new(task: Task<PathfindingResult>) -> Self {
+        Self(vec![task])
+    }
+
+    pub fn push(&mut self, task: Task<PathfindingResult>) {
+        self.0.push(task);
+    }
+}
+
 #[derive(Debug, Event)]
 pub struct PathfindRequestEvent {
     pub entity: Entity,

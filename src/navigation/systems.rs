@@ -7,17 +7,26 @@ pub fn pathfinding_async_on_click(
     queue_counter: Res<AsyncQueueCounter>,
     mut commands: Commands,
     mut click_event_reader: EventReader<ClickTileEvent>,
-    mut query_pawns: Query<(Entity, &Transform, &mut Movement), With<Movement>>,
+    mut query_pawns: Query<
+        (
+            Entity,
+            &Transform,
+            &mut Movement,
+            Option<&mut PathfindingTask>,
+        ),
+        With<Movement>,
+    >,
     mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
 ) {
     for click_event in click_event_reader.read() {
-        for (entity, transform, mut movement) in &mut query_pawns {
+        for (entity, transform, mut movement, mut maybe_pathfinding_task) in &mut query_pawns {
             movement.to_pathfinding_async(
                 entity,
                 transform.translation.truncate().world_pos_to_grid(),
                 click_event.0,
                 &arc_navmesh,
                 &queue_counter,
+                maybe_pathfinding_task.as_deref_mut(),
                 &mut commands,
                 &mut movement_state_event_writer,
             );

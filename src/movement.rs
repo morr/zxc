@@ -73,6 +73,7 @@ impl Movement {
         end_tile: IVec2,
         arc_navmesh: &Res<ArcNavmesh>,
         queue_counter: &Res<AsyncQueueCounter>,
+        maybe_pathfinding_task: Option<&mut PathfindingTask>,
         commands: &mut Commands,
         movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementState>>,
     ) {
@@ -93,7 +94,11 @@ impl Movement {
             }
         });
 
-        commands.entity(entity).insert(PathfindingTask(vec![task]));
+        if let Some(pathfinding_task) = maybe_pathfinding_task {
+            pathfinding_task.push(task);
+        } else {
+            commands.entity(entity).insert(PathfindingTask::new(task));
+        }
     }
 
     // pub fn to_pathfinding(
