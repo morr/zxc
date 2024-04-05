@@ -1,4 +1,7 @@
-use std::sync::{atomic::{AtomicI32, Ordering}, Arc};
+use std::sync::{
+    atomic::{AtomicI32, Ordering},
+    Arc,
+};
 
 use bevy::tasks::AsyncComputeTaskPool;
 
@@ -23,22 +26,24 @@ impl AsyncQueueCounter {
     }
 }
 
-
 impl Plugin for TaskQueuesPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<AsyncQueueCounter>();
     }
 }
 
-pub fn spawn_task<Fut>(queue_counter: &Res<AsyncQueueCounter>, future: Fut) -> bevy::tasks::Task<Fut::Output>
+pub fn spawn_task<Fut>(
+    queue_counter: &Res<AsyncQueueCounter>,
+    future: Fut,
+) -> bevy::tasks::Task<Fut::Output>
 where
     Fut: std::future::Future + Send + 'static,
     Fut::Output: Send + 'static,
 {
+    queue_counter.increment();
+
     let thread_pool = AsyncComputeTaskPool::get();
     let queue_counter_clone = queue_counter.0.clone();
-
-    queue_counter.increment();
 
     thread_pool.spawn(async move {
         let result = future.await;
@@ -46,4 +51,3 @@ where
         result
     })
 }
-

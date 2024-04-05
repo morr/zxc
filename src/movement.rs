@@ -82,8 +82,12 @@ impl Movement {
         self.state = MovementState::Pathfinding(end_tile);
         movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
 
+        // queue_counter.increment();
+        // let queue_counter_clone = queue_counter.0.clone();
+
         let navmesh_arc_clone = arc_navmesh.0.clone();
         let task = spawn_task(queue_counter, async move {
+            // queue_counter_clone.fetch_sub(1, std::sync::atomic::Ordering::SeqCst);
             let navmesh = navmesh_arc_clone.read().unwrap();
             astar_pathfinding(&navmesh, &start_tile, &end_tile)
         });
