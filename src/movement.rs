@@ -93,7 +93,7 @@ impl Movement {
             }
         });
 
-        commands.entity(entity).insert(PathfindingTask(task));
+        commands.entity(entity).insert(PathfindingTask(vec![task]));
     }
 
     // pub fn to_pathfinding(
