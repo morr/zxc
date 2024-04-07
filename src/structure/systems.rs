@@ -2,11 +2,9 @@ use super::*;
 
 pub fn spawn_base(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
+    assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
-    // https://fin-nio.itch.io/pixel-houses
-    let texture_handle = asset_server.load("sprites/castle_complete.png");
     let grid_pos = IVec2::new(0, 0);
 
     commands
@@ -14,7 +12,7 @@ pub fn spawn_base(
             structure: Structure {},
             name: Name::new("Base"),
             sprite_bundle: SpriteBundle {
-                texture: texture_handle.clone(),
+                texture: assets.castle.clone(),
                 sprite: Sprite {
                     custom_size: Some(Vec2::new(BASE_WIDTH * TILE_SIZE, BASE_HEIGHT * TILE_SIZE)),
                     ..default()

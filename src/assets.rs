@@ -5,7 +5,9 @@ pub struct AssetsPlugin;
 impl Plugin for AssetsPlugin {
     fn build(&self, app: &mut App) {
         app.configure_loading_state(
-            LoadingStateConfig::new(WorldState::Loading).init_resource::<AssetsCollection>(),
+            LoadingStateConfig::new(WorldState::Loading)
+                .init_resource::<AssetsCollection>()
+                .load_collection::<TextureAssets>(),
         );
     }
 }
@@ -20,6 +22,12 @@ pub struct AssetsCollection {
     pub navmesh_impassable: Handle<ColorMaterial>,
 }
 
+#[derive(AssetCollection, Resource)]
+pub struct TextureAssets {
+    #[asset(path = "sprites/castle_complete.png")] // https://fin-nio.itch.io/pixel-houses
+    pub castle: Handle<Image>,
+}
+
 impl FromWorld for AssetsCollection {
     fn from_world(world: &mut World) -> Self {
         let mut materials = world.get_resource_mut::<Assets<ColorMaterial>>().unwrap();
@@ -31,7 +39,8 @@ impl FromWorld for AssetsCollection {
             pawn_pathfinding: materials.add(ColorMaterial::from(Color::hex("fb8f44").unwrap())),
             pawn_pathfinding_error: materials.add(ColorMaterial::from(Color::RED)),
             navmesh_passable: materials.add(ColorMaterial::from(Color::rgba(0.0, 0.0, 0.75, 0.5))),
-            navmesh_impassable: materials.add(ColorMaterial::from(Color::rgba(1.0, 0.0, 0.0, 0.75))),
+            navmesh_impassable: materials
+                .add(ColorMaterial::from(Color::rgba(1.0, 0.0, 0.0, 0.75))),
         }
     }
 }
