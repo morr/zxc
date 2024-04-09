@@ -32,7 +32,7 @@ impl Plugin for TaskQueuesPlugin {
     }
 }
 
-pub fn spawn_task<Fut>(
+pub fn spawn_async_task<Fut>(
     queue_counter: &Res<AsyncQueueCounter>,
     future: Fut,
 ) -> bevy::tasks::Task<Fut::Output>

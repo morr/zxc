@@ -84,7 +84,7 @@ impl Movement {
         movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
 
         let navmesh_arc_clone = arc_navmesh.0.clone();
-        let task = spawn_task(queue_counter, async move {
+        let task = spawn_async_task(queue_counter, async move {
             let navmesh = navmesh_arc_clone.read().unwrap();
 
             PathfindingResult {
