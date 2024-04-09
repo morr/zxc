@@ -1,7 +1,7 @@
 use super::*;
 
-pub const BASE_WIDTH: f32 = 8.0;
-pub const BASE_HEIGHT: f32 = 14.0;
+pub const BASE_WIDTH: i32 = 8;
+pub const BASE_HEIGHT: i32 = 14;
 
 #[derive(Component)]
 pub struct Structure {}

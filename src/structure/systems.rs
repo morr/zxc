@@ -5,7 +5,8 @@ pub fn spawn_base(
     assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
-    let grid_pos = IVec2::new(0, 0);
+    let structure_size = IVec2::new(BASE_WIDTH, BASE_HEIGHT);
+    let structure_grid_pos = IVec2::new(0, 0);
 
     commands
         .spawn((
@@ -14,11 +15,13 @@ pub fn spawn_base(
             SpriteBundle {
                 texture: assets.castle.clone(),
                 sprite: Sprite {
-                    custom_size: Some(Vec2::new(BASE_WIDTH * TILE_SIZE, BASE_HEIGHT * TILE_SIZE)),
+                    custom_size: Some(structure_size.grid_tile_edge_to_world()),
                     ..default()
                 },
                 transform: Transform::from_translation(
-                    grid_pos.grid_tile_edge_to_world().extend(STRUCTURE_Z_INDEX),
+                    (structure_grid_pos.grid_tile_edge_to_world()
+                        + structure_size.grid_tile_edge_to_world() / 2.0)
+                        .extend(STRUCTURE_Z_INDEX),
                 ),
                 ..default()
             },
@@ -28,8 +31,8 @@ pub fn spawn_base(
         });
 
     arc_navmesh.write().update_cost(
-        (grid_pos.x - (BASE_WIDTH / 2.0) as i32)..(grid_pos.x + (BASE_WIDTH / 2.0) as i32),
-        (grid_pos.y - (BASE_HEIGHT / 2.0) as i32)..(grid_pos.x + (BASE_HEIGHT / 2.0) as i32),
+        (structure_grid_pos.x)..(structure_grid_pos.x + structure_size.x),
+        (structure_grid_pos.y)..(structure_grid_pos.x + structure_size.y),
         None,
     )
 }

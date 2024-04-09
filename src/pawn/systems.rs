@@ -19,7 +19,7 @@ pub fn spawn_pawns(
     // let material_handle = materials.add(material);
 
     let mut rng = rand::thread_rng();
-    let radius = TILE_SIZE * f32::max(BASE_WIDTH, BASE_HEIGHT);
+    let radius = TILE_SIZE * i32::max(BASE_WIDTH, BASE_HEIGHT) as f32;
 
     let transform = query.single();
 
