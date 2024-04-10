@@ -1,7 +1,7 @@
 use bevy::sprite::MaterialMesh2dBundle;
 use rand::Rng;
 
-use self::structure::{Structure, BASE_HEIGHT, BASE_WIDTH};
+use self::structure::{Warehouse, BASE_HEIGHT, BASE_WIDTH};
 
 use super::*;
 
@@ -9,7 +9,7 @@ pub fn spawn_pawns(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     assets: Res<AssetsCollection>,
-    query: Query<&Transform, With<Structure>>,
+    query: Query<&Transform, With<Warehouse>>,
 ) {
     // println!("Spawning pawns");
 

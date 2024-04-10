@@ -10,7 +10,7 @@ pub fn spawn_base(
 
     commands
         .spawn((
-            Structure {},
+            Warehouse {},
             Name::new("Base"),
             SpriteBundle {
                 texture: assets.castle.clone(),
@@ -35,4 +35,12 @@ pub fn spawn_base(
         (structure_grid_pos.y)..(structure_grid_pos.x + structure_size.y),
         None,
     )
+}
+
+pub fn spawn_farm(
+    mut commands: Commands,
+) {
+    // commands
+    //     .spawn((
+    //     });
 }
