@@ -3,18 +3,16 @@ use super::*;
 pub const BASE_WIDTH: i32 = 8;
 pub const BASE_HEIGHT: i32 = 14;
 
-macro_rules! define_building_types {
-    ($($name:ident),*) => {
-        #[derive(Debug, Clone, Eq, PartialEq, Hash, States)]
-        pub enum BuildingType {
-            $($name),*
-        }
+#[derive(Component)]
+pub struct Warehouse {}
 
-        $(
-            #[derive(Component)]
-            pub struct $name;
-        )*
-    };
-}
+#[derive(Component)]
+pub struct FarmTile {}
 
-define_building_types!(Warehouse, Home, FarmTile);
+// #[derive(Bundle)]
+// pub struct StructureBundle {
+//     pub structure: Structure,
+//     pub name: Name,
+//     // pub mesh_bundle: MaterialMesh2dBundle<ColorMaterial>,
+//     pub sprite_bundle: SpriteBundle,
+// }

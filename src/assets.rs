@@ -26,6 +26,8 @@ pub struct AssetsCollection {
 pub struct TextureAssets {
     #[asset(path = "sprites/castle_complete.png")] // https://fin-nio.itch.io/pixel-houses
     pub castle: Handle<Image>,
+    #[asset(path = "sprites/dirt.png")] // SBS - Tiny Texture Pack 2 - 128x128
+    pub dirt: Handle<Image>,
 }
 
 impl FromWorld for AssetsCollection {
