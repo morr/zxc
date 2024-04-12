@@ -13,6 +13,7 @@ macro_rules! expose_submodules {
 
 pub mod assets;
 pub mod camera;
+pub mod daylight;
 pub mod input;
 pub mod map;
 pub mod movement;
@@ -27,6 +28,7 @@ pub mod utils;
 
 pub use crate::assets::*;
 pub use crate::camera::*;
+pub use crate::daylight::*;
 pub use crate::input::*;
 pub use crate::map::*;
 pub use crate::movement::*;

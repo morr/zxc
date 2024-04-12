@@ -35,6 +35,7 @@ fn main() {
             tasks_queues::TaskQueuesPlugin,
             settings::SettingsPlugin,
             assets::AssetsPlugin,
+            daylight::DaylightPlugin,
             map::MapPlugin,
             movement::MovementPlugin,
             navigation::NavigationPlugin,
