@@ -47,11 +47,11 @@ fn main() {
         //     bevy::diagnostic::LogDiagnosticsPlugin::default(),
         //     bevy::diagnostic::FrameTimeDiagnosticsPlugin::default(),
         // ))
-        .insert_resource(ClearColor(Color::rgb(0.1, 0.0, 0.15)))
-        .insert_resource(AmbientLight {
-            color: Color::default(),
-            brightness: 0.75,
-        })
+        // .insert_resource(ClearColor(Color::rgb(0.1, 0.0, 0.15)))
+        // .insert_resource(AmbientLight {
+        //     color: Color::default(),
+        //     brightness: 9.75,
+        // })
         // .insert_resource(ClearColor(Color::rgba_u8(
         //     BG_COLOR.0, BG_COLOR.1, BG_COLOR.2, 0,
         // )))
