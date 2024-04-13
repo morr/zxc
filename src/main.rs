@@ -33,13 +33,13 @@ fn main() {
             BevyMagicLight2DPlugin,
         ))
         .insert_resource(BevyMagicLight2DSettings {
-            light_pass_params: LightPassParams {
-                reservoir_size: 32,
-                smooth_kernel_size: (3, 3),
-                direct_light_contrib: 0.5,
-                indirect_light_contrib: 0.5,
-                ..default()
-            },
+            // light_pass_params: LightPassParams {
+            //     reservoir_size: 32,
+            //     smooth_kernel_size: (3, 3),
+            //     direct_light_contrib: 0.5,
+            //     indirect_light_contrib: 0.5,
+            //     ..default()
+            // },
             ..default()
         })
         // .add_plugins(WorldInspectorPlugin::new())
