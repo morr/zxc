@@ -42,7 +42,8 @@ fn main() {
             // },
             ..default()
         })
-        // .add_plugins(WorldInspectorPlugin::new())
+        // .add_plugins(bevy_inspector_egui::quick::WorldInspectorPlugin::new())
+        .add_plugins(bevy_inspector_egui::quick::ResourceInspectorPlugin::<BevyMagicLight2DSettings>::default())
         // .add_plugins(FilterQueryInspectorPlugin::<With<structure::Structure>>::default())
         // .add_plugins(FilterQueryInspectorPlugin::<With<Movement>>::default())
         // .add_plugins(bevy_framepace::FramepacePlugin) // this fixes bevy input lag https://github.com/bevyengine/bevy/issues/3317

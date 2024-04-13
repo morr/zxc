@@ -135,7 +135,7 @@ fn spawn_camera(mut commands: Commands, camera_targets: Res<CameraTargets>) {
             Name::new("main_camera"),
             FloorCamera,
         ))
-        .insert(SpriteCamera)
+        // .insert(SpriteCamera)
         // .spawn({
         //     let mut camera = Camera2dBundle::default();
         //     println!("{:?}", camera.projection);
