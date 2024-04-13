@@ -9,7 +9,7 @@ pub fn mouse_input(
     // hovered_tile_pos: &mut ResMut<HoveredTilePos>,
     q_window: Query<&Window, With<PrimaryWindow>>,
     // query to get camera transform
-    q_camera: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
+    q_camera: Query<(&Camera, &GlobalTransform), With<FloorCamera>>,
     mut hover_event_writer: EventWriter<HoverTileEvent>,
     mut click_event_writer: EventWriter<ClickTileEvent>,
     mut prev_hovered_tile_pos: ResMut<PrevHoveredTilePos>,

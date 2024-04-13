@@ -1,11 +1,14 @@
-use bevy::window::PresentMode;
+use bevy::{
+    render::texture::{ImageFilterMode, ImageSamplerDescriptor},
+    window::PresentMode,
+};
 
 use zxc::*;
 
 fn main() {
     App::new()
         .insert_resource(Msaa::Off)
-        .add_plugins(
+        .add_plugins((
             DefaultPlugins
                 .set(ImagePlugin::default_nearest())
                 .set(WindowPlugin {
@@ -19,8 +22,26 @@ fn main() {
                         ..default()
                     }),
                     ..default()
+                })
+                .set(ImagePlugin {
+                    default_sampler: ImageSamplerDescriptor {
+                        mag_filter: ImageFilterMode::Nearest,
+                        min_filter: ImageFilterMode::Nearest,
+                        ..default()
+                    },
                 }),
-        )
+            BevyMagicLight2DPlugin,
+        ))
+        .insert_resource(BevyMagicLight2DSettings {
+            light_pass_params: LightPassParams {
+                reservoir_size: 32,
+                smooth_kernel_size: (3, 3),
+                direct_light_contrib: 0.5,
+                indirect_light_contrib: 0.5,
+                ..default()
+            },
+            ..default()
+        })
         // .add_plugins(WorldInspectorPlugin::new())
         // .add_plugins(FilterQueryInspectorPlugin::<With<structure::Structure>>::default())
         // .add_plugins(FilterQueryInspectorPlugin::<With<Movement>>::default())
