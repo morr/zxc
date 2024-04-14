@@ -1,5 +1,4 @@
 use super::*;
-use bevy::render::camera::RenderTarget;
 use bevy_pancam::PanCam;
 use bevy_pancam::PanCamPlugin;
 
@@ -15,95 +14,7 @@ impl Plugin for CameraPlugin {
     }
 }
 
-fn spawn_camera(mut commands: Commands, camera_targets: Res<CameraTargets>) {
-    // let mut occluders = vec![];
-    // let occluder_entity = commands
-    //     .spawn((
-    //         SpatialBundle::from_transform(Transform::from_translation(Vec3::new(0., 0., 0.))),
-    //         LightOccluder2D {
-    //             h_size: Vec2::new(40.0, 20.0),
-    //         },
-    //     ))
-    //     .id();
-    //
-    // occluders.push(occluder_entity);
-    //
-    // commands
-    //     .spawn(SpatialBundle::default())
-    //     .insert(Name::new("occluders"))
-    //     .push_children(&occluders);
-
-    // Add lights.
-    // let mut lights = vec![];
-    // {
-    //     let spawn_light = |cmd: &mut Commands,
-    //                        x: f32,
-    //                        y: f32,
-    //                        name: &'static str,
-    //                        light_source: OmniLightSource2D| {
-    //         return cmd
-    //             .spawn(Name::new(name))
-    //             .insert(light_source)
-    //             .insert(SpatialBundle {
-    //                 transform: Transform {
-    //                     translation: Vec3::new(x, y, 0.0),
-    //                     ..default()
-    //                 },
-    //                 ..default()
-    //             })
-    //             .id();
-    //     };
-    //
-    //     lights.push(spawn_light(
-    //         &mut commands,
-    //         -128.,
-    //         -128.,
-    //         "left",
-    //         OmniLightSource2D {
-    //             intensity: 1.0,
-    //             color: Color::rgb_u8(255, 0, 0),
-    //             falloff: Vec3::new(1.5, 10.0, 0.005),
-    //             ..default()
-    //         },
-    //     ));
-    //     lights.push(spawn_light(
-    //         &mut commands,
-    //         128.,
-    //         -128.,
-    //         "right",
-    //         OmniLightSource2D {
-    //             intensity: 1.0,
-    //             color: Color::rgb_u8(0, 0, 255),
-    //             falloff: Vec3::new(1.5, 10.0, 0.005),
-    //             ..default()
-    //         },
-    //     ));
-    //     lights.push(spawn_light(
-    //         &mut commands,
-    //         0.,
-    //         128.,
-    //         "rop",
-    //         OmniLightSource2D {
-    //             intensity: 1.0,
-    //             color: Color::rgb_u8(0, 255, 0),
-    //             falloff: Vec3::new(1.5, 10.0, 0.005),
-    //             ..default()
-    //         },
-    //     ));
-    // }
-    // commands
-    //     .spawn(SpatialBundle::default())
-    //     .insert(Name::new("lights"))
-    //     .push_children(&lights);
-
-    commands.spawn((
-        SkylightLight2D {
-            color: Color::rgb_u8(255, 244, 229),
-            intensity: 0.15,
-        },
-        Name::new("global_skylight"),
-    ));
-
+fn spawn_camera(mut commands: Commands) { // , camera_targets: Res<CameraTargets>) {
     commands
         .spawn((
             Camera2dBundle {
@@ -125,11 +36,11 @@ fn spawn_camera(mut commands: Commands, camera_targets: Res<CameraTargets>) {
                     // ... any other settings you want to change ...
                     ..default()
                 },
-                camera: Camera {
-                    hdr: true,
-                    target: RenderTarget::Image(camera_targets.floor_target.clone()),
-                    ..default()
-                },
+                // camera: Camera {
+                //     hdr: true,
+                //     target: RenderTarget::Image(camera_targets.floor_target.clone()),
+                //     ..default()
+                // },
                 ..default()
             },
             Name::new("main_camera"),
