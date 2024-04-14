@@ -1,6 +1,6 @@
 use super::*;
 
-pub fn apply_movement(
+pub fn move_moving_entities(
     mut commands: Commands,
     mut query_movement: Query<(Entity, &mut Movement, &mut Transform), With<MovementMoving>>,
     time: Res<Time>,
