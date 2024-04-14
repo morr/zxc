@@ -1,7 +1,5 @@
 use crate::*;
 
-const DAY_DURATION: f32 = 60.0; // Duration of a full day cycle in seconds
-
 pub struct DaylightPlugin;
 
 impl Plugin for DaylightPlugin {

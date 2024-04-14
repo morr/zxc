@@ -16,6 +16,8 @@ pub const STRUCTURE_Z_INDEX: f32 = 10.0;
 pub const PAWN_Z_INDEX: f32 = 20.0;
 pub const NIGHT_Z_INDEX: f32 = 100.0;
 
+pub const DAY_DURATION: f32 = 60.0; // Duration of a full day cycle in seconds
+
 #[derive(Resource, Default)]
 pub struct Settings {
     // pub time_scale: f32,
