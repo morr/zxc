@@ -29,28 +29,30 @@ pub struct Pawn {
 // }
 
 
-// macro_rules! define_pawn_statuses {
-//     // This pattern matches each enum variant and its corresponding structure component.
-//     ($(($name:ident, $struct_name:ident)),*) => {
-//         #[derive(Debug)]
-//         pub enum PawnStatus {
-//             $($name),*
-//         }
-//
-//         $(
-//             #[derive(Component)]
-//             pub struct $struct_name;
-//         )*
-//     };
-// }
-//
-// // Use the macro to define both the enum and the corresponding structure components.
-// define_buildings_and_structures!(
-//     (Base, BaseStructure),
-//     (Home, HomeStructure),
-//     (Warehouse, WarehouseStructure),
-//     (Farm, FarmStructure)
-// );
+pub mod pawn_status {
+    use super::*;
+
+    macro_rules! define_pawn_statuses {
+        // This pattern matches each enum variant and its corresponding structure component.
+        ($(($enum_name:ident, $component_name:ident)),*) => {
+            #[derive(Debug)]
+            pub enum PawnStatus {
+                $($enum_name),*
+            }
+
+            $(
+                #[derive(Component)]
+                pub struct $component_name;
+            )*
+        };
+    }
+    //
+    // // Use the macro to define both the enum and the corresponding structure components.
+    define_pawn_statuses!(
+        (Idle, PawnIdle),
+        (Moving, PawnMoving)
+    );
+}
 
 #[derive(Bundle)]
 pub struct PawnBundle {
