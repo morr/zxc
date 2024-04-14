@@ -40,7 +40,7 @@ fn day_night_cycle_system(
     elapsed_time: Res<ElapsedTime>,
     mut query: Query<&mut Sprite, With<NightOverlay>>,
 ) {
-    let time_of_day = (elapsed_time.0 % DAY_DURATION) / DAY_DURATION;
+    let time_of_day = ((elapsed_time.0 + DAY_DURATION / 2.0) % DAY_DURATION) / DAY_DURATION;
     println!("{}", time_of_day);
 
     let theta = time_of_day * 2.0 * std::f32::consts::PI; // Full cycle from 0 to 2π
