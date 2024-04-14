@@ -1,44 +1,20 @@
-use bevy::sprite::MaterialMesh2dBundle;
-
 use super::*;
 
-#[derive(Component, Default)]
-pub struct Pawn {
-    // pub age: u32,
-    // pub retry_pathfinding_timer: Timer,
-}
-
-// impl Default for Pawn {
-//     fn default() -> Self {
-//         // let mut rng = rand::thread_rng();
-//
-//         Self {
-//             // age: rng.gen_range(14..32),
-//             // retry_pathfinding_timer: Timer::new(Duration::from_secs(0), TimerMode::Once),
-//         }
-//     }
-// }
-
-// #[derive(Component, Debug, Clone, Eq, PartialEq, Hash, Default, States)]
-// pub enum PawnStatus {
-//     #[default]
-//     Idle,
-//     Pathfinding,
-//     PathfindingError,
-//     Moving,
-// }
-
-
 pub mod pawn_status {
-    use super::*;
+    use bevy::prelude::*; // Assuming you're using Bevy for the `Component` derive
 
     macro_rules! define_pawn_statuses {
-        // This pattern matches each enum variant and its corresponding structure component.
-        ($(($enum_name:ident, $component_name:ident)),*) => {
-            #[derive(Debug)]
+        // Match a tuple of tuples, with the first one treated as default
+        (($first_enum_name:ident, $first_component_name:ident) $(, ($enum_name:ident, $component_name:ident))*) => {
+            #[derive(Debug, Default)] // Use the standard Default derive
             pub enum PawnStatus {
+                #[default] // This marks the first variant as the default.
+                $first_enum_name,
                 $($enum_name),*
             }
+
+            #[derive(Component)]
+            pub struct $first_component_name;
 
             $(
                 #[derive(Component)]
@@ -46,12 +22,16 @@ pub mod pawn_status {
             )*
         };
     }
-    //
-    // // Use the macro to define both the enum and the corresponding structure components.
-    define_pawn_statuses!(
-        (Idle, PawnIdle),
-        (Moving, PawnMoving)
-    );
+
+    // Use the macro with the new tuple of pairs format
+    define_pawn_statuses!((Idle, PawnIdle), (Moving, PawnMoving));
+}
+
+#[derive(Component, Default)]
+pub struct Pawn {
+    // pub status: pawn_status::PawnStatus,
+    // pub age: u32,
+    // pub retry_pathfinding_timer: Timer,
 }
 
 // #[derive(Bundle)]
