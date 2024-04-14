@@ -18,6 +18,30 @@ impl Default for TimeScale {
 #[derive(Resource, Deref, DerefMut, Default)]
 pub struct ElapsedTime(pub f32);
 
+impl ElapsedTime {
+    pub fn total_seconds(&self) -> f32 {
+        self.0.floor()
+    }
+
+    pub fn game_time_of_day(&self) -> f32 {
+        (self.0 % DAY_DURATION) / DAY_DURATION
+        // ((self.0 + DAY_DURATION / 2.0) % DAY_DURATION) / DAY_DURATION
+    }
+
+    pub fn game_day(&self) -> f32 {
+        (self.0 / DAY_DURATION).floor()
+    }
+
+    pub fn game_hour(&self) -> f32 {
+        ((self.0 % DAY_DURATION) / HOUR_DURATION).floor()
+    }
+
+    pub fn game_minute(&self) -> f32 {
+        (((self.0 % DAY_DURATION) % HOUR_DURATION) / MINUTE_DURATION).floor()
+    }
+
+}
+
 pub struct StoryTimePlugin;
 
 impl Plugin for StoryTimePlugin {
