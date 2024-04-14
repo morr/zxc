@@ -15,8 +15,14 @@ impl Default for TimeScale {
     }
 }
 
-#[derive(Resource, Deref, DerefMut, Default)]
+#[derive(Resource, Deref, DerefMut)]
 pub struct ElapsedTime(pub f32);
+
+impl Default for ElapsedTime {
+    fn default() -> Self {
+        Self(HOUR_DURATION * 10.0)
+    }
+}
 
 impl ElapsedTime {
     pub fn total_seconds(&self) -> f32 {
@@ -25,7 +31,6 @@ impl ElapsedTime {
 
     pub fn game_time_of_day(&self) -> f32 {
         (self.0 % DAY_DURATION) / DAY_DURATION
-        // ((self.0 + DAY_DURATION / 2.0) % DAY_DURATION) / DAY_DURATION
     }
 
     pub fn game_day(&self) -> f32 {
