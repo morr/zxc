@@ -23,17 +23,17 @@ pub fn spawn_pawns(
 
     let transform = query.single();
 
-    for i in 0..STARTING_PAWNS {
+    for _i in 0..STARTING_PAWNS {
         let random_angle: f32 = rng.gen_range(0.0..360.0);
         let x = transform.translation.x + random_angle.cos() * radius;
         let y = transform.translation.y + random_angle.sin() * radius;
 
         commands
-            .spawn(PawnBundle {
-                pawn: Pawn::default(),
-                name: Name::new(format!("Pawn {i}")),
+            .spawn((
+                Pawn::default(),
+                Name::new("Pawn"),
                 // status: PawnStatus::Idle,
-                mesh_bundle: MaterialMesh2dBundle {
+                MaterialMesh2dBundle {
                     mesh: mesh_handle.clone().into(),
                     material: assets.pawn_idle.clone(),
                     transform: Transform::from_xyz(
@@ -43,12 +43,12 @@ pub fn spawn_pawns(
                     ),
                     ..default()
                 },
-                movement: Movement::new(PAWN_SPEED),
+                Movement::new(PAWN_SPEED),
                 // movement_bundle: MovementBundle {
                 //     movement: Movement::new(PAWN_SPEED),
                 //     // pathfind_status: PathfindStatus(PathfindStatusEnum::Idle),
                 // },
-            })
+            ))
             .insert(ShowAabbGizmo {
                 color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
             });

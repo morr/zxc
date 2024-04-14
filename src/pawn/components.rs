@@ -54,12 +54,12 @@ pub mod pawn_status {
     );
 }
 
-#[derive(Bundle)]
-pub struct PawnBundle {
-    pub pawn: Pawn,
-    pub name: Name,
-    pub mesh_bundle: MaterialMesh2dBundle<ColorMaterial>,
-    pub movement: Movement,
-    // pub movement_bundle: MovementBundle
-    // pub status: PawnStatus,
-}
+// #[derive(Bundle)]
+// pub struct PawnBundle {
+//     pub pawn: Pawn,
+//     pub name: Name,
+//     pub mesh_bundle: MaterialMesh2dBundle<ColorMaterial>,
+//     pub movement: Movement,
+//     // pub movement_bundle: MovementBundle
+//     // pub status: PawnStatus,
+// }
