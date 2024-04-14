@@ -1,5 +1,4 @@
 use super::*;
-use bevy::render::camera::RenderTarget;
 use bevy_pancam::PanCam;
 use bevy_pancam::PanCamPlugin;
 
@@ -15,7 +14,7 @@ impl Plugin for CameraPlugin {
     }
 }
 
-fn spawn_camera(mut commands: Commands, camera_targets: Res<CameraTargets>) {
+fn spawn_camera(mut commands: Commands) { // , camera_targets: Res<CameraTargets>) {
     commands
         .spawn((
             Camera2dBundle {
@@ -37,11 +36,11 @@ fn spawn_camera(mut commands: Commands, camera_targets: Res<CameraTargets>) {
                     // ... any other settings you want to change ...
                     ..default()
                 },
-                camera: Camera {
-                    hdr: true,
-                    target: RenderTarget::Image(camera_targets.floor_target.clone()),
-                    ..default()
-                },
+                // camera: Camera {
+                //     hdr: true,
+                //     target: RenderTarget::Image(camera_targets.floor_target.clone()),
+                //     ..default()
+                // },
                 ..default()
             },
             Name::new("main_camera"),
