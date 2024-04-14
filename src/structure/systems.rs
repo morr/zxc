@@ -11,6 +11,7 @@ pub fn spawn_base(
     commands
         .spawn((
             Warehouse {},
+            Name::new("Warehouse"),
             SpriteBundle {
                 texture: assets.castle.clone(),
                 sprite: Sprite {
@@ -53,6 +54,7 @@ pub fn spawn_farm(
             commands
                 .spawn((
                     FarmTile {},
+                    Name::new("FarmTile"),
                     SpriteBundle {
                         texture: assets.dirt.clone(),
                         sprite: Sprite {
