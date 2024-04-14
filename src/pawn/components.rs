@@ -29,7 +29,7 @@ pub mod pawn_status {
 
 #[derive(Component, Default)]
 pub struct Pawn {
-    // pub status: pawn_status::PawnStatus,
+    pub status: pawn_status::PawnStatus,
     // pub age: u32,
     // pub retry_pathfinding_timer: Timer,
 }
