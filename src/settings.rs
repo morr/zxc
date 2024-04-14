@@ -14,6 +14,7 @@ pub const PAWN_SPEED: f32 = TILE_SIZE * 3.0;
 pub const TILE_Z_INDEX: f32 = 0.0;
 pub const STRUCTURE_Z_INDEX: f32 = 10.0;
 pub const PAWN_Z_INDEX: f32 = 20.0;
+pub const NIGHT_Z_INDEX: f32 = 100.0;
 
 #[derive(Resource, Default)]
 pub struct Settings {
