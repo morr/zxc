@@ -19,6 +19,7 @@ pub const NIGHT_Z_INDEX: f32 = 100.0;
 pub const DAY_DURATION: f32 = 60.0; // Duration of a full day cycle in seconds
 pub const HOUR_DURATION: f32 = DAY_DURATION / 24.0;
 pub const MINUTE_DURATION: f32 = HOUR_DURATION / 60.0;
+pub const GAME_START_TIME: f32 = 10.0; // 10AM
 
 #[derive(Resource, Default)]
 pub struct Settings {

@@ -76,11 +76,12 @@ fn format_ui_line(
     };
 
     format!(
-        "Total Seconds: {} Day: {} {}:{} {} Queue: {}",
-        elapsed_time.total_seconds(),
+        // "Total Seconds: {} Day: {} {:02}:{:02} {} Queue: {}",
+        "Day: {} {:02}:{:02} {} Queue: {}",
+        // elapsed_time.total_seconds(),
         elapsed_time.game_day(),
-        elapsed_time.game_hour(),
-        elapsed_time.game_minute(),
+        elapsed_time.game_hours(),
+        elapsed_time.game_minutes(),
         speed_part,
         queue_counter.get()
     )
