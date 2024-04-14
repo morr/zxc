@@ -1,5 +1,6 @@
 use bevy::sprite::MaterialMesh2dBundle;
 use rand::Rng;
+use rand_distr::{Distribution, UnitCircle};
 
 use self::structure::{Warehouse, BASE_HEIGHT, BASE_WIDTH};
 
@@ -101,9 +102,12 @@ pub fn wander_idle_pawns(
 
         let world_pos = transform.translation.truncate();
 
-        let random_angle: f32 = rng.gen_range(0.0..360.0);
+        // let random_angle: f32 = rng.gen_range(0.0..360.0);
+        // let tiles_to_move = rng.gen_range(3.0..20.0) * TILE_SIZE;
+        // let move_vector = Vec2::new(random_angle.cos(), random_angle.sin());
+
+        let move_vector: Vec2 = UnitCircle.sample(&mut rng).into();
         let tiles_to_move = rng.gen_range(3.0..20.0) * TILE_SIZE;
-        let move_vector = Vec2::new(random_angle.cos(), random_angle.sin());
 
         // movement.to_pathfinding(
         //     entity,
