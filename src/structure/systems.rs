@@ -39,7 +39,7 @@ pub fn spawn_base(
 pub fn spawn_farm(
     mut commands: Commands,
     assets: Res<TextureAssets>,
-    // arc_navmesh: ResMut<ArcNavmesh>,
+    arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     let size = IVec2::new(1, 1);
     let grid_tile_start = IVec2::new(-13, 0);
@@ -51,30 +51,29 @@ pub fn spawn_farm(
                 grid_tile_start.y + size.y * y,
             );
 
-            commands
-                .spawn((
-                    FarmTile {},
-                    Name::new("FarmTile"),
-                    SpriteBundle {
-                        texture: assets.dirt.clone(),
-                        sprite: Sprite {
-                            custom_size: Some(size.grid_tile_edge_to_world()),
-                            ..default()
-                        },
-                        transform: Transform::from_translation(
-                            (grid_tile.grid_tile_edge_to_world()
-                                + size.grid_tile_edge_to_world() / 2.0)
-                                .extend(STRUCTURE_Z_INDEX),
-                        ),
+            commands.spawn((
+                FarmTile {},
+                Name::new("FarmTile"),
+                SpriteBundle {
+                    texture: assets.dirt.clone(),
+                    sprite: Sprite {
+                        custom_size: Some(size.grid_tile_edge_to_world()),
                         ..default()
                     },
-                ));
+                    transform: Transform::from_translation(
+                        (grid_tile.grid_tile_edge_to_world()
+                            + size.grid_tile_edge_to_world() / 2.0)
+                            .extend(STRUCTURE_Z_INDEX),
+                    ),
+                    ..default()
+                },
+            ));
+
+            arc_navmesh.write().update_cost(
+                grid_tile.x..grid_tile.x + size.x,
+                grid_tile.y..grid_tile.y + size.y,
+                Some((0.3 * COST_MULTIPLIER) as i32),
+            );
         }
     }
-
-    // arc_navmesh.write().update_cost(
-    //     (structure_grid_pos.x)..(structure_grid_pos.x + structure_size.x),
-    //     (structure_grid_pos.y)..(structure_grid_pos.x + structure_size.y),
-    //     None,
-    // )
 }

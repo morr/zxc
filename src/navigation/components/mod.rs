@@ -5,7 +5,7 @@ use super::*;
 expose_submodules!(navtile, navmesh);
 
 pub const COST_MULTIPLIER: f32 = 100.0;
-const DEFAULT_COST: i32 = 1;
+pub const DEFAULT_COST: i32 = 1;
 
 const INITIAL_NAV_COST: i32 = (DEFAULT_COST as f32 * COST_MULTIPLIER) as i32;
 
