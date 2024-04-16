@@ -1,0 +1,65 @@
+#!/usr/bin/env ruby
+# Ruby script to convert project files into a format suitable for GPT-4 input.
+#
+# - Avoid using external gems
+# - It must parse content of current directory recursively.
+# - It must print output into stdout.
+# - Format each file and its output as it suits better for GPT-4 to understand it
+# example of possible formatting:
+# `<AS_MANY_===_AS_YOU_LIKE>`Start:`<FILE_PATH_RELATIVE_TO_THE_PROJECT_DIR. PATH_STARTS_WITH "./">` `<AS_MANY_===_AS_YOU_LIKE>`
+# ```<SYNTAX_TYPE>
+# <FILE_CONTENT>
+# ```
+# `<AS_MANY_===_AS_YOU_LIKE>`End:`<FILE_PATH_RELATIVE_TO_THE_PROJECT_DIR. PATH_STARTS_WITH "./">` `<AS_MANY_===_AS_YOU_LIKE>`
+# - It must respect `.gitignore`. For example in folder `/Users/morr/develop/zxc` it should not print content of `/Users/morr/develop/zxc/target/debug/libzxc.rlib` while `/target` is in  `gitignore`.
+# - Add newlines between outputs of files
+# - Use git command line tools to respect .gitignore rules and processes files not yet staged in git.
+# - It must ignore content of `.git` folder
+# - It must ignore content of `Berksfile.lock', 'Gemfile.lock','yarn.lock','Cargo.lock','ai'
+# - Ignore images and other binary files
+# - There is no `File.binary?` method in ruby.
+
+require 'open3'
+
+SYNTAX_TYPES = {
+  '.rs' => 'rust',
+  '.toml' => 'toml',
+  '.js' => 'javascript',
+  '.css' => 'css',
+  '.sass' => 'sass',
+  '.scss' => 'scss',
+  '.rb' => 'ruby',
+  '.html' => 'html',
+  '.slim' => 'slim',
+  '.vue' => 'vue'
+}.freeze
+
+LOCK_FILES = ['Berksfile.lock', 'Gemfile.lock', 'yarn.lock', 'Cargo.lock', 'ai'].freeze
+IGNORED_EXTENSIONS = ['.png', '.jpg', '.gif', '.bmp', '.tiff', '.ico'].freeze
+
+def git_ls_files
+  `git ls-files -co --exclude-standard`.split("\n")
+end
+
+def binary_file?(file_path)
+  `file --brief --mime-type "#{file_path}"`.strip.split('/').first == 'image'
+end
+
+def print_file_content(file_path)
+  return if IGNORED_EXTENSIONS.include?(File.extname(file_path).downcase) || binary_file?(file_path)
+
+  syntax_type = SYNTAX_TYPES[File.extname(file_path).downcase] || 'text'
+  content = File.read(file_path)
+  separator = '=' * 50
+  puts "#{separator}Start:#{file_path} #{separator}"
+  puts "```#{syntax_type}"
+  puts content
+  puts '```'
+  puts "#{separator}End:#{file_path} #{separator}\n\n"
+end
+
+git_ls_files.each do |file|
+  next if file.include?('/.git/') || LOCK_FILES.any? { |lock_file| file.end_with?(lock_file) }
+
+  print_file_content(file) if SYNTAX_TYPES.keys.include?(File.extname(file).downcase)
+end
