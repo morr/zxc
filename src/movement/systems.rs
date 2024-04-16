@@ -35,7 +35,8 @@ fn move_to_target_location(
         return;
     }
 
-    let current_tile = transform.translation.truncate().world_pos_to_grid();
+    let current_point_world = transform.translation.truncate();
+    let current_tile = current_point_world.world_pos_to_grid();
     let speed_modifier = arc_navmesh
         .read()
         .navtiles
@@ -48,16 +49,17 @@ fn move_to_target_location(
 
     let target_point_tile = movement.path.front().unwrap();
     let target_point_world = target_point_tile.grid_tile_center_to_world();
-    let direction = (target_point_world - transform.translation.truncate()).normalize_or_zero();
-    let distance_between_points = (target_point_world - transform.translation.truncate()).length();
+    let direction = (target_point_world - current_point_world).normalize_or_zero();
+    let distance_between_points = (target_point_world - current_point_world).length();
 
     if distance_to_move >= distance_between_points {
         transform.translation = target_point_world.extend(transform.translation.z);
         movement.path.pop_front();
+
         let remaining_distance = distance_to_move - distance_between_points;
         let remaining_time = remaining_distance / actual_speed;
 
-        if remaining_time > 0.0 && !movement.path.is_empty() {
+        if remaining_time > 0.0 {
             move_to_target_location(
                 entity,
                 movement,
