@@ -42,7 +42,7 @@ fn move_to_target_location(
         .navtiles
         .get(current_tile.x, current_tile.y)
         .cost
-        .map_or(DEFAULT_COST as f32, |cost| cost as f32 / COST_MULTIPLIER);
+        .map_or(1.0, |cost| COST_MULTIPLIER / cost as f32);
 
     let actual_speed = movement.speed * speed_modifier;
     let distance_to_move = actual_speed * remaining_time;

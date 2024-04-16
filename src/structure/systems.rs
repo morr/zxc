@@ -72,7 +72,7 @@ pub fn spawn_farm(
             arc_navmesh.write().update_cost(
                 grid_tile.x..grid_tile.x + size.x,
                 grid_tile.y..grid_tile.y + size.y,
-                Some((0.3 * COST_MULTIPLIER) as i32),
+                Some((3.0 * COST_MULTIPLIER) as i32),
             );
         }
     }
