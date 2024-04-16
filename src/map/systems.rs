@@ -1,16 +1,13 @@
 use super::*;
 
-pub fn spawn_map(mut commands: Commands, asset_server: Res<AssetServer>) {
-    println!("spawn map");
-    // https://itch.io/game-assets/free/tag-textures
-    // https://screamingbrainstudios.itch.io/tiny-texture-pack/download/eyJpZCI6MTAzMzEyOSwiZXhwaXJlcyI6MTcxMDc5ODI3OX0%3d.%2f%2bodleBeo8EbYeM%2bKnn3UZPKq2U%3d
-    let texture_handle = asset_server.load("sprites/grass.png");
+pub fn spawn_map(mut commands: Commands, assets: Res<TextureAssets>) {
+    // println!("spawn map");
 
     for x in -GRID_SIZE_HALF..GRID_SIZE_HALF {
         for y in -GRID_SIZE_HALF..GRID_SIZE_HALF {
             commands
                 .spawn(SpriteBundle {
-                    texture: texture_handle.clone(),
+                    texture: assets.grass.clone(),
                     sprite: Sprite {
                         custom_size: Some(Vec2::new(TILE_SIZE, TILE_SIZE)),
                         ..default()
