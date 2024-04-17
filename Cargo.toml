@@ -11,7 +11,7 @@ bevy_framepace = "0.15.0"
 pathfinding = "4.9.1"
 bevy_asset_loader = "0.20.0"
 bevy-inspector-egui = "0.23.4"
-bevy_magic_light_2d = { git = "https://github.com/zaycev/bevy-magic-light-2d.git", branch = "main" }
+# bevy_magic_light_2d = { git = "https://github.com/zaycev/bevy-magic-light-2d.git", branch = "main" }
 rand_distr = "0.4.3"
 
 

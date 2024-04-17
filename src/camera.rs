@@ -2,6 +2,9 @@ use super::*;
 use bevy_pancam::PanCam;
 use bevy_pancam::PanCamPlugin;
 
+#[derive(Component)]
+pub struct FloorCamera;
+
 pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
@@ -9,7 +12,8 @@ impl Plugin for CameraPlugin {
         app.add_plugins(PanCamPlugin).add_systems(
             // OnExit(WorldState::Loading),
             Startup,
-            spawn_camera.after(setup_post_processing_camera),
+            // spawn_camera.after(setup_post_processing_camera),
+            spawn_camera,
         );
     }
 }

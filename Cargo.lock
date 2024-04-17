@@ -813,17 +813,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy_magic_light_2d"
-version = "0.7.0"
-source = "git+https://github.com/zaycev/bevy-magic-light-2d.git?branch=main#4a953699d4683b4b77917b10c37ed550c3cc17ed"
-dependencies = [
- "bevy",
- "bevy-inspector-egui",
- "log",
- "rand",
-]
-
-[[package]]
 name = "bevy_math"
 version = "0.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4491,7 +4480,6 @@ dependencies = [
  "bevy-inspector-egui",
  "bevy_asset_loader",
  "bevy_framepace",
- "bevy_magic_light_2d",
  "bevy_pancam",
  "pathfinding",
  "rand",
