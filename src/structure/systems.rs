@@ -3,7 +3,8 @@ use super::*;
 pub const BASE_WIDTH: i32 = 8;
 pub const BASE_HEIGHT: i32 = 14;
 pub const FARM_TILE_SIZE: i32 = 1;
-pub const HOUSE_SIZE: i32 = 3;
+pub const HOUSE_WIDTH: i32 = 4;
+pub const HOUSE_HEIGHT: i32 = 4;
 
 pub fn spawn_base(
     mut commands: Commands,
@@ -36,7 +37,7 @@ pub fn spawn_base(
 
     arc_navmesh.write().update_cost(
         (grid_tile.x)..(grid_tile.x + size.x),
-        (grid_tile.y)..(grid_tile.x + size.y),
+        (grid_tile.y)..(grid_tile.y + size.y),
         None,
     )
 }
@@ -89,7 +90,7 @@ pub fn spawn_house(
     assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
-    let size = IVec2::new(HOUSE_SIZE, HOUSE_SIZE);
+    let size = IVec2::new(HOUSE_WIDTH, HOUSE_HEIGHT);
     let grid_tile = IVec2::new(-13, -8);
 
     commands
@@ -115,7 +116,7 @@ pub fn spawn_house(
 
     arc_navmesh.write().update_cost(
         (grid_tile.x)..(grid_tile.x + size.x),
-        (grid_tile.y)..(grid_tile.x + size.y),
+        (grid_tile.y)..(grid_tile.y + size.y),
         None,
     )
 }

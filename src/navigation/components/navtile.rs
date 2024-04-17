@@ -36,22 +36,23 @@ impl Default for Navtiles {
 }
 
 impl Navtiles {
-    pub fn get(&self, x: i32, y: i32) -> &Navtile {
-        &self.0[grid_tile_to_navmesh_index(x)][grid_tile_to_navmesh_index(y)]
+    pub fn get(&self, grid_tile_x: i32, grid_tile_y: i32) -> &Navtile {
+        &self.0[grid_tile_to_navmesh_index(grid_tile_x)][grid_tile_to_navmesh_index(grid_tile_y)]
     }
 
-    pub fn get_mut(&mut self, x: i32, y: i32) -> &mut Navtile {
-        &mut self.0[grid_tile_to_navmesh_index(x)][grid_tile_to_navmesh_index(y)]
+    pub fn get_mut(&mut self, grid_tile_x: i32, grid_tile_y: i32) -> &mut Navtile {
+        &mut self.0[grid_tile_to_navmesh_index(grid_tile_x)]
+            [grid_tile_to_navmesh_index(grid_tile_y)]
     }
 
-    pub fn get_some(&self, x: i32, y: i32) -> Option<&Navtile> {
+    pub fn get_some(&self, grid_tile_x: i32, grid_tile_y: i32) -> Option<&Navtile> {
         self.0
-            .get(grid_tile_to_navmesh_index(x))?
-            .get(grid_tile_to_navmesh_index(y))
+            .get(grid_tile_to_navmesh_index(grid_tile_x))?
+            .get(grid_tile_to_navmesh_index(grid_tile_y))
     }
 
-    pub fn get_passable(&self, x: i32, y: i32) -> Option<&Navtile> {
-        let result = self.get_some(x, y);
+    pub fn get_passable(&self, grid_tile_x: i32, grid_tile_y: i32) -> Option<&Navtile> {
+        let result = self.get_some(grid_tile_x, grid_tile_y);
 
         if result?.is_passable() {
             result
