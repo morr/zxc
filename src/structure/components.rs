@@ -1,13 +1,13 @@
 use super::*;
 
-pub const BASE_WIDTH: i32 = 8;
-pub const BASE_HEIGHT: i32 = 14;
-
 #[derive(Component)]
 pub struct Warehouse {}
 
 #[derive(Component)]
 pub struct FarmTile {}
+
+#[derive(Component)]
+pub struct House {}
 
 // #[derive(Bundle)]
 // pub struct StructureBundle {

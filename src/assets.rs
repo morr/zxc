@@ -22,14 +22,24 @@ pub struct AssetsCollection {
     pub navmesh_impassable: Handle<ColorMaterial>,
 }
 
+// https://itch.io/game-assets/free/tag-textures
 #[derive(AssetCollection, Resource)]
 pub struct TextureAssets {
-    #[asset(path = "sprites/castle_complete.png")] // https://fin-nio.itch.io/pixel-houses
-    pub castle: Handle<Image>,
-    #[asset(path = "sprites/grass.png")] // https://itch.io/game-assets/free/tag-textures https://screamingbrainstudios.itch.io/tiny-texture-pack/download/eyJpZCI6MTAzMzEyOSwiZXhwaXJlcyI6MTcxMDc5ODI3OX0%3d.%2f%2bodleBeo8EbYeM%2bKnn3UZPKq2U%3d
+    #[asset(path = "sprites/grass.png")] // https://screamingbrainstudios.itch.io/tiny-texture-pack/download/eyJpZCI6MTAzMzEyOSwiZXhwaXJlcyI6MTcxMDc5ODI3OX0%3d.%2f%2bodleBeo8EbYeM%2bKnn3UZPKq2U%3d
     pub grass: Handle<Image>,
     #[asset(path = "sprites/dirt.png")] // SBS - Tiny Texture Pack 2 - 128x128
     pub dirt: Handle<Image>,
+    // https://fin-nio.itch.io/pixel-houses
+    #[asset(path = "sprites/castle_complete.png")] 
+    pub castle: Handle<Image>,
+    #[asset(path = "sprites/house_1.png")]
+    pub house_1: Handle<Image>,
+    #[asset(path = "sprites/house_2.png")]
+    pub house_2: Handle<Image>,
+    #[asset(path = "sprites/house_3.png")]
+    pub house_3: Handle<Image>,
+    #[asset(path = "sprites/house_4.png")]
+    pub house_4: Handle<Image>,
 }
 
 impl FromWorld for AssetsCollection {
