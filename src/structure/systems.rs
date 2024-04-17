@@ -48,6 +48,7 @@ pub fn spawn_farm(
 ) {
     let size = IVec2::new(FARM_TILE_SIZE, FARM_TILE_SIZE);
     let grid_tile_start = IVec2::new(-13, 0);
+    let mut navmesh = arc_navmesh.write();
 
     for x in 0..8 {
         for y in 0..5 {
@@ -74,7 +75,7 @@ pub fn spawn_farm(
                 },
             ));
 
-            arc_navmesh.write().update_cost(
+            navmesh.update_cost(
                 grid_tile.x..grid_tile.x + size.x,
                 grid_tile.y..grid_tile.y + size.y,
                 Some((3.0 * COST_MULTIPLIER) as i32),
