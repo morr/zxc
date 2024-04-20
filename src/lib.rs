@@ -13,6 +13,7 @@ macro_rules! expose_submodules {
 }
 
 pub mod assets;
+pub mod async_queue;
 pub mod camera;
 pub mod daylight;
 pub mod input;
@@ -23,12 +24,12 @@ pub mod pawn;
 pub mod settings;
 pub mod story_time;
 pub mod structure;
-pub mod tasks_queues;
 pub mod ui;
 pub mod utils;
 pub mod work_queue;
 
 pub use crate::assets::*;
+pub use crate::async_queue::*;
 pub use crate::camera::*;
 pub use crate::daylight::*;
 pub use crate::input::*;
@@ -38,7 +39,6 @@ pub use crate::navigation::*;
 pub use crate::pawn::*;
 pub use crate::settings::*;
 pub use crate::story_time::*;
-pub use crate::tasks_queues::*;
 pub use crate::ui::*;
 pub use crate::utils::*;
 pub use crate::work_queue::*;

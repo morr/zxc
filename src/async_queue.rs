@@ -7,7 +7,7 @@ use bevy::tasks::AsyncComputeTaskPool;
 
 use super::*;
 
-pub struct TaskQueuesPlugin;
+pub struct AsyncQueuePlugin;
 
 #[derive(Resource, Default)]
 pub struct AsyncQueueCounter(pub Arc<AtomicI32>);
@@ -26,7 +26,7 @@ impl AsyncQueueCounter {
     }
 }
 
-impl Plugin for TaskQueuesPlugin {
+impl Plugin for AsyncQueuePlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<AsyncQueueCounter>();
     }

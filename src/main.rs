@@ -40,7 +40,7 @@ fn main() {
             daylight::DaylightPlugin,
             camera::CameraPlugin,
             story_time::StoryTimePlugin,
-            tasks_queues::TaskQueuesPlugin,
+            async_queue::AsyncQueuePlugin,
             settings::SettingsPlugin,
             assets::AssetsPlugin,
             map::MapPlugin,

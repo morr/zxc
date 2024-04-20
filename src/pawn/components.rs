@@ -31,6 +31,8 @@ macro_rules! define_pawn_statuses {
                 entity: Entity,
                 new_status: PawnStatus,
             ) {
+                println!("PawnStatus {:?}=>{:?}", self.status, new_status);
+
                 // Remove the old status component
                 match self.status {
                     PawnStatus::$first_enum_name => {
