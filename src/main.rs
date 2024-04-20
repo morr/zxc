@@ -48,6 +48,7 @@ fn main() {
             navigation::NavigationPlugin,
             structure::StructurePlugin,
             ui::UiPlugin,
+            work_queue::WorkQueuePlugin,
             input::InputPlugin,
             pawn::PawnPlugin,
         ))

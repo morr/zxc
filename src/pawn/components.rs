@@ -24,12 +24,17 @@ pub mod pawn_status {
     }
 
     // Use the macro with the new tuple of pairs format
-    define_pawn_statuses!((Idle, PawnIdle), (Moving, PawnMoving));
+    define_pawn_statuses!(
+        (Idle, PawnIdle),
+        (Moving, PawnMoving),
+        (Working, PawnWorking)
+    );
 }
 
 #[derive(Component, Default)]
 pub struct Pawn {
     pub status: pawn_status::PawnStatus,
+    pub task: Option<Task>,
     // pub age: u32,
     // pub retry_pathfinding_timer: Timer,
 }
