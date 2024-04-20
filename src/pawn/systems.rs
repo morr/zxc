@@ -45,7 +45,7 @@ pub fn spawn_pawns(
                     ..default()
                 },
                 Movement::new(PAWN_SPEED),
-                pawn_status::PawnIdle
+                PawnIdle
                 // movement_bundle: MovementBundle {
                 //     movement: Movement::new(PAWN_SPEED),
                 //     // pathfind_status: PathfindStatus(PathfindStatusEnum::Idle),
@@ -88,7 +88,7 @@ pub fn wander_idle_pawns(
             &mut Movement,
             Option<&mut PathfindingTask>,
         ),
-        With<pawn_status::PawnIdle>,
+        With<PawnIdle>,
     >,
     // time_scale: Res<TimeScale>,
     // mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
