@@ -28,7 +28,6 @@ pub fn render_movepath(
             continue;
         }
 
-        let current_world = transform.translation.truncate();
         let color = Color::Rgba {
             red: 1.0,
             green: 1.0,
