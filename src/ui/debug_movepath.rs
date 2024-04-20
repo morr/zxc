@@ -29,26 +29,23 @@ pub fn render_movepath(
         }
 
         let current_world = transform.translation.truncate();
+        let color = Color::Rgba {
+            red: 1.0,
+            green: 1.0,
+            blue: 0.25,
+            alpha: 0.25,
+        };
 
         let mut prev_world = transform.translation.truncate();
-        for path_target in movement.path.iter() {
+        for (index, path_target) in movement.path.iter().enumerate() {
             let iter_world = path_target.grid_tile_center_to_world();
 
-            gizmos.line_2d(
-                prev_world,
-                iter_world,
-                Color::Rgba {
-                    red: 1.0,
-                    green: 1.0,
-                    blue: 0.25,
-                    alpha: 0.25,
-                },
-            );
+            if index < movement.path.len() - 1 {
+                gizmos.line_2d(prev_world, iter_world, color);
+            } else {
+                gizmos.arrow_2d(prev_world, iter_world, color);
+            }
             prev_world = iter_world;
         }
-
-        let move_target_world = movement.path.front().unwrap().grid_tile_center_to_world();
-
-        gizmos.arrow_2d(current_world, move_target_world, Color::RED);
     }
 }
