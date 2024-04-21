@@ -49,14 +49,3 @@ pub struct PathfindAnswerEvent {
     pub end_tile: IVec2,
     pub path: Option<Vec<IVec2>>,
 }
-
-// #[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
-// pub enum PathfindStatusEnum {
-//     #[default]
-//     Idle,
-//     Pathfinding,
-//     // Error,
-// }
-
-// #[derive(Component)]
-// pub struct PathfindStatus(pub PathfindStatusEnum);

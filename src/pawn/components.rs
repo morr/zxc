@@ -66,3 +66,6 @@ define_pawn_statuses!(
     (Moving, PawnMoving),
     (Working, PawnWorking)
 );
+
+#[derive(Component)]
+pub struct PawnStatusText;

@@ -9,7 +9,8 @@ use super::*;
 pub fn spawn_pawns(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    assets: Res<AssetsCollection>,
+    assets_collection: Res<AssetsCollection>,
+    font_assets: Res<FontAssets>,
     query: Query<&Transform, With<Warehouse>>,
 ) {
     // println!("Spawning pawns");
@@ -26,39 +27,54 @@ pub fn spawn_pawns(
 
     for _i in 0..STARTING_PAWNS {
         let random_angle: f32 = rng.gen_range(0.0..360.0);
-        let x = transform.translation.x + random_angle.cos() * radius;
-        let y = transform.translation.y + random_angle.sin() * radius;
+
+        let position = Vec3::new(
+            transform.translation.x + random_angle.cos() * radius,
+            transform.translation.y + random_angle.sin() * radius,
+            PAWN_Z_INDEX,
+        );
+        let pawn = Pawn::default();
+        let pawn_status_string = format!("{:?}", pawn.status);
 
         commands
             .spawn((
-                Pawn::default(),
+                pawn,
                 Name::new("Pawn"),
                 // status: PawnStatus::Idle,
                 MaterialMesh2dBundle {
                     mesh: mesh_handle.clone().into(),
-                    material: assets.pawn_idle.clone(),
-                    transform: Transform::from_xyz(
-                        grid_tile_center_to_world(world_pos_to_grid(x)),
-                        grid_tile_center_to_world(world_pos_to_grid(y)),
-                        PAWN_Z_INDEX,
-                    ),
+                    material: assets_collection.pawn_idle.clone(),
+                    transform: Transform::from_translation(position),
                     ..default()
                 },
                 Movement::new(PAWN_SPEED),
-                PawnIdle
-                // movement_bundle: MovementBundle {
-                //     movement: Movement::new(PAWN_SPEED),
-                //     // pathfind_status: PathfindStatus(PathfindStatusEnum::Idle),
-                // },
+                PawnIdle,
             ))
             .insert(ShowAabbGizmo {
                 color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
+            })
+            .with_children(|parent| {
+                parent.spawn((
+                    Text2dBundle {
+                        text: Text::from_section(
+                            pawn_status_string,
+                            TextStyle {
+                                font: font_assets.fira.clone(),
+                                font_size: 15.0,
+                                color: Color::WHITE,
+                            },
+                        ),
+                        transform: Transform::from_xyz(0.0, 25.0, PAWN_Z_INDEX),
+                        ..default()
+                    },
+                    PawnStatusText,
+                ));
             });
     }
 }
 
 pub fn update_pawn_color(
-    assets: Res<AssetsCollection>,
+    assets_collection: Res<AssetsCollection>,
     mut event_reader: EventReader<EntityStateChangeEvent<MovementState>>,
     mut query: Query<&mut Handle<ColorMaterial>>,
 ) {
@@ -67,10 +83,10 @@ pub fn update_pawn_color(
 
         if let Ok(mut material_handle) = query.get_mut(event.0) {
             *material_handle = match event.1 {
-                MovementState::Idle => assets.pawn_idle.clone(),
-                MovementState::Moving => assets.pawn_moving.clone(),
-                MovementState::Pathfinding(_end_tile) => assets.pawn_pathfinding.clone(),
-                MovementState::PathfindingError => assets.pawn_pathfinding_error.clone(),
+                MovementState::Idle => assets_collection.pawn_idle.clone(),
+                MovementState::Moving => assets_collection.pawn_moving.clone(),
+                MovementState::Pathfinding(_end_tile) => assets_collection.pawn_pathfinding.clone(),
+                MovementState::PathfindingError => assets_collection.pawn_pathfinding_error.clone(),
             };
         }
     }
