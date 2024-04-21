@@ -9,14 +9,14 @@ pub fn render_ui(
     elapsed_time: Res<ElapsedTime>,
     time_state: Res<State<TimeState>>,
     time_scale: Res<TimeScale>,
-    asset_server: Res<AssetServer>,
+    assets: Res<FontAssets>,
     queue_counter: Res<AsyncQueueCounter>,
 ) {
     commands.spawn((
         TextBundle::from_section(
             format_ui_line(&elapsed_time, &time_state, &time_scale, &queue_counter),
             TextStyle {
-                font: asset_server.load("fonts/FiraMono-Medium.ttf"),
+                font: assets.fira.clone(),
                 font_size: 24.,
                 color: Color::WHITE,
             },
@@ -32,7 +32,7 @@ pub fn render_ui(
 \"n\" - toggle navmesh
 \"m\" - toggle movepath",
             TextStyle {
-                font: asset_server.load("fonts/FiraMono-Medium.ttf"),
+                font: assets.fira.clone(),
                 font_size: 16.,
                 color: Color::WHITE,
             },

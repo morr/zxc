@@ -7,7 +7,8 @@ impl Plugin for AssetsPlugin {
         app.configure_loading_state(
             LoadingStateConfig::new(WorldState::Loading)
                 .init_resource::<AssetsCollection>()
-                .load_collection::<TextureAssets>(),
+                .load_collection::<FontAssets>()
+                .load_collection::<TextureAssets>()
         );
     }
 }
@@ -20,6 +21,12 @@ pub struct AssetsCollection {
     pub pawn_pathfinding_error: Handle<ColorMaterial>,
     pub navmesh_passable: Handle<ColorMaterial>,
     pub navmesh_impassable: Handle<ColorMaterial>,
+}
+
+#[derive(AssetCollection, Resource)]
+pub struct FontAssets {
+    #[asset(path = "fonts/FiraMono-Medium.ttf")]
+    pub fira: Handle<Font>,
 }
 
 // https://itch.io/game-assets/free/tag-textures
