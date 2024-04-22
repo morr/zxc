@@ -46,6 +46,7 @@ pub fn spawn_farm(
     mut commands: Commands,
     assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
+    mut work_queue: ResMut<WorkQueue>,
 ) {
     let size = IVec2::new(FARM_TILE_SIZE, FARM_TILE_SIZE);
     let grid_tile_start = IVec2::new(-13, 0);
@@ -58,28 +59,13 @@ pub fn spawn_farm(
                 grid_tile_start.y + size.y * y,
             );
 
-            commands.spawn((
-                FarmTile {},
-                Name::new("FarmTile"),
-                SpriteBundle {
-                    texture: assets.dirt.clone(),
-                    sprite: Sprite {
-                        custom_size: Some(size.grid_tile_edge_to_world()),
-                        ..default()
-                    },
-                    transform: Transform::from_translation(
-                        (grid_tile.grid_tile_edge_to_world()
-                            + size.grid_tile_edge_to_world() / 2.0)
-                            .extend(STRUCTURE_Z_INDEX),
-                    ),
-                    ..default()
-                },
-            ));
-
-            navmesh.update_cost(
-                grid_tile.x..grid_tile.x + size.x,
-                grid_tile.y..grid_tile.y + size.y,
-                Some((3.0 * COST_MULTIPLIER) as i32),
+            FarmTile::spawn(
+                &mut commands,
+                &assets,
+                &mut navmesh,
+                &mut work_queue,
+                grid_tile,
+                size,
             );
         }
     }
@@ -107,7 +93,7 @@ pub fn spawn_house(
                     (grid_tile.grid_tile_edge_to_world() + size.grid_tile_edge_to_world() / 2.0)
                         .extend(STRUCTURE_Z_INDEX),
                 ),
-               ..default()
+                ..default()
             },
         ))
         .insert(ShowAabbGizmo {
