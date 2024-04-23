@@ -10,7 +10,7 @@ pub fn assign_tasks_to_pawns(
         if pawn.task.is_none() {
             if let Some(task) = work_queue.get_task() {
                 pawn.task = Some(task);
-                pawn.change_status(entity, PawnStatus::Working, &mut commands, &mut event_writer);
+                pawn.change_status(entity, PawnStatus::WorkAssigned, &mut commands, &mut event_writer);
             }
         }
     }

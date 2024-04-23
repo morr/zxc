@@ -79,6 +79,7 @@ macro_rules! define_pawn_statuses {
 define_pawn_statuses!(
     (Idle, PawnIdle),
     // (Moving, PawnMoving),
+    (WorkAssigned, PawnWorkAssigned),
     (Working, PawnWorking)
 );
 
