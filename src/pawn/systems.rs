@@ -6,6 +6,8 @@ use self::structure::{Warehouse, BASE_HEIGHT, BASE_WIDTH};
 
 use super::*;
 
+const MAX_ATTEMPTS_TO_FIND_IDLE_WALK_PATH: usize = 10;
+
 pub fn spawn_pawns(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -140,8 +142,6 @@ pub fn wander_idle_pawns(
     }
 }
 
-const MAX_RECURSION_DEPTH: usize = 10;
-
 fn find_valid_end_tile(
     start_pos: Vec2,
     navmesh: &Navmesh,
@@ -152,7 +152,7 @@ fn find_valid_end_tile(
     let tiles_to_move = rng.gen_range(3.0..12.0) * TILE_SIZE;
     let end_tile = (start_pos + move_vector * tiles_to_move).world_pos_to_grid();
 
-    if recursion_depth >= MAX_RECURSION_DEPTH {
+    if recursion_depth >= MAX_ATTEMPTS_TO_FIND_IDLE_WALK_PATH {
         return end_tile;
     }
 
