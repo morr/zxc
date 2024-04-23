@@ -10,7 +10,8 @@ impl Plugin for WorkQueuePlugin {
             FixedUpdate,
             (
                 assign_tasks_to_pawns,
-                start_pawns_working
+                check_pawn_ready_for_working,
+                start_pawn_working
             )
                 .chain()
                 .run_if(in_state(WorldState::Playing)),

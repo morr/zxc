@@ -47,25 +47,34 @@ pub fn assign_tasks_to_pawns(
     }
 }
 
-pub fn start_pawns_working(
-    mut commands: Commands,
-    mut query: Query<
-        (Entity, &Transform, &mut Pawn),
-        (With<PawnWorkAssigned>, Without<MovementMoving>)
-    >,
-    mut pawn_state_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+pub fn check_pawn_ready_for_working(
+    query: Query<(Entity, &Transform, &Pawn), (With<PawnWorkAssigned>, Without<MovementMoving>)>,
+    mut event_writer: EventWriter<PawnStartWorkingEvent>,
 ) {
-    for (entity, transform, mut pawn) in query.iter_mut() {
+    for (entity, transform, pawn) in query.iter() {
         let current_tile = transform.translation.truncate().world_pos_to_grid();
         let task_tile = pawn.task.as_ref().unwrap().tile;
 
         if current_tile == task_tile {
-            pawn.change_state(
-                entity,
-                PawnState::Working,
-                &mut commands,
-                &mut pawn_state_event_writer,
-            );
+            event_writer.send(PawnStartWorkingEvent(entity));
         }
+    }
+}
+
+pub fn start_pawn_working(
+    mut commands: Commands,
+    mut event_reader: EventReader<PawnStartWorkingEvent>,
+    mut query: Query<&mut Pawn>,
+    mut pawn_state_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+) {
+    for event in event_reader.read() {
+        let mut pawn = query.get_mut(event.0).unwrap();
+
+        pawn.change_state(
+            event.0,
+            PawnState::Working,
+            &mut commands,
+            &mut pawn_state_event_writer,
+        );
     }
 }
