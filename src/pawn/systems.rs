@@ -60,11 +60,11 @@ pub fn spawn_pawns(
                             pawn_state_string,
                             TextStyle {
                                 font: font_assets.fira.clone(),
-                                font_size: 15.0,
+                                font_size: 13.0,
                                 color: Color::WHITE,
                             },
                         ),
-                        transform: Transform::from_xyz(0.0, 25.0, PAWN_Z_INDEX),
+                        transform: Transform::from_xyz(0.0, 21.0, PAWN_Z_INDEX),
                         ..default()
                     },
                     PawnStateText,
