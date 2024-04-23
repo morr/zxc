@@ -78,7 +78,7 @@ macro_rules! define_pawn_statuses {
 // Use the macro with the new tuple of pairs format
 define_pawn_statuses!(
     (Idle, PawnIdle),
-    (Moving, PawnMoving),
+    // (Moving, PawnMoving),
     (Working, PawnWorking)
 );
 
