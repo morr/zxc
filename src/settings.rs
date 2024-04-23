@@ -54,13 +54,13 @@ fn update_settings(
     }
 
     if keys.just_pressed(KeyCode::Equal) {
-        println!("+");
+        // println!("+");
         increase_time_scale(&time_state, &mut next_state, &mut time_scale);
         // ev_update_ui.send(UpdateUiEvent {});
     }
 
     if keys.just_pressed(KeyCode::Minus) {
-        println!("-");
+        // println!("-");
         decrease_time_scale(&time_state, &mut next_state, &mut time_scale);
         // if decrease_time_scale(&time_state, &mut next_state, &mut time_scale) {
         //   ev_update_ui.send(UpdateUiEvent {});
