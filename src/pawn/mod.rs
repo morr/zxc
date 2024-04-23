@@ -13,10 +13,15 @@ impl Plugin for PawnPlugin {
             .add_systems(OnExit(WorldState::Loading), spawn_pawns.after(spawn_base))
             .add_systems(
                 FixedUpdate,
-                (update_pawn_color, wander_idle_pawns)
+                (
+                    update_pawn_color,
+                    update_pawn_status_text,
+                    wander_idle_pawns,
+                )
                     .chain()
                     .run_if(in_state(WorldState::Playing)),
             );
+
         // .add_systems(
         //     FixedUpdate,
         //     wander_pawns.run_if(in_state(TimeState::Running)),

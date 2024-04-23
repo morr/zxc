@@ -165,3 +165,17 @@ pub fn wander_idle_pawns(
         // }
     }
 }
+
+pub fn update_pawn_status_text(
+    mut event_reader: EventReader<EntityStateChangeEvent<PawnStatus>>,
+    children_query: Query<&Children>,
+    mut status_text_query: Query<&mut Text, With<PawnStatusText>>,
+) {
+    for event in event_reader.read() {
+        // println!("{:?}", event);
+        for text_entity in children_query.iter_descendants(event.0) {
+            let mut text = status_text_query.get_mut(text_entity).unwrap();
+            text.sections[0].value = format!("{:?}", event.1);
+        }
+    }
+}

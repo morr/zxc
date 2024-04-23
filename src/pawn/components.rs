@@ -16,6 +16,18 @@ macro_rules! define_pawn_statuses {
             $($enum_name),*
         }
 
+        // impl From<PawnStatus> for String {
+        //     fn from(status: PawnStatus) -> Self {
+        //         format!("{:?}", status)
+        //     }
+        // }
+
+        // impl PawnStatus {
+        //     pub fn to_string(&self) -> String {
+        //         format!("{:?}", self)
+        //     }
+        // }
+
         #[derive(Component)]
         pub struct $first_component_name;
 
