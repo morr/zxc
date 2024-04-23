@@ -2,27 +2,27 @@ use super::*;
 
 #[derive(Component, Default)]
 pub struct Pawn {
-    pub status: PawnStatus,
+    pub state: PawnState,
     pub task: Option<Task>,
 }
 
-macro_rules! define_pawn_statuses {
+macro_rules! define_pawn_statees {
     // Match a tuple of tuples, with the first one treated as default
     (($first_enum_name:ident, $first_component_name:ident) $(, ($enum_name:ident, $component_name:ident))*) => {
         #[derive(Debug, Clone, Default)] // Use the standard Default derive
-        pub enum PawnStatus {
+        pub enum PawnState {
             #[default] // This marks the first variant as the default.
             $first_enum_name,
             $($enum_name),*
         }
 
-        // impl From<PawnStatus> for String {
-        //     fn from(status: PawnStatus) -> Self {
-        //         format!("{:?}", status)
+        // impl From<PawnState> for String {
+        //     fn from(state: PawnState) -> Self {
+        //         format!("{:?}", state)
         //     }
         // }
 
-        // impl PawnStatus {
+        // impl PawnState {
         //     pub fn to_string(&self) -> String {
         //         format!("{:?}", self)
         //     }
@@ -37,46 +37,46 @@ macro_rules! define_pawn_statuses {
         )*
 
         impl Pawn {
-            pub fn change_status(
+            pub fn change_state(
                 &mut self,
                 entity: Entity,
-                new_status: PawnStatus,
+                new_state: PawnState,
                 commands: &mut Commands,
-                event_writer: &mut EventWriter<EntityStateChangeEvent<PawnStatus>>,
+                pawn_state_event_writer: &mut EventWriter<EntityStateChangeEvent<PawnState>>,
             ) {
-                println!("PawnStatus {:?}=>{:?}", self.status, new_status);
+                println!("PawnState {:?}=>{:?}", self.state, new_state);
 
-                // Remove the old status component
-                match self.status {
-                    PawnStatus::$first_enum_name => {
+                // Remove the old state component
+                match self.state {
+                    PawnState::$first_enum_name => {
                         commands.entity(entity).remove::<$first_component_name>();
                     },
-                    $(PawnStatus::$enum_name => {
+                    $(PawnState::$enum_name => {
                         commands.entity(entity).remove::<$component_name>();
                     }),*
                 }
 
-                // Update the Pawn's status
-                self.status = new_status;
+                // Update the Pawn's state
+                self.state = new_state;
 
-                // Add the new status component
-                match self.status {
-                    PawnStatus::$first_enum_name => {
+                // Add the new state component
+                match self.state {
+                    PawnState::$first_enum_name => {
                         commands.entity(entity).insert($first_component_name);
                     },
-                    $(PawnStatus::$enum_name => {
+                    $(PawnState::$enum_name => {
                         commands.entity(entity).insert($component_name);
                     }),*
                 }
 
-                event_writer.send(EntityStateChangeEvent(entity, self.status.clone()));
+                pawn_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
             }
         }
     };
 }
 
 // Use the macro with the new tuple of pairs format
-define_pawn_statuses!(
+define_pawn_statees!(
     (Idle, PawnIdle),
     // (Moving, PawnMoving),
     (WorkAssigned, PawnWorkAssigned),
@@ -84,4 +84,4 @@ define_pawn_statuses!(
 );
 
 #[derive(Component)]
-pub struct PawnStatusText;
+pub struct PawnStateText;

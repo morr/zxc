@@ -34,13 +34,13 @@ pub fn spawn_pawns(
             PAWN_Z_INDEX,
         );
         let pawn = Pawn::default();
-        let pawn_status_string = format!("{:?}", pawn.status);
+        let pawn_state_string = format!("{:?}", pawn.state);
 
         commands
             .spawn((
                 pawn,
                 Name::new("Pawn"),
-                // status: PawnStatus::Idle,
+                // state: PawnState::Idle,
                 MaterialMesh2dBundle {
                     mesh: mesh_handle.clone().into(),
                     material: assets_collection.pawn_idle.clone(),
@@ -57,7 +57,7 @@ pub fn spawn_pawns(
                 parent.spawn((
                     Text2dBundle {
                         text: Text::from_section(
-                            pawn_status_string,
+                            pawn_state_string,
                             TextStyle {
                                 font: font_assets.fira.clone(),
                                 font_size: 15.0,
@@ -67,7 +67,7 @@ pub fn spawn_pawns(
                         transform: Transform::from_xyz(0.0, 25.0, PAWN_Z_INDEX),
                         ..default()
                     },
-                    PawnStatusText,
+                    PawnStateText,
                 ));
             });
     }
@@ -166,15 +166,15 @@ pub fn wander_idle_pawns(
     }
 }
 
-pub fn update_pawn_status_text(
-    mut event_reader: EventReader<EntityStateChangeEvent<PawnStatus>>,
+pub fn update_pawn_state_text(
+    mut event_reader: EventReader<EntityStateChangeEvent<PawnState>>,
     children_query: Query<&Children>,
-    mut status_text_query: Query<&mut Text, With<PawnStatusText>>,
+    mut state_text_query: Query<&mut Text, With<PawnStateText>>,
 ) {
     for event in event_reader.read() {
         // println!("{:?}", event);
         for text_entity in children_query.iter_descendants(event.0) {
-            let mut text = status_text_query.get_mut(text_entity).unwrap();
+            let mut text = state_text_query.get_mut(text_entity).unwrap();
             text.sections[0].value = format!("{:?}", event.1);
         }
     }

@@ -13,7 +13,7 @@ pub fn assign_tasks_to_pawns(
         With<PawnIdle>,
     >,
     mut work_queue: ResMut<WorkQueue>,
-    mut event_writer: EventWriter<EntityStateChangeEvent<PawnStatus>>,
+    mut pawn_state_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
     mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
     arc_navmesh: Res<ArcNavmesh>,
     queue_counter: Res<AsyncQueueCounter>,
@@ -23,12 +23,13 @@ pub fn assign_tasks_to_pawns(
         if pawn.task.is_none() {
             if let Some(task) = work_queue.get_task() {
                 let tile = task.tile;
+
                 pawn.task = Some(task);
-                pawn.change_status(
+                pawn.change_state(
                     entity,
-                    PawnStatus::WorkAssigned,
+                    PawnState::WorkAssigned,
                     &mut commands,
-                    &mut event_writer,
+                    &mut pawn_state_event_writer,
                 );
 
                 movement.to_pathfinding_async(
