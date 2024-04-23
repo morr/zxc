@@ -119,13 +119,6 @@ pub fn wander_idle_pawns(
 
         let world_pos = transform.translation.truncate();
 
-        // let random_angle: f32 = rng.gen_range(0.0..360.0);
-        // let tiles_to_move = rng.gen_range(3.0..20.0) * TILE_SIZE;
-        // let move_vector = Vec2::new(random_angle.cos(), random_angle.sin());
-
-        let move_vector: Vec2 = UnitCircle.sample(&mut rng).into();
-        let tiles_to_move = rng.gen_range(3.0..12.0) * TILE_SIZE;
-
         // movement.to_pathfinding(
         //     entity,
         //     world_pos.world_pos_to_grid(),
@@ -137,32 +130,51 @@ pub fn wander_idle_pawns(
         movement.to_pathfinding_async(
             entity,
             world_pos.world_pos_to_grid(),
-            (world_pos + move_vector * tiles_to_move).world_pos_to_grid(),
+            find_valid_end_tile(world_pos, &*arc_navmesh.read(), &mut rng, 0),
             &arc_navmesh,
             &queue_counter,
             maybe_pathfinding_task.as_deref_mut(),
             &mut commands,
             &mut movement_state_event_writer,
         );
+    }
+}
 
-        // pawn.retry_pathfinding_timer.tick(time.delta());
-        //
-        // if pawn.retry_pathfinding_timer.finished() {
-        //     pawn.retry_pathfinding_timer = Timer::new(
-        //         Duration::from_secs_f32(rng.gen_range(0.5..3.0)),
-        //         TimerMode::Once,
-        //     );
-        //     let random_angle: f32 = rng.gen_range(0.0..360.0);
-        //     let tile_to_move = rng.gen_range(1..15);
-        //     let move_path = Vec2::new(random_angle.cos(), random_angle.sin());
-        // }
+const MAX_RECURSION_DEPTH: usize = 10;
 
-        // if let Some(move_vector) = pawn.move_vector {
-        //     transform.translation.x +=
-        //         move_vector.x * PAWN_SPEED * time.delta_seconds() * time_scale.0;
-        //     transform.translation.y +=
-        //         move_vector.y * PAWN_SPEED * time.delta_seconds() * time_scale.0;
-        // }
+fn find_valid_end_tile(
+    start_pos: Vec2,
+    navmesh: &Navmesh,
+    rng: &mut impl Rng,
+    recursion_depth: usize,
+) -> IVec2 {
+    let move_vector: Vec2 = UnitCircle.sample(rng).into();
+    let tiles_to_move = rng.gen_range(3.0..12.0) * TILE_SIZE;
+    let end_tile = (start_pos + move_vector * tiles_to_move).world_pos_to_grid();
+
+    if recursion_depth >= MAX_RECURSION_DEPTH {
+        return end_tile;
+    }
+
+    if navmesh.is_passable(end_tile.x, end_tile.y) {
+        end_tile
+    } else {
+        let offsets = [
+            IVec2::new(-1, -1), // left-top
+            IVec2::new(0, -1),  // top
+            IVec2::new(1, -1),  // right-top
+            IVec2::new(-1, 0),  // left
+            IVec2::new(1, 0),   // right
+            IVec2::new(-1, 1),  // left-bottom
+            IVec2::new(0, 1),   // bottom
+            IVec2::new(1, 1),   // right-bottom
+        ];
+
+        offsets
+            .iter()
+            .map(|offset| end_tile + *offset)
+            .find(|&tile| navmesh.is_passable(tile.x, tile.y))
+            .unwrap_or_else(|| find_valid_end_tile(start_pos, navmesh, rng, recursion_depth + 1))
     }
 }
 

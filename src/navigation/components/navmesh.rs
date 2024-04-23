@@ -56,6 +56,14 @@ impl Navmesh {
             }
         }
     }
+
+    pub fn is_passable(&self, x: i32, y: i32) -> bool {
+        if let Some(navtile) = self.navtiles.get_some(x, y) {
+            navtile.is_passable()
+        } else {
+            false
+        }
+    }
 }
 
 fn generate_successors(navtiles: &Navtiles) -> Vec<Vec<Vec<(IVec2, i32)>>> {
