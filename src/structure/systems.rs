@@ -52,8 +52,10 @@ pub fn spawn_farm(
     let grid_tile_start = IVec2::new(-13, 0);
     let mut navmesh = arc_navmesh.write();
 
-    for x in 0..8 {
-        for y in 0..5 {
+    // for x in 0..8 {
+    for x in 0..2 {
+        for y in 0..2 {
+        // for y in 0..5 {
             let grid_tile = IVec2::new(
                 grid_tile_start.x + size.x * x,
                 grid_tile_start.y + size.y * y,
