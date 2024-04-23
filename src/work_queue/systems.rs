@@ -46,3 +46,26 @@ pub fn assign_tasks_to_pawns(
         }
     }
 }
+
+pub fn start_pawns_working(
+    mut commands: Commands,
+    mut query: Query<
+        (Entity, &Transform, &mut Pawn),
+        (With<PawnWorkAssigned>, Without<MovementMoving>)
+    >,
+    mut pawn_state_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+) {
+    for (entity, transform, mut pawn) in query.iter_mut() {
+        let current_tile = transform.translation.truncate().world_pos_to_grid();
+        let task_tile = pawn.task.as_ref().unwrap().tile;
+
+        if current_tile == task_tile {
+            pawn.change_state(
+                entity,
+                PawnState::Working,
+                &mut commands,
+                &mut pawn_state_event_writer,
+            );
+        }
+    }
+}
