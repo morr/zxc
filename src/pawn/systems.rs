@@ -124,7 +124,7 @@ pub fn wander_idle_pawns(
         // let move_vector = Vec2::new(random_angle.cos(), random_angle.sin());
 
         let move_vector: Vec2 = UnitCircle.sample(&mut rng).into();
-        let tiles_to_move = rng.gen_range(3.0..20.0) * TILE_SIZE;
+        let tiles_to_move = rng.gen_range(3.0..12.0) * TILE_SIZE;
 
         // movement.to_pathfinding(
         //     entity,
