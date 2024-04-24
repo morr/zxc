@@ -44,7 +44,7 @@ macro_rules! define_pawn_statees {
                 commands: &mut Commands,
                 pawn_state_event_writer: &mut EventWriter<EntityStateChangeEvent<PawnState>>,
             ) {
-                println!("PawnState {:?}=>{:?}", self.state, new_state);
+                // println!("PawnState {:?}=>{:?}", self.state, new_state);
 
                 // Remove the old state component
                 match self.state {
