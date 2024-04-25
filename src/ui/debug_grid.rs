@@ -48,13 +48,13 @@ pub fn render_grid(mut gizmos: Gizmos) {
 
     gizmos.line_2d(
         Vec2::new(0.0, 0.0),
-        Vec2::new(CONFIG.grid.size as f32 * TILE_SIZE, 0.0),
+        Vec2::new(CONFIG.grid.size as f32 * CONFIG.tile.size, 0.0),
         Color::rgb(1.0, 0.0, 0.0),
     );
 
     gizmos.line_2d(
         Vec2::new(0.0, 0.0),
-        Vec2::new(0.0, CONFIG.grid.size as f32 * TILE_SIZE),
+        Vec2::new(0.0, CONFIG.grid.size as f32 * CONFIG.tile.size),
         Color::rgb(0.0, 1.0, 0.0),
     );
 }

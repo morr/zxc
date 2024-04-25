@@ -1,13 +1,11 @@
 use super::*;
 
-use crate::TILE_SIZE;
-
 pub fn grid_tile_edge_to_world(value: i32) -> f32 {
-    value as f32 * TILE_SIZE
+    value as f32 * CONFIG.tile.size
 }
 
 pub fn grid_tile_center_to_world(value: i32) -> f32 {
-    grid_tile_edge_to_world(value) + TILE_SIZE / 2.0
+    grid_tile_edge_to_world(value) + CONFIG.tile.size / 2.0
 }
 
 pub fn grid_tile_to_navmesh_index(value: i32) -> usize {
@@ -19,11 +17,11 @@ pub fn navmesh_index_to_grid_tile(value: usize) -> i32 {
 }
 
 // pub fn tile_pos_to_world_aligned(value: i32) -> f32 {
-//     tile_pos_to_world(value) + TILE_SIZE / 2.0
+//     tile_pos_to_world(value) + CONFIG.tile.size / 2.0
 // }
 
 pub fn world_pos_to_grid(value: f32) -> i32 {
-    (value / TILE_SIZE).floor() as i32
+    (value / CONFIG.tile.size).floor() as i32
 }
 
 // pub fn world_pos_to_tile_aligned(value: f32) -> f32 {

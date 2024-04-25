@@ -17,17 +17,17 @@ pub fn spawn_pawns(
 ) {
     // println!("Spawning pawns");
 
-    let mesh = Mesh::from(Circle::new(TILE_SIZE / 2.0 * 0.75));
+    let mesh = Mesh::from(Circle::new(CONFIG.tile.size / 2.0 * 0.75));
     // let material = ColorMaterial::from(Color::hex("E178C5").unwrap());
     let mesh_handle: Handle<Mesh> = meshes.add(mesh);
     // let material_handle = materials.add(material);
 
     let mut rng = rand::thread_rng();
-    let radius = TILE_SIZE * i32::max(BASE_WIDTH, BASE_HEIGHT) as f32;
+    let radius = CONFIG.tile.size * i32::max(BASE_WIDTH, BASE_HEIGHT) as f32;
 
     let transform = query.single();
 
-    for _i in 0..STARTING_PAWNS {
+    for _i in 0..CONFIG.scene.starting_pawns {
         let random_angle: f32 = rng.gen_range(0.0..360.0);
 
         let position = Vec3::new(
@@ -49,7 +49,7 @@ pub fn spawn_pawns(
                     transform: Transform::from_translation(position),
                     ..default()
                 },
-                Movement::new(PAWN_SPEED),
+                Movement::new(CONFIG.pawn.speed * CONFIG.tile.size),
                 PawnIdle,
             ))
             .insert(ShowAabbGizmo {
@@ -149,7 +149,7 @@ fn find_valid_end_tile(
     recursion_depth: usize,
 ) -> IVec2 {
     let move_vector: Vec2 = UnitCircle.sample(rng).into();
-    let tiles_to_move = rng.gen_range(3.0..12.0) * TILE_SIZE;
+    let tiles_to_move = rng.gen_range(3.0..12.0) * CONFIG.tile.size;
     let end_tile = (start_pos + move_vector * tiles_to_move).world_pos_to_grid();
 
     if recursion_depth >= MAX_ATTEMPTS_TO_FIND_IDLE_WALK_PATH {

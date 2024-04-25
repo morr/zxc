@@ -5,8 +5,13 @@ RootConfig(
     grid: GridConfig(
         size: 500,
     ),
+    tile: TileConfig(
+        size: 32.0
+    ),
     scene: SceneConfig(
         starting_pawns: 6,
-        pawn_speed: 3.0
+    ),
+    pawn: PawnConfig(
+        speed: 3.0
     )
 )

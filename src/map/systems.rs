@@ -9,12 +9,12 @@ pub fn spawn_map(mut commands: Commands, assets: Res<TextureAssets>) {
                 .spawn(SpriteBundle {
                     texture: assets.grass.clone(),
                     sprite: Sprite {
-                        custom_size: Some(Vec2::new(TILE_SIZE, TILE_SIZE)),
+                        custom_size: Some(Vec2::new(CONFIG.tile.size, CONFIG.tile.size)),
                         ..default()
                     },
                     transform: Transform::from_xyz(
-                        grid_tile_edge_to_world(x) + TILE_SIZE / 2.,
-                        grid_tile_edge_to_world(y) + TILE_SIZE / 2.,
+                        grid_tile_edge_to_world(x) + CONFIG.tile.size / 2.,
+                        grid_tile_edge_to_world(y) + CONFIG.tile.size / 2.,
                         TILE_Z_INDEX,
                     ),
                     ..default()
