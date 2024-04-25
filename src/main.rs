@@ -14,7 +14,7 @@ fn main() {
                         mode: bevy::window::WindowMode::Windowed,
                         present_mode: PresentMode::AutoNoVsync,
                         // present_mode: PresentMode::AutoVsync,
-                        resolution: CONFIG.app.window_resolution,
+                        resolution: (CONFIG.app.resolution.0 as f32, CONFIG.app.resolution.1 as f32).into(),
                         // title: "Test App".to_string(),
                         ..default()
                     }),

@@ -24,9 +24,9 @@ pub struct Navtiles(pub Vec<Vec<Navtile>>);
 impl Default for Navtiles {
     fn default() -> Self {
         Self(
-            (0..GRID_SIZE)
+            (0..CONFIG.grid.size)
                 .map(|_x| {
-                    (0..GRID_SIZE)
+                    (0..CONFIG.grid.size)
                         .map(|_y| Navtile::new())
                         .collect::<Vec<Navtile>>()
                 })

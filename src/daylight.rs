@@ -16,7 +16,7 @@ impl Plugin for DaylightPlugin {
 struct NightOverlay;
 
 fn setup(mut commands: Commands) {
-    let grid_size = IVec2::new(GRID_SIZE, GRID_SIZE);
+    let grid_size = IVec2::new(CONFIG.grid.size, CONFIG.grid.size);
 
     // Add an overlay sprite
     commands

@@ -1,4 +1,3 @@
-use bevy::window::WindowResolution;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::{fs::File, io::Read};
@@ -12,7 +11,6 @@ pub struct RootConfig {
 
 impl RootConfig {
     pub fn calculate_derived_fields(&mut self) {
-        self.app.calculate_derived_fields();
         self.grid.calculate_derived_fields();
     }
 }
@@ -20,15 +18,6 @@ impl RootConfig {
 #[derive(Deserialize, Serialize)]
 pub struct AppConfig {
     pub resolution: (i32, i32),
-
-    #[serde(skip)]
-    pub window_resolution: WindowResolution,
-}
-
-impl AppConfig {
-    pub fn calculate_derived_fields(&mut self) {
-        self.window_resolution = (self.resolution.0 as f32, self.resolution.1 as f32).into();
-    }
 }
 
 #[derive(Deserialize, Serialize)]
@@ -71,8 +60,8 @@ pub fn load_config() -> RootConfig {
 
 pub static CONFIG: Lazy<RootConfig> = Lazy::new(load_config);
 
-// pub const GRID_SIZE: i32 = 500;
-// pub const GRID_SIZE_HALF: i32 = GRID_SIZE / 2;
+// pub const CONFIG.grid.size: i32 = 500;
+// pub const CONFIG.grid.half_size: i32 = CONFIG.grid.size / 2;
 
 pub const TILE_SIZE: f32 = 32.;
 
