@@ -54,12 +54,40 @@ impl Plugin for StoryTimePlugin {
         app.init_state::<TimeState>()
             .init_resource::<TimeScale>()
             .init_resource::<ElapsedTime>()
-            .add_systems(FixedUpdate, track_time.run_if(in_state(TimeState::Running)));
+            .add_systems(FixedUpdate, track_time.run_if(in_state(TimeState::Running)))
+            .add_systems(Update, modify_time.run_if(in_state(WorldState::Playing)));
     }
 }
 
 fn track_time(time: Res<Time>, time_scale: Res<TimeScale>, mut elapsed_time: ResMut<ElapsedTime>) {
     elapsed_time.0 += time.delta_seconds() * time_scale.0;
+}
+
+fn modify_time(
+    time_state: Res<State<TimeState>>,
+    mut next_state: ResMut<NextState<TimeState>>,
+    mut time_scale: ResMut<TimeScale>,
+    // mut ev_update_ui: EventWriter<UpdateUiEvent>,
+    keys: Res<ButtonInput<KeyCode>>,
+) {
+    if keys.just_pressed(KeyCode::Space) {
+        toggle_story_time(&time_state, &mut next_state);
+        // ev_update_ui.send(UpdateUiEvent {});
+    }
+
+    if keys.just_pressed(KeyCode::Equal) {
+        // println!("+");
+        increase_time_scale(&time_state, &mut next_state, &mut time_scale);
+        // ev_update_ui.send(UpdateUiEvent {});
+    }
+
+    if keys.just_pressed(KeyCode::Minus) {
+        // println!("-");
+        decrease_time_scale(&time_state, &mut next_state, &mut time_scale);
+        // if decrease_time_scale(&time_state, &mut next_state, &mut time_scale) {
+        //   ev_update_ui.send(UpdateUiEvent {});
+        // }
+    }
 }
 
 pub fn toggle_story_time(

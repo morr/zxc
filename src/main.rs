@@ -14,7 +14,7 @@ fn main() {
                         mode: bevy::window::WindowMode::Windowed,
                         present_mode: PresentMode::AutoNoVsync,
                         // present_mode: PresentMode::AutoVsync,
-                        resolution: (WW as f32, WH as f32).into(),
+                        resolution: C.app.window_resolution(),
                         // title: "Test App".to_string(),
                         ..default()
                     }),
@@ -41,7 +41,7 @@ fn main() {
             camera::CameraPlugin,
             story_time::StoryTimePlugin,
             async_queue::AsyncQueuePlugin,
-            settings::SettingsPlugin,
+            // settings::SettingsPlugin,
             assets::AssetsPlugin,
             map::MapPlugin,
             movement::MovementPlugin,
