@@ -3,8 +3,8 @@ use super::*;
 pub fn spawn_map(mut commands: Commands, assets: Res<TextureAssets>) {
     // println!("spawn map");
 
-    for x in -GRID_SIZE_HALF..GRID_SIZE_HALF {
-        for y in -GRID_SIZE_HALF..GRID_SIZE_HALF {
+    for x in -CONFIG.grid.half_size..CONFIG.grid.half_size {
+        for y in -CONFIG.grid.half_size..CONFIG.grid.half_size {
             commands
                 .spawn(SpriteBundle {
                     texture: assets.grass.clone(),

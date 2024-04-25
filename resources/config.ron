@@ -2,8 +2,10 @@ RootConfig(
     app: AppConfig(
         resolution: (1920, 1080),
     ),
+    grid: GridConfig(
+        size: 500,
+    ),
     scene: SceneConfig(
-        grid_size: 500,
         starting_pawns: 6,
         pawn_speed: 3.0
     )
