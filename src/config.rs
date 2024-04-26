@@ -9,9 +9,6 @@ pub const STRUCTURE_Z_INDEX: f32 = 10.0;
 pub const PAWN_Z_INDEX: f32 = 20.0;
 pub const NIGHT_Z_INDEX: f32 = 100.0;
 
-pub const DAY_DURATION: f32 = 60.0; // Duration of a full day cycle in seconds
-pub const HOUR_DURATION: f32 = DAY_DURATION / 24.0;
-pub const MINUTE_DURATION: f32 = HOUR_DURATION / 60.0;
 pub const GAME_START_TIME: f32 = 10.0; // 10AM
 
 pub fn load_config() -> RootConfig {
@@ -33,12 +30,14 @@ pub struct RootConfig {
     pub grid: GridConfig,
     pub tile: TileConfig,
     pub scene: SceneConfig,
+    pub time: TimeConfig,
     pub pawn: PawnConfig,
 }
 
 impl RootConfig {
     pub fn calculate_derived_fields(&mut self) {
         self.grid.calculate_derived_fields();
+        self.time.calculate_derived_fields();
     }
 }
 
@@ -70,6 +69,23 @@ pub struct TileConfig {
 #[derive(Deserialize, Serialize)]
 pub struct SceneConfig {
     pub starting_pawns: i32,
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct TimeConfig {
+    pub day_duration: f32,
+
+    #[serde(skip)]
+    pub hour_duration: f32,
+    #[serde(skip)]
+    pub minute_duration: f32,
+}
+
+impl TimeConfig {
+    pub fn calculate_derived_fields(&mut self) {
+        self.hour_duration = self.day_duration / 24.0;
+        self.minute_duration = self.hour_duration / 60.0;
+    }
 }
 
 #[derive(Deserialize, Serialize)]

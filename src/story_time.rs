@@ -20,7 +20,7 @@ pub struct ElapsedTime(pub f32);
 
 impl Default for ElapsedTime {
     fn default() -> Self {
-        Self(HOUR_DURATION * 10.0)
+        Self(CONFIG.time.hour_duration * 10.0)
     }
 }
 
@@ -30,19 +30,19 @@ impl ElapsedTime {
     }
 
     pub fn game_time_of_day(&self) -> f32 {
-        (self.0 % DAY_DURATION) / DAY_DURATION
+        (self.0 % CONFIG.time.day_duration) / CONFIG.time.day_duration
     }
 
     pub fn game_day(&self) -> f32 {
-        (self.0 / DAY_DURATION).floor()
+        (self.0 / CONFIG.time.day_duration).floor()
     }
 
     pub fn game_hours(&self) -> f32 {
-        ((self.0 % DAY_DURATION) / HOUR_DURATION).floor()
+        ((self.0 % CONFIG.time.day_duration) / CONFIG.time.hour_duration).floor()
     }
 
     pub fn game_minutes(&self) -> f32 {
-        (((self.0 % DAY_DURATION) % HOUR_DURATION) / MINUTE_DURATION).floor()
+        (((self.0 % CONFIG.time.day_duration) % CONFIG.time.hour_duration) / CONFIG.time.minute_duration).floor()
     }
 
 }
