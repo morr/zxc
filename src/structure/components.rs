@@ -15,23 +15,26 @@ impl FarmTile {
         grid_tile: IVec2,
         size: IVec2,
     ) {
-        commands.spawn((
-            FarmTile {},
-            Workable::default(),
-            Name::new("FarmTile"),
-            SpriteBundle {
-                texture: assets.dirt.clone(),
-                sprite: Sprite {
-                    custom_size: Some(size.grid_tile_edge_to_world()),
+        let entity = commands
+            .spawn((
+                FarmTile {},
+                Workable::default(),
+                Name::new("FarmTile"),
+                SpriteBundle {
+                    texture: assets.dirt.clone(),
+                    sprite: Sprite {
+                        custom_size: Some(size.grid_tile_edge_to_world()),
+                        ..default()
+                    },
+                    transform: Transform::from_translation(
+                        (grid_tile.grid_tile_edge_to_world()
+                            + size.grid_tile_edge_to_world() / 2.0)
+                            .extend(STRUCTURE_Z_INDEX),
+                    ),
                     ..default()
                 },
-                transform: Transform::from_translation(
-                    (grid_tile.grid_tile_edge_to_world() + size.grid_tile_edge_to_world() / 2.0)
-                        .extend(STRUCTURE_Z_INDEX),
-                ),
-                ..default()
-            },
-        ));
+            ))
+            .id();
 
         arc_navmesh.update_cost(
             grid_tile.x..grid_tile.x + size.x,
@@ -41,6 +44,7 @@ impl FarmTile {
 
         // Adding the task for the farm tile to the work queue
         let task = Task {
+            entity,
             kind: TaskKind::Farming,
             tile: grid_tile,
         };

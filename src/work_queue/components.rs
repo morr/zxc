@@ -1,5 +1,7 @@
 use std::collections::VecDeque;
 
+use bevy::ecs::world::Entry;
+
 use super::*;
 
 #[derive(Default, Resource)]
@@ -24,6 +26,7 @@ pub enum TaskKind {
 
 #[derive(Debug, Clone)]
 pub struct Task {
+    pub entity: Entity,
     pub kind: TaskKind,
     pub tile: IVec2,
 }
