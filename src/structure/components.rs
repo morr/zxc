@@ -4,17 +4,7 @@ use super::*;
 pub struct Warehouse {}
 
 #[derive(Component)]
-pub struct FarmTile {
-    progress: f32
-}
-
-impl Default for FarmTile {
-    fn default() -> Self {
-        Self {
-            progress: 0.0
-        }
-    }
-}
+pub struct FarmTile {}
 
 impl FarmTile {
     pub fn spawn(
@@ -26,7 +16,8 @@ impl FarmTile {
         size: IVec2,
     ) {
         commands.spawn((
-            FarmTile::default(),
+            FarmTile {},
+            Workable::default(),
             Name::new("FarmTile"),
             SpriteBundle {
                 texture: assets.dirt.clone(),
