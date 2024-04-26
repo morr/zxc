@@ -9,7 +9,7 @@ RootConfig(
         size: 32.0
     ),
     scene: SceneConfig(
-        starting_pawns: 6,
+        starting_pawns: 1,
         starting_hour: 8
     ),
     time: TimeConfig(

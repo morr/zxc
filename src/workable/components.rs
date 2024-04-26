@@ -11,3 +11,9 @@ impl Default for Workable {
         Self { progress: 0.0 }
     }
 }
+
+impl Workable {
+    pub fn perform_work(&mut self, elapsed_time: f32) {
+        self.progress += elapsed_time;
+    }
+}
