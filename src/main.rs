@@ -49,6 +49,7 @@ fn main() {
             assets::AssetsPlugin,
             map::MapPlugin,
             movable::MovablePlugin,
+            workable::WorkablePlugin,
             navigation::NavigationPlugin,
             structure::StructurePlugin,
             ui::UiPlugin,

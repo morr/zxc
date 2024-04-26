@@ -27,6 +27,7 @@ pub mod structure;
 pub mod ui;
 pub mod utils;
 pub mod work_queue;
+pub mod workable;
 
 pub use crate::assets::*;
 pub use crate::async_queue::*;
@@ -42,6 +43,7 @@ pub use crate::story_time::*;
 pub use crate::ui::*;
 pub use crate::utils::*;
 pub use crate::work_queue::*;
+pub use crate::workable::*;
 
 #[derive(Debug, Event)]
 pub struct StateChangeEvent<T>(pub T);
