@@ -10,6 +10,7 @@ RootConfig(
     ),
     scene: SceneConfig(
         starting_pawns: 6,
+        starting_hour: 8
     ),
     time: TimeConfig(
         day_duration: 60.0

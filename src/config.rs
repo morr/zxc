@@ -9,8 +9,6 @@ pub const STRUCTURE_Z_INDEX: f32 = 10.0;
 pub const PAWN_Z_INDEX: f32 = 20.0;
 pub const NIGHT_Z_INDEX: f32 = 100.0;
 
-pub const GAME_START_TIME: f32 = 10.0; // 10AM
-
 pub fn load_config() -> RootConfig {
     let mut contents = String::new();
 
@@ -69,10 +67,12 @@ pub struct TileConfig {
 #[derive(Deserialize, Serialize)]
 pub struct SceneConfig {
     pub starting_pawns: i32,
+    pub starting_hour: i32,
 }
 
 #[derive(Deserialize, Serialize)]
 pub struct TimeConfig {
+    /// in game seconds
     pub day_duration: f32,
 
     #[serde(skip)]

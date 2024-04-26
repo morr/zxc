@@ -20,7 +20,7 @@ pub struct ElapsedTime(pub f32);
 
 impl Default for ElapsedTime {
     fn default() -> Self {
-        Self(CONFIG.time.hour_duration * 10.0)
+        Self(CONFIG.time.hour_duration * CONFIG.scene.starting_hour as f32)
     }
 }
 
