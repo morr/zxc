@@ -11,18 +11,18 @@ pub fn pathfinding_async_on_click(
         (
             Entity,
             &Transform,
-            &mut Movement,
+            &mut Movable,
             Option<&mut PathfindingTask>,
         ),
         With<PawnIdle>,
-        // With<Movement>,
-        // (With<Movement>, With<PawnIdle>),
+        // With<Movable>,
+        // (With<Movable>, With<PawnIdle>),
     >,
-    mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
+    mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     for click_event in click_event_reader.read() {
-        for (entity, transform, mut movement, mut maybe_pathfinding_task) in &mut query_pawns {
-            movement.to_pathfinding_async(
+        for (entity, transform, mut movable, mut maybe_pathfinding_task) in &mut query_pawns {
+            movable.to_pathfinding_async(
                 entity,
                 transform.translation.truncate().world_pos_to_grid(),
                 click_event.0,
@@ -30,7 +30,7 @@ pub fn pathfinding_async_on_click(
                 &queue_counter,
                 maybe_pathfinding_task.as_deref_mut(),
                 &mut commands,
-                &mut movement_state_event_writer,
+                &mut movable_state_event_writer,
             );
         }
     }
@@ -39,19 +39,19 @@ pub fn pathfinding_async_on_click(
 // pub fn pathfinding_on_click(
 //     mut commands: Commands,
 //     mut click_event_reader: EventReader<ClickTileEvent>,
-//     mut query_pawns: Query<(Entity, &Transform, &mut Movement), With<Movement>>,
+//     mut query_pawns: Query<(Entity, &Transform, &mut Movable), With<Movable>>,
 //     mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
-//     mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
+//     mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 // ) {
 //     for click_event in click_event_reader.read() {
-//         for (entity, transform, mut movement) in &mut query_pawns {
-//             movement.to_pathfinding(
+//         for (entity, transform, mut movable) in &mut query_pawns {
+//             movable.to_pathfinding(
 //                 entity,
 //                 transform.translation.truncate().world_pos_to_grid(),
 //                 click_event.0,
 //                 &mut commands,
 //                 &mut pathfind_event_writer,
-//                 &mut movement_state_event_writer,
+//                 &mut movable_state_event_writer,
 //             );
 //         }
 //     }
@@ -82,14 +82,14 @@ pub fn listen_for_pathfinding_requests(
 
 pub fn listen_for_pathfinding_async_tasks(
     mut commands: Commands,
-    mut tasks: Query<(Entity, &mut Movement, &mut PathfindingTask), With<PathfindingTask>>,
-    mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
+    mut tasks: Query<(Entity, &mut Movable, &mut PathfindingTask), With<PathfindingTask>>,
+    mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
-    for (entity, mut movement, mut pathfinding_tasks) in &mut tasks {
+    for (entity, mut movable, mut pathfinding_tasks) in &mut tasks {
         pathfinding_tasks.0.retain_mut(|task| {
             if let Some(result) = block_on(future::poll_once(task)) {
                 // println!("{:?}", task);
-                if let MovementState::Pathfinding(end_tile) = movement.state {
+                if let MovableState::Pathfinding(end_tile) = movable.state {
                     // check if it an is outdated pathfinding answer
                     if end_tile != result.end_tile {
                         return false;
@@ -97,26 +97,26 @@ pub fn listen_for_pathfinding_async_tasks(
 
                     if let Some(path) = &result.path {
                         if path.len() == 1 {
-                            movement.to_idle(
+                            movable.to_idle(
                                 entity,
                                 &mut commands,
-                                &mut movement_state_event_writer,
+                                &mut movable_state_event_writer,
                             );
                         } else {
-                            movement.to_moving(
+                            movable.to_moving(
                                 path.iter().skip(1).cloned().collect(),
                                 entity,
                                 &mut commands,
-                                &mut movement_state_event_writer,
+                                &mut movable_state_event_writer,
                             );
                         }
                     } else {
-                        movement.to_pathfinding_error(entity, &mut movement_state_event_writer);
+                        movable.to_pathfinding_error(entity, &mut movable_state_event_writer);
                     }
                 } else {
                     println!(
-                        "movement.state != MovementState::Pathfinding, movement.state={:?}",
-                        movement.state
+                        "movable.state != MovableState::Pathfinding, movable.state={:?}",
+                        movable.state
                     );
                 }
                 false // remove the task
@@ -134,16 +134,16 @@ pub fn listen_for_pathfinding_async_tasks(
 pub fn listen_for_pathfinding_answers(
     mut commands: Commands,
     mut pathfind_event_reader: EventReader<PathfindAnswerEvent>,
-    mut query_movement: Query<(Entity, &mut Movement), With<Movement>>,
-    mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
+    mut query_movable: Query<(Entity, &mut Movable), With<Movable>>,
+    mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     for event in pathfind_event_reader.read() {
         // println!("{:?}", event);
 
-        let Ok((entity, mut movement)) = query_movement.get_mut(event.entity) else {
+        let Ok((entity, mut movable)) = query_movable.get_mut(event.entity) else {
             continue;
         };
-        if let MovementState::Pathfinding(end_tile) = movement.state {
+        if let MovableState::Pathfinding(end_tile) = movable.state {
             // check if it an is outdated pathfinding answer
             if end_tile != event.end_tile {
                 // println!(
@@ -155,22 +155,22 @@ pub fn listen_for_pathfinding_answers(
 
             if let Some(path) = &event.path {
                 if path.len() == 1 {
-                    movement.to_idle(entity, &mut commands, &mut movement_state_event_writer);
+                    movable.to_idle(entity, &mut commands, &mut movable_state_event_writer);
                 } else {
-                    movement.to_moving(
+                    movable.to_moving(
                         path.iter().skip(1).cloned().collect(),
                         entity,
                         &mut commands,
-                        &mut movement_state_event_writer,
+                        &mut movable_state_event_writer,
                     );
                 }
             } else {
-                movement.to_pathfinding_error(entity, &mut movement_state_event_writer);
+                movable.to_pathfinding_error(entity, &mut movable_state_event_writer);
             }
         } else {
             println!(
-                "movement.state != MovementState::Pathfinding, movement.state={:?}",
-                movement.state
+                "movable.state != MovableState::Pathfinding, movable.state={:?}",
+                movable.state
             );
         }
     }

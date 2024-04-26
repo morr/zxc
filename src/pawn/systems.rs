@@ -49,7 +49,7 @@ pub fn spawn_pawns(
                     transform: Transform::from_translation(position),
                     ..default()
                 },
-                Movement::new(CONFIG.pawn.speed * CONFIG.tile.size),
+                Movable::new(CONFIG.pawn.speed * CONFIG.tile.size),
                 PawnIdle,
             ))
             .insert(ShowAabbGizmo {
@@ -77,7 +77,7 @@ pub fn spawn_pawns(
 
 pub fn update_pawn_color(
     assets_collection: Res<AssetsCollection>,
-    mut event_reader: EventReader<EntityStateChangeEvent<MovementState>>,
+    mut event_reader: EventReader<EntityStateChangeEvent<MovableState>>,
     mut query: Query<&mut Handle<ColorMaterial>>,
 ) {
     for event in event_reader.read() {
@@ -85,10 +85,10 @@ pub fn update_pawn_color(
 
         if let Ok(mut material_handle) = query.get_mut(event.0) {
             *material_handle = match event.1 {
-                MovementState::Idle => assets_collection.pawn_idle.clone(),
-                MovementState::Moving => assets_collection.pawn_moving.clone(),
-                MovementState::Pathfinding(_end_tile) => assets_collection.pawn_pathfinding.clone(),
-                MovementState::PathfindingError => assets_collection.pawn_pathfinding_error.clone(),
+                MovableState::Idle => assets_collection.pawn_idle.clone(),
+                MovableState::Moving => assets_collection.pawn_moving.clone(),
+                MovableState::Pathfinding(_end_tile) => assets_collection.pawn_pathfinding.clone(),
+                MovableState::PathfindingError => assets_collection.pawn_pathfinding_error.clone(),
             };
         }
     }
@@ -103,33 +103,33 @@ pub fn wander_idle_pawns(
         (
             Entity,
             &Transform,
-            &mut Movement,
+            &mut Movable,
             Option<&mut PathfindingTask>,
         ),
         With<PawnIdle>,
     >,
     // time_scale: Res<TimeScale>,
     // mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
-    mut movement_state_event_writer: EventWriter<EntityStateChangeEvent<MovementState>>,
+    mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     let mut rng = rand::thread_rng();
 
-    for (entity, transform, mut movement, mut maybe_pathfinding_task) in &mut query {
-        if movement.state != MovementState::Idle {
+    for (entity, transform, mut movable, mut maybe_pathfinding_task) in &mut query {
+        if movable.state != MovableState::Idle {
             continue;
         }
 
         let world_pos = transform.translation.truncate();
 
-        // movement.to_pathfinding(
+        // movable.to_pathfinding(
         //     entity,
         //     world_pos.world_pos_to_grid(),
         //     (world_pos + move_vector * tiles_to_move).world_pos_to_grid(),
         //     &mut commands,
         //     &mut pathfind_event_writer,
-        //     &mut movement_state_event_writer,
+        //     &mut movable_state_event_writer,
         // );
-        movement.to_pathfinding_async(
+        movable.to_pathfinding_async(
             entity,
             world_pos.world_pos_to_grid(),
             find_valid_end_tile(world_pos, &*arc_navmesh.read(), &mut rng, 0),
@@ -137,7 +137,7 @@ pub fn wander_idle_pawns(
             &queue_counter,
             maybe_pathfinding_task.as_deref_mut(),
             &mut commands,
-            &mut movement_state_event_writer,
+            &mut movable_state_event_writer,
         );
     }
 }

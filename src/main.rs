@@ -14,7 +14,11 @@ fn main() {
                         mode: bevy::window::WindowMode::Windowed,
                         present_mode: PresentMode::AutoNoVsync,
                         // present_mode: PresentMode::AutoVsync,
-                        resolution: (CONFIG.app.resolution.0 as f32, CONFIG.app.resolution.1 as f32).into(),
+                        resolution: (
+                            CONFIG.app.resolution.0 as f32,
+                            CONFIG.app.resolution.1 as f32,
+                        )
+                            .into(),
                         // title: "Test App".to_string(),
                         ..default()
                     }),
@@ -30,7 +34,7 @@ fn main() {
         )
         // .add_plugins(WorldInspectorPlugin::new())
         // .add_plugins(FilterQueryInspectorPlugin::<With<structure::Structure>>::default())
-        // .add_plugins(FilterQueryInspectorPlugin::<With<Movement>>::default())
+        // .add_plugins(FilterQueryInspectorPlugin::<With<Movable>>::default())
         // .add_plugins(bevy_framepace::FramepacePlugin) // this fixes bevy input lag https://github.com/bevyengine/bevy/issues/3317
         .init_state::<WorldState>()
         .add_loading_state(
@@ -44,7 +48,7 @@ fn main() {
             // settings::SettingsPlugin,
             assets::AssetsPlugin,
             map::MapPlugin,
-            movement::MovementPlugin,
+            movable::MovablePlugin,
             navigation::NavigationPlugin,
             structure::StructurePlugin,
             ui::UiPlugin,

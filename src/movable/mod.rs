@@ -2,12 +2,12 @@ use crate::*;
 
 expose_submodules!(components, systems);
 
-pub struct MovementPlugin;
+pub struct MovablePlugin;
 
-impl Plugin for MovementPlugin {
+impl Plugin for MovablePlugin {
     fn build(&self, app: &mut App) {
-        app.register_type::<Movement>()
-            .add_event::<EntityStateChangeEvent<MovementState>>()
+        app.register_type::<Movable>()
+            .add_event::<EntityStateChangeEvent<MovableState>>()
             .add_systems(
                 Update,
                 move_moving_entities.run_if(in_state(TimeState::Running)),

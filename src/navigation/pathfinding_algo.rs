@@ -46,16 +46,16 @@ pub fn astar_pathfinding(
                 // .iter()
                 // .filter_map(|&(nx, ny)| {
                 //     navmesh.navtiles.get_if_passable(nx, ny).and_then(|navtile| {
-                //         let is_diagonal_movement = x != nx && y != ny;
+                //         let is_diagonal_movable = x != nx && y != ny;
                 //
-                //         if !is_diagonal_movement
+                //         if !is_diagonal_movable
                 //                 // check that both adjacent tiles are passable
                 //                 || (navmesh.navtiles.get_if_passable(x, ny).is_some()
                 //                     && navmesh.navtiles.get_if_passable(nx, y).is_some())
                 //         {
                 //             Some((
                 //                 IVec2 { x: nx, y: ny },
-                //                 if is_diagonal_movement {
+                //                 if is_diagonal_movable {
                 //                     // this is not strictly correct calculation
                 //                     // instead of cost * sqrt(2) it should be
                 //                     // (tile1.cost + sqrt(2))/2 + (tile2.cost + sqrt(2))/2

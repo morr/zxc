@@ -4,7 +4,7 @@ use std::collections::VecDeque;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
-pub enum MovementState {
+pub enum MovableState {
     #[default]
     Idle,
     Moving,
@@ -13,22 +13,22 @@ pub enum MovementState {
 }
 
 #[derive(Component)]
-pub struct MovementMoving;
+pub struct MovableMoving;
 
 #[derive(Debug, Component, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
-pub struct Movement {
+pub struct Movable {
     pub path: VecDeque<IVec2>,
     pub speed: f32,
-    pub state: MovementState,
+    pub state: MovableState,
 }
 
-impl Movement {
+impl Movable {
     pub fn new(speed: f32) -> Self {
         Self {
             path: VecDeque::new(),
             speed,
-            state: MovementState::Idle,
+            state: MovableState::Idle,
         }
     }
 
@@ -36,11 +36,11 @@ impl Movement {
         &mut self,
         entity: Entity,
         commands: &mut Commands,
-        movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementState>>,
+        movable_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
     ) {
         self.stop_moving(entity, commands);
-        self.state = MovementState::Idle;
-        movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+        self.state = MovableState::Idle;
+        movable_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
     }
 
     pub fn to_moving(
@@ -48,12 +48,12 @@ impl Movement {
         path: VecDeque<IVec2>,
         entity: Entity,
         commands: &mut Commands,
-        movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementState>>,
+        movable_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
     ) {
-        self.state = MovementState::Moving;
+        self.state = MovableState::Moving;
         self.path = path;
-        commands.entity(entity).insert(MovementMoving);
-        movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+        commands.entity(entity).insert(MovableMoving);
+        movable_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -66,13 +66,13 @@ impl Movement {
         queue_counter: &Res<AsyncQueueCounter>,
         maybe_pathfinding_task: Option<&mut PathfindingTask>,
         commands: &mut Commands,
-        movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementState>>,
+        movable_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
     ) {
-        if self.state == MovementState::Moving {
+        if self.state == MovableState::Moving {
             self.stop_moving(entity, commands);
         }
-        self.state = MovementState::Pathfinding(end_tile);
-        movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+        self.state = MovableState::Pathfinding(end_tile);
+        movable_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
 
         let navmesh_arc_clone = arc_navmesh.0.clone();
         let task = spawn_async_task(queue_counter, async move {
@@ -99,33 +99,33 @@ impl Movement {
     //     end_tile: IVec2,
     //     commands: &mut Commands,
     //     pathfind_event_writer: &mut EventWriter<PathfindRequestEvent>,
-    //     movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementState>>,
+    //     movable_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
     // ) {
-    //     if self.state == MovementState::Moving {
+    //     if self.state == MovableState::Moving {
     //         self.stop_moving(entity, commands);
     //     }
     //
-    //     self.state = MovementState::Pathfinding(end_tile);
+    //     self.state = MovableState::Pathfinding(end_tile);
     //     pathfind_event_writer.send(PathfindRequestEvent {
     //         start_tile,
     //         end_tile,
     //         entity,
     //     });
-    //     movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+    //     movable_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
     // }
 
     pub fn to_pathfinding_error(
         &mut self,
         entity: Entity,
-        movement_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovementState>>,
+        movable_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
     ) {
-        self.state = MovementState::PathfindingError;
+        self.state = MovableState::PathfindingError;
         self.path = [].into();
-        movement_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+        movable_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
     }
 
     fn stop_moving(&mut self, entity: Entity, commands: &mut Commands) {
         self.path = [].into();
-        commands.entity(entity).remove::<MovementMoving>();
+        commands.entity(entity).remove::<MovableMoving>();
     }
 }

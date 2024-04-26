@@ -103,10 +103,10 @@ fn tile_successors(x: i32, y: i32, navtiles: &Navtiles) -> Vec<(IVec2, i32)> {
     ]
     .iter()
     .filter_map(|&(nx, ny)| {
-        let is_diagonal_movement = x != nx && y != ny;
+        let is_diagonal_movable = x != nx && y != ny;
 
         navtiles.get_passable(nx, ny).and_then(|navtile| {
-            if !is_diagonal_movement
+            if !is_diagonal_movable
                 // check that both adjacent tiles are passable
                 || (navtiles.get_passable(x, ny).is_some()
                     && navtiles.get_passable(nx, y).is_some())
@@ -115,7 +115,7 @@ fn tile_successors(x: i32, y: i32, navtiles: &Navtiles) -> Vec<(IVec2, i32)> {
 
                 Some((
                     IVec2 { x: nx, y: ny },
-                    if is_diagonal_movement {
+                    if is_diagonal_movable {
                         // this is not strictly correct calculation
                         // instead of cost * sqrt(2) it should be
                         // (tile1.cost + sqrt(2))/2 + (tile2.cost + sqrt(2))/2
