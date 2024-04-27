@@ -3,30 +3,28 @@ use super::*;
 #[derive(Component, Default)]
 pub struct Pawn {
     pub state: PawnState,
-    pub task: Option<Task>,
 }
 
-macro_rules! define_pawn_statees {
-    // Match a tuple of tuples, with the first one treated as default
-    (($first_enum_name:ident, $first_component_name:ident) $(, ($enum_name:ident, $component_name:ident))*) => {
-        #[derive(Debug, Clone, Default)] // Use the standard Default derive
-        pub enum PawnState {
-            #[default] // This marks the first variant as the default.
-            $first_enum_name,
-            $($enum_name),*
+impl Pawn {
+    pub fn get_task(&self) -> &Task {
+        match &self.state {
+            PawnState::WorkAssigned(task) | PawnState::Working(task) => task,
+            _ => panic!("Pawn must be in a task-assigned state"),
         }
+    }
+}
 
-        // impl From<PawnState> for String {
-        //     fn from(state: PawnState) -> Self {
-        //         format!("{:?}", state)
-        //     }
-        // }
-
-        // impl PawnState {
-        //     pub fn to_string(&self) -> String {
-        //         format!("{:?}", self)
-        //     }
-        // }
+macro_rules! define_pawn_states {
+    (
+        ($first_enum_name:ident, $first_component_name:ident)
+        $( , ($enum_name:ident, $component_name:ident $(, $turple_type:ty, $match_field:ident)?))*
+    ) => {
+        #[derive(Debug, Clone, Default)]
+        pub enum PawnState {
+            #[default]
+            $first_enum_name,
+            $($enum_name $(($turple_type))? ),*
+        }
 
         #[derive(Component)]
         pub struct $first_component_name;
@@ -36,7 +34,7 @@ macro_rules! define_pawn_statees {
             pub struct $component_name;
         )*
 
-        impl Pawn {
+       impl Pawn {
             pub fn change_state(
                 &mut self,
                 entity: Entity,
@@ -45,28 +43,27 @@ macro_rules! define_pawn_statees {
                 pawn_state_event_writer: &mut EventWriter<EntityStateChangeEvent<PawnState>>,
             ) {
                 // println!("PawnState {:?}=>{:?}", self.state, new_state);
-
                 // Remove the old state component
-                match self.state {
+                match &self.state {
                     PawnState::$first_enum_name => {
                         commands.entity(entity).remove::<$first_component_name>();
                     },
-                    $(PawnState::$enum_name => {
+                    $(PawnState::$enum_name $( ($match_field) )? => {
                         commands.entity(entity).remove::<$component_name>();
-                    }),*
+                    },)*
                 }
 
-                // Update the Pawn's state
+                // Set the new state
                 self.state = new_state;
 
-                // Add the new state component
-                match self.state {
+                // Add the new component
+                match &self.state {
                     PawnState::$first_enum_name => {
                         commands.entity(entity).insert($first_component_name);
                     },
-                    $(PawnState::$enum_name => {
+                    $(PawnState::$enum_name $( ($match_field) )? => {
                         commands.entity(entity).insert($component_name);
-                    }),*
+                    },)*
                 }
 
                 pawn_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
@@ -75,12 +72,12 @@ macro_rules! define_pawn_statees {
     };
 }
 
-// Use the macro with the new tuple of pairs format
-define_pawn_statees!(
+// Using the macro
+define_pawn_states!(
     (Idle, PawnIdle),
-    // (Moving, PawnMoving),
-    (WorkAssigned, PawnWorkAssigned),
-    (Working, PawnWorking)
+    (Moving, PawnMoving),
+    (WorkAssigned, PawnWorkAssigned, Task, _wa),
+    (Working, PawnWorking, Task, _w)
 );
 
 #[derive(Component)]
