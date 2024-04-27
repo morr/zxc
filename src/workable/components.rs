@@ -14,6 +14,6 @@ impl Default for Workable {
 
 impl Workable {
     pub fn perform_work(&mut self, elapsed_time: f32) {
-        self.progress += elapsed_time;
+        self.progress += elapsed_time * CONFIG.pawn.work_force;
     }
 }

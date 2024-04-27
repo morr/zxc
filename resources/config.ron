@@ -16,6 +16,7 @@ RootConfig(
         day_duration: 60.0
     ),
     pawn: PawnConfig(
-        speed: 3.0
+        speed: 3.0,
+        work_force: 1.0
     )
 )

@@ -91,4 +91,5 @@ impl TimeConfig {
 #[derive(Deserialize, Serialize)]
 pub struct PawnConfig {
     pub speed: f32,
+    pub work_force: f32
 }
