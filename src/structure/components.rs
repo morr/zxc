@@ -45,7 +45,7 @@ impl FarmTile {
         // Adding the task for the farm tile to the work queue
         let task = Task {
             entity,
-            kind: TaskKind::Farming,
+            // kind: TaskKind::Farming,
             tile: grid_tile,
         };
         work_queue.add_task(task);
