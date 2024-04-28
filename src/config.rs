@@ -30,6 +30,7 @@ pub struct RootConfig {
     pub scene: SceneConfig,
     pub time: TimeConfig,
     pub pawn: PawnConfig,
+    pub work_amount: WorkAmountConfig,
 }
 
 impl RootConfig {
@@ -93,3 +94,10 @@ pub struct PawnConfig {
     pub speed: f32,
     pub work_force: f32
 }
+
+#[derive(Deserialize, Serialize)]
+pub struct WorkAmountConfig {
+    /// in hours
+    pub farm_tile: f32,
+}
+
