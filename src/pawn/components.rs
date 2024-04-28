@@ -82,6 +82,3 @@ define_pawn_states!(
 
 #[derive(Component)]
 pub struct PawnStateText;
-
-#[derive(Event, Debug)]
-pub struct PawnStartWorkingEvent(pub Entity);

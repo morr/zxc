@@ -1,6 +1,10 @@
 use super::*;
 
-pub fn track_time(time: Res<Time>, time_scale: Res<TimeScale>, mut elapsed_time: ResMut<ElapsedTime>) {
+pub fn track_time(
+    time: Res<Time>,
+    time_scale: Res<TimeScale>,
+    mut elapsed_time: ResMut<ElapsedTime>,
+) {
     elapsed_time.0 += time.delta_seconds() * time_scale.0;
 }
 
