@@ -1,4 +1,4 @@
-use zxc::{utils::{grid_tile_center_to_world, grid_tile_edge_to_world, world_pos_to_grid}, CONFIG};
+use zxc::{grid_tile_center_to_world, grid_tile_edge_to_world, world_pos_to_grid, CONFIG};
 
 #[test]
 fn transform_tile_pos_edge_to_world_pos() {
