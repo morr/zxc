@@ -1,6 +1,6 @@
 use crate::*;
 
-expose_submodules!(components, systems, pathfinding_algo);
+expose_submodules!(components, systems, pathfinding_algo, utils);
 
 pub struct NavigationPlugin;
 impl Plugin for NavigationPlugin {
