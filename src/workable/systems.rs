@@ -68,14 +68,14 @@ pub fn assign_tasks_to_pawns(
 
 pub fn check_pawn_ready_for_working(
     query: Query<(Entity, &Transform, &Pawn), (With<PawnWorkAssigned>, Without<MovableMoving>)>,
-    mut event_writer: EventWriter<WorkStartingEvent>,
+    mut event_writer: EventWriter<WorkStartEvent>,
 ) {
     for (entity, transform, pawn) in query.iter() {
         let current_tile = transform.translation.truncate().world_pos_to_grid();
         let is_pawn_reached_workplace = current_tile == pawn.get_task().tile;
 
         if is_pawn_reached_workplace {
-            event_writer.send(WorkStartingEvent {
+            event_writer.send(WorkStartEvent {
                 pawn_entity: entity,
             });
         }
@@ -84,7 +84,7 @@ pub fn check_pawn_ready_for_working(
 
 pub fn start_pawn_working(
     mut commands: Commands,
-    mut event_reader: EventReader<WorkStartingEvent>,
+    mut event_reader: EventReader<WorkStartEvent>,
     mut query: Query<&mut Pawn>,
     mut pawn_state_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
@@ -95,6 +95,24 @@ pub fn start_pawn_working(
         pawn.change_state(
             event.pawn_entity,
             PawnState::Working(task),
+            &mut commands,
+            &mut pawn_state_event_writer,
+        );
+    }
+}
+
+pub fn complete_pawn_working(
+    mut commands: Commands,
+    mut event_reader: EventReader<WorkCompleteEvent>,
+    mut query: Query<&mut Pawn>,
+    mut pawn_state_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+) {
+    for event in event_reader.read() {
+        let mut pawn = query.get_mut(event.pawn_entity).unwrap();
+
+        pawn.change_state(
+            event.pawn_entity,
+            PawnState::Idle,
             &mut commands,
             &mut pawn_state_event_writer,
         );

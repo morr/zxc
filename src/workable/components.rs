@@ -31,7 +31,7 @@ impl Workable {
 }
 
 #[derive(Event, Debug)]
-pub struct WorkStartingEvent {
+pub struct WorkStartEvent {
     pub pawn_entity: Entity,
 }
 
