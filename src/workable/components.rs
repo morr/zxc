@@ -3,17 +3,21 @@ use super::*;
 #[derive(Debug, Component, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
 pub struct Workable {
-    progress: f32,
+    pub work_amount_done: f32,
+    pub work_amount_total: f32,
 }
 
-impl Default for Workable {
-    fn default() -> Self {
-        Self { progress: 0.0 }
+impl Workable {
+    pub fn new(work_amount_total: f32) -> Self {
+        Self {
+            work_amount_total,
+            work_amount_done: 0.0,
+        }
     }
 }
 
 impl Workable {
     pub fn perform_work(&mut self, elapsed_time: f32) {
-        self.progress += elapsed_time * CONFIG.pawn.work_force;
+        self.work_amount_done += elapsed_time * CONFIG.pawn.work_force;
     }
 }

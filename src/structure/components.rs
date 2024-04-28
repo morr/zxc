@@ -18,7 +18,7 @@ impl FarmTile {
         let entity = commands
             .spawn((
                 FarmTile {},
-                Workable::default(),
+                Workable::new(CONFIG.work_amount.farm_tile),
                 Name::new("FarmTile"),
                 SpriteBundle {
                     texture: assets.dirt.clone(),
