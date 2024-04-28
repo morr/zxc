@@ -3,7 +3,9 @@ use super::*;
 #[derive(Debug, Component, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
 pub struct Workable {
+    /// in seconds
     pub work_amount_done: f32,
+    /// in seconds
     pub work_amount_total: f32,
 }
 
