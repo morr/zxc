@@ -18,7 +18,10 @@ impl Plugin for DebugNavmeshPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<StateChangeEvent<DebugNavmeshState>>()
             .init_state::<DebugNavmeshState>()
-            .add_systems(FixedUpdate, handle_state_changes.run_if(in_state(WorldState::Playing)));
+            .add_systems(
+                FixedUpdate,
+                handle_state_changes.run_if(in_state(WorldState::Playing)),
+            );
     }
 }
 
@@ -38,24 +41,27 @@ fn handle_state_changes(
 
         match event.0 {
             DebugNavmeshState::Visible => {
-                arc_navmesh.read().navtiles.for_each_tile_mut(|navtile, tile_pos| {
-                    commands
-                        .spawn(MaterialMesh2dBundle {
-                            mesh: mesh_handle.clone().into(),
-                            material: if navtile.is_passable() {
-                                assets.navmesh_passable.clone()
-                            } else {
-                                assets.navmesh_impassable.clone()
-                            },
-                            transform: Transform::from_translation(
-                                tile_pos
-                                    .grid_tile_center_to_world()
-                                    .extend(TILE_Z_INDEX + 1.0),
-                            ),
-                            ..default()
-                        })
-                        .insert(DebugNavmeshTile);
-                });
+                arc_navmesh
+                    .read()
+                    .navtiles
+                    .for_each_tile_mut(|navtile, tile_pos| {
+                        commands
+                            .spawn(MaterialMesh2dBundle {
+                                mesh: mesh_handle.clone().into(),
+                                material: if navtile.is_passable() {
+                                    assets.navmesh_passable.clone()
+                                } else {
+                                    assets.navmesh_impassable.clone()
+                                },
+                                transform: Transform::from_translation(
+                                    tile_pos
+                                        .grid_tile_center_to_world()
+                                        .extend(TILE_Z_INDEX + 1.0),
+                                ),
+                                ..default()
+                            })
+                            .insert(DebugNavmeshTile);
+                    });
             }
             DebugNavmeshState::Hidden => {
                 for entity in query_tiles_hovered.iter() {

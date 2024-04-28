@@ -18,7 +18,8 @@ impl Plugin for CameraPlugin {
     }
 }
 
-fn spawn_camera(mut commands: Commands) { // , camera_targets: Res<CameraTargets>) {
+fn spawn_camera(mut commands: Commands) {
+    // , camera_targets: Res<CameraTargets>) {
     commands
         .spawn((
             Camera2dBundle {

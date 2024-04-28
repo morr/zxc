@@ -1,5 +1,11 @@
 use crate::*;
-expose_submodules!(components, systems, debug_grid, debug_movepath, debug_navmesh);
+expose_submodules!(
+    components,
+    systems,
+    debug_grid,
+    debug_movepath,
+    debug_navmesh
+);
 
 pub struct UiPlugin;
 

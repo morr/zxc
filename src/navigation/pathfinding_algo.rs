@@ -88,4 +88,3 @@ pub fn astar_pathfinding(
         None
     }
 }
-

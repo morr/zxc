@@ -42,9 +42,10 @@ impl ElapsedTime {
     }
 
     pub fn game_minutes(&self) -> f32 {
-        (((self.0 % CONFIG.time.day_duration) % CONFIG.time.hour_duration) / CONFIG.time.minute_duration).floor()
+        (((self.0 % CONFIG.time.day_duration) % CONFIG.time.hour_duration)
+            / CONFIG.time.minute_duration)
+            .floor()
     }
-
 }
 
 pub struct StoryTimePlugin;

@@ -97,11 +97,7 @@ pub fn listen_for_pathfinding_async_tasks(
 
                     if let Some(path) = &result.path {
                         if path.len() == 1 {
-                            movable.to_idle(
-                                entity,
-                                &mut commands,
-                                &mut movable_state_event_writer,
-                            );
+                            movable.to_idle(entity, &mut commands, &mut movable_state_event_writer);
                         } else {
                             movable.to_moving(
                                 path.iter().skip(1).cloned().collect(),

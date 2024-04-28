@@ -11,7 +11,7 @@ impl Plugin for WorkQueuePlugin {
             (
                 assign_tasks_to_pawns,
                 check_pawn_ready_for_working,
-                start_pawn_working
+                start_pawn_working,
             )
                 .chain()
                 .run_if(in_state(WorldState::Playing)),
