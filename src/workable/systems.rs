@@ -11,9 +11,8 @@ pub fn progress_work(
     for pawn in query_pawns.iter() {
         let task = pawn.get_task();
 
-        query_workable
-            .get_mut(task.entity)
-            .unwrap()
-            .perform_work(elapsed_time);
+        let mut workable = query_workable.get_mut(task.entity).unwrap();
+
+        workable.perform_work(elapsed_time);
     }
 }

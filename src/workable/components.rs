@@ -21,5 +21,6 @@ impl Workable {
 impl Workable {
     pub fn perform_work(&mut self, elapsed_time: f32) {
         self.work_amount_done += elapsed_time * CONFIG.pawn.work_force;
+        // println!("{} of {}", self.work_amount_done, self.work_amount_total);
     }
 }
