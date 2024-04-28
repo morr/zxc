@@ -1,70 +1,10 @@
 use super::*;
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
-pub enum TimeState {
-    #[default]
-    Running,
-    Paused,
-}
-
-#[derive(Resource, Deref, DerefMut)]
-pub struct TimeScale(pub f32);
-impl Default for TimeScale {
-    fn default() -> Self {
-        Self(1.0)
-    }
-}
-
-#[derive(Resource, Deref, DerefMut)]
-pub struct ElapsedTime(pub f32);
-
-impl Default for ElapsedTime {
-    fn default() -> Self {
-        Self(CONFIG.time.hour_duration * CONFIG.scene.starting_hour as f32)
-    }
-}
-
-impl ElapsedTime {
-    pub fn total_seconds(&self) -> f32 {
-        self.0.floor()
-    }
-
-    pub fn game_time_of_day(&self) -> f32 {
-        (self.0 % CONFIG.time.day_duration) / CONFIG.time.day_duration
-    }
-
-    pub fn game_day(&self) -> f32 {
-        (self.0 / CONFIG.time.day_duration).floor()
-    }
-
-    pub fn game_hours(&self) -> f32 {
-        ((self.0 % CONFIG.time.day_duration) / CONFIG.time.hour_duration).floor()
-    }
-
-    pub fn game_minutes(&self) -> f32 {
-        (((self.0 % CONFIG.time.day_duration) % CONFIG.time.hour_duration)
-            / CONFIG.time.minute_duration)
-            .floor()
-    }
-}
-
-pub struct StoryTimePlugin;
-
-impl Plugin for StoryTimePlugin {
-    fn build(&self, app: &mut App) {
-        app.init_state::<TimeState>()
-            .init_resource::<TimeScale>()
-            .init_resource::<ElapsedTime>()
-            .add_systems(FixedUpdate, track_time.run_if(in_state(TimeState::Running)))
-            .add_systems(Update, modify_time.run_if(in_state(WorldState::Playing)));
-    }
-}
-
-fn track_time(time: Res<Time>, time_scale: Res<TimeScale>, mut elapsed_time: ResMut<ElapsedTime>) {
+pub fn track_time(time: Res<Time>, time_scale: Res<TimeScale>, mut elapsed_time: ResMut<ElapsedTime>) {
     elapsed_time.0 += time.delta_seconds() * time_scale.0;
 }
 
-fn modify_time(
+pub fn modify_time(
     time_state: Res<State<TimeState>>,
     mut next_state: ResMut<NextState<TimeState>>,
     mut time_scale: ResMut<TimeScale>,
