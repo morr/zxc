@@ -10,11 +10,18 @@ pub fn render_ui(
     time_state: Res<State<TimeState>>,
     time_scale: Res<TimeScale>,
     assets: Res<FontAssets>,
-    queue_counter: Res<AsyncQueueCounter>,
+    tasks_queue: Res<TasksQueue>,
+    async_queue_counter: Res<AsyncQueueCounter>,
 ) {
     commands.spawn((
         TextBundle::from_section(
-            format_ui_line(&elapsed_time, &time_state, &time_scale, &queue_counter),
+            format_ui_line(
+                &elapsed_time,
+                &time_state,
+                &time_scale,
+                &tasks_queue,
+                &async_queue_counter,
+            ),
             TextStyle {
                 font: assets.fira.clone(),
                 font_size: 24.,
@@ -51,7 +58,8 @@ pub fn update_ui(
     elapsed_time: Res<ElapsedTime>,
     time_state: Res<State<TimeState>>,
     time_scale: Res<TimeScale>,
-    queue_counter: Res<AsyncQueueCounter>,
+    tasks_queue: Res<TasksQueue>,
+    async_queue_counter: Res<AsyncQueueCounter>,
     // mut ev_update_ui: EventReader<UpdateUiEvent>,
     mut query: Query<&mut Text, With<StatusText>>,
 ) {
@@ -59,8 +67,13 @@ pub fn update_ui(
     //     println!("update ui");
 
     let mut text = query.single_mut();
-    text.sections[0].value =
-        format_ui_line(&elapsed_time, &time_state, &time_scale, &queue_counter);
+    text.sections[0].value = format_ui_line(
+        &elapsed_time,
+        &time_state,
+        &time_scale,
+        &tasks_queue,
+        &async_queue_counter,
+    );
     // }
 }
 
@@ -68,7 +81,8 @@ fn format_ui_line(
     elapsed_time: &Res<ElapsedTime>,
     time_state: &Res<State<TimeState>>,
     time_scale: &Res<TimeScale>,
-    queue_counter: &Res<AsyncQueueCounter>,
+    tasks_queue: &Res<TasksQueue>,
+    async_queue_counter: &Res<AsyncQueueCounter>,
 ) -> String {
     let speed_part = match time_state.get() {
         TimeState::Running => format!("Speed: {}x", time_scale.0),
@@ -77,13 +91,14 @@ fn format_ui_line(
 
     format!(
         // "Total Seconds: {} Day: {} {:02}:{:02} {} Queue: {}",
-        "Day: {} {:02}:{:02} {} Queue: {}",
+        "Day: {} {:02}:{:02} {} TasksQueue: {} AsyncQueue: {}",
         // elapsed_time.total_seconds(),
         elapsed_time.game_day(),
         elapsed_time.game_hours(),
         elapsed_time.game_minutes(),
         speed_part,
-        queue_counter.get()
+        tasks_queue.len(),
+        async_queue_counter.get()
     )
 }
 
