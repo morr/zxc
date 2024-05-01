@@ -30,7 +30,7 @@ pub fn spawn_pawns(
     let warehouse_transform = warehouse_query.single();
     let farm_tile_transform = farm_tile_query.iter().next().unwrap();
 
-    for i in 0..CONFIG.scene.starting_pawns {
+    for i in 0..CONFIG.starting_scene.pawns {
         let random_angle: f32 = rng.gen_range(0.0..360.0);
 
         let position = if i >= 4 {
@@ -42,9 +42,9 @@ pub fn spawn_pawns(
         } else {
             Vec3::new(
                 farm_tile_transform.translation.x
-                    + random_angle.cos() * 5.0 * FARM_TILE_SIZE as f32 * CONFIG.tile.size as f32,
+                    + random_angle.cos() * 5.0 * FARM_TILE_SIZE as f32 * CONFIG.tile.size,
                 farm_tile_transform.translation.y
-                    + random_angle.sin() * 5.0 * FARM_TILE_SIZE as f32 * CONFIG.tile.size as f32,
+                    + random_angle.sin() * 5.0 * FARM_TILE_SIZE as f32 * CONFIG.tile.size,
                 PAWN_Z_INDEX,
             )
         };

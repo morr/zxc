@@ -8,9 +8,11 @@ RootConfig(
     tile: TileConfig(
         size: 32.0
     ),
-    scene: SceneConfig(
-        starting_pawns: 1,
-        starting_hour: 8
+    starting_scene: StartingSceneConfig(
+        pawns: 1,
+        day_hour: 8,
+        farm_width: 3,
+        farm_height: 3
     ),
     time: TimeConfig(
         day_duration: 60.0

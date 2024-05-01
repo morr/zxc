@@ -27,7 +27,7 @@ pub struct RootConfig {
     pub app: AppConfig,
     pub grid: GridConfig,
     pub tile: TileConfig,
-    pub scene: SceneConfig,
+    pub starting_scene: StartingSceneConfig,
     pub time: TimeConfig,
     pub pawn: PawnConfig,
     pub work_amount: WorkAmountConfig,
@@ -66,9 +66,11 @@ pub struct TileConfig {
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct SceneConfig {
-    pub starting_pawns: i32,
-    pub starting_hour: i32,
+pub struct StartingSceneConfig {
+    pub pawns: i32,
+    pub day_hour: i32,
+    pub farm_width: i32,
+    pub farm_height: i32,
 }
 
 #[derive(Deserialize, Serialize)]
