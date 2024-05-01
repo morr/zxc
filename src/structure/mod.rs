@@ -8,7 +8,7 @@ impl Plugin for StructurePlugin {
         app.add_event::<FarmTileProgressEvent>()
             .add_systems(
                 OnExit(WorldState::Loading),
-                (spawn_base, spawn_farm, spawn_house),
+                (spawn_base, spawn_farm, spawn_house, spawn_well),
             )
             .add_systems(
                 FixedUpdate,

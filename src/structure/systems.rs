@@ -5,6 +5,7 @@ pub const BASE_HEIGHT: i32 = 14;
 pub const FARM_TILE_SIZE: i32 = 1;
 pub const HOUSE_WIDTH: i32 = 4;
 pub const HOUSE_HEIGHT: i32 = 4;
+pub const WELL_SIZE: i32 = 2;
 
 pub fn spawn_base(
     mut commands: Commands,
@@ -83,6 +84,42 @@ pub fn spawn_house(
             Name::new("House"),
             SpriteBundle {
                 texture: assets.house_3.clone(),
+                sprite: Sprite {
+                    custom_size: Some(size.grid_tile_edge_to_world()),
+                    ..default()
+                },
+                transform: Transform::from_translation(
+                    (grid_tile.grid_tile_edge_to_world() + size.grid_tile_edge_to_world() / 2.0)
+                        .extend(STRUCTURE_Z_INDEX),
+                ),
+                ..default()
+            },
+        ))
+        .insert(ShowAabbGizmo {
+            color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
+        });
+
+    arc_navmesh.write().update_cost(
+        (grid_tile.x)..(grid_tile.x + size.x),
+        (grid_tile.y)..(grid_tile.y + size.y),
+        None,
+    )
+}
+
+pub fn spawn_well(
+    mut commands: Commands,
+    assets: Res<TextureAssets>,
+    arc_navmesh: ResMut<ArcNavmesh>,
+) {
+    let size = IVec2::new(WELL_SIZE, WELL_SIZE);
+    let grid_tile = IVec2::new(-3, -6);
+
+    commands
+        .spawn((
+            Well {},
+            Name::new("well"),
+            SpriteBundle {
+                texture: assets.well.clone(),
                 sprite: Sprite {
                     custom_size: Some(size.grid_tile_edge_to_world()),
                     ..default()
