@@ -5,7 +5,7 @@ pub struct Warehouse {}
 
 #[derive(Component, Default)]
 pub struct FarmTile {
-    state: FarmTileState,
+    pub state: FarmTileState,
 }
 
 impl FarmTile {

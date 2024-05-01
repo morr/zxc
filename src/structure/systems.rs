@@ -65,7 +65,7 @@ pub fn spawn_farm(
                 &assets,
                 &mut navmesh,
                 &mut work_queue,
-                grid_tile
+                grid_tile,
             );
         }
     }
@@ -109,18 +109,20 @@ pub fn spawn_house(
 
 pub fn progress_farms(
     mut commands: Commands,
-    mut query: Query<&mut FarmTile>,
+    mut query: Query<(&Transform, &mut FarmTile)>,
     mut event_reader: EventReader<FarmTileProgressEvent>,
     assets: Res<TextureAssets>,
 ) {
     for event in event_reader.read() {
-        let mut farm_tile = query.get_mut(event.0).unwrap();
+        let (transform, mut farm_tile) = query.get_mut(event.0).unwrap();
+        let grid_tile = transform.translation.truncate().world_pos_to_grid();
+
         farm_tile.progress_state();
 
-        // Update the texture to wheat
-        // commands.entity(event.0).insert(SpriteBundle {
-        //     texture: assets.wheat.clone(),
-        //     ..default()
-        // });
+        commands.entity(event.0).insert(FarmTile::sprite_bundle(
+            &farm_tile.state,
+            &assets,
+            grid_tile,
+        ));
     }
 }
