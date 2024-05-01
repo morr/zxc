@@ -73,8 +73,10 @@ impl FarmTile {
     ) -> SpriteBundle {
         let size = IVec2::new(FARM_TILE_SIZE, FARM_TILE_SIZE);
         let texture = match state {
-            FarmTileState::Planted => assets.wheat.clone(),
-            _ => assets.dirt.clone(),
+            FarmTileState::NotPlanted => assets.dirt.clone(),
+            FarmTileState::Planted => assets.crops.clone(),
+            FarmTileState::Grown => assets.wheat.clone(),
+            FarmTileState::Harvested => assets.hay.clone(),
         };
 
         SpriteBundle {

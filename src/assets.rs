@@ -54,6 +54,8 @@ pub struct TextureAssets {
 pub struct FarmAssets {
     #[asset(path = "sprites/dirt.png")] // SBS - Tiny Texture Pack 2 - 128x128
     pub dirt: Handle<Image>,
+    #[asset(path = "sprites/crops.png")]
+    pub crops: Handle<Image>,
     #[asset(path = "sprites/wheat.png")]
     pub wheat: Handle<Image>,
     #[asset(path = "sprites/hay.png")]
