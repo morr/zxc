@@ -2,7 +2,7 @@ use bevy::sprite::MaterialMesh2dBundle;
 use rand::Rng;
 use rand_distr::{Distribution, UnitCircle};
 
-use self::structure::{Warehouse, BASE_HEIGHT, BASE_WIDTH};
+use self::structure::{FarmTile, Warehouse, BASE_HEIGHT, BASE_WIDTH, FARM_TILE_SIZE};
 
 use super::*;
 
@@ -13,7 +13,9 @@ pub fn spawn_pawns(
     mut meshes: ResMut<Assets<Mesh>>,
     assets_collection: Res<AssetsCollection>,
     font_assets: Res<FontAssets>,
-    query: Query<&Transform, With<Warehouse>>,
+    warehouse_query: Query<&Transform, With<Warehouse>>,
+    farm_tile_query: Query<&Transform, With<FarmTile>>,
+    // query: Query<&Transform, With<Warehouse>>,
 ) {
     // println!("Spawning pawns");
 
@@ -25,16 +27,27 @@ pub fn spawn_pawns(
     let mut rng = rand::thread_rng();
     let radius = CONFIG.tile.size * i32::max(BASE_WIDTH, BASE_HEIGHT) as f32;
 
-    let transform = query.single();
+    let warehouse_transform = warehouse_query.single();
+    let farm_tile_transform = farm_tile_query.iter().next().unwrap();
 
-    for _i in 0..CONFIG.scene.starting_pawns {
+    for i in 0..CONFIG.scene.starting_pawns {
         let random_angle: f32 = rng.gen_range(0.0..360.0);
 
-        let position = Vec3::new(
-            transform.translation.x + random_angle.cos() * radius,
-            transform.translation.y + random_angle.sin() * radius,
-            PAWN_Z_INDEX,
-        );
+        let position = if i >= 4 {
+            Vec3::new(
+                warehouse_transform.translation.x + random_angle.cos() * radius,
+                warehouse_transform.translation.y + random_angle.sin() * radius,
+                PAWN_Z_INDEX,
+            )
+        } else {
+            Vec3::new(
+                farm_tile_transform.translation.x
+                    + random_angle.cos() * 5.0 * FARM_TILE_SIZE as f32 * CONFIG.tile.size as f32,
+                farm_tile_transform.translation.y
+                    + random_angle.sin() * 5.0 * FARM_TILE_SIZE as f32 * CONFIG.tile.size as f32,
+                PAWN_Z_INDEX,
+            )
+        };
         let pawn = Pawn::default();
         let pawn_state_string = format!("{:?}", pawn.state);
 
