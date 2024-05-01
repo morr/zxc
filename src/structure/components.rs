@@ -6,8 +6,23 @@ pub struct Warehouse {}
 #[derive(Component)]
 pub struct FarmTile {}
 
+impl FarmTile {
+    pub fn progress_state(&mut self) {
+        println!("progress farm tile")
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+pub enum FarmTileState {
+    #[default]
+    NotPlanted,
+    Planted,
+    Grown,
+    Harvested
+}
+
 #[derive(Event, Debug)]
-pub struct FarmProgressEvent(pub Entity);
+pub struct FarmTileProgressEvent(pub Entity);
 
 impl FarmTile {
     pub fn spawn(

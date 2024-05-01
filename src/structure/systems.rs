@@ -108,3 +108,14 @@ pub fn spawn_house(
         None,
     )
 }
+
+pub fn progress_farms(
+    mut query: Query<&mut FarmTile>,
+    mut event_reader: EventReader<FarmTileProgressEvent>,
+) {
+    for event in event_reader.read() {
+        let mut farm_tile = query.get_mut(event.0).unwrap();
+        farm_tile.progress_state();
+    }
+}
+
