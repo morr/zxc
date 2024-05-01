@@ -36,15 +36,20 @@ pub struct TextureAssets {
     // https://screamingbrainstudios.itch.io/tiny-texture-pack/download/eyJpZCI6MTAzMzEyOSwiZXhwaXJlcyI6MTcxMDc5ODI3OX0%3d.%2f%2bodleBeo8EbYeM%2bKnn3UZPKq2U%3d
     #[asset(path = "sprites/grass.png")]
     pub grass: Handle<Image>,
+
     // https://fin-nio.itch.io/pixel-houses
     #[asset(path = "sprites/castle_complete.png")]
     pub castle: Handle<Image>,
+
     #[asset(path = "sprites/house_1.png")]
     pub house_1: Handle<Image>,
+
     #[asset(path = "sprites/house_2.png")]
     pub house_2: Handle<Image>,
+
     #[asset(path = "sprites/house_3.png")]
     pub house_3: Handle<Image>,
+
     #[asset(path = "sprites/house_4.png")]
     pub house_4: Handle<Image>,
 }
@@ -52,14 +57,18 @@ pub struct TextureAssets {
 // https://itch.io/game-assets/free/tag-textures
 #[derive(AssetCollection, Resource)]
 pub struct FarmAssets {
-    #[asset(path = "sprites/dirt.png")] // SBS - Tiny Texture Pack 2 - 128x128
-    pub dirt: Handle<Image>,
-    #[asset(path = "sprites/crops.png")]
-    pub crops: Handle<Image>,
-    #[asset(path = "sprites/wheat.png")]
-    pub wheat: Handle<Image>,
-    #[asset(path = "sprites/hay.png")]
-    pub hay: Handle<Image>,
+    #[asset(path = "sprites/farm_tile/not_planted.png")] // SBS - Tiny Texture Pack 2 - 128x128
+    pub not_planted: Handle<Image>,
+
+    // https://lynocs.itch.io/texture-pack
+    #[asset(path = "sprites/farm_tile/planted.png")]
+    pub planted: Handle<Image>,
+
+    #[asset(path = "sprites/farm_tile/grown.png")]
+    pub grown: Handle<Image>,
+
+    #[asset(path = "sprites/farm_tile/harvested.png")]
+    pub harvested: Handle<Image>,
 }
 
 impl FromWorld for AssetsCollection {
