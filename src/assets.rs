@@ -56,6 +56,8 @@ pub struct FarmAssets {
     pub dirt: Handle<Image>,
     #[asset(path = "sprites/wheat.png")]
     pub wheat: Handle<Image>,
+    #[asset(path = "sprites/hay.png")]
+    pub hay: Handle<Image>,
 }
 
 impl FromWorld for AssetsCollection {
