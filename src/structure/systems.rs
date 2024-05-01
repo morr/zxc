@@ -44,7 +44,7 @@ pub fn spawn_base(
 
 pub fn spawn_farm(
     mut commands: Commands,
-    assets: Res<TextureAssets>,
+    assets: Res<FarmAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
     mut work_queue: ResMut<TasksQueue>,
 ) {
@@ -111,7 +111,7 @@ pub fn progress_farms(
     mut commands: Commands,
     mut query: Query<(&Transform, &mut FarmTile)>,
     mut event_reader: EventReader<FarmTileProgressEvent>,
-    assets: Res<TextureAssets>,
+    assets: Res<FarmAssets>,
 ) {
     for event in event_reader.read() {
         let (transform, mut farm_tile) = query.get_mut(event.0).unwrap();

@@ -8,7 +8,8 @@ impl Plugin for AssetsPlugin {
             LoadingStateConfig::new(WorldState::Loading)
                 .init_resource::<AssetsCollection>()
                 .load_collection::<FontAssets>()
-                .load_collection::<TextureAssets>(),
+                .load_collection::<TextureAssets>()
+                .load_collection::<FarmAssets>(),
         );
     }
 }
@@ -35,10 +36,6 @@ pub struct TextureAssets {
     // https://screamingbrainstudios.itch.io/tiny-texture-pack/download/eyJpZCI6MTAzMzEyOSwiZXhwaXJlcyI6MTcxMDc5ODI3OX0%3d.%2f%2bodleBeo8EbYeM%2bKnn3UZPKq2U%3d
     #[asset(path = "sprites/grass.png")]
     pub grass: Handle<Image>,
-    #[asset(path = "sprites/dirt.png")] // SBS - Tiny Texture Pack 2 - 128x128
-    pub dirt: Handle<Image>,
-    #[asset(path = "sprites/wheat.png")]
-    pub wheat: Handle<Image>,
     // https://fin-nio.itch.io/pixel-houses
     #[asset(path = "sprites/castle_complete.png")]
     pub castle: Handle<Image>,
@@ -50,6 +47,15 @@ pub struct TextureAssets {
     pub house_3: Handle<Image>,
     #[asset(path = "sprites/house_4.png")]
     pub house_4: Handle<Image>,
+}
+
+// https://itch.io/game-assets/free/tag-textures
+#[derive(AssetCollection, Resource)]
+pub struct FarmAssets {
+    #[asset(path = "sprites/dirt.png")] // SBS - Tiny Texture Pack 2 - 128x128
+    pub dirt: Handle<Image>,
+    #[asset(path = "sprites/wheat.png")]
+    pub wheat: Handle<Image>,
 }
 
 impl FromWorld for AssetsCollection {

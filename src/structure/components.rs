@@ -34,7 +34,7 @@ pub struct FarmTileProgressEvent(pub Entity);
 impl FarmTile {
     pub fn spawn(
         commands: &mut Commands,
-        assets: &Res<TextureAssets>,
+        assets: &Res<FarmAssets>,
         arc_navmesh: &mut Navmesh,
         work_queue: &mut ResMut<TasksQueue>,
         grid_tile: IVec2,
@@ -68,7 +68,7 @@ impl FarmTile {
 
     pub fn sprite_bundle(
         state: &FarmTileState,
-        assets: &Res<TextureAssets>,
+        assets: &Res<FarmAssets>,
         grid_tile: IVec2,
     ) -> SpriteBundle {
         let size = IVec2::new(FARM_TILE_SIZE, FARM_TILE_SIZE);
