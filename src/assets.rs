@@ -61,6 +61,7 @@ pub struct FarmAssets {
     pub not_planted: Handle<Image>,
 
     // https://lynocs.itch.io/texture-pack
+    // Grass/9/9_diffuseOriginal.bmp
     #[asset(path = "sprites/farm_tile/planted.png")]
     pub planted: Handle<Image>,
 
