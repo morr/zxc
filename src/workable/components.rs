@@ -64,14 +64,14 @@ impl TasksQueue {
     }
 }
 
-// #[derive(Debug, Clone, PartialEq, Eq)]
-// pub enum TaskKind {
-//     Farming,
-// }
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum TaskKind {
+    Farming,
+}
 
 #[derive(Debug, Clone)]
 pub struct Task {
     pub entity: Entity,
-    // pub kind: TaskKind,
+    pub kind: TaskKind,
     pub tile: IVec2,
 }

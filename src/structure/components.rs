@@ -6,6 +6,9 @@ pub struct Warehouse {}
 #[derive(Component)]
 pub struct FarmTile {}
 
+#[derive(Event, Debug)]
+pub struct FarmProgressEvent(pub Entity);
+
 impl FarmTile {
     pub fn spawn(
         commands: &mut Commands,
@@ -45,7 +48,7 @@ impl FarmTile {
         // Adding the task for the farm tile to the work queue
         let task = Task {
             entity,
-            // kind: TaskKind::Farming,
+            kind: TaskKind::Farming,
             tile: grid_tile,
         };
         work_queue.add_task(task);
