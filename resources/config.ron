@@ -20,6 +20,7 @@ RootConfig(
         work_force: 1.0
     ),
     work_amount: WorkAmountConfig(
-        farm_tile: 8.0
+        farm_tile: 1.0
+        // farm_tile: 8.0
     )
 )
