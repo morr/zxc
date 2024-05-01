@@ -3,12 +3,19 @@ use super::*;
 #[derive(Component)]
 pub struct Warehouse {}
 
-#[derive(Component)]
-pub struct FarmTile {}
+#[derive(Component, Default)]
+pub struct FarmTile {
+    state: FarmTileState,
+}
 
 impl FarmTile {
     pub fn progress_state(&mut self) {
-        println!("progress farm tile")
+        self.state = match &self.state {
+            FarmTileState::NotPlanted => FarmTileState::Planted,
+            FarmTileState::Planted => FarmTileState::Grown,
+            FarmTileState::Grown => FarmTileState::Harvested,
+            FarmTileState::Harvested => FarmTileState::NotPlanted,
+        }
     }
 }
 
@@ -18,7 +25,7 @@ pub enum FarmTileState {
     NotPlanted,
     Planted,
     Grown,
-    Harvested
+    Harvested,
 }
 
 #[derive(Event, Debug)]
@@ -35,7 +42,7 @@ impl FarmTile {
     ) {
         let entity = commands
             .spawn((
-                FarmTile {},
+                FarmTile::default(),
                 Workable::new(hours_to_seconds(CONFIG.work_amount.farm_tile)),
                 Name::new("FarmTile"),
                 SpriteBundle {
