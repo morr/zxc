@@ -6,7 +6,7 @@ pub struct WorkablePlugin;
 
 impl Plugin for WorkablePlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<WorkQueue>()
+        app.init_resource::<TasksQueue>()
             .register_type::<Workable>()
             .add_event::<WorkCompleteEvent>()
             .add_event::<WorkStartEvent>()

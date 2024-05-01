@@ -35,7 +35,7 @@ pub fn assign_tasks_to_pawns(
         ),
         With<PawnIdle>,
     >,
-    mut work_queue: ResMut<WorkQueue>,
+    mut work_queue: ResMut<TasksQueue>,
     mut pawn_state_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
     mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
     arc_navmesh: Res<ArcNavmesh>,

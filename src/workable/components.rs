@@ -42,11 +42,11 @@ pub struct WorkCompleteEvent {
 }
 
 #[derive(Default, Resource)]
-pub struct WorkQueue {
+pub struct TasksQueue {
     tasks: VecDeque<Task>,
 }
 
-impl WorkQueue {
+impl TasksQueue {
     pub fn add_task(&mut self, task: Task) {
         self.tasks.push_back(task);
     }

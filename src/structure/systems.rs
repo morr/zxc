@@ -46,7 +46,7 @@ pub fn spawn_farm(
     mut commands: Commands,
     assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
-    mut work_queue: ResMut<WorkQueue>,
+    mut work_queue: ResMut<TasksQueue>,
 ) {
     let size = IVec2::new(FARM_TILE_SIZE, FARM_TILE_SIZE);
     let grid_tile_start = IVec2::new(-13, 0);

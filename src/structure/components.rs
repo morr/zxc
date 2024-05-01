@@ -11,7 +11,7 @@ impl FarmTile {
         commands: &mut Commands,
         assets: &Res<TextureAssets>,
         arc_navmesh: &mut Navmesh,
-        work_queue: &mut ResMut<WorkQueue>,
+        work_queue: &mut ResMut<TasksQueue>,
         grid_tile: IVec2,
         size: IVec2,
     ) {
