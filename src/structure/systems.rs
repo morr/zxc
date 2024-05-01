@@ -48,7 +48,6 @@ pub fn spawn_farm(
     arc_navmesh: ResMut<ArcNavmesh>,
     mut work_queue: ResMut<TasksQueue>,
 ) {
-    let size = IVec2::new(FARM_TILE_SIZE, FARM_TILE_SIZE);
     let grid_tile_start = IVec2::new(-13, 0);
     let mut navmesh = arc_navmesh.write();
 
@@ -57,8 +56,8 @@ pub fn spawn_farm(
         for y in 0..2 {
             // for y in 0..5 {
             let grid_tile = IVec2::new(
-                grid_tile_start.x + size.x * x,
-                grid_tile_start.y + size.y * y,
+                grid_tile_start.x + FARM_TILE_SIZE * x,
+                grid_tile_start.y + FARM_TILE_SIZE * y,
             );
 
             FarmTile::spawn(
@@ -66,8 +65,7 @@ pub fn spawn_farm(
                 &assets,
                 &mut navmesh,
                 &mut work_queue,
-                grid_tile,
-                size,
+                grid_tile
             );
         }
     }
@@ -110,12 +108,19 @@ pub fn spawn_house(
 }
 
 pub fn progress_farms(
+    mut commands: Commands,
     mut query: Query<&mut FarmTile>,
     mut event_reader: EventReader<FarmTileProgressEvent>,
+    assets: Res<TextureAssets>,
 ) {
     for event in event_reader.read() {
         let mut farm_tile = query.get_mut(event.0).unwrap();
         farm_tile.progress_state();
+
+        // Update the texture to wheat
+        // commands.entity(event.0).insert(SpriteBundle {
+        //     texture: assets.wheat.clone(),
+        //     ..default()
+        // });
     }
 }
-

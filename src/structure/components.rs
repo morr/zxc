@@ -38,32 +38,22 @@ impl FarmTile {
         arc_navmesh: &mut Navmesh,
         work_queue: &mut ResMut<TasksQueue>,
         grid_tile: IVec2,
-        size: IVec2,
     ) {
+        let farm_tile = Self::default();
+        let sprite_bundle = Self::sprite_bundle(&farm_tile.state, assets, grid_tile);
+
         let entity = commands
             .spawn((
-                FarmTile::default(),
+                farm_tile,
+                sprite_bundle,
                 Workable::new(hours_to_seconds(CONFIG.work_amount.farm_tile)),
                 Name::new("FarmTile"),
-                SpriteBundle {
-                    texture: assets.dirt.clone(),
-                    sprite: Sprite {
-                        custom_size: Some(size.grid_tile_edge_to_world()),
-                        ..default()
-                    },
-                    transform: Transform::from_translation(
-                        (grid_tile.grid_tile_edge_to_world()
-                            + size.grid_tile_edge_to_world() / 2.0)
-                            .extend(STRUCTURE_Z_INDEX),
-                    ),
-                    ..default()
-                },
             ))
             .id();
 
         arc_navmesh.update_cost(
-            grid_tile.x..grid_tile.x + size.x,
-            grid_tile.y..grid_tile.y + size.y,
+            grid_tile.x..grid_tile.x + FARM_TILE_SIZE,
+            grid_tile.y..grid_tile.y + FARM_TILE_SIZE,
             Some((3.0 * COST_MULTIPLIER) as i32),
         );
 
@@ -74,6 +64,31 @@ impl FarmTile {
             tile: grid_tile,
         };
         work_queue.add_task(task);
+    }
+
+    pub fn sprite_bundle(
+        state: &FarmTileState,
+        assets: &Res<TextureAssets>,
+        grid_tile: IVec2,
+    ) -> SpriteBundle {
+        let size = IVec2::new(FARM_TILE_SIZE, FARM_TILE_SIZE);
+        let texture = match state {
+            FarmTileState::Planted => assets.wheat.clone(),
+            _ => assets.dirt.clone(),
+        };
+
+        SpriteBundle {
+            texture,
+            sprite: Sprite {
+                custom_size: Some(size.grid_tile_edge_to_world()),
+                ..default()
+            },
+            transform: Transform::from_translation(
+                (grid_tile.grid_tile_edge_to_world() + size.grid_tile_edge_to_world() / 2.0)
+                    .extend(STRUCTURE_Z_INDEX),
+            ),
+            ..default()
+        }
     }
 }
 
