@@ -84,71 +84,6 @@ impl FarmTile {
     }
 }
 
-// macro_rules! define_farmtile_states {
-//     (
-//         ($first_enum_name:ident, $first_component_name:ident)
-//         $( , $enum_name:ident, $component_name:ident )*
-//     ) => {
-//         #[derive(Debug, Clone, Default)]
-//         pub enum FarmTileState {
-//             #[default]
-//             $first_enum_name,
-//             $($enum_name $(($turple_type))? ),*
-//         }
-//
-//         #[derive(Component)]
-//         pub struct $first_component_name;
-//
-//         $(
-//             #[derive(Component)]
-//             pub struct $component_name;
-//         )*
-//
-//        impl FarmTile {
-//             pub fn change_state(
-//                 &mut self,
-//                 entity: Entity,
-//                 // new_state: FarmTileState,
-//                 commands: &mut Commands,
-//                 // farmtile_state_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmTileState>>,
-//             ) {
-//                 // println!("FarmTileState {:?}=>{:?}", self.state, new_state);
-//                 // Remove the old state component
-//                 match &self.state {
-//                     FarmTileState::$first_enum_name => {
-//                         commands.entity(entity).remove::<$first_component_name>();
-//                     },
-//                     $(FarmTileState::$enum_name $( ($match_field) )? => {
-//                         commands.entity(entity).remove::<$component_name>();
-//                     },)*
-//                 }
-//
-//                 // Set the new state
-//                 self.state = new_state;
-//
-//                 // Add the new component
-//                 match &self.state {
-//                     FarmTileState::$first_enum_name => {
-//                         commands.entity(entity).insert($first_component_name);
-//                     },
-//                     $(FarmTileState::$enum_name $( ($match_field) )? => {
-//                         commands.entity(entity).insert($component_name);
-//                     },)*
-//                 }
-//
-//                 // farmtile_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
-//             }
-//         }
-//     };
-// }
-//
-// define_farm_tile_states!(
-//     (NotPlanted, FarmTileNotPlanted)
-//     (Planted, FarmTilePlanted)
-//     (Grown, FarmTileGrown)
-//     (Harvested, FarmTileHarvested)
-// );
-
 #[derive(Event, Debug)]
 pub struct FarmTileProgressEvent(pub Entity);
 
@@ -166,6 +101,7 @@ impl FarmTile {
         let entity = commands
             .spawn((
                 farm_tile,
+                FarmTileNotPlanted,
                 sprite_bundle,
                 Workable::new(hours_to_seconds(CONFIG.work_amount.farm_tile_plant)),
                 Name::new("FarmTile"),
