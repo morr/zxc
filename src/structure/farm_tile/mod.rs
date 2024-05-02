@@ -3,6 +3,7 @@ use super::*;
 #[derive(Component, Default)]
 pub struct FarmTile {
     pub state: FarmTileState,
+    pub grow_timer: Option<Timer>,
 }
 
 impl FarmTile {
@@ -12,11 +13,18 @@ impl FarmTile {
             FarmTileState::Planted => FarmTileState::Grown,
             FarmTileState::Grown => FarmTileState::Harvested,
             FarmTileState::Harvested => FarmTileState::NotPlanted,
+        };
+
+        if self.state == FarmTileState::Planted {
+            self.grow_timer = Some(Timer::from_seconds(
+                hours_to_seconds(CONFIG.work_amount.farm_tile_grow),
+                TimerMode::Once,
+            ));
         }
     }
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub enum FarmTileState {
     #[default]
     NotPlanted,
