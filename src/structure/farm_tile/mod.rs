@@ -2,19 +2,24 @@ use super::*;
 
 macro_rules! farm_tile_states {
     (
-        $( ($enum_name:ident, $component_name:ident) ),* $(,)?
+        $($enum_name:ident),* $(,)?
     ) => {
         #[derive(Debug, Clone, PartialEq)]
         pub enum FarmTileState {
             $($enum_name),*
         }
 
-        $(
-            #[derive(Component)]
-            pub struct $component_name;
-        )*
+        pub mod farm_tile_state {
+            use bevy::{prelude::*};
 
-       impl FarmTile {
+            $(
+                #[derive(Component)]
+                pub struct $enum_name;
+            )*
+        }
+
+
+        impl FarmTile {
             pub fn change_state(
                 &mut self,
                 new_state: FarmTileState,
@@ -22,20 +27,18 @@ macro_rules! farm_tile_states {
                 commands: &mut Commands,
             ) {
                 // println!("FarmTileState {:?}=>{:?}", self.state, new_state);
-                // Remove the old state component
+
                 match &self.state {
                     $(FarmTileState::$enum_name => {
-                        commands.entity(entity).remove::<$component_name>();
+                        commands.entity(entity).remove::<farm_tile_state::$enum_name>();
                     },)*
                 }
 
-                // Set the new state
                 self.state = new_state;
 
-                // Add the new component
                 match &self.state {
                     $(FarmTileState::$enum_name => {
-                        commands.entity(entity).insert($component_name);
+                        commands.entity(entity).insert(farm_tile_state::$enum_name);
                     },)*
                 }
             }
@@ -43,12 +46,7 @@ macro_rules! farm_tile_states {
     };
 }
 
-farm_tile_states!(
-    (NotPlanted, FarmTileNotPlanted),
-    (Planted, FarmTilePlanted),
-    (Grown, FarmTileGrown),
-    (Harvested, FarmTileHarvested),
-);
+farm_tile_states!(NotPlanted, Planted, Grown, Harvested);
 
 #[derive(Component)]
 pub struct FarmTile {
@@ -60,7 +58,7 @@ impl Default for FarmTile {
     fn default() -> Self {
         Self {
             state: FarmTileState::NotPlanted,
-            grow_timer: None
+            grow_timer: None,
         }
     }
 }
@@ -101,7 +99,7 @@ impl FarmTile {
         let entity = commands
             .spawn((
                 farm_tile,
-                FarmTileNotPlanted,
+                farm_tile_state::NotPlanted,
                 sprite_bundle,
                 Workable::new(hours_to_seconds(CONFIG.work_amount.farm_tile_plant)),
                 Name::new("FarmTile"),

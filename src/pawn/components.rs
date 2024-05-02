@@ -36,7 +36,7 @@ macro_rules! pawn_states {
             pub struct $component_name;
         )*
 
-       impl Pawn {
+        impl Pawn {
             pub fn change_state(
                 &mut self,
                 new_state: PawnState,
