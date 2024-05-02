@@ -172,6 +172,7 @@ pub fn progress_farm_tile_state(
 
 pub fn progress_farm_tile_timer(
     time: Res<Time>,
+    time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &Transform, &mut FarmTile), With<farm_tile_state::Planted>>,
     mut commands: Commands,
     assets: Res<FarmAssets>,
@@ -181,7 +182,7 @@ pub fn progress_farm_tile_timer(
             FarmTileState::Planted(timer) => timer,
             _ => panic!("FarmTile must be in a timer-assigned state"),
         };
-        timer.tick(time.delta());
+        timer.tick(time_scale.scale_to_duration(time.delta_seconds()));
 
         if timer.finished() {
             farm_tile.progress_state(entity, &mut commands, transform, &assets);
