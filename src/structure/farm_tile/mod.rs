@@ -1,18 +1,54 @@
 use super::*;
 
-#[derive(Debug, Clone, Default, PartialEq)]
-pub enum FarmTileState {
-    #[default]
-    NotPlanted,
-    Planted,
-    Grown,
-    Harvested,
+// #[derive(Debug, Clone, Default, PartialEq)]
+// pub enum FarmTileState {
+//     #[default]
+//     NotPlanted,
+//     Planted,
+//     Grown,
+//     Harvested,
+// }
+
+macro_rules! farm_tile_states {
+    // ($head:ident, $($tail:ident),*) => {
+    ($($name:ident),*) => {
+        #[derive(Component, Clone, Eq, PartialEq, Debug, Reflect)]
+        pub enum FarmTileState {
+            $(
+                $name,
+            )*
+        }
+        // #[derive(Debug, Clone, PartialEq, Default)]
+        // pub enum FarmTileState {
+        //     #[default]
+        //     $head,
+        //     $(
+        //         $tail,
+        //     )*
+        // }
+        //
+        // $(
+        //     #[derive(Component)]
+        //     pub struct $name;
+        // )*
+    };
 }
 
-#[derive(Component, Default)]
+farm_tile_states!(NotPlanted, Planted, Grown, Harvested);
+
+#[derive(Component)]
 pub struct FarmTile {
     pub state: FarmTileState,
     pub grow_timer: Option<Timer>,
+}
+
+impl Default for FarmTile {
+    fn default() -> Self {
+        Self {
+            state: FarmTileState::NotPlanted,
+            grow_timer: None
+        }
+    }
 }
 
 impl FarmTile {
