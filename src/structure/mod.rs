@@ -1,5 +1,5 @@
 use crate::*;
-expose_submodules!(components, systems);
+expose_submodules!(components, systems, farm_tile);
 
 pub struct StructurePlugin;
 

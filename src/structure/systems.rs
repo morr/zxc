@@ -141,23 +141,3 @@ pub fn spawn_well(
         None,
     )
 }
-
-pub fn progress_farms(
-    mut commands: Commands,
-    mut query: Query<(&Transform, &mut FarmTile)>,
-    mut event_reader: EventReader<FarmTileProgressEvent>,
-    assets: Res<FarmAssets>,
-) {
-    for event in event_reader.read() {
-        let (transform, mut farm_tile) = query.get_mut(event.0).unwrap();
-        let grid_tile = transform.translation.truncate().world_pos_to_grid();
-
-        farm_tile.progress_state();
-
-        commands.entity(event.0).insert(FarmTile::sprite_bundle(
-            &farm_tile.state,
-            &assets,
-            grid_tile,
-        ));
-    }
-}
