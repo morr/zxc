@@ -2,11 +2,11 @@ use super::*;
 
 macro_rules! farm_tile_states {
     (
-        $($name:ident),* $(,)?
+        $( ($name:ident $(, $turple_type:ty, $match_field:ident)?)),* $(,)?
     ) => {
         #[derive(Debug, Clone, PartialEq)]
         pub enum FarmTileState {
-            $($name),*
+            $($name $(($turple_type))? ),*
         }
 
         pub mod farm_tile_state {
@@ -28,7 +28,7 @@ macro_rules! farm_tile_states {
                 // println!("FarmTileState {:?}=>{:?}", self.state, new_state);
 
                 match &self.state {
-                    $(FarmTileState::$name => {
+                    $(FarmTileState::$name $( ($match_field) )? => {
                         commands.entity(entity).remove::<farm_tile_state::$name>();
                     },)*
                 }
@@ -36,7 +36,7 @@ macro_rules! farm_tile_states {
                 self.state = new_state;
 
                 match &self.state {
-                    $(FarmTileState::$name => {
+                    $(FarmTileState::$name $( ($match_field) )? => {
                         commands.entity(entity).insert(farm_tile_state::$name);
                     },)*
                 }
@@ -45,19 +45,17 @@ macro_rules! farm_tile_states {
     };
 }
 
-farm_tile_states!(NotPlanted, Planted, Grown, Harvested);
+farm_tile_states!((NotPlanted), (Planted, Timer, _a), (Grown), (Harvested),);
 
 #[derive(Component)]
 pub struct FarmTile {
     pub state: FarmTileState,
-    pub grow_timer: Option<Timer>,
 }
 
 impl Default for FarmTile {
     fn default() -> Self {
         Self {
             state: FarmTileState::NotPlanted,
-            grow_timer: None,
         }
     }
 }
@@ -65,19 +63,15 @@ impl Default for FarmTile {
 impl FarmTile {
     pub fn progress_state(&mut self, entity: Entity, commands: &mut Commands) {
         let new_state = match &self.state {
-            FarmTileState::NotPlanted => FarmTileState::Planted,
-            FarmTileState::Planted => FarmTileState::Grown,
+            FarmTileState::NotPlanted => FarmTileState::Planted(Timer::from_seconds(
+                hours_to_seconds(CONFIG.work_amount.farm_tile_grow),
+                TimerMode::Once,
+            )),
+            FarmTileState::Planted(_) => FarmTileState::Grown,
             FarmTileState::Grown => FarmTileState::Harvested,
             FarmTileState::Harvested => FarmTileState::NotPlanted,
         };
         self.change_state(new_state, entity, commands);
-
-        if self.state == FarmTileState::Planted {
-            self.grow_timer = Some(Timer::from_seconds(
-                hours_to_seconds(CONFIG.work_amount.farm_tile_grow),
-                TimerMode::Once,
-            ));
-        }
     }
 }
 
@@ -128,7 +122,7 @@ impl FarmTile {
         let size = IVec2::new(FARM_TILE_SIZE, FARM_TILE_SIZE);
         let texture = match state {
             FarmTileState::NotPlanted => assets.not_planted.clone(),
-            FarmTileState::Planted => assets.planted.clone(),
+            FarmTileState::Planted(_) => assets.planted.clone(),
             FarmTileState::Grown => assets.grown.clone(),
             FarmTileState::Harvested => assets.harvested.clone(),
         };
@@ -174,7 +168,11 @@ pub fn progress_farm_tile_timer(
     mut query: Query<&mut FarmTile, With<farm_tile_state::Planted>>,
 ) {
     for mut farm_tile in query.iter_mut() {
-        println!("progress_farm_tile_timer");
-        farm_tile.grow_timer.as_mut().unwrap().tick(time.delta());
+        let timer = match &mut farm_tile.state {
+            FarmTileState::Planted(timer) => timer,
+            _ => panic!("FarmTile must be in a timer-assigned state"),
+        };
+        timer.tick(time.delta());
+        println!("tick timer");
     }
 }
