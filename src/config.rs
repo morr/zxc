@@ -100,5 +100,9 @@ pub struct PawnConfig {
 #[derive(Deserialize, Serialize)]
 pub struct WorkAmountConfig {
     /// in hours
-    pub farm_tile: f32,
+    pub farm_tile_plant: f32,
+    /// in hours
+    pub farm_tile_grow: f32,
+    /// in hours
+    pub farm_tile_harvest: f32,
 }

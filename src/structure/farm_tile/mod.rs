@@ -43,7 +43,7 @@ impl FarmTile {
             .spawn((
                 farm_tile,
                 sprite_bundle,
-                Workable::new(hours_to_seconds(CONFIG.work_amount.farm_tile)),
+                Workable::new(hours_to_seconds(CONFIG.work_amount.farm_tile_plant)),
                 Name::new("FarmTile"),
             ))
             .id();
