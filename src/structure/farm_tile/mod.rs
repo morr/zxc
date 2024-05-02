@@ -1,40 +1,54 @@
 use super::*;
 
-// #[derive(Debug, Clone, Default, PartialEq)]
-// pub enum FarmTileState {
-//     #[default]
-//     NotPlanted,
-//     Planted,
-//     Grown,
-//     Harvested,
-// }
-
 macro_rules! farm_tile_states {
-    // ($head:ident, $($tail:ident),*) => {
-    ($($name:ident),*) => {
-        #[derive(Component, Clone, Eq, PartialEq, Debug, Reflect)]
+    (
+        $( ($enum_name:ident, $component_name:ident) ),* $(,)?
+    ) => {
+        #[derive(Debug, Clone, PartialEq)]
         pub enum FarmTileState {
-            $(
-                $name,
-            )*
+            $($enum_name),*
         }
-        // #[derive(Debug, Clone, PartialEq, Default)]
-        // pub enum FarmTileState {
-        //     #[default]
-        //     $head,
-        //     $(
-        //         $tail,
-        //     )*
-        // }
-        //
-        // $(
-        //     #[derive(Component)]
-        //     pub struct $name;
-        // )*
+
+        $(
+            #[derive(Component)]
+            pub struct $component_name;
+        )*
+
+       impl FarmTile {
+            pub fn change_state(
+                &mut self,
+                new_state: FarmTileState,
+                entity: Entity,
+                commands: &mut Commands,
+            ) {
+                // println!("FarmTileState {:?}=>{:?}", self.state, new_state);
+                // Remove the old state component
+                match &self.state {
+                    $(FarmTileState::$enum_name => {
+                        commands.entity(entity).remove::<$component_name>();
+                    },)*
+                }
+
+                // Set the new state
+                self.state = new_state;
+
+                // Add the new component
+                match &self.state {
+                    $(FarmTileState::$enum_name => {
+                        commands.entity(entity).insert($component_name);
+                    },)*
+                }
+            }
+        }
     };
 }
 
-farm_tile_states!(NotPlanted, Planted, Grown, Harvested);
+farm_tile_states!(
+    (NotPlanted, FarmTileNotPlanted),
+    (Planted, FarmTilePlanted),
+    (Grown, FarmTileGrown),
+    (Harvested, FarmTileHarvested),
+);
 
 #[derive(Component)]
 pub struct FarmTile {
@@ -52,13 +66,14 @@ impl Default for FarmTile {
 }
 
 impl FarmTile {
-    pub fn progress_state(&mut self, _entity: Entity, _commands: &mut Commands) {
-        self.state = match &self.state {
+    pub fn progress_state(&mut self, entity: Entity, commands: &mut Commands) {
+        let new_state = match &self.state {
             FarmTileState::NotPlanted => FarmTileState::Planted,
             FarmTileState::Planted => FarmTileState::Grown,
             FarmTileState::Grown => FarmTileState::Harvested,
             FarmTileState::Harvested => FarmTileState::NotPlanted,
         };
+        self.change_state(new_state, entity, commands);
 
         if self.state == FarmTileState::Planted {
             self.grow_timer = Some(Timer::from_seconds(

@@ -24,7 +24,7 @@ impl Pawn {
 
 macro_rules! pawn_states {
     (
-        $( ($enum_name:ident, $component_name:ident $(, $turple_type:ty, $match_field:ident)?)),*
+        $( ($enum_name:ident, $component_name:ident $(, $turple_type:ty, $match_field:ident)?)),* $(,)?
     ) => {
         #[derive(Debug, Clone)]
         pub enum PawnState {
@@ -72,7 +72,7 @@ pawn_states!(
     (Idle, PawnIdle),
     (Moving, PawnMoving),
     (WorkAssigned, PawnWorkAssigned, Task, _a),
-    (Working, PawnWorking, Task, _b)
+    (Working, PawnWorking, Task, _b),
 );
 
 #[derive(Component)]

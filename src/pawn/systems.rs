@@ -54,6 +54,7 @@ pub fn spawn_pawns(
         commands
             .spawn((
                 pawn,
+                PawnIdle,
                 Name::new("Pawn"),
                 // state: PawnState::Idle,
                 MaterialMesh2dBundle {
@@ -63,7 +64,6 @@ pub fn spawn_pawns(
                     ..default()
                 },
                 Movable::new(CONFIG.pawn.speed * CONFIG.tile.size),
-                PawnIdle,
             ))
             .insert(ShowAabbGizmo {
                 color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
