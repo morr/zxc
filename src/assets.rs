@@ -53,6 +53,15 @@ pub struct TextureAssets {
     #[asset(path = "sprites/house_4.png")]
     pub house_4: Handle<Image>,
 
+    // prompt: round basin full of deep water, rough stone and stone border, minimal details, top down view, pixel art, texture for sprite, clean water, transparent background
+    //
+    // negativeprompt: blurry, shadows,  hole at center, shadow, basin shadow
+    // mechanisms, stairs, grass
+    // water pouring, water waves. water ripples, water reflections
+    // pebbles inside water
+    // water outside basin
+    //
+    // disfigured, seed: 1016497133, steps: 100, cfgscale: 7, aspectratio: 1:1, width: 1024, height: 1024, sampler: dpmpp_sde_gpu, scheduler: karras, model: pixelArtDiffusionXL_spriteShaper.safetensors, swarm_version: 0.6.2.0, date: 2024-04-25, generation_time: 0.02 (prep) and 54.20 (gen) seconds,
     #[asset(path = "sprites/well.png")]
     pub well: Handle<Image>,
 }
@@ -68,6 +77,9 @@ pub struct FarmAssets {
     #[asset(path = "sprites/farm_tile/planted.png")]
     pub planted: Handle<Image>,
 
+    // prompt: ripe wheat, minimal details, top down view, pixel art, texture for sprite
+    // negativeprompt: blurry, shadows,  disfigured
+    // seed: 918053270, steps: 20, cfgscale: 7, aspectratio: 1:1, width: 1024, height: 1024, sampler: dpmpp_sde_gpu, scheduler: karras, model: pixelArtDiffusionXL_spriteShaper.safetensors, swarm_version: 0.6.2.0, date: 2024-05-02, generation_time: 2.05 (prep) and 12.14 (gen) seconds,
     #[asset(path = "sprites/farm_tile/grown.png")]
     pub grown: Handle<Image>,
 
