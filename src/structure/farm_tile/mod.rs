@@ -71,6 +71,7 @@ impl FarmTile {
             FarmTileState::Grown => FarmTileState::Harvested,
             FarmTileState::Harvested => FarmTileState::NotPlanted,
         };
+        println!("progress_state {:?} => {:?}", self.state, new_state);
         self.change_state(new_state, entity, commands);
     }
 }
@@ -143,19 +144,19 @@ impl FarmTile {
 }
 
 pub fn progress_farm_tile_state(
-    mut commands: Commands,
     mut query: Query<(&Transform, &mut FarmTile)>,
+    mut commands: Commands,
     mut event_reader: EventReader<FarmTileProgressEvent>,
     assets: Res<FarmAssets>,
 ) {
     for event in event_reader.read() {
-        let farm_tile_entity = event.0;
-        let (transform, mut farm_tile) = query.get_mut(farm_tile_entity).unwrap();
+        let entity = event.0;
+        let (transform, mut farm_tile) = query.get_mut(entity).unwrap();
         let grid_tile = transform.translation.truncate().world_pos_to_grid();
 
-        farm_tile.progress_state(farm_tile_entity, &mut commands);
+        farm_tile.progress_state(entity, &mut commands);
 
-        commands.entity(event.0).insert(FarmTile::sprite_bundle(
+        commands.entity(entity).insert(FarmTile::sprite_bundle(
             &farm_tile.state,
             &assets,
             grid_tile,
@@ -165,14 +166,18 @@ pub fn progress_farm_tile_state(
 
 pub fn progress_farm_tile_timer(
     time: Res<Time>,
-    mut query: Query<&mut FarmTile, With<farm_tile_state::Planted>>,
+    mut query: Query<(Entity, &mut FarmTile), With<farm_tile_state::Planted>>,
+    mut commands: Commands,
 ) {
-    for mut farm_tile in query.iter_mut() {
+    for (entity, mut farm_tile) in query.iter_mut() {
         let timer = match &mut farm_tile.state {
             FarmTileState::Planted(timer) => timer,
             _ => panic!("FarmTile must be in a timer-assigned state"),
         };
         timer.tick(time.delta());
-        println!("tick timer");
+
+        if timer.finished() {
+            farm_tile.progress_state(entity, &mut commands);
+        }
     }
 }
