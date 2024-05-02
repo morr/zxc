@@ -1,8 +1,16 @@
 use super::*;
 
-#[derive(Component, Default)]
+#[derive(Component)]
 pub struct Pawn {
     pub state: PawnState,
+}
+
+impl Default for Pawn {
+    fn default() -> Self {
+        Self {
+            state: PawnState::Idle,
+        }
+    }
 }
 
 impl Pawn {
@@ -16,18 +24,12 @@ impl Pawn {
 
 macro_rules! pawn_states {
     (
-        ($first_enum_name:ident, $first_component_name:ident)
-        $( , ($enum_name:ident, $component_name:ident $(, $turple_type:ty, $match_field:ident)?))*
+        $( ($enum_name:ident, $component_name:ident $(, $turple_type:ty, $match_field:ident)?)),*
     ) => {
-        #[derive(Debug, Clone, Default)]
+        #[derive(Debug, Clone)]
         pub enum PawnState {
-            #[default]
-            $first_enum_name,
             $($enum_name $(($turple_type))? ),*
         }
-
-        #[derive(Component)]
-        pub struct $first_component_name;
 
         $(
             #[derive(Component)]
@@ -45,9 +47,6 @@ macro_rules! pawn_states {
                 // println!("PawnState {:?}=>{:?}", self.state, new_state);
                 // Remove the old state component
                 match &self.state {
-                    PawnState::$first_enum_name => {
-                        commands.entity(entity).remove::<$first_component_name>();
-                    },
                     $(PawnState::$enum_name $( ($match_field) )? => {
                         commands.entity(entity).remove::<$component_name>();
                     },)*
@@ -58,9 +57,6 @@ macro_rules! pawn_states {
 
                 // Add the new component
                 match &self.state {
-                    PawnState::$first_enum_name => {
-                        commands.entity(entity).insert($first_component_name);
-                    },
                     $(PawnState::$enum_name $( ($match_field) )? => {
                         commands.entity(entity).insert($component_name);
                     },)*
