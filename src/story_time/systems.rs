@@ -9,8 +9,8 @@ pub fn track_time(
 }
 
 pub fn modify_time(
-    time_state: Res<State<TimeState>>,
-    mut next_state: ResMut<NextState<TimeState>>,
+    time_state: Res<State<SimulationState>>,
+    mut next_state: ResMut<NextState<SimulationState>>,
     mut time_scale: ResMut<TimeScale>,
     // mut ev_update_ui: EventWriter<UpdateUiEvent>,
     keys: Res<ButtonInput<KeyCode>>,
@@ -36,34 +36,34 @@ pub fn modify_time(
 }
 
 pub fn toggle_story_time(
-    time_state: &Res<State<TimeState>>,
-    next_state: &mut ResMut<NextState<TimeState>>,
+    time_state: &Res<State<SimulationState>>,
+    next_state: &mut ResMut<NextState<SimulationState>>,
 ) {
     match time_state.get() {
-        TimeState::Running => next_state.set(TimeState::Paused),
-        TimeState::Paused => next_state.set(TimeState::Running),
+        SimulationState::Running => next_state.set(SimulationState::Paused),
+        SimulationState::Paused => next_state.set(SimulationState::Running),
     };
 }
 
 pub fn increase_time_scale(
-    time_state: &Res<State<TimeState>>,
-    next_state: &mut ResMut<NextState<TimeState>>,
+    time_state: &Res<State<SimulationState>>,
+    next_state: &mut ResMut<NextState<SimulationState>>,
     time_scale: &mut ResMut<TimeScale>,
 ) {
     match time_state.get() {
-        TimeState::Running => time_scale.0 += 1.0,
-        TimeState::Paused => next_state.set(TimeState::Running),
+        SimulationState::Running => time_scale.0 += 1.0,
+        SimulationState::Paused => next_state.set(SimulationState::Running),
     };
 }
 
 pub fn decrease_time_scale(
-    time_state: &Res<State<TimeState>>,
-    next_state: &mut ResMut<NextState<TimeState>>,
+    time_state: &Res<State<SimulationState>>,
+    next_state: &mut ResMut<NextState<SimulationState>>,
     time_scale: &mut ResMut<TimeScale>,
 ) -> bool {
-    if let TimeState::Running = time_state.get() {
+    if let SimulationState::Running = time_state.get() {
         if time_scale.0 == 1.0 {
-            next_state.set(TimeState::Paused);
+            next_state.set(SimulationState::Paused);
         } else {
             time_scale.0 -= 1.0;
         }

@@ -1,7 +1,7 @@
 use super::*;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
-pub enum TimeState {
+pub enum SimulationState {
     #[default]
     Running,
     Paused,

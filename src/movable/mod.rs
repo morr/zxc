@@ -10,7 +10,7 @@ impl Plugin for MovablePlugin {
             .add_event::<EntityStateChangeEvent<MovableState>>()
             .add_systems(
                 Update,
-                move_moving_entities.run_if(in_state(TimeState::Running)),
+                move_moving_entities.run_if(in_state(SimulationState::Running)),
             );
     }
 }

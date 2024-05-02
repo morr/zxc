@@ -7,7 +7,7 @@ use super::*;
 pub fn render_ui(
     mut commands: Commands,
     elapsed_time: Res<ElapsedTime>,
-    time_state: Res<State<TimeState>>,
+    time_state: Res<State<SimulationState>>,
     time_scale: Res<TimeScale>,
     assets: Res<FontAssets>,
     tasks_queue: Res<TasksQueue>,
@@ -56,7 +56,7 @@ pub fn render_ui(
 
 pub fn update_ui(
     elapsed_time: Res<ElapsedTime>,
-    time_state: Res<State<TimeState>>,
+    time_state: Res<State<SimulationState>>,
     time_scale: Res<TimeScale>,
     tasks_queue: Res<TasksQueue>,
     async_queue_counter: Res<AsyncQueueCounter>,
@@ -79,14 +79,14 @@ pub fn update_ui(
 
 fn format_ui_line(
     elapsed_time: &Res<ElapsedTime>,
-    time_state: &Res<State<TimeState>>,
+    time_state: &Res<State<SimulationState>>,
     time_scale: &Res<TimeScale>,
     tasks_queue: &Res<TasksQueue>,
     async_queue_counter: &Res<AsyncQueueCounter>,
 ) -> String {
     let speed_part = match time_state.get() {
-        TimeState::Running => format!("Speed: {}x", time_scale.0),
-        TimeState::Paused => "Paused".to_string(),
+        SimulationState::Running => format!("Speed: {}x", time_scale.0),
+        SimulationState::Paused => "Paused".to_string(),
     };
 
     format!(

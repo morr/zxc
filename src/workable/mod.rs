@@ -12,7 +12,7 @@ impl Plugin for WorkablePlugin {
             .add_event::<WorkStartEvent>()
             .add_systems(
                 FixedUpdate,
-                progress_work.run_if(in_state(TimeState::Running)),
+                progress_work.run_if(in_state(SimulationState::Running)),
             )
             .add_systems(
                 FixedUpdate,
