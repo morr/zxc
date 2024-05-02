@@ -18,7 +18,6 @@ macro_rules! farm_tile_states {
             )*
         }
 
-
         impl FarmTile {
             pub fn change_state(
                 &mut self,
@@ -170,4 +169,12 @@ pub fn progress_farm_tile_state(
     }
 }
 
-pub fn progress_farm_tile_timer(_commands: Commands, _query: Query<(&Transform, &mut FarmTile)>) {}
+pub fn progress_farm_tile_timer(
+    time: Res<Time>,
+    mut query: Query<&mut FarmTile, With<farm_tile_state::Planted>>,
+) {
+    for mut farm_tile in query.iter_mut() {
+        println!("progress_farm_tile_timer");
+        farm_tile.grow_timer.as_mut().unwrap().tick(time.delta());
+    }
+}
