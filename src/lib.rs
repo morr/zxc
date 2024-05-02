@@ -48,7 +48,7 @@ pub struct StateChangeEvent<T>(pub T);
 pub struct EntityStateChangeEvent<T>(pub Entity, pub T);
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash, Default, States)]
-pub enum WorldState {
+pub enum AppState {
     #[default]
     Loading,
     Playing,

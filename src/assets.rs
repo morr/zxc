@@ -5,7 +5,7 @@ pub struct AssetsPlugin;
 impl Plugin for AssetsPlugin {
     fn build(&self, app: &mut App) {
         app.configure_loading_state(
-            LoadingStateConfig::new(WorldState::Loading)
+            LoadingStateConfig::new(AppState::Loading)
                 .init_resource::<AssetsCollection>()
                 .load_collection::<FontAssets>()
                 .load_collection::<TextureAssets>()

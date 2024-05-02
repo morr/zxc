@@ -20,7 +20,7 @@ impl Plugin for DebugNavmeshPlugin {
             .init_state::<DebugNavmeshState>()
             .add_systems(
                 FixedUpdate,
-                handle_state_changes.run_if(in_state(WorldState::Playing)),
+                handle_state_changes.run_if(in_state(AppState::Playing)),
             );
     }
 }

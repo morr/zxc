@@ -13,7 +13,7 @@ impl Plugin for DebugMovepathPlugin {
         app.init_state::<DebugMovepathState>().add_systems(
             Update,
             render_movepath
-                .run_if(in_state(WorldState::Playing))
+                .run_if(in_state(AppState::Playing))
                 .run_if(in_state(DebugMovepathState::Visible)),
         );
     }

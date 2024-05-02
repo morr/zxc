@@ -9,12 +9,12 @@ pub struct PawnPlugin;
 impl Plugin for PawnPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<EntityStateChangeEvent<PawnState>>()
-            .add_systems(OnExit(WorldState::Loading), spawn_pawns.after(spawn_base))
+            .add_systems(OnExit(AppState::Loading), spawn_pawns.after(spawn_base))
             .add_systems(
                 FixedUpdate,
                 (update_pawn_color, update_pawn_state_text, wander_idle_pawns)
                     .chain()
-                    .run_if(in_state(WorldState::Playing)),
+                    .run_if(in_state(AppState::Playing)),
             );
 
         // .add_systems(

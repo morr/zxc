@@ -7,12 +7,12 @@ impl Plugin for StructurePlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<FarmTileProgressEvent>()
             .add_systems(
-                OnExit(WorldState::Loading),
+                OnExit(AppState::Loading),
                 (spawn_base, spawn_farm, spawn_house, spawn_well),
             )
             .add_systems(
                 FixedUpdate,
-                progress_farms.run_if(in_state(WorldState::Playing)),
+                progress_farms.run_if(in_state(AppState::Playing)),
             );
     }
 }

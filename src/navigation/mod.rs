@@ -21,7 +21,7 @@ impl Plugin for NavigationPlugin {
                     listen_for_pathfinding_async_tasks,
                 )
                     .chain()
-                    .run_if(in_state(WorldState::Playing)),
+                    .run_if(in_state(AppState::Playing)),
             );
     }
 }

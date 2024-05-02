@@ -4,10 +4,10 @@ pub struct DaylightPlugin;
 
 impl Plugin for DaylightPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnExit(WorldState::Loading), setup)
+        app.add_systems(OnExit(AppState::Loading), setup)
             .add_systems(
                 FixedUpdate,
-                day_night_cycle_system.run_if(in_state(WorldState::Playing)),
+                day_night_cycle_system.run_if(in_state(AppState::Playing)),
             );
     }
 }

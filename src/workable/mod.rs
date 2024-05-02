@@ -23,7 +23,7 @@ impl Plugin for WorkablePlugin {
                     complete_pawn_working,
                 )
                     .chain()
-                    .run_if(in_state(WorldState::Playing)),
+                    .run_if(in_state(AppState::Playing)),
             );
     }
 }

@@ -36,9 +36,9 @@ fn main() {
         // .add_plugins(FilterQueryInspectorPlugin::<With<structure::Structure>>::default())
         // .add_plugins(FilterQueryInspectorPlugin::<With<Movable>>::default())
         // .add_plugins(bevy_framepace::FramepacePlugin) // this fixes bevy input lag https://github.com/bevyengine/bevy/issues/3317
-        .init_state::<WorldState>()
+        .init_state::<AppState>()
         .add_loading_state(
-            LoadingState::new(WorldState::Loading).continue_to_state(WorldState::Playing),
+            LoadingState::new(AppState::Loading).continue_to_state(AppState::Playing),
         )
         .add_plugins((
             daylight::DaylightPlugin,
