@@ -14,9 +14,9 @@ pub fn pathfinding_async_on_click(
             &mut Movable,
             Option<&mut PathfindingTask>,
         ),
-        With<PawnIdle>,
+        With<pawn_state::Idle>,
         // With<Movable>,
-        // (With<Movable>, With<PawnIdle>),
+        // (With<Movable>, With<pawn_state::Idle>),
     >,
     mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {

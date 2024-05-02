@@ -24,17 +24,21 @@ impl Pawn {
 
 macro_rules! pawn_states {
     (
-        $( ($enum_name:ident, $component_name:ident $(, $turple_type:ty, $match_field:ident)?)),* $(,)?
+        $( ($name:ident $(, $turple_type:ty, $match_field:ident)?)),* $(,)?
     ) => {
         #[derive(Debug, Clone)]
         pub enum PawnState {
-            $($enum_name $(($turple_type))? ),*
+            $($name $(($turple_type))? ),*
         }
 
-        $(
-            #[derive(Component)]
-            pub struct $component_name;
-        )*
+        pub mod pawn_state {
+            use bevy::{prelude::*};
+
+            $(
+                #[derive(Component)]
+                pub struct $name;
+            )*
+        }
 
         impl Pawn {
             pub fn change_state(
@@ -47,8 +51,8 @@ macro_rules! pawn_states {
                 // println!("PawnState {:?}=>{:?}", self.state, new_state);
                 // Remove the old state component
                 match &self.state {
-                    $(PawnState::$enum_name $( ($match_field) )? => {
-                        commands.entity(entity).remove::<$component_name>();
+                    $(PawnState::$name $( ($match_field) )? => {
+                        commands.entity(entity).remove::<pawn_state::$name>();
                     },)*
                 }
 
@@ -57,8 +61,8 @@ macro_rules! pawn_states {
 
                 // Add the new component
                 match &self.state {
-                    $(PawnState::$enum_name $( ($match_field) )? => {
-                        commands.entity(entity).insert($component_name);
+                    $(PawnState::$name $( ($match_field) )? => {
+                        commands.entity(entity).insert(pawn_state::$name);
                     },)*
                 }
 
@@ -69,10 +73,10 @@ macro_rules! pawn_states {
 }
 
 pawn_states!(
-    (Idle, PawnIdle),
-    (Moving, PawnMoving),
-    (WorkAssigned, PawnWorkAssigned, Task, _a),
-    (Working, PawnWorking, Task, _b),
+    (Idle),
+    (Moving),
+    (WorkAssigned, Task, _a),
+    (Working, Task, _b),
 );
 
 #[derive(Component)]

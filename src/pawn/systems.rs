@@ -54,7 +54,7 @@ pub fn spawn_pawns(
         commands
             .spawn((
                 pawn,
-                PawnIdle,
+                pawn_state::Idle,
                 Name::new("Pawn"),
                 // state: PawnState::Idle,
                 MaterialMesh2dBundle {
@@ -119,7 +119,7 @@ pub fn wander_idle_pawns(
             &mut Movable,
             Option<&mut PathfindingTask>,
         ),
-        With<PawnIdle>,
+        With<pawn_state::Idle>,
     >,
     // time_scale: Res<TimeScale>,
     // mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,

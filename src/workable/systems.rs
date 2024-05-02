@@ -12,7 +12,7 @@ pub fn assign_tasks_to_pawns(
             &mut Movable,
             Option<&mut PathfindingTask>,
         ),
-        With<PawnIdle>,
+        With<pawn_state::Idle>,
     >,
     mut work_queue: ResMut<TasksQueue>,
     mut pawn_state_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
@@ -46,7 +46,10 @@ pub fn assign_tasks_to_pawns(
 }
 
 pub fn check_pawn_ready_for_working(
-    query: Query<(Entity, &Transform, &Pawn), (With<PawnWorkAssigned>, Without<MovableMoving>)>,
+    query: Query<
+        (Entity, &Transform, &Pawn),
+        (With<pawn_state::WorkAssigned>, Without<MovableMoving>),
+    >,
     mut event_writer: EventWriter<WorkStartEvent>,
 ) {
     for (entity, transform, pawn) in query.iter() {
@@ -81,7 +84,7 @@ pub fn start_pawn_working(
 }
 
 pub fn progress_work(
-    query_pawns: Query<(Entity, &Pawn), With<PawnWorking>>,
+    query_pawns: Query<(Entity, &Pawn), With<pawn_state::Working>>,
     mut query_workable: Query<(Entity, &mut Workable)>,
     time: Res<Time>,
     time_scale: Res<TimeScale>,

@@ -2,11 +2,11 @@ use super::*;
 
 macro_rules! farm_tile_states {
     (
-        $($enum_name:ident),* $(,)?
+        $($name:ident),* $(,)?
     ) => {
         #[derive(Debug, Clone, PartialEq)]
         pub enum FarmTileState {
-            $($enum_name),*
+            $($name),*
         }
 
         pub mod farm_tile_state {
@@ -14,7 +14,7 @@ macro_rules! farm_tile_states {
 
             $(
                 #[derive(Component)]
-                pub struct $enum_name;
+                pub struct $name;
             )*
         }
 
@@ -29,16 +29,16 @@ macro_rules! farm_tile_states {
                 // println!("FarmTileState {:?}=>{:?}", self.state, new_state);
 
                 match &self.state {
-                    $(FarmTileState::$enum_name => {
-                        commands.entity(entity).remove::<farm_tile_state::$enum_name>();
+                    $(FarmTileState::$name => {
+                        commands.entity(entity).remove::<farm_tile_state::$name>();
                     },)*
                 }
 
                 self.state = new_state;
 
                 match &self.state {
-                    $(FarmTileState::$enum_name => {
-                        commands.entity(entity).insert(farm_tile_state::$enum_name);
+                    $(FarmTileState::$name => {
+                        commands.entity(entity).insert(farm_tile_state::$name);
                     },)*
                 }
             }
