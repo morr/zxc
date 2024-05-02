@@ -12,7 +12,12 @@ impl Plugin for StructurePlugin {
             )
             .add_systems(
                 FixedUpdate,
-                progress_farms.run_if(in_state(AppState::Playing)),
+                progress_farm_tile_state.run_if(in_state(AppState::Playing))
+            )
+            .add_systems(
+                FixedUpdate,
+                progress_farm_tile_timer.run_if(in_state(SimulationState::Running))
             );
+
     }
 }

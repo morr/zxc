@@ -72,7 +72,6 @@ macro_rules! define_pawn_states {
     };
 }
 
-// Using the macro
 define_pawn_states!(
     (Idle, PawnIdle),
     (Moving, PawnMoving),

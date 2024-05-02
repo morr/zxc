@@ -1,5 +1,14 @@
 use super::*;
 
+#[derive(Debug, Clone, Default, PartialEq)]
+pub enum FarmTileState {
+    #[default]
+    NotPlanted,
+    Planted,
+    Grown,
+    Harvested,
+}
+
 #[derive(Component, Default)]
 pub struct FarmTile {
     pub state: FarmTileState,
@@ -7,7 +16,7 @@ pub struct FarmTile {
 }
 
 impl FarmTile {
-    pub fn progress_state(&mut self) {
+    pub fn progress_state(&mut self, _entity: Entity, _commands: &mut Commands) {
         self.state = match &self.state {
             FarmTileState::NotPlanted => FarmTileState::Planted,
             FarmTileState::Planted => FarmTileState::Grown,
@@ -24,14 +33,70 @@ impl FarmTile {
     }
 }
 
-#[derive(Debug, Clone, Default, PartialEq)]
-pub enum FarmTileState {
-    #[default]
-    NotPlanted,
-    Planted,
-    Grown,
-    Harvested,
-}
+// macro_rules! define_farmtile_states {
+//     (
+//         ($first_enum_name:ident, $first_component_name:ident)
+//         $( , $enum_name:ident, $component_name:ident )*
+//     ) => {
+//         #[derive(Debug, Clone, Default)]
+//         pub enum FarmTileState {
+//             #[default]
+//             $first_enum_name,
+//             $($enum_name $(($turple_type))? ),*
+//         }
+//
+//         #[derive(Component)]
+//         pub struct $first_component_name;
+//
+//         $(
+//             #[derive(Component)]
+//             pub struct $component_name;
+//         )*
+//
+//        impl FarmTile {
+//             pub fn change_state(
+//                 &mut self,
+//                 entity: Entity,
+//                 // new_state: FarmTileState,
+//                 commands: &mut Commands,
+//                 // farmtile_state_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmTileState>>,
+//             ) {
+//                 // println!("FarmTileState {:?}=>{:?}", self.state, new_state);
+//                 // Remove the old state component
+//                 match &self.state {
+//                     FarmTileState::$first_enum_name => {
+//                         commands.entity(entity).remove::<$first_component_name>();
+//                     },
+//                     $(FarmTileState::$enum_name $( ($match_field) )? => {
+//                         commands.entity(entity).remove::<$component_name>();
+//                     },)*
+//                 }
+//
+//                 // Set the new state
+//                 self.state = new_state;
+//
+//                 // Add the new component
+//                 match &self.state {
+//                     FarmTileState::$first_enum_name => {
+//                         commands.entity(entity).insert($first_component_name);
+//                     },
+//                     $(FarmTileState::$enum_name $( ($match_field) )? => {
+//                         commands.entity(entity).insert($component_name);
+//                     },)*
+//                 }
+//
+//                 // farmtile_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+//             }
+//         }
+//     };
+// }
+//
+// define_farm_tile_states!(
+//     (NotPlanted, FarmTileNotPlanted)
+//     (Planted, FarmTilePlanted)
+//     (Grown, FarmTileGrown)
+//     (Harvested, FarmTileHarvested)
+// );
 
 #[derive(Event, Debug)]
 pub struct FarmTileProgressEvent(pub Entity);
@@ -99,17 +164,18 @@ impl FarmTile {
     }
 }
 
-pub fn progress_farms(
+pub fn progress_farm_tile_state(
     mut commands: Commands,
     mut query: Query<(&Transform, &mut FarmTile)>,
     mut event_reader: EventReader<FarmTileProgressEvent>,
     assets: Res<FarmAssets>,
 ) {
     for event in event_reader.read() {
-        let (transform, mut farm_tile) = query.get_mut(event.0).unwrap();
+        let farm_tile_entity = event.0;
+        let (transform, mut farm_tile) = query.get_mut(farm_tile_entity).unwrap();
         let grid_tile = transform.translation.truncate().world_pos_to_grid();
 
-        farm_tile.progress_state();
+        farm_tile.progress_state(farm_tile_entity, &mut commands);
 
         commands.entity(event.0).insert(FarmTile::sprite_bundle(
             &farm_tile.state,
@@ -118,3 +184,5 @@ pub fn progress_farms(
         ));
     }
 }
+
+pub fn progress_farm_tile_timer(_commands: Commands, _query: Query<(&Transform, &mut FarmTile)>) {}
