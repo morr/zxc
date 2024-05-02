@@ -16,7 +16,9 @@ impl Plugin for StructurePlugin {
             )
             .add_systems(
                 FixedUpdate,
-                progress_farm_tile_timer.run_if(in_state(SimulationState::Running))
+                progress_farm_tile_timer
+                    .run_if(in_state(AppState::Playing))
+                    .run_if(in_state(SimulationState::Running))
             );
 
     }

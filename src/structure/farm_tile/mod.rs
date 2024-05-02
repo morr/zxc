@@ -61,7 +61,13 @@ impl Default for FarmTile {
 }
 
 impl FarmTile {
-    pub fn progress_state(&mut self, entity: Entity, commands: &mut Commands) {
+    pub fn progress_state(
+        &mut self,
+        entity: Entity,
+        commands: &mut Commands,
+        transform: &Transform,
+        assets: &Res<FarmAssets>,
+    ) {
         let new_state = match &self.state {
             FarmTileState::NotPlanted => FarmTileState::Planted(Timer::from_seconds(
                 hours_to_seconds(CONFIG.work_amount.farm_tile_grow),
@@ -71,8 +77,15 @@ impl FarmTile {
             FarmTileState::Grown => FarmTileState::Harvested,
             FarmTileState::Harvested => FarmTileState::NotPlanted,
         };
-        println!("progress_state {:?} => {:?}", self.state, new_state);
+        // println!("progress_state {:?} => {:?}", self.state, new_state);
         self.change_state(new_state, entity, commands);
+
+        let grid_tile = transform.translation.truncate().world_pos_to_grid();
+        commands.entity(entity).insert(FarmTile::sprite_bundle(
+            &self.state,
+            &assets,
+            grid_tile,
+        ));
     }
 }
 
@@ -152,24 +165,18 @@ pub fn progress_farm_tile_state(
     for event in event_reader.read() {
         let entity = event.0;
         let (transform, mut farm_tile) = query.get_mut(entity).unwrap();
-        let grid_tile = transform.translation.truncate().world_pos_to_grid();
 
-        farm_tile.progress_state(entity, &mut commands);
-
-        commands.entity(entity).insert(FarmTile::sprite_bundle(
-            &farm_tile.state,
-            &assets,
-            grid_tile,
-        ));
+        farm_tile.progress_state(entity, &mut commands, transform, &assets);
     }
 }
 
 pub fn progress_farm_tile_timer(
     time: Res<Time>,
-    mut query: Query<(Entity, &mut FarmTile), With<farm_tile_state::Planted>>,
+    mut query: Query<(Entity, &Transform, &mut FarmTile), With<farm_tile_state::Planted>>,
     mut commands: Commands,
+    assets: Res<FarmAssets>,
 ) {
-    for (entity, mut farm_tile) in query.iter_mut() {
+    for (entity, transform, mut farm_tile) in query.iter_mut() {
         let timer = match &mut farm_tile.state {
             FarmTileState::Planted(timer) => timer,
             _ => panic!("FarmTile must be in a timer-assigned state"),
@@ -177,7 +184,7 @@ pub fn progress_farm_tile_timer(
         timer.tick(time.delta());
 
         if timer.finished() {
-            farm_tile.progress_state(entity, &mut commands);
+            farm_tile.progress_state(entity, &mut commands, transform, &assets);
         }
     }
 }
