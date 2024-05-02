@@ -37,8 +37,8 @@ macro_rules! pawn_states {
        impl Pawn {
             pub fn change_state(
                 &mut self,
-                entity: Entity,
                 new_state: PawnState,
+                entity: Entity,
                 commands: &mut Commands,
                 pawn_state_event_writer: &mut EventWriter<EntityStateChangeEvent<PawnState>>,
             ) {

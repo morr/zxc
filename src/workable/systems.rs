@@ -25,8 +25,8 @@ pub fn assign_tasks_to_pawns(
             let tile = task.tile;
 
             pawn.change_state(
-                entity,
                 PawnState::WorkAssigned(task),
+                entity,
                 &mut commands,
                 &mut pawn_state_event_writer,
             );
@@ -72,8 +72,8 @@ pub fn start_pawn_working(
         let task = pawn.get_task().clone();
 
         pawn.change_state(
-            event.pawn_entity,
             PawnState::Working(task),
+            event.pawn_entity,
             &mut commands,
             &mut pawn_state_event_writer,
         );
@@ -122,8 +122,8 @@ pub fn complete_pawn_working(
         }
 
         pawn.change_state(
-            event.pawn_entity,
             PawnState::Idle,
+            event.pawn_entity,
             &mut commands,
             &mut pawn_state_event_writer,
         );
