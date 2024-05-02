@@ -90,7 +90,7 @@ pub fn progress_work(
     time_scale: Res<TimeScale>,
     mut event_writer: EventWriter<WorkCompleteEvent>,
 ) {
-    let elapsed_time = time.delta_seconds() * time_scale.0;
+    let elapsed_time = time_scale.scale_to_seconds(time.delta_seconds());
 
     for (pawn_entity, pawn) in query_pawns.iter() {
         let task = pawn.get_task();

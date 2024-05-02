@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use super::*;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
@@ -12,6 +14,16 @@ pub struct TimeScale(pub f32);
 impl Default for TimeScale {
     fn default() -> Self {
         Self(1.0)
+    }
+}
+
+impl TimeScale {
+    pub fn scale_to_seconds(&self, seconds: f32) -> f32 {
+        seconds * self.0
+    }
+
+    pub fn scale_to_duration(&self, seconds: f32) -> Duration {
+        Duration::from_secs_f32(seconds * self.0)
     }
 }
 

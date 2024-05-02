@@ -5,7 +5,7 @@ pub fn track_time(
     time_scale: Res<TimeScale>,
     mut elapsed_time: ResMut<ElapsedTime>,
 ) {
-    elapsed_time.0 += time.delta_seconds() * time_scale.0;
+    elapsed_time.0 += time_scale.scale_to_seconds(time.delta_seconds());
 }
 
 pub fn modify_time(

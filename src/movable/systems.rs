@@ -13,7 +13,7 @@ pub fn move_moving_entities(
             entity,
             &mut movable,
             &mut transform,
-            time.delta_seconds() * time_scale.0,
+            time_scale.scale_to_seconds(time.delta_seconds()),
             &arc_navmesh,
             &mut commands,
             &mut movable_state_event_writer,
