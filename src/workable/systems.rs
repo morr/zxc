@@ -8,8 +8,8 @@ pub fn assign_tasks_to_pawns(
         (
             Entity,
             &mut Pawn,
-            &Transform,
             &mut Movable,
+            &Transform,
             Option<&mut PathfindingTask>,
         ),
         With<pawn_state::Idle>,
@@ -20,7 +20,7 @@ pub fn assign_tasks_to_pawns(
     arc_navmesh: Res<ArcNavmesh>,
     queue_counter: Res<AsyncQueueCounter>,
 ) {
-    for (entity, mut pawn, transform, mut movable, mut maybe_pathfinding_task) in query.iter_mut() {
+    for (entity, mut pawn, mut movable, transform, mut maybe_pathfinding_task) in query.iter_mut() {
         if let Some(task) = work_queue.get_task() {
             let tile = task.tile;
 
@@ -47,12 +47,12 @@ pub fn assign_tasks_to_pawns(
 
 pub fn check_pawn_ready_for_working(
     query: Query<
-        (Entity, &Transform, &Pawn),
+        (Entity, &Pawn, &Transform),
         (With<pawn_state::WorkAssigned>, Without<MovableMoving>),
     >,
     mut event_writer: EventWriter<WorkStartEvent>,
 ) {
-    for (entity, transform, pawn) in query.iter() {
+    for (entity, pawn, transform) in query.iter() {
         let current_tile = transform.translation.truncate().world_pos_to_grid();
         let is_pawn_reached_workplace = current_tile == pawn.get_task().tile;
 

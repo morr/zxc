@@ -28,12 +28,12 @@ pub fn highlight_hovered_tile(
     mut commands: Commands,
     mut event_reader: EventReader<HoverTileEvent>,
     query_tiles_hovered: Query<Entity, With<TileHovered>>,
-    query_tiles: Query<(&Tile, Entity)>,
+    query_tiles: Query<(Entity, &Tile)>,
 ) {
     for event in event_reader.read() {
         remove_tile_hovered_from_other_tiles(&query_tiles_hovered, &mut commands);
 
-        for (tile, entity) in query_tiles.iter() {
+        for (entity, tile) in query_tiles.iter() {
             if tile.0 == event.0 {
                 commands
                     .entity(entity)

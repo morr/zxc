@@ -1,7 +1,7 @@
 use super::*;
 
 pub fn progress_farm_tile_state(
-    mut query: Query<(&Transform, &mut FarmTile)>,
+    mut query: Query<(&mut FarmTile, &Transform)>,
     mut commands: Commands,
     mut event_reader: EventReader<FarmTileProgressEvent>,
     assets: Res<FarmAssets>,
@@ -9,7 +9,7 @@ pub fn progress_farm_tile_state(
 ) {
     for event in event_reader.read() {
         let entity = event.0;
-        let (transform, mut farm_tile) = query.get_mut(entity).unwrap();
+        let (mut farm_tile, transform) = query.get_mut(entity).unwrap();
 
         farm_tile.progress_state(
             entity,
@@ -24,12 +24,12 @@ pub fn progress_farm_tile_state(
 pub fn progress_farm_tile_timer(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
-    mut query: Query<(Entity, &Transform, &mut FarmTile), With<farm_tile_state::Planted>>,
+    mut query: Query<(Entity, &mut FarmTile, &Transform), With<farm_tile_state::Planted>>,
     mut commands: Commands,
     assets: Res<FarmAssets>,
     mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmTileState>>,
 ) {
-    for (entity, transform, mut farm_tile) in query.iter_mut() {
+    for (entity, mut farm_tile, transform) in query.iter_mut() {
         let timer = match &mut farm_tile.state {
             FarmTileState::Planted(timer) => timer,
             _ => panic!("FarmTile must be in a timer-assigned state"),

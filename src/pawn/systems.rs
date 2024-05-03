@@ -115,8 +115,8 @@ pub fn wander_idle_pawns(
     mut query: Query<
         (
             Entity,
-            &Transform,
             &mut Movable,
+            &Transform,
             Option<&mut PathfindingTask>,
         ),
         With<pawn_state::Idle>,
@@ -127,7 +127,7 @@ pub fn wander_idle_pawns(
 ) {
     let mut rng = rand::thread_rng();
 
-    for (entity, transform, mut movable, mut maybe_pathfinding_task) in &mut query {
+    for (entity, mut movable, transform, mut maybe_pathfinding_task) in &mut query {
         if movable.state != MovableState::Idle {
             continue;
         }
