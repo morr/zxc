@@ -84,10 +84,11 @@ impl FarmTile {
         // println!("progress_state {:?} => {:?}", self.state, new_state);
         self.change_state(new_state, entity, commands, state_change_event_writer);
 
-        let grid_tile = transform.translation.truncate().world_pos_to_grid();
-        commands
-            .entity(entity)
-            .insert(FarmTile::sprite_bundle(&self.state, assets, grid_tile));
+        commands.entity(entity).insert(FarmTile::sprite_bundle(
+            &self.state,
+            assets,
+            self.get_grid_tile(transform),
+        ));
 
         // if new_state == FarmTileState::Grown {
         //     work_queue.add_task(Task {
@@ -96,6 +97,10 @@ impl FarmTile {
         //         tile: grid_tile,
         //     });
         // }
+    }
+
+    pub fn get_grid_tile(&self, transform: &Transform) -> IVec2 {
+        transform.translation.truncate().world_pos_to_grid()
     }
 }
 
