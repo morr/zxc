@@ -15,8 +15,8 @@ pub fn assign_tasks_to_pawns(
         With<pawn_state::Idle>,
     >,
     mut work_queue: ResMut<TasksQueue>,
-    mut pawn_state_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
-    mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
+    mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    mut movable_state_change_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
     arc_navmesh: Res<ArcNavmesh>,
     queue_counter: Res<AsyncQueueCounter>,
 ) {
@@ -28,7 +28,7 @@ pub fn assign_tasks_to_pawns(
                 PawnState::WorkAssigned(task),
                 entity,
                 &mut commands,
-                &mut pawn_state_event_writer,
+                &mut pawn_state_change_event_writer,
             );
 
             movable.to_pathfinding_async(
@@ -39,7 +39,7 @@ pub fn assign_tasks_to_pawns(
                 &queue_counter,
                 maybe_pathfinding_task.as_deref_mut(),
                 &mut commands,
-                &mut movable_state_event_writer,
+                &mut movable_state_change_event_writer,
             );
         }
     }
@@ -68,7 +68,7 @@ pub fn start_pawn_working(
     mut commands: Commands,
     mut event_reader: EventReader<WorkStartEvent>,
     mut query: Query<&mut Pawn>,
-    mut pawn_state_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for event in event_reader.read() {
         let mut pawn = query.get_mut(event.pawn_entity).unwrap();
@@ -78,7 +78,7 @@ pub fn start_pawn_working(
             PawnState::Working(task),
             event.pawn_entity,
             &mut commands,
-            &mut pawn_state_event_writer,
+            &mut state_change_event_writer,
         );
     }
 }
@@ -110,7 +110,7 @@ pub fn complete_pawn_working(
     mut commands: Commands,
     mut event_reader: EventReader<WorkCompleteEvent>,
     mut query: Query<&mut Pawn>,
-    mut pawn_state_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
     mut farm_progress_event_writer: EventWriter<FarmTileProgressEvent>,
 ) {
     for event in event_reader.read() {
@@ -128,7 +128,7 @@ pub fn complete_pawn_working(
             PawnState::Idle,
             event.pawn_entity,
             &mut commands,
-            &mut pawn_state_event_writer,
+            &mut state_change_event_writer,
         );
     }
 }
