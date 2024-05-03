@@ -10,11 +10,12 @@ impl Plugin for FarmTilePlugin {
             .add_event::<EntityStateChangeEvent<FarmTileState>>()
             .add_systems(
                 FixedUpdate,
-                progress_farm_tile_state.run_if(in_state(AppState::Playing)),
-            )
-            .add_systems(
-                FixedUpdate,
-                progress_farm_tile_timer
+                (
+                    progress_farm_tile_state,
+                    progress_farm_tile_timer,
+                    track_farm_tiles_grown,
+                )
+                    .chain()
                     .run_if(in_state(AppState::Playing))
                     .run_if(in_state(SimulationState::Running)),
             );

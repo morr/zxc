@@ -47,3 +47,13 @@ pub fn progress_farm_tile_timer(
         }
     }
 }
+
+pub fn track_farm_tiles_grown(
+    mut event_reader: EventReader<EntityStateChangeEvent<FarmTileState>>,
+    query: Query<(&mut FarmTile, &Transform)>,
+) {
+    // for event in event_reader.read() {
+    //     let a = event.0;
+    //     let b = event.1;
+    // }
+}
