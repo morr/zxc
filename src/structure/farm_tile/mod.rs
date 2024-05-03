@@ -26,6 +26,7 @@ macro_rules! farm_tile_states {
                 new_state: FarmTileState,
                 entity: Entity,
                 commands: &mut Commands,
+                state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmTileState>>,
             ) {
                 // println!("FarmTileState {:?}=>{:?}", self.state, new_state);
 
@@ -42,6 +43,8 @@ macro_rules! farm_tile_states {
                         commands.entity(entity).insert(farm_tile_state::$name);
                     },)*
                 }
+
+                state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
             }
         }
     };
@@ -69,6 +72,7 @@ impl FarmTile {
         commands: &mut Commands,
         transform: &Transform,
         assets: &Res<FarmAssets>,
+        state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmTileState>>,
     ) {
         let new_state = match &self.state {
             FarmTileState::NotPlanted => FarmTileState::Planted(Timer::from_seconds(
@@ -80,7 +84,7 @@ impl FarmTile {
             FarmTileState::Harvested => FarmTileState::NotPlanted,
         };
         // println!("progress_state {:?} => {:?}", self.state, new_state);
-        self.change_state(new_state, entity, commands);
+        self.change_state(new_state, entity, commands, state_change_event_writer);
 
         let grid_tile = transform.translation.truncate().world_pos_to_grid();
         commands

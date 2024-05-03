@@ -5,12 +5,13 @@ pub fn progress_farm_tile_state(
     mut commands: Commands,
     mut event_reader: EventReader<FarmTileProgressEvent>,
     assets: Res<FarmAssets>,
+    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmTileState>>,
 ) {
     for event in event_reader.read() {
         let entity = event.0;
         let (transform, mut farm_tile) = query.get_mut(entity).unwrap();
 
-        farm_tile.progress_state(entity, &mut commands, transform, &assets);
+        farm_tile.progress_state(entity, &mut commands, transform, &assets, &mut state_change_event_writer);
     }
 }
 
@@ -20,6 +21,7 @@ pub fn progress_farm_tile_timer(
     mut query: Query<(Entity, &Transform, &mut FarmTile), With<farm_tile_state::Planted>>,
     mut commands: Commands,
     assets: Res<FarmAssets>,
+    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmTileState>>,
 ) {
     for (entity, transform, mut farm_tile) in query.iter_mut() {
         let timer = match &mut farm_tile.state {
@@ -29,7 +31,7 @@ pub fn progress_farm_tile_timer(
         timer.tick(time_scale.scale_to_duration(time.delta_seconds()));
 
         if timer.finished() {
-            farm_tile.progress_state(entity, &mut commands, transform, &assets);
+            farm_tile.progress_state(entity, &mut commands, transform, &assets, &mut state_change_event_writer);
         }
     }
 }
