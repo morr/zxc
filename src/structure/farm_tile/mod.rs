@@ -81,11 +81,17 @@ impl FarmTile {
         self.change_state(new_state, entity, commands);
 
         let grid_tile = transform.translation.truncate().world_pos_to_grid();
-        commands.entity(entity).insert(FarmTile::sprite_bundle(
-            &self.state,
-            &assets,
-            grid_tile,
-        ));
+        commands
+            .entity(entity)
+            .insert(FarmTile::sprite_bundle(&self.state, assets, grid_tile));
+
+        // if new_state == FarmTileState::Grown {
+        //     work_queue.add_task(Task {
+        //         entity,
+        //         kind: TaskKind::FarmTileHarvest,
+        //         tile: grid_tile,
+        //     });
+        // }
     }
 }
 
@@ -119,13 +125,11 @@ impl FarmTile {
             Some((3.0 * COST_MULTIPLIER) as i32),
         );
 
-        // Adding the task for the farm tile to the work queue
-        let task = Task {
+        work_queue.add_task(Task {
             entity,
-            kind: TaskKind::Farming,
+            kind: TaskKind::FarmTilePlant,
             tile: grid_tile,
-        };
-        work_queue.add_task(task);
+        });
     }
 
     pub fn sprite_bundle(
