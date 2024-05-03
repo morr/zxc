@@ -11,7 +11,13 @@ pub fn progress_farm_tile_state(
         let entity = event.0;
         let (transform, mut farm_tile) = query.get_mut(entity).unwrap();
 
-        farm_tile.progress_state(entity, &mut commands, transform, &assets, &mut state_change_event_writer);
+        farm_tile.progress_state(
+            entity,
+            &mut commands,
+            transform,
+            &assets,
+            &mut state_change_event_writer,
+        );
     }
 }
 
@@ -31,8 +37,13 @@ pub fn progress_farm_tile_timer(
         timer.tick(time_scale.scale_to_duration(time.delta_seconds()));
 
         if timer.finished() {
-            farm_tile.progress_state(entity, &mut commands, transform, &assets, &mut state_change_event_writer);
+            farm_tile.progress_state(
+                entity,
+                &mut commands,
+                transform,
+                &assets,
+                &mut state_change_event_writer,
+            );
         }
     }
 }
-
