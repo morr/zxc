@@ -13,7 +13,7 @@ impl Plugin for FarmTilePlugin {
                 (
                     progress_on_progress_event,
                     progress_timer,
-                    track_farm_tiles_grown
+                    progress_on_state_change
                 )
                     .chain()
                     .run_if(in_state(AppState::Playing))

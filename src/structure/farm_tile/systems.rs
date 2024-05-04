@@ -48,7 +48,7 @@ pub fn progress_timer(
     }
 }
 
-pub fn track_farm_tiles_grown(
+pub fn progress_on_state_change(
     mut event_reader: EventReader<EntityStateChangeEvent<FarmTileState>>,
     mut work_queue: ResMut<TasksQueue>,
     query: Query<&Transform>,
@@ -56,25 +56,22 @@ pub fn track_farm_tiles_grown(
     for event in event_reader.read() {
         let entity = event.0;
         let state = &event.1;
-        let transform = query.get(entity).unwrap();
-        let grid_tile = FarmTile::get_grid_tile(transform);
 
-        match state {
-            FarmTileState::NotPlanted => {
-                work_queue.add_task(Task {
-                    entity,
-                    kind: TaskKind::FarmTilePlant,
-                    grid_tile,
-                });
-            }
-            FarmTileState::Grown => {
-                work_queue.add_task(Task {
-                    entity,
-                    kind: TaskKind::FarmTileHarvest,
-                    grid_tile,
-                });
-            }
-            _ => {}
+        let maybe_task_kind = match state {
+            FarmTileState::NotPlanted => Some(TaskKind::FarmTilePlant),
+            FarmTileState::Grown => Some(TaskKind::FarmTileHarvest),
+            _ => None,
         };
+
+        if let Some(task_kind) = maybe_task_kind {
+            let transform = query.get(entity).unwrap();
+            let grid_tile = FarmTile::get_grid_tile(transform);
+
+            work_queue.add_task(Task {
+                entity,
+                kind: task_kind,
+                grid_tile,
+            });
+        }
     }
 }
