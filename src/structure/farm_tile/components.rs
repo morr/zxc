@@ -1,7 +1,4 @@
-use bevy::{
-    ecs::{entity, system::EntityCommands},
-    sprite,
-};
+use bevy::ecs::system::EntityCommands;
 
 use super::*;
 
@@ -184,15 +181,6 @@ impl FarmTile {
         entity_commands: &mut EntityCommands,
         assets: &Res<FarmAssets>,
     ) {
-        let sprite_bundle = FarmTile::sprite_bundle(state, assets, grid_tile);
-        entity_commands.insert(sprite_bundle);
-    }
-
-    pub fn sprite_bundle(
-        state: &FarmTileState,
-        assets: &Res<FarmAssets>,
-        grid_tile: IVec2,
-    ) -> SpriteBundle {
         let size = IVec2::new(FARM_TILE_SIZE, FARM_TILE_SIZE);
         let texture = match state {
             FarmTileState::NotPlanted => assets.not_planted.clone(),
@@ -201,7 +189,7 @@ impl FarmTile {
             FarmTileState::Harvested => assets.harvested.clone(),
         };
 
-        SpriteBundle {
+        entity_commands.insert(SpriteBundle {
             texture,
             sprite: Sprite {
                 custom_size: Some(size.grid_tile_edge_to_world()),
@@ -212,7 +200,7 @@ impl FarmTile {
                     .extend(STRUCTURE_Z_INDEX),
             ),
             ..default()
-        }
+        });
     }
 
     pub fn workable(state: &FarmTileState) -> Option<Workable> {
