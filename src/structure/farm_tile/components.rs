@@ -1,3 +1,5 @@
+use bevy::ecs::entity;
+
 use super::*;
 
 macro_rules! farm_tile_states {
@@ -114,7 +116,7 @@ impl FarmTile {
                     TimerMode::Once,
                 ),
                 tendings_done: 0,
-                next_tending_timer: None
+                next_tending_timer: None,
             }),
             FarmTileState::Planted(_) => FarmTileState::Grown,
             FarmTileState::Grown => FarmTileState::Harvested,
@@ -148,16 +150,19 @@ impl FarmTile {
         let farm_tile = Self::default();
         let state = farm_tile.state.clone();
         let sprite_bundle = Self::sprite_bundle(&farm_tile.state, assets, grid_tile);
+        let maybe_workable = Self::workable(&farm_tile.state);
 
-        let entity = commands
-            .spawn((
-                farm_tile,
-                farm_tile_state::NotPlanted,
-                sprite_bundle,
-                Workable::new(hours_to_seconds(CONFIG.farming.planting_work_amount)),
-                Name::new("FarmTile"),
-            ))
-            .id();
+        let mut entity_commands = commands.spawn((
+            farm_tile,
+            farm_tile_state::NotPlanted,
+            sprite_bundle,
+            Name::new("FarmTile"),
+        ));
+        if let Some(workable) = maybe_workable {
+            entity_commands.insert(workable);
+        }
+
+        let entity = entity_commands.id();
 
         arc_navmesh.update_cost(
             grid_tile.x..grid_tile.x + FARM_TILE_SIZE,
@@ -193,5 +198,11 @@ impl FarmTile {
             ),
             ..default()
         }
+    }
+
+    pub fn workable(state: &FarmTileState) -> Option<Workable> {
+        Some(Workable::new(hours_to_seconds(
+            CONFIG.farming.planting_work_amount,
+        )))
     }
 }
