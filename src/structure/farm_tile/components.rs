@@ -6,15 +6,30 @@ macro_rules! farm_tile_states {
             (
                 $name:ident
                 $(,
-                    $turple_type:ty
+                    struct $turple_name: ident {
+                        $(
+                            $field: ident: $ty: ty
+                        ),* $(,)?
+                    }
+
                     , $match_field:ident
                 )?
             )),* $(,)?
     ) => {
         #[derive(Debug, Clone, PartialEq, Reflect)]
         pub enum FarmTileState {
-            $($name $(($turple_type))? ),*
+            $($name $(($turple_name))? ),*
         }
+
+        $($(
+            #[derive(Clone, Eq, PartialEq, Reflect, Debug)]
+            pub struct $turple_name {
+            $(
+                pub $field: $ty
+            ),*
+            }
+        )?)*
+
 
         pub mod farm_tile_state {
             use bevy::{prelude::*};
@@ -59,7 +74,9 @@ farm_tile_states!(
     (NotPlanted),
     (
         Planted,
-        Timer,
+        struct PlantedState {
+            growth_timer: Timer
+        },
         _a
     ),
     (Grown), (Harvested),
@@ -88,10 +105,12 @@ impl FarmTile {
         state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmTileState>>,
     ) {
         let new_state = match &self.state {
-            FarmTileState::NotPlanted => FarmTileState::Planted(Timer::from_seconds(
-                hours_to_seconds(CONFIG.work_amount.farm_tile_grow),
-                TimerMode::Once,
-            )),
+            FarmTileState::NotPlanted => FarmTileState::Planted(PlantedState {
+                growth_timer: Timer::from_seconds(
+                    hours_to_seconds(CONFIG.work_amount.farm_tile_grow),
+                    TimerMode::Once,
+                ),
+            }),
             FarmTileState::Planted(_) => FarmTileState::Grown,
             FarmTileState::Grown => FarmTileState::Harvested,
             FarmTileState::Harvested => FarmTileState::NotPlanted,

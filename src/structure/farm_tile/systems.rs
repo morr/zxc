@@ -30,13 +30,13 @@ pub fn progress_timer(
     mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmTileState>>,
 ) {
     for (entity, mut farm_tile, transform) in query.iter_mut() {
-        let timer = match &mut farm_tile.state {
-            FarmTileState::Planted(timer) => timer,
+        let state = match &mut farm_tile.state {
+            FarmTileState::Planted(state) => state,
             _ => panic!("FarmTile must be in a timer-assigned state"),
         };
-        timer.tick(time_scale.scale_to_duration(time.delta_seconds()));
+        state.growth_timer.tick(time_scale.scale_to_duration(time.delta_seconds()));
 
-        if timer.finished() {
+        if state.growth_timer.finished() {
             farm_tile.progress_state(
                 entity,
                 &mut commands,
