@@ -34,7 +34,9 @@ pub fn progress_planted_timer(
             FarmTileState::Planted(state) => state,
             _ => panic!("FarmTile must be in a timer-assigned state"),
         };
-        state.growth_timer.tick(time_scale.scale_to_duration(time.delta_seconds()));
+        state
+            .growth_timer
+            .tick(time_scale.scale_to_duration(time.delta_seconds()));
 
         if state.growth_timer.finished() {
             farm_tile.progress_state(
@@ -85,7 +87,7 @@ pub fn progress_on_state_changed(
             spawn_food_event_writer.send(SpawnItemEvent {
                 item_type: ItemType::Food,
                 amount: 10,
-                grid_tile: entity_grid_tile(entity, &query)
+                grid_tile: entity_grid_tile(entity, &query),
             });
         };
     }

@@ -112,7 +112,7 @@ impl FarmTile {
         let new_state = match &self.state {
             FarmTileState::NotPlanted => FarmTileState::Planted(PlantedState {
                 growth_timer: Timer::from_seconds(
-                    hours_to_seconds(CONFIG.farming.growth_time),
+                    days_to_seconds(CONFIG.farming.growth_days),
                     TimerMode::Once,
                 ),
                 tendings_done: 0,
