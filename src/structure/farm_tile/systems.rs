@@ -28,6 +28,7 @@ pub fn progress_planted_timer(
     mut commands: Commands,
     assets: Res<FarmAssets>,
     mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmTileState>>,
+    mut work_queue: ResMut<TasksQueue>,
 ) {
     for (entity, mut farm_tile, transform) in query.iter_mut() {
         let state = match &mut farm_tile.state {
@@ -39,6 +40,14 @@ pub fn progress_planted_timer(
 
         if let Some(tending_rest_timer) = &mut state.tending_rest_timer {
             tending_rest_timer.tick(delta);
+
+            if tending_rest_timer.finished() {
+                work_queue.add_task(Task {
+                    entity,
+                    kind: TaskKind::FarmTileTending,
+                    grid_tile: transform.world_pos_to_grid()
+                });
+            }
         }
 
         if state.growth_timer.finished() {
