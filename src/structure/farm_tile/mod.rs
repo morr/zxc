@@ -15,8 +15,8 @@ impl Plugin for FarmTilePlugin {
                 FixedUpdate,
                 (
                     progress_on_progress_event,
-                    progress_timer,
-                    progress_on_state_change
+                    progress_planted_timer,
+                    progress_on_state_changed
                 )
                     .chain()
                     .run_if(in_state(AppState::Playing))

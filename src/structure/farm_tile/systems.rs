@@ -21,7 +21,7 @@ pub fn progress_on_progress_event(
     }
 }
 
-pub fn progress_timer(
+pub fn progress_planted_timer(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut FarmTile, &Transform), With<farm_tile_state::Planted>>,
@@ -48,28 +48,37 @@ pub fn progress_timer(
     }
 }
 
-pub fn progress_on_state_change(
+pub fn progress_on_state_changed(
     mut event_reader: EventReader<EntityStateChangeEvent<FarmTileState>>,
     mut work_queue: ResMut<TasksQueue>,
     query: Query<&Transform>,
     mut spawn_food_event_writer: EventWriter<SpawnItemEvent>,
 ) {
     for event in event_reader.read() {
+        println!("{:?}", event);
+
         let entity = event.0;
         let state = &event.1;
 
-        let task_kind = match state {
-            FarmTileState::NotPlanted => TaskKind::FarmTilePlant,
-            FarmTileState::Planted(_) => TaskKind::FarmTileTending,
-            FarmTileState::Grown => TaskKind::FarmTileHarvest,
-            FarmTileState::Harvested => TaskKind::FarmTileCleanup,
+        let maybe_task_kind = match state {
+            FarmTileState::NotPlanted => Some(TaskKind::FarmTilePlant),
+            FarmTileState::Grown => Some(TaskKind::FarmTileHarvest),
+            FarmTileState::Harvested => Some(TaskKind::FarmTileCleanup),
+            _ => None,
         };
 
-        work_queue.add_task(Task {
-            entity,
-            kind: task_kind,
-            grid_tile: entity_grid_tile(entity, &query),
-        });
+        if let Some(task_kind) = maybe_task_kind {
+            work_queue.add_task(Task {
+                entity,
+                kind: task_kind,
+                grid_tile: entity_grid_tile(entity, &query),
+            });
+        }
+
+        // start tending cycle
+        if let FarmTileState::Planted(plant_state) = state {
+            println!("{:?}", plant_state);
+        }
 
         // generate food
         if let FarmTileState::Harvested = state {

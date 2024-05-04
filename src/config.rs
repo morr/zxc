@@ -31,7 +31,7 @@ pub struct RootConfig {
     pub starting_scene: StartingSceneConfig,
     pub time: TimeConfig,
     pub pawn: PawnConfig,
-    pub work_amount: WorkAmountConfig,
+    pub farming: FarmingConfig,
 }
 
 impl RootConfig {
@@ -99,11 +99,11 @@ pub struct PawnConfig {
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct WorkAmountConfig {
+pub struct FarmingConfig {
     /// in hours
-    pub farm_tile_plant: f32,
+    pub planting_work_amount: f32,
     /// in hours
-    pub farm_tile_grow: f32,
+    pub growth_time: f32,
     /// in hours
-    pub farm_tile_harvest: f32,
+    pub harvesting_work_amount: f32,
 }

@@ -110,7 +110,7 @@ impl FarmTile {
         let new_state = match &self.state {
             FarmTileState::NotPlanted => FarmTileState::Planted(PlantedState {
                 growth_timer: Timer::from_seconds(
-                    hours_to_seconds(CONFIG.work_amount.farm_tile_grow),
+                    hours_to_seconds(CONFIG.farming.growth_time),
                     TimerMode::Once,
                 ),
                 tendings_done: 0,
@@ -154,7 +154,7 @@ impl FarmTile {
                 farm_tile,
                 farm_tile_state::NotPlanted,
                 sprite_bundle,
-                Workable::new(hours_to_seconds(CONFIG.work_amount.farm_tile_plant)),
+                Workable::new(hours_to_seconds(CONFIG.farming.planting_work_amount)),
                 Name::new("FarmTile"),
             ))
             .id();
