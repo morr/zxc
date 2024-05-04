@@ -75,11 +75,14 @@ farm_tile_states!(
     (
         Planted,
         struct PlantedState {
-            growth_timer: Timer
+            growth_timer: Timer,
+            tendings_done: u32,
+            next_tending_timer: Option<Timer>
         },
         _a
     ),
-    (Grown), (Harvested),
+    (Grown),
+    (Harvested),
 );
 
 #[derive(Debug, Component, Reflect)]
@@ -110,6 +113,8 @@ impl FarmTile {
                     hours_to_seconds(CONFIG.work_amount.farm_tile_grow),
                     TimerMode::Once,
                 ),
+                tendings_done: 0,
+                next_tending_timer: None
             }),
             FarmTileState::Planted(_) => FarmTileState::Grown,
             FarmTileState::Grown => FarmTileState::Harvested,
@@ -128,6 +133,9 @@ impl FarmTile {
 
 #[derive(Event, Debug)]
 pub struct FarmTileProgressEvent(pub Entity);
+
+#[derive(Event, Debug)]
+pub struct FarmTileTendingEvent(pub Entity);
 
 impl FarmTile {
     pub fn spawn(

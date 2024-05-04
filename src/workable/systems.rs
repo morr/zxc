@@ -1,4 +1,4 @@
-use self::structure::FarmTileProgressEvent;
+use self::structure::{FarmTileProgressEvent, FarmTileTendingEvent};
 
 use super::*;
 
@@ -112,6 +112,7 @@ pub fn complete_pawn_working(
     mut query: Query<&mut Pawn>,
     mut state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
     mut farm_progress_event_writer: EventWriter<FarmTileProgressEvent>,
+    mut farm_tending_event_writer: EventWriter<FarmTileTendingEvent>,
 ) {
     for event in event_reader.read() {
         let mut pawn = query.get_mut(event.pawn_entity).unwrap();
@@ -121,6 +122,9 @@ pub fn complete_pawn_working(
             TaskKind::FarmTilePlant | TaskKind::FarmTileHarvest | TaskKind::FarmTileCleanup => {
                 // event.workable_entity the same is task.entity
                 farm_progress_event_writer.send(FarmTileProgressEvent(event.workable_entity));
+            }
+            TaskKind::FarmTileTending => {
+                farm_tending_event_writer.send(FarmTileTendingEvent(event.workable_entity));
             }
         }
 

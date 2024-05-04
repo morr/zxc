@@ -58,21 +58,20 @@ pub fn progress_on_state_change(
         let entity = event.0;
         let state = &event.1;
 
-        let maybe_task_kind = match state {
-            FarmTileState::NotPlanted => Some(TaskKind::FarmTilePlant),
-            FarmTileState::Grown => Some(TaskKind::FarmTileHarvest),
-            FarmTileState::Harvested => Some(TaskKind::FarmTileCleanup),
-            _ => None,
+        let task_kind = match state {
+            FarmTileState::NotPlanted => TaskKind::FarmTilePlant,
+            FarmTileState::Planted(_) => TaskKind::FarmTileTending,
+            FarmTileState::Grown => TaskKind::FarmTileHarvest,
+            FarmTileState::Harvested => TaskKind::FarmTileCleanup,
         };
 
-        if let Some(task_kind) = maybe_task_kind {
-            work_queue.add_task(Task {
-                entity,
-                kind: task_kind,
-                grid_tile: entity_grid_tile(entity, &query),
-            });
-        }
+        work_queue.add_task(Task {
+            entity,
+            kind: task_kind,
+            grid_tile: entity_grid_tile(entity, &query),
+        });
 
+        // generate food
         if let FarmTileState::Harvested = state {
             spawn_food_event_writer.send(SpawnItemEvent {
                 item_type: ItemType::Food,
