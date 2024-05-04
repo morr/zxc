@@ -22,7 +22,7 @@ pub fn assign_tasks_to_pawns(
 ) {
     for (entity, mut pawn, mut movable, transform, mut maybe_pathfinding_task) in query.iter_mut() {
         if let Some(task) = work_queue.get_task() {
-            println!("assign_tasks_to_pawns {:?}", task);
+            // println!("assign_tasks_to_pawns {:?}", task);
 
             let tile = task.grid_tile;
 
@@ -100,7 +100,7 @@ pub fn progress_work(
         workable.perform_work(elapsed_time);
 
         if workable.is_work_complete() {
-            println!("work_complete {:?}", task);
+            // println!("work_complete {:?}", task);
 
             event_writer.send(WorkCompleteEvent {
                 pawn_entity,

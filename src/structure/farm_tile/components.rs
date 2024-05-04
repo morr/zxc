@@ -96,7 +96,7 @@ impl Default for FarmTile {
     fn default() -> Self {
         Self {
             state: FarmTileState::NotPlanted,
-            tendings_done: 0
+            tendings_done: 0,
         }
     }
 }
@@ -116,10 +116,7 @@ impl FarmTile {
                     days_to_seconds(CONFIG.farming.growth_days),
                     TimerMode::Once,
                 ),
-                tending_rest_timer: Some(Timer::from_seconds(
-                    hours_to_seconds(CONFIG.farming.tending_rest_hours),
-                    TimerMode::Once,
-                )),
+                tending_rest_timer: Some(Self::new_tending_rest_timer()),
             }),
             FarmTileState::Planted(_) => FarmTileState::Grown,
             FarmTileState::Grown => FarmTileState::Harvested,
@@ -135,15 +132,14 @@ impl FarmTile {
         Self::sync_sprite_bundle(grid_tile, &self.state, &mut commands.entity(entity), assets);
         Self::sync_workable(&self.state, &mut commands.entity(entity));
     }
-}
 
-#[derive(Event, Debug)]
-pub struct FarmTileProgressEvent(pub Entity);
+    pub fn new_tending_rest_timer() -> Timer {
+        Timer::from_seconds(
+            hours_to_seconds(CONFIG.farming.tending_rest_hours),
+            TimerMode::Once,
+        )
+    }
 
-#[derive(Event, Debug)]
-pub struct FarmTileTendedEvent(pub Entity);
-
-impl FarmTile {
     pub fn spawn(
         commands: &mut Commands,
         assets: &Res<FarmAssets>,
@@ -211,3 +207,9 @@ impl FarmTile {
         entity_commands.insert(Workable::new(hours_to_seconds(work_amount)));
     }
 }
+
+#[derive(Event, Debug)]
+pub struct FarmTileProgressEvent(pub Entity);
+
+#[derive(Event, Debug)]
+pub struct FarmTileTendedEvent(pub Entity);
