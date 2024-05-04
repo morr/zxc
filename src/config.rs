@@ -103,7 +103,11 @@ pub struct FarmingConfig {
     /// in hours
     pub planting_work_amount: f32,
     /// in hours
-    pub growth_time: f32,
+    pub tending_work_amount: f32,
     /// in hours
     pub harvesting_work_amount: f32,
+    /// in hours
+    pub cleaning_work_amount: f32,
+    /// in hours
+    pub growth_time: f32,
 }

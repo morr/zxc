@@ -159,6 +159,7 @@ impl FarmTile {
             Name::new("FarmTile"),
         ));
         FarmTile::sync_sprite_bundle(grid_tile, &state, &mut entity_commands, assets);
+        FarmTile::sync_workable(&state, &mut entity_commands);
 
         if let Some(workable) = maybe_workable {
             entity_commands.insert(workable);
@@ -203,9 +204,14 @@ impl FarmTile {
         });
     }
 
-    pub fn workable(state: &FarmTileState) -> Option<Workable> {
-        Some(Workable::new(hours_to_seconds(
-            CONFIG.farming.planting_work_amount,
-        )))
+    pub fn sync_workable(state: &FarmTileState, entity_commands: &mut EntityCommands) {
+        let work_amount = match state {
+            FarmTileState::NotPlanted => CONFIG.farming.planting_work_amount,
+            FarmTileState::Planted(_) => CONFIG.farming.tending_work_amount,
+            FarmTileState::Grown => CONFIG.farming.harvesting_work_amount,
+            FarmTileState::Harvested => CONFIG.farming.cleaning_work_amount,
+        };
+
+        entity_commands.insert(Workable::new(hours_to_seconds(work_amount)));
     }
 }

@@ -6,24 +6,26 @@ RootConfig(
         size: 500,
     ),
     tile: TileConfig(
-        size: 32.0
+        size: 32.0,
     ),
     starting_scene: StartingSceneConfig(
         pawns: 1,
         day_hour: 8,
         farm_width: 1,
-        farm_height: 1
+        farm_height: 1,
     ),
     time: TimeConfig(
-        day_duration: 60.0
+        day_duration: 60.0,
     ),
     pawn: PawnConfig(
         speed: 3.0,
-        work_force: 1.0
+        work_force: 1.0,
     ),
     farming: FarmingConfig(
         planting_work_amount: 1.0, // 8.0
+        tending_work_amount: 1.0, // 8.0
+        harvesting_work_amount: 1.0, // 8.0
+        cleaning_work_amount: 1.0, // 8.0
         growth_time: 48.0, // 24.0
-        harvesting_work_amount: 1.0 // 8.0
     )
 )
