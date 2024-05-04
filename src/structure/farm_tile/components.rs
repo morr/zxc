@@ -2,7 +2,14 @@ use super::*;
 
 macro_rules! farm_tile_states {
     (
-        $( ($name:ident $(, $turple_type:ty, $match_field:ident)?)),* $(,)?
+        $(
+            (
+                $name:ident
+                $(,
+                    $turple_type:ty
+                    , $match_field:ident
+                )?
+            )),* $(,)?
     ) => {
         #[derive(Debug, Clone, PartialEq, Reflect)]
         pub enum FarmTileState {
@@ -48,7 +55,15 @@ macro_rules! farm_tile_states {
     };
 }
 
-farm_tile_states!((NotPlanted), (Planted, Timer, _a), (Grown), (Harvested),);
+farm_tile_states!(
+    (NotPlanted),
+    (
+        Planted,
+        Timer,
+        _a
+    ),
+    (Grown), (Harvested),
+);
 
 #[derive(Debug, Component, Reflect)]
 pub struct FarmTile {
