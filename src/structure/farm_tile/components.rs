@@ -1,4 +1,7 @@
-use bevy::ecs::entity;
+use bevy::{
+    ecs::{entity, system::EntityCommands},
+    sprite,
+};
 
 use super::*;
 
@@ -125,11 +128,12 @@ impl FarmTile {
         // println!("progress_state {:?} => {:?}", self.state, new_state);
         self.change_state(new_state, entity, commands, state_change_event_writer);
 
-        commands.entity(entity).insert(FarmTile::sprite_bundle(
-            &self.state,
-            assets,
+        Self::sync_sprite_bundle(
             transform.world_pos_to_grid(),
-        ));
+            &self.state,
+            &mut commands.entity(entity),
+            assets,
+        );
     }
 }
 
@@ -149,15 +153,16 @@ impl FarmTile {
     ) {
         let farm_tile = Self::default();
         let state = farm_tile.state.clone();
-        let sprite_bundle = Self::sprite_bundle(&farm_tile.state, assets, grid_tile);
+        // let sprite_bundle = Self::sprite_bundle(&farm_tile.state, assets, grid_tile);
         let maybe_workable = Self::workable(&farm_tile.state);
 
         let mut entity_commands = commands.spawn((
             farm_tile,
             farm_tile_state::NotPlanted,
-            sprite_bundle,
             Name::new("FarmTile"),
         ));
+        FarmTile::sync_sprite_bundle(grid_tile, &state, &mut entity_commands, assets);
+
         if let Some(workable) = maybe_workable {
             entity_commands.insert(workable);
         }
@@ -171,6 +176,16 @@ impl FarmTile {
         );
 
         state_change_event_writer.send(EntityStateChangeEvent(entity, state));
+    }
+
+    pub fn sync_sprite_bundle(
+        grid_tile: IVec2,
+        state: &FarmTileState,
+        entity_commands: &mut EntityCommands,
+        assets: &Res<FarmAssets>,
+    ) {
+        let sprite_bundle = FarmTile::sprite_bundle(state, assets, grid_tile);
+        entity_commands.insert(sprite_bundle);
     }
 
     pub fn sprite_bundle(
