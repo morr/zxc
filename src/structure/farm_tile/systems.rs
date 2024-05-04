@@ -1,3 +1,5 @@
+use bevy::transform;
+
 use super::*;
 
 pub fn progress_on_progress_event(
@@ -31,9 +33,7 @@ pub fn progress_on_tending_event(
         let entity = event.0;
         let mut farm_tile = query.get_mut(entity).unwrap();
 
-        if let FarmTileState::Planted(state) = &mut farm_tile.state {
-            state.tendings_done += 1;
-        }
+        farm_tile.tendings_done += 1;
     }
 }
 
@@ -82,7 +82,7 @@ pub fn progress_planted_timer(
 pub fn progress_on_state_changed(
     mut event_reader: EventReader<EntityStateChangeEvent<FarmTileState>>,
     mut work_queue: ResMut<TasksQueue>,
-    query: Query<&Transform>,
+    query: Query<(&FarmTile, &Transform)>,
     mut spawn_food_event_writer: EventWriter<SpawnItemEvent>,
 ) {
     for event in event_reader.read() {
@@ -98,27 +98,26 @@ pub fn progress_on_state_changed(
             _ => None,
         };
 
-        if let Some(task_kind) = maybe_task_kind {
-            work_queue.add_task(Task {
-                entity,
-                kind: task_kind,
-                grid_tile: entity_grid_tile(entity, &query),
-            });
+        if maybe_task_kind.is_some() || matches!(state, FarmTileState::Harvested) {
+            if let Ok((farm_tile, transform)) = query.get(entity) {
+                if let Some(task_kind) = maybe_task_kind {
+                    work_queue.add_task(Task {
+                        entity,
+                        kind: task_kind,
+                        grid_tile: transform.world_pos_to_grid()
+                    });
+                }
+
+                if let FarmTileState::Harvested = state {
+                    println!("tendings done: {}", farm_tile.tendings_done);
+                    spawn_food_event_writer.send(SpawnItemEvent {
+                        item_type: ItemType::Food,
+                        amount: 10 * farm_tile.tendings_done,
+                        grid_tile: transform.world_pos_to_grid()
+                    });
+                };
+            }
         }
-
-        // start tending cycle
-        // if let FarmTileState::Planted(plant_state) = state {
-        //     println!("{:?}", plant_state);
-        // }
-
-        // generate food
-        if let FarmTileState::Harvested = state {
-            spawn_food_event_writer.send(SpawnItemEvent {
-                item_type: ItemType::Food,
-                amount: 10,
-                grid_tile: entity_grid_tile(entity, &query),
-            });
-        };
     }
 }
 

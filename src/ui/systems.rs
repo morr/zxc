@@ -85,7 +85,7 @@ fn format_ui_line(
     elapsed_time: &Res<ElapsedTime>,
     time_state: &Res<State<SimulationState>>,
     time_scale: &Res<TimeScale>,
-    food_amount: usize,
+    food_amount: u32,
     tasks_queue: &Res<TasksQueue>,
     async_queue_counter: &Res<AsyncQueueCounter>,
 ) -> String {

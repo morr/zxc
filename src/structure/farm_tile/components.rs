@@ -78,7 +78,6 @@ farm_tile_states!(
         Planted,
         struct PlantedState {
             growth_timer: Timer,
-            tendings_done: u32,
             tending_rest_timer: Option<Timer>
         },
         _a
@@ -90,12 +89,14 @@ farm_tile_states!(
 #[derive(Debug, Component, Reflect)]
 pub struct FarmTile {
     pub state: FarmTileState,
+    pub tendings_done: u32,
 }
 
 impl Default for FarmTile {
     fn default() -> Self {
         Self {
             state: FarmTileState::NotPlanted,
+            tendings_done: 0
         }
     }
 }
@@ -115,7 +116,6 @@ impl FarmTile {
                     days_to_seconds(CONFIG.farming.growth_days),
                     TimerMode::Once,
                 ),
-                tendings_done: 0,
                 tending_rest_timer: Some(Timer::from_seconds(
                     hours_to_seconds(CONFIG.farming.tending_rest_hours),
                     TimerMode::Once,
@@ -127,6 +127,10 @@ impl FarmTile {
         };
         // println!("progress_state {:?} => {:?}", self.state, new_state);
         self.change_state(new_state, entity, commands, state_change_event_writer);
+
+        if let FarmTileState::NotPlanted = self.state {
+            self.tendings_done = 0;
+        }
 
         Self::sync_sprite_bundle(grid_tile, &self.state, &mut commands.entity(entity), assets);
         Self::sync_workable(&self.state, &mut commands.entity(entity));
