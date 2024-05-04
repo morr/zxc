@@ -6,7 +6,9 @@ pub struct FarmTilePlugin;
 
 impl Plugin for FarmTilePlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<FarmTileProgressEvent>()
+        app
+            .register_type::<FarmTile>()
+            .add_event::<FarmTileProgressEvent>()
             .add_event::<EntityStateChangeEvent<FarmTileState>>()
             .add_systems(
                 FixedUpdate,

@@ -1,10 +1,10 @@
 use super::*;
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct Warehouse {}
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct House {}
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct Well {}
