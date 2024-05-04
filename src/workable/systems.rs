@@ -118,7 +118,7 @@ pub fn complete_pawn_working(
         let task = pawn.get_task();
 
         match task.kind {
-            TaskKind::FarmTilePlant => {
+            TaskKind::FarmTilePlant | TaskKind::FarmTileHarvest => {
                 // event.workable_entity the same is task.entity
                 farm_progress_event_writer.send(FarmTileProgressEvent(event.workable_entity));
             }
