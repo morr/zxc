@@ -104,10 +104,11 @@ impl FarmTile {
         commands: &mut Commands,
         assets: &Res<FarmAssets>,
         arc_navmesh: &mut Navmesh,
-        work_queue: &mut ResMut<TasksQueue>,
         grid_tile: IVec2,
+        state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmTileState>>,
     ) {
         let farm_tile = Self::default();
+        let state = farm_tile.state.clone();
         let sprite_bundle = Self::sprite_bundle(&farm_tile.state, assets, grid_tile);
 
         let entity = commands
@@ -126,11 +127,7 @@ impl FarmTile {
             Some((3.0 * COST_MULTIPLIER) as i32),
         );
 
-        work_queue.add_task(Task {
-            entity,
-            kind: TaskKind::FarmTilePlant,
-            tile: grid_tile,
-        });
+        state_change_event_writer.send(EntityStateChangeEvent(entity, state));
     }
 
     pub fn sprite_bundle(

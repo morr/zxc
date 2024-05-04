@@ -60,6 +60,13 @@ pub fn track_farm_tiles_grown(
         let grid_tile = FarmTile::get_grid_tile(transform);
 
         match state {
+            FarmTileState::NotPlanted => {
+                work_queue.add_task(Task {
+                    entity,
+                    kind: TaskKind::FarmTilePlant,
+                    tile: grid_tile,
+                });
+            }
             FarmTileState::Grown => {
                 work_queue.add_task(Task {
                     entity,
