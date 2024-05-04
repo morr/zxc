@@ -17,6 +17,7 @@ impl Default for TimeScale {
     }
 }
 
+/// NOTE: simulation is not working properly on time scale >~ 75
 impl TimeScale {
     pub fn scale_to_seconds(&self, seconds: f32) -> f32 {
         seconds * self.0
@@ -27,16 +28,41 @@ impl TimeScale {
     }
 
     pub fn increase(&mut self) {
-        self.0 += 1.0
+        self.0 += if self.0 < 5.0 {
+            2.0
+        } else if self.0 < 15.0 {
+            5.0
+        } else if self.0 < 20.0 {
+            10.0
+        } else if self.0 < 100.0 {
+            25.0
+        } else if self.0 < 200.0 {
+            50.0
+        } else {
+            100.0
+        }
     }
 
     pub fn decrease(&mut self) -> bool {
         if self.0 == 1.0 {
-            false
-        } else {
-            self.0 -= 1.0;
-            true
+            return false;
         }
+
+        self.0 -= if self.0 <= 5.0 {
+            2.0
+        } else if self.0 <= 15.0 {
+            5.0
+        } else if self.0 <= 20.0 {
+            10.0
+        } else if self.0 <= 100.0 {
+            25.0
+        } else if self.0 <= 200.0 {
+            50.0
+        } else {
+            100.0
+        };
+
+        true
     }
 }
 
