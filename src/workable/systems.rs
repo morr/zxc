@@ -122,9 +122,11 @@ pub fn complete_pawn_working(
         let mut pawn = query.get_mut(event.pawn_entity).unwrap();
         let task = pawn.get_task();
 
+        // println!("{:?} {:?}", event, task);
+
         match task.kind {
+            // event.workable_entity the same is task.entity
             TaskKind::FarmTilePlant | TaskKind::FarmTileHarvest | TaskKind::FarmTileCleanup => {
-                // event.workable_entity the same is task.entity
                 farm_progress_event_writer.send(FarmTileProgressEvent(event.workable_entity));
             }
             TaskKind::FarmTileTending => {

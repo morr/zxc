@@ -27,11 +27,10 @@ pub fn progress_on_tending_event(
     mut query: Query<&mut FarmTile>,
 ) {
     for event in event_reader.read() {
-        println!("{:?}", event);
+        // println!("{:?}", event);
+
         if let Ok(mut farm_tile) = query.get_mut(event.0) {
             farm_tile.tendings_done += 1;
-            println!("farm_tile.tendings_done={:?}", farm_tile.tendings_done);
-
             if let FarmTileState::Planted(planted_state) = &mut farm_tile.state {
                 planted_state.tending_rest_timer = Some(FarmTile::new_tending_rest_timer());
             }
@@ -102,11 +101,13 @@ pub fn progress_on_state_changed(
 
         if maybe_task_kind.is_some() || matches!(state, FarmTileState::Harvested) {
             if let Ok((farm_tile, transform)) = query.get(entity) {
+                let grid_tile = transform.world_pos_to_grid();
+
                 if let Some(task_kind) = maybe_task_kind {
                     work_queue.add_task(Task {
                         entity,
                         kind: task_kind,
-                        grid_tile: transform.world_pos_to_grid()
+                        grid_tile
                     });
                 }
 
@@ -115,8 +116,8 @@ pub fn progress_on_state_changed(
 
                     spawn_food_event_writer.send(SpawnItemEvent {
                         item_type: ItemType::Food,
-                        amount: 10 * farm_tile.tendings_done,
-                        grid_tile: transform.world_pos_to_grid()
+                        amount: farm_tile.calculate_food_grown_amount(),
+                        grid_tile
                     });
                 };
             }

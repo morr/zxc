@@ -133,6 +133,10 @@ impl FarmTile {
         Self::sync_workable(&self.state, &mut commands.entity(entity));
     }
 
+    pub fn calculate_food_grown_amount(&self) -> u32 {
+        10 * self.tendings_done
+    }
+
     pub fn new_tending_rest_timer() -> Timer {
         Timer::from_seconds(
             hours_to_seconds(CONFIG.farming.tending_rest_hours),
