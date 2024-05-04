@@ -49,7 +49,6 @@ pub fn progress_timer(
 }
 
 pub fn progress_on_state_change(
-    mut commands: Commands,
     mut event_reader: EventReader<EntityStateChangeEvent<FarmTileState>>,
     mut work_queue: ResMut<TasksQueue>,
     query: Query<&Transform>,
@@ -77,6 +76,7 @@ pub fn progress_on_state_change(
             spawn_food_event_writer.send(SpawnItemEvent {
                 item_type: ItemType::Food,
                 amount: 10,
+                grid_tile: entity_grid_tile(entity, &query)
             });
         };
     }

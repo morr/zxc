@@ -1,7 +1,9 @@
 use super::*;
 
-#[derive(Component)]
-pub struct FoodItem;
+#[derive(Component, Reflect)]
+pub struct FoodItem {
+    pub amount: usize,
+}
 
 #[derive(Debug, Clone, Copy)]
 pub enum ItemType {
@@ -12,4 +14,5 @@ pub enum ItemType {
 pub struct SpawnItemEvent {
     pub item_type: ItemType,
     pub amount: usize,
+    pub grid_tile: IVec2
 }

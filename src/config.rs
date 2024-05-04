@@ -7,6 +7,7 @@ pub static CONFIG: Lazy<RootConfig> = Lazy::new(load_config);
 pub const TILE_Z_INDEX: f32 = 0.0;
 pub const STRUCTURE_Z_INDEX: f32 = 10.0;
 pub const PAWN_Z_INDEX: f32 = 20.0;
+pub const ITEM_Z_INDEX: f32 = 40.0;
 pub const NIGHT_Z_INDEX: f32 = 100.0;
 
 pub fn load_config() -> RootConfig {
