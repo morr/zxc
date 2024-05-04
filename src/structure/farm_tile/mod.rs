@@ -11,9 +11,9 @@ impl Plugin for FarmTilePlugin {
             .add_systems(
                 FixedUpdate,
                 (
-                    progress_farm_tile_state,
-                    progress_farm_tile_timer,
-                    track_farm_tiles_grown,
+                    progress_on_progress_event,
+                    progress_timer,
+                    track_farm_tiles_grown
                 )
                     .chain()
                     .run_if(in_state(AppState::Playing))

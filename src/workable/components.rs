@@ -74,5 +74,5 @@ pub enum TaskKind {
 pub struct Task {
     pub entity: Entity,
     pub kind: TaskKind,
-    pub tile: IVec2,
+    pub grid_tile: IVec2,
 }

@@ -87,7 +87,7 @@ impl FarmTile {
         commands.entity(entity).insert(FarmTile::sprite_bundle(
             &self.state,
             assets,
-            Self::get_grid_tile(transform),
+            Self::get_grid_tile(transform)
         ));
     }
 

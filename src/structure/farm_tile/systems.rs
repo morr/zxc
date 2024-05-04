@@ -1,6 +1,6 @@
 use super::*;
 
-pub fn progress_farm_tile_state(
+pub fn progress_on_progress_event(
     mut query: Query<(&mut FarmTile, &Transform)>,
     mut commands: Commands,
     mut event_reader: EventReader<FarmTileProgressEvent>,
@@ -21,7 +21,7 @@ pub fn progress_farm_tile_state(
     }
 }
 
-pub fn progress_farm_tile_timer(
+pub fn progress_timer(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut FarmTile, &Transform), With<farm_tile_state::Planted>>,
@@ -64,14 +64,14 @@ pub fn track_farm_tiles_grown(
                 work_queue.add_task(Task {
                     entity,
                     kind: TaskKind::FarmTilePlant,
-                    tile: grid_tile,
+                    grid_tile,
                 });
             }
             FarmTileState::Grown => {
                 work_queue.add_task(Task {
                     entity,
                     kind: TaskKind::FarmTileHarvest,
-                    tile: grid_tile,
+                    grid_tile,
                 });
             }
             _ => {}
