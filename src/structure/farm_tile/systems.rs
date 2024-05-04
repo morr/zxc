@@ -28,10 +28,9 @@ pub fn progress_on_tending_event(
 ) {
     for event in event_reader.read() {
         // println!("{:?}", event);
-        let entity = event.0;
-        let mut farm_tile = query.get_mut(entity).unwrap();
-
-        farm_tile.tendings_done += 1;
+        if let Ok(mut farm_tile) = query.get_mut(event.0) {
+            farm_tile.tendings_done += 1;
+        }
     }
 }
 
