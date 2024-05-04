@@ -49,9 +49,11 @@ pub fn progress_timer(
 }
 
 pub fn progress_on_state_change(
+    mut commands: Commands,
     mut event_reader: EventReader<EntityStateChangeEvent<FarmTileState>>,
     mut work_queue: ResMut<TasksQueue>,
     query: Query<&Transform>,
+    mut spawn_food_event_writer: EventWriter<SpawnItemEvent>,
 ) {
     for event in event_reader.read() {
         let entity = event.0;
@@ -64,14 +66,22 @@ pub fn progress_on_state_change(
         };
 
         if let Some(task_kind) = maybe_task_kind {
-            let transform = query.get(entity).unwrap();
-            let grid_tile = transform.world_pos_to_grid();
-
             work_queue.add_task(Task {
                 entity,
                 kind: task_kind,
-                grid_tile,
+                grid_tile: entity_grid_tile(entity, &query),
             });
         }
+
+        if let FarmTileState::Harvested = state {
+            spawn_food_event_writer.send(SpawnItemEvent {
+                item_type: ItemType::Food,
+                amount: 10,
+            });
+        };
     }
+}
+
+fn entity_grid_tile(entity: Entity, query: &Query<&Transform>) -> IVec2 {
+    query.get(entity).unwrap().world_pos_to_grid()
 }

@@ -4,7 +4,7 @@ macro_rules! farm_tile_states {
     (
         $( ($name:ident $(, $turple_type:ty, $match_field:ident)?)),* $(,)?
     ) => {
-        #[derive(Debug, Clone, PartialEq)]
+        #[derive(Debug, Clone, PartialEq, Reflect)]
         pub enum FarmTileState {
             $($name $(($turple_type))? ),*
         }
@@ -50,7 +50,7 @@ macro_rules! farm_tile_states {
 
 farm_tile_states!((NotPlanted), (Planted, Timer, _a), (Grown), (Harvested),);
 
-#[derive(Component)]
+#[derive(Debug, Component, Reflect)]
 pub struct FarmTile {
     pub state: FarmTileState,
 }
