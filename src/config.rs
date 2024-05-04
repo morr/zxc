@@ -43,7 +43,7 @@ impl RootConfig {
 
 #[derive(Deserialize, Serialize)]
 pub struct AppConfig {
-    pub resolution: (i32, i32),
+    pub resolution: (u32, u32),
 }
 
 #[derive(Deserialize, Serialize)]

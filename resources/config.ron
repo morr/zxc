@@ -11,8 +11,8 @@ RootConfig(
     starting_scene: StartingSceneConfig(
         pawns: 1,
         day_hour: 8,
-        farm_width: 3,
-        farm_height: 3
+        farm_width: 1,
+        farm_height: 1
     ),
     time: TimeConfig(
         day_duration: 60.0
