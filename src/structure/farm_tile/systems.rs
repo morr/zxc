@@ -61,6 +61,7 @@ pub fn progress_on_state_change(
         let maybe_task_kind = match state {
             FarmTileState::NotPlanted => Some(TaskKind::FarmTilePlant),
             FarmTileState::Grown => Some(TaskKind::FarmTileHarvest),
+            FarmTileState::Harvested => Some(TaskKind::FarmTileCleanup),
             _ => None,
         };
 

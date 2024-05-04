@@ -68,6 +68,7 @@ impl TasksQueue {
 pub enum TaskKind {
     FarmTilePlant,
     FarmTileHarvest,
+    FarmTileCleanup,
 }
 
 #[derive(Debug, Clone)]
