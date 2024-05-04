@@ -65,7 +65,7 @@ pub fn progress_on_state_change(
 
         if let Some(task_kind) = maybe_task_kind {
             let transform = query.get(entity).unwrap();
-            let grid_tile = FarmTile::get_grid_tile(transform);
+            let grid_tile = transform.world_pos_to_grid();
 
             work_queue.add_task(Task {
                 entity,

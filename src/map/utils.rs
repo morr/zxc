@@ -42,7 +42,12 @@ impl GridTranslationHelper for IVec2 {
     }
 }
 
-//
+impl WorldTranslationHelper for Transform {
+    fn world_pos_to_grid(&self) -> IVec2 {
+        self.translation.truncate().world_pos_to_grid()
+    }
+}
+
 // impl TranslationHelper for Transform {
 //     fn world_pos_to_tile(&self) -> Vec2 {
 //         Vec2::new(
