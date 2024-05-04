@@ -1,5 +1,3 @@
-use bevy::transform;
-
 use super::*;
 
 pub fn progress_on_progress_event(
@@ -119,8 +117,4 @@ pub fn progress_on_state_changed(
             }
         }
     }
-}
-
-fn entity_grid_tile(entity: Entity, query: &Query<&Transform>) -> IVec2 {
-    query.get(entity).unwrap().world_pos_to_grid()
 }
