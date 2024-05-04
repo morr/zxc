@@ -105,19 +105,19 @@ impl FarmTile {
         &mut self,
         entity: Entity,
         commands: &mut Commands,
-        transform: &Transform,
+        grid_tile: IVec2,
         assets: &Res<FarmAssets>,
         state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmTileState>>,
     ) {
         let new_state = match &self.state {
             FarmTileState::NotPlanted => FarmTileState::Planted(PlantedState {
                 growth_timer: Timer::from_seconds(
-                    days_to_seconds(CONFIG.farming.growth_time),
+                    days_to_seconds(CONFIG.farming.growth_days),
                     TimerMode::Once,
                 ),
                 tendings_done: 0,
                 tending_rest_timer: Some(Timer::from_seconds(
-                    hours_to_seconds(CONFIG.farming.tending_rest_time),
+                    hours_to_seconds(CONFIG.farming.tending_rest_hours),
                     TimerMode::Once,
                 )),
             }),
@@ -128,12 +128,7 @@ impl FarmTile {
         // println!("progress_state {:?} => {:?}", self.state, new_state);
         self.change_state(new_state, entity, commands, state_change_event_writer);
 
-        Self::sync_sprite_bundle(
-            transform.world_pos_to_grid(),
-            &self.state,
-            &mut commands.entity(entity),
-            assets,
-        );
+        Self::sync_sprite_bundle(grid_tile, &self.state, &mut commands.entity(entity), assets);
         Self::sync_workable(&self.state, &mut commands.entity(entity));
     }
 }
@@ -142,7 +137,7 @@ impl FarmTile {
 pub struct FarmTileProgressEvent(pub Entity);
 
 #[derive(Event, Debug)]
-pub struct FarmTileTendingEvent(pub Entity);
+pub struct FarmTileTendedEvent(pub Entity);
 
 impl FarmTile {
     pub fn spawn(

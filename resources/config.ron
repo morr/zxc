@@ -26,7 +26,7 @@ RootConfig(
         tending_work_amount: 1.0, // 8.0
         harvesting_work_amount: 1.0, // 8.0
         cleaning_work_amount: 1.0, // 8.0
-        growth_time: 1.0, // 7
-        tending_rest_time: 8.0,
+        growth_days: 7.0, // 7
+        tending_rest_hours: 8.0,
     )
 )

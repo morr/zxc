@@ -1,23 +1,39 @@
 use super::*;
 
 pub fn progress_on_progress_event(
+    mut event_reader: EventReader<FarmTileProgressEvent>,
     mut query: Query<(&mut FarmTile, &Transform)>,
     mut commands: Commands,
-    mut event_reader: EventReader<FarmTileProgressEvent>,
     assets: Res<FarmAssets>,
     mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmTileState>>,
 ) {
     for event in event_reader.read() {
+        // println!("{:?}", event);
         let entity = event.0;
         let (mut farm_tile, transform) = query.get_mut(entity).unwrap();
 
         farm_tile.progress_state(
             entity,
             &mut commands,
-            transform,
+            transform.world_pos_to_grid(),
             &assets,
             &mut state_change_event_writer,
         );
+    }
+}
+
+pub fn progress_on_tending_event(
+    mut event_reader: EventReader<FarmTileTendedEvent>,
+    mut query: Query<&mut FarmTile>,
+) {
+    for event in event_reader.read() {
+        // println!("{:?}", event);
+        let entity = event.0;
+        let mut farm_tile = query.get_mut(entity).unwrap();
+
+        if let FarmTileState::Planted(state) = &mut farm_tile.state {
+            state.tendings_done += 1;
+        }
     }
 }
 
@@ -45,8 +61,9 @@ pub fn progress_planted_timer(
                 work_queue.add_task(Task {
                     entity,
                     kind: TaskKind::FarmTileTending,
-                    grid_tile: transform.world_pos_to_grid()
+                    grid_tile: transform.world_pos_to_grid(),
                 });
+                state.tending_rest_timer = None;
             }
         }
 
@@ -54,7 +71,7 @@ pub fn progress_planted_timer(
             farm_tile.progress_state(
                 entity,
                 &mut commands,
-                transform,
+                transform.world_pos_to_grid(),
                 &assets,
                 &mut state_change_event_writer,
             );
@@ -90,9 +107,9 @@ pub fn progress_on_state_changed(
         }
 
         // start tending cycle
-        if let FarmTileState::Planted(plant_state) = state {
-            println!("{:?}", plant_state);
-        }
+        // if let FarmTileState::Planted(plant_state) = state {
+        //     println!("{:?}", plant_state);
+        // }
 
         // generate food
         if let FarmTileState::Harvested = state {

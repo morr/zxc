@@ -1,4 +1,4 @@
-use self::structure::{FarmTileProgressEvent, FarmTileTendingEvent};
+use self::structure::{FarmTileProgressEvent, FarmTileTendedEvent};
 
 use super::*;
 
@@ -22,6 +22,8 @@ pub fn assign_tasks_to_pawns(
 ) {
     for (entity, mut pawn, mut movable, transform, mut maybe_pathfinding_task) in query.iter_mut() {
         if let Some(task) = work_queue.get_task() {
+            println!("assign_tasks_to_pawns {:?}", task);
+
             let tile = task.grid_tile;
 
             pawn.change_state(
@@ -98,6 +100,8 @@ pub fn progress_work(
         workable.perform_work(elapsed_time);
 
         if workable.is_work_complete() {
+            println!("work_complete {:?}", task);
+
             event_writer.send(WorkCompleteEvent {
                 pawn_entity,
                 workable_entity,
@@ -112,7 +116,7 @@ pub fn complete_pawn_working(
     mut query: Query<&mut Pawn>,
     mut state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
     mut farm_progress_event_writer: EventWriter<FarmTileProgressEvent>,
-    mut farm_tending_event_writer: EventWriter<FarmTileTendingEvent>,
+    mut farm_tending_event_writer: EventWriter<FarmTileTendedEvent>,
 ) {
     for event in event_reader.read() {
         let mut pawn = query.get_mut(event.pawn_entity).unwrap();
@@ -124,7 +128,7 @@ pub fn complete_pawn_working(
                 farm_progress_event_writer.send(FarmTileProgressEvent(event.workable_entity));
             }
             TaskKind::FarmTileTending => {
-                farm_tending_event_writer.send(FarmTileTendingEvent(event.workable_entity));
+                farm_tending_event_writer.send(FarmTileTendedEvent(event.workable_entity));
             }
         }
 

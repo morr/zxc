@@ -9,7 +9,7 @@ impl Plugin for FarmTilePlugin {
         app
             .register_type::<FarmTile>()
             .add_event::<FarmTileProgressEvent>()
-            .add_event::<FarmTileTendingEvent>()
+            .add_event::<FarmTileTendedEvent>()
             .add_event::<EntityStateChangeEvent<FarmTileState>>()
             .add_systems(
                 FixedUpdate,
