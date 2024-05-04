@@ -109,5 +109,7 @@ pub struct FarmingConfig {
     /// in hours
     pub cleaning_work_amount: f32,
     /// in days
-    pub growth_days: f32,
+    pub growth_time: f32,
+    /// in hours
+    pub tending_rest_time: f32,
 }

@@ -79,7 +79,7 @@ farm_tile_states!(
         struct PlantedState {
             growth_timer: Timer,
             tendings_done: u32,
-            next_tending_timer: Option<Timer>
+            tending_rest_timer: Option<Timer>
         },
         _a
     ),
@@ -112,11 +112,14 @@ impl FarmTile {
         let new_state = match &self.state {
             FarmTileState::NotPlanted => FarmTileState::Planted(PlantedState {
                 growth_timer: Timer::from_seconds(
-                    days_to_seconds(CONFIG.farming.growth_days),
+                    days_to_seconds(CONFIG.farming.growth_time),
                     TimerMode::Once,
                 ),
                 tendings_done: 0,
-                next_tending_timer: None,
+                tending_rest_timer: Some(Timer::from_seconds(
+                    hours_to_seconds(CONFIG.farming.tending_rest_time),
+                    TimerMode::Once,
+                )),
             }),
             FarmTileState::Planted(_) => FarmTileState::Grown,
             FarmTileState::Grown => FarmTileState::Harvested,
