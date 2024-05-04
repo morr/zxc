@@ -15,6 +15,7 @@ impl Plugin for FarmTilePlugin {
                 FixedUpdate,
                 (
                     progress_on_progress_event,
+                    progress_on_tending_event,
                     progress_planted_timer,
                     progress_on_state_changed
                 )
