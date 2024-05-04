@@ -101,7 +101,7 @@ impl FromWorld for AssetsCollection {
             navmesh_passable: materials.add(ColorMaterial::from(Color::rgba(0.0, 0.0, 0.75, 0.5))),
             navmesh_impassable: materials
                 .add(ColorMaterial::from(Color::rgba(1.0, 0.0, 0.0, 0.75))),
-            food: materials.add(ColorMaterial::from(Color::hex("e5b572").unwrap())),
+            food: materials.add(ColorMaterial::from(Color::hex("fe9516").unwrap())),
         }
     }
 }

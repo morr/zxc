@@ -45,7 +45,7 @@ fn main() {
             camera::CameraPlugin,
             story_time::StoryTimePlugin,
             async_queue::AsyncQueuePlugin,
-            // settings::SettingsPlugin,
+            item::ItemPlugin,
             assets::AssetsPlugin,
             map::MapPlugin,
             movable::MovablePlugin,
