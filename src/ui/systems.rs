@@ -63,12 +63,8 @@ pub fn update_ui(
     food: Res<Food>,
     tasks_queue: Res<TasksQueue>,
     async_queue_counter: Res<AsyncQueueCounter>,
-    // mut ev_update_ui: EventReader<UpdateUiEvent>,
     mut query: Query<&mut Text, With<StatusText>>,
 ) {
-    // for _ev in ev_update_ui.read() {
-    //     println!("update ui");
-
     let mut text = query.single_mut();
     text.sections[0].value = format_ui_line(
         &elapsed_time,
@@ -78,7 +74,6 @@ pub fn update_ui(
         &tasks_queue,
         &async_queue_counter,
     );
-    // }
 }
 
 fn format_ui_line(

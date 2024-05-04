@@ -15,7 +15,6 @@ impl Plugin for UiPlugin {
         app.add_plugins(debug_grid::DebugGridPlugin)
             .add_plugins(debug_navmesh::DebugNavmeshPlugin)
             .add_plugins(debug_movepath::DebugMovepathPlugin)
-            // .add_event::<UpdateUiEvent>()
             .add_systems(OnExit(AppState::Loading), render_ui)
             .add_systems(
                 Update,
