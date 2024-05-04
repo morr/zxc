@@ -7,6 +7,7 @@ pub struct ItemPlugin;
 impl Plugin for ItemPlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<FoodItem>()
+            .init_resource::<Food>()
             .add_event::<SpawnItemEvent>()
             .add_systems(
                 FixedUpdate,

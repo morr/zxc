@@ -16,3 +16,6 @@ pub struct SpawnItemEvent {
     pub amount: usize,
     pub grid_tile: IVec2
 }
+
+#[derive(Resource, Default)]
+pub struct Food(pub usize);
