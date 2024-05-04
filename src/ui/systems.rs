@@ -10,6 +10,7 @@ pub fn render_ui(
     time_state: Res<State<SimulationState>>,
     time_scale: Res<TimeScale>,
     assets: Res<FontAssets>,
+    food: Res<Food>,
     tasks_queue: Res<TasksQueue>,
     async_queue_counter: Res<AsyncQueueCounter>,
 ) {
@@ -19,6 +20,7 @@ pub fn render_ui(
                 &elapsed_time,
                 &time_state,
                 &time_scale,
+                food.0,
                 &tasks_queue,
                 &async_queue_counter,
             ),
@@ -58,6 +60,7 @@ pub fn update_ui(
     elapsed_time: Res<ElapsedTime>,
     time_state: Res<State<SimulationState>>,
     time_scale: Res<TimeScale>,
+    food: Res<Food>,
     tasks_queue: Res<TasksQueue>,
     async_queue_counter: Res<AsyncQueueCounter>,
     // mut ev_update_ui: EventReader<UpdateUiEvent>,
@@ -71,6 +74,7 @@ pub fn update_ui(
         &elapsed_time,
         &time_state,
         &time_scale,
+        food.0,
         &tasks_queue,
         &async_queue_counter,
     );
@@ -81,6 +85,7 @@ fn format_ui_line(
     elapsed_time: &Res<ElapsedTime>,
     time_state: &Res<State<SimulationState>>,
     time_scale: &Res<TimeScale>,
+    food_amount: usize,
     tasks_queue: &Res<TasksQueue>,
     async_queue_counter: &Res<AsyncQueueCounter>,
 ) -> String {
@@ -91,12 +96,13 @@ fn format_ui_line(
 
     format!(
         // "Total Seconds: {} Day: {} {:02}:{:02} {} Queue: {}",
-        "Day: {} {:02}:{:02} {} TasksQueue: {} AsyncQueue: {}",
+        "Day: {} {:02}:{:02} {} Food: {} TasksQueue: {} AsyncQueue: {}",
         // elapsed_time.total_seconds(),
         elapsed_time.game_day(),
         elapsed_time.game_hours(),
         elapsed_time.game_minutes(),
         speed_part,
+        food_amount,
         tasks_queue.len(),
         async_queue_counter.get()
     )
