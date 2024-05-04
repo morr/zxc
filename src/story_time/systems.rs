@@ -43,7 +43,7 @@ pub fn increase_time_scale(
     time_scale: &mut ResMut<TimeScale>,
 ) {
     match time_state.get() {
-        SimulationState::Running => time_scale.0 += 1.0,
+        SimulationState::Running => time_scale.increase(),
         SimulationState::Paused => next_state.set(SimulationState::Running),
     };
 }
@@ -54,10 +54,8 @@ pub fn decrease_time_scale(
     time_scale: &mut ResMut<TimeScale>,
 ) {
     if let SimulationState::Running = time_state.get() {
-        if time_scale.0 == 1.0 {
+        if !time_scale.decrease() {
             next_state.set(SimulationState::Paused);
-        } else {
-            time_scale.0 -= 1.0;
         }
     }
 }

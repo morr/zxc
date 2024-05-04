@@ -25,6 +25,19 @@ impl TimeScale {
     pub fn scale_to_duration(&self, seconds: f32) -> Duration {
         Duration::from_secs_f32(seconds * self.0)
     }
+
+    pub fn increase(&mut self) {
+        self.0 += 1.0
+    }
+
+    pub fn decrease(&mut self) -> bool {
+        if self.0 == 1.0 {
+            false
+        } else {
+            self.0 -= 1.0;
+            true
+        }
+    }
 }
 
 #[derive(Resource, Deref, DerefMut)]
