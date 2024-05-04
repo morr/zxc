@@ -50,10 +50,24 @@ pub fn progress_farm_tile_timer(
 
 pub fn track_farm_tiles_grown(
     mut event_reader: EventReader<EntityStateChangeEvent<FarmTileState>>,
-    query: Query<(&mut FarmTile, &Transform)>,
+    mut work_queue: ResMut<TasksQueue>,
+    query: Query<&Transform>,
 ) {
-    // for event in event_reader.read() {
-    //     let a = event.0;
-    //     let b = event.1;
-    // }
+    for event in event_reader.read() {
+        let entity = event.0;
+        let state = &event.1;
+        let transform = query.get(entity).unwrap();
+        let grid_tile = FarmTile::get_grid_tile(transform);
+
+        match state {
+            FarmTileState::Grown => {
+                work_queue.add_task(Task {
+                    entity,
+                    kind: TaskKind::FarmTileHarvest,
+                    tile: grid_tile,
+                });
+            }
+            _ => {}
+        };
+    }
 }

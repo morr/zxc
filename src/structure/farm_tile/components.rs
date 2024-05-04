@@ -87,19 +87,11 @@ impl FarmTile {
         commands.entity(entity).insert(FarmTile::sprite_bundle(
             &self.state,
             assets,
-            self.get_grid_tile(transform),
+            Self::get_grid_tile(transform),
         ));
-
-        // if new_state == FarmTileState::Grown {
-        //     work_queue.add_task(Task {
-        //         entity,
-        //         kind: TaskKind::FarmTileHarvest,
-        //         tile: grid_tile,
-        //     });
-        // }
     }
 
-    pub fn get_grid_tile(&self, transform: &Transform) -> IVec2 {
+    pub fn get_grid_tile(transform: &Transform) -> IVec2 {
         transform.translation.truncate().world_pos_to_grid()
     }
 }
