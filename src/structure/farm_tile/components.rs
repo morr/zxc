@@ -131,6 +131,7 @@ impl FarmTile {
             &mut commands.entity(entity),
             assets,
         );
+        Self::sync_workable(&self.state, &mut commands.entity(entity));
     }
 }
 
@@ -150,8 +151,6 @@ impl FarmTile {
     ) {
         let farm_tile = Self::default();
         let state = farm_tile.state.clone();
-        // let sprite_bundle = Self::sprite_bundle(&farm_tile.state, assets, grid_tile);
-        let maybe_workable = Self::workable(&farm_tile.state);
 
         let mut entity_commands = commands.spawn((
             farm_tile,
@@ -161,10 +160,6 @@ impl FarmTile {
         FarmTile::sync_sprite_bundle(grid_tile, &state, &mut entity_commands, assets);
         FarmTile::sync_workable(&state, &mut entity_commands);
 
-        if let Some(workable) = maybe_workable {
-            entity_commands.insert(workable);
-        }
-
         let entity = entity_commands.id();
 
         arc_navmesh.update_cost(
@@ -172,7 +167,6 @@ impl FarmTile {
             grid_tile.y..grid_tile.y + FARM_TILE_SIZE,
             Some((3.0 * COST_MULTIPLIER) as i32),
         );
-
         state_change_event_writer.send(EntityStateChangeEvent(entity, state));
     }
 
