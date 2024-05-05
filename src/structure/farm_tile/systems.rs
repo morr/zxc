@@ -112,7 +112,7 @@ pub fn progress_on_state_changed(
                 }
 
                 if let FarmTileState::Harvested = state {
-                    println!("tendings done: {}", farm_tile.tendings_done);
+                    // println!("tendings done: {}", farm_tile.tendings_done);
 
                     spawn_food_event_writer.send(SpawnItemEvent {
                         item_type: ItemType::Food,
