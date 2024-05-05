@@ -98,7 +98,7 @@ pub fn progress_on_state_changed(
             _ => None,
         };
 
-        if maybe_task_kind.is_some() || matches!(state, FarmTileState::Harvested) {
+        if maybe_task_kind.is_some() || matches!(state, FarmTileState::Harvested(_)) {
             if let Ok((farm_tile, transform)) = query.get(entity) {
                 let grid_tile = transform.world_pos_to_grid();
 
@@ -110,7 +110,7 @@ pub fn progress_on_state_changed(
                     });
                 }
 
-                if let FarmTileState::Harvested = state {
+                if let FarmTileState::Harvested(_) = state {
                     // println!("tendings done: {}", farm_tile.tendings_done);
 
                     spawn_food_event_writer.send(SpawnItemEvent {

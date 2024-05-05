@@ -80,10 +80,17 @@ farm_tile_states!(
             growth_timer: Timer,
             tending_rest_timer: Option<Timer>
         },
-        _a
+        _p
     ),
     (Grown),
-    (Harvested),
+    (
+        Harvested,
+        struct HarvestedState {
+            rest_timer: Timer
+        },
+        _h
+
+    ),
 );
 
 #[derive(Debug, Component, Reflect)]
@@ -119,8 +126,13 @@ impl FarmTile {
                 tending_rest_timer: Some(Self::new_tending_rest_timer()),
             }),
             FarmTileState::Planted(_) => FarmTileState::Grown,
-            FarmTileState::Grown => FarmTileState::Harvested,
-            FarmTileState::Harvested => FarmTileState::NotPlanted,
+            FarmTileState::Grown => FarmTileState::Harvested(HarvestedState {
+                rest_timer: Timer::from_seconds(
+                    days_to_seconds(CONFIG.farming.harvested_rest_days),
+                    TimerMode::Once,
+                )
+            }),
+            FarmTileState::Harvested(_) => FarmTileState::NotPlanted,
         };
         // println!("progress_state {:?} => {:?}", self.state, new_state);
         self.change_state(new_state, entity, commands, state_change_event_writer);
@@ -197,7 +209,7 @@ impl FarmTile {
             FarmTileState::NotPlanted => assets.not_planted.clone(),
             FarmTileState::Planted(_) => assets.planted.clone(),
             FarmTileState::Grown => assets.grown.clone(),
-            FarmTileState::Harvested => assets.harvested.clone(),
+            FarmTileState::Harvested(_) => assets.harvested.clone(),
         };
 
         entity_commands.insert(SpriteBundle {
@@ -219,7 +231,7 @@ impl FarmTile {
             FarmTileState::NotPlanted => Some(CONFIG.farming.planting_hours),
             FarmTileState::Planted(_) => Some(CONFIG.farming.tending_hours),
             FarmTileState::Grown => Some(CONFIG.farming.harvesting_hours),
-            FarmTileState::Harvested => None,
+            FarmTileState::Harvested(_) => None,
         };
 
         if let Some(work_amount) = maybe_work_amount {
