@@ -52,6 +52,7 @@ pub fn progress_planted_timer(
             FarmTileState::Planted(state) => state,
             _ => panic!("FarmTile must be in a timer-assigned state"),
         };
+
         let delta = time_scale.scale_to_duration(time.delta_seconds());
         state.growth_timer.tick(delta);
 
@@ -69,6 +70,35 @@ pub fn progress_planted_timer(
         }
 
         if state.growth_timer.finished() {
+            farm_tile.progress_state(
+                entity,
+                &mut commands,
+                transform.world_pos_to_grid(),
+                &assets,
+                &mut state_change_event_writer,
+            );
+        }
+    }
+}
+
+pub fn progress_harvested_timer(
+    time: Res<Time>,
+    time_scale: Res<TimeScale>,
+    mut query: Query<(Entity, &mut FarmTile, &Transform), With<farm_tile_state::Harvested>>,
+    mut commands: Commands,
+    assets: Res<FarmAssets>,
+    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmTileState>>,
+) {
+    for (entity, mut farm_tile, transform) in query.iter_mut() {
+        let state = match &mut farm_tile.state {
+            FarmTileState::Harvested(state) => state,
+            _ => panic!("FarmTile must be in a timer-assigned state"),
+        };
+
+        let delta = time_scale.scale_to_duration(time.delta_seconds());
+        state.rest_timer.tick(delta);
+
+        if state.rest_timer.finished() {
             farm_tile.progress_state(
                 entity,
                 &mut commands,
@@ -106,7 +136,7 @@ pub fn progress_on_state_changed(
                     work_queue.add_task(Task {
                         entity,
                         kind: task_kind,
-                        grid_tile
+                        grid_tile,
                     });
                 }
 
@@ -116,7 +146,7 @@ pub fn progress_on_state_changed(
                     spawn_food_event_writer.send(SpawnItemEvent {
                         item_type: ItemType::Food,
                         amount: farm_tile.yield_amount(),
-                        grid_tile
+                        grid_tile,
                     });
                 };
             }
