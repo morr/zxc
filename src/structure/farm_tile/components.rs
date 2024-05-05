@@ -133,8 +133,14 @@ impl FarmTile {
         Self::sync_workable(&self.state, &mut commands.entity(entity));
     }
 
-    pub fn calculate_food_grown_amount(&self) -> u32 {
-        10 * self.tendings_done
+    pub fn yield_amount(&self) -> u32 {
+        let basic_yield = CONFIG.farming.basic_yield_percent * CONFIG.farming.max_yield;
+        let rest_yield = CONFIG.farming.max_yield - basic_yield;
+
+        // let a = 10 * self.tendings_done;
+        // let result = CONFIG.farming.max_yield as u32;
+        // println!("result {} tendings {}", result, self.tendings_done);
+        basic_yield.round() as u32
     }
 
     pub fn new_tending_rest_timer() -> Timer {

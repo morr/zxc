@@ -100,6 +100,10 @@ pub struct PawnConfig {
 
 #[derive(Deserialize, Serialize)]
 pub struct FarmingConfig {
+    /// percent of `max_yield` for 0 tended tile
+    pub basic_yield_percent: f32,
+    /// amount of food items per fully tended tile
+    pub max_yield: f32,
     /// in hours
     pub planting_hours: f32,
     /// in hours

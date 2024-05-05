@@ -116,7 +116,7 @@ pub fn progress_on_state_changed(
 
                     spawn_food_event_writer.send(SpawnItemEvent {
                         item_type: ItemType::Food,
-                        amount: farm_tile.calculate_food_grown_amount(),
+                        amount: farm_tile.yield_amount(),
                         grid_tile
                     });
                 };
