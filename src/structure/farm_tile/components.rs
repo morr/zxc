@@ -137,10 +137,18 @@ impl FarmTile {
         let basic_yield = CONFIG.farming.basic_yield_percent * CONFIG.farming.max_yield;
         let rest_yield = CONFIG.farming.max_yield - basic_yield;
 
-        // let a = 10 * self.tendings_done;
-        // let result = CONFIG.farming.max_yield as u32;
-        // println!("result {} tendings {}", result, self.tendings_done);
-        basic_yield.round() as u32
+        let max_tendings = CONFIG.farming.growth_days; // 1 tending per day
+        let tendings_percent = if self.tendings_done == 0 {
+            0.0
+        } else {
+            (self.tendings_done as f32).min(max_tendings) / max_tendings
+        };
+
+        println!(
+            "basic_yield:{} rest_yield:{} tendings_percent:{}",
+            basic_yield, rest_yield, tendings_percent
+        );
+        (basic_yield + (rest_yield * tendings_percent)).round() as u32
     }
 
     pub fn new_tending_rest_timer() -> Timer {
