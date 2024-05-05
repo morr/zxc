@@ -52,7 +52,7 @@ impl TimeScale {
             2.0
         } else if self.0 <= 15.0 {
             5.0
-        } else if self.0 <= 20.0 {
+        } else if self.0 <= 25.0 {
             10.0
         } else if self.0 <= 100.0 {
             25.0
