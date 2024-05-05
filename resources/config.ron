@@ -27,7 +27,7 @@ RootConfig(
         planting_hours: 8.0,
         tending_hours: 8.0,
         harvesting_hours: 8.0,
-        after_harvest_resting_day: 3.0,
+        after_harvest_rest_days: 3.0,
         growth_days: 7.0,
         tending_rest_hours: 8.0,
     )
