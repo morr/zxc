@@ -69,7 +69,6 @@ pub enum TaskKind {
     FarmTilePlant,
     FarmTileTending,
     FarmTileHarvest,
-    FarmTileCleanup,
 }
 
 #[derive(Debug, Clone)]

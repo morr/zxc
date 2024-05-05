@@ -126,7 +126,7 @@ pub fn complete_pawn_working(
 
         match task.kind {
             // event.workable_entity the same is task.entity
-            TaskKind::FarmTilePlant | TaskKind::FarmTileHarvest | TaskKind::FarmTileCleanup => {
+            TaskKind::FarmTilePlant | TaskKind::FarmTileHarvest => {
                 farm_progress_event_writer.send(FarmTileProgressEvent(event.workable_entity));
             }
             TaskKind::FarmTileTending => {

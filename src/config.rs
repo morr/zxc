@@ -111,7 +111,7 @@ pub struct FarmingConfig {
     /// in hours
     pub harvesting_hours: f32,
     /// in hours
-    pub cleaning_up_hours: f32,
+    pub after_harvest_resting_days: f32,
     /// in days
     pub growth_days: f32,
     /// in hours
