@@ -202,10 +202,10 @@ impl FarmTile {
 
     pub fn sync_workable(state: &FarmTileState, entity_commands: &mut EntityCommands) {
         let work_amount = match state {
-            FarmTileState::NotPlanted => CONFIG.farming.planting_work_amount,
-            FarmTileState::Planted(_) => CONFIG.farming.tending_work_amount,
-            FarmTileState::Grown => CONFIG.farming.harvesting_work_amount,
-            FarmTileState::Harvested => CONFIG.farming.cleaning_work_amount,
+            FarmTileState::NotPlanted => CONFIG.farming.planting_hours,
+            FarmTileState::Planted(_) => CONFIG.farming.tending_hours,
+            FarmTileState::Grown => CONFIG.farming.harvesting_hours,
+            FarmTileState::Harvested => CONFIG.farming.cleaning_up_hours,
         };
 
         entity_commands.insert(Workable::new(hours_to_seconds(work_amount)));

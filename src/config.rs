@@ -101,13 +101,13 @@ pub struct PawnConfig {
 #[derive(Deserialize, Serialize)]
 pub struct FarmingConfig {
     /// in hours
-    pub planting_work_amount: f32,
+    pub planting_hours: f32,
     /// in hours
-    pub tending_work_amount: f32,
+    pub tending_hours: f32,
     /// in hours
-    pub harvesting_work_amount: f32,
+    pub harvesting_hours: f32,
     /// in hours
-    pub cleaning_work_amount: f32,
+    pub cleaning_up_hours: f32,
     /// in days
     pub growth_days: f32,
     /// in hours
