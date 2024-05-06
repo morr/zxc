@@ -26,7 +26,7 @@ pub fn progress_on_farm_progress_event(
 
 pub fn progress_on_farm_tended_event(
     mut event_reader: EventReader<FarmTendedEvent>,
-    mut query: Query<&mut Farm>,
+    mut query: Query<&mut Farm, With<farm_state::Planted>>,
 ) {
     for event in event_reader.read() {
         // println!("{:?}", event);
