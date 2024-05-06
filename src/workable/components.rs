@@ -18,15 +18,16 @@ impl Workable {
             work_amount_done: 0.0,
         }
     }
-}
-
-impl Workable {
     pub fn perform_work(&mut self, elapsed_time: f32) {
         self.work_amount_done += elapsed_time * CONFIG.pawn.work_force;
     }
 
     pub fn is_work_complete(&self) -> bool {
         self.work_amount_done >= self.work_amount_total
+    }
+
+    pub fn reset_work_amount_done(&mut self) {
+        self.work_amount_done = 0.0;
     }
 }
 

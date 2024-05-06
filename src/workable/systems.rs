@@ -101,6 +101,7 @@ pub fn progress_work(
 
         if workable.is_work_complete() {
             // println!("work_complete {:?}", task);
+            workable.reset_work_amount_done();
 
             event_writer.send(WorkCompleteEvent {
                 pawn_entity,
