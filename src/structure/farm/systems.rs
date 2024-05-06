@@ -37,7 +37,7 @@ pub fn progress_on_farm_tended_event(
             if let FarmState::Planted(planted_state) = &mut farm.state {
                 planted_state.tending_rest_timer.reset();
                 planted_state.tending_rest_started_day = elapsed_time.game_day();
-            } 
+            }
         }
     }
 }
@@ -67,7 +67,12 @@ pub fn progress_planted_and_tending_rest_timers(
             planted_state.tending_rest_timer.tick(delta);
 
             if planted_state.tending_rest_timer.finished() {
-                println!("tending_timer finished. tending_rest_started_day:{} game_day:{}", planted_state.tending_rest_started_day, elapsed_time.game_day());
+                // println!(
+                //     "tending_timer finished. tending_rest_started_day:{} game_day:{}",
+                //     planted_state.tending_rest_started_day,
+                //     elapsed_time.game_day()
+                // );
+
                 if planted_state.tending_rest_started_day != elapsed_time.game_day() {
                     work_queue.add_task(Task {
                         entity,
@@ -75,7 +80,7 @@ pub fn progress_planted_and_tending_rest_timers(
                         grid_tile: transform.world_pos_to_grid(),
                     });
                 } else {
-                    planted_state.is_tending_pending_on_next_day = true;
+                    planted_state.is_tending_pending_for_next_day = true;
                 }
             }
         }
@@ -147,12 +152,25 @@ pub fn progress_on_state_changed(
     }
 }
 
-pub fn progress_on_new_day(// mut event_reader: EventReader<NewDayEvent>,
-    // query: Query<&Farm, With<farm_state::Planted>>,
+pub fn progress_on_new_day(
+    mut event_reader: EventReader<NewDayEvent>,
+    mut query: Query<(Entity, &mut Farm, &Transform), With<farm_state::Planted>>,
+    mut work_queue: ResMut<TasksQueue>,
 ) {
-    // for event in event_reader.read() {
-    //     println!("{:?}", event);
-    //
-    //     for farm in query.iter() {}
-    // }
+    for _event in event_reader.read() {
+        // println!("{:?}", event);
+
+        for (entity, mut farm, transform) in query.iter_mut() {
+            if let FarmState::Planted(planted_state) = &mut farm.state {
+                if planted_state.is_tending_pending_for_next_day {
+                    work_queue.add_task(Task {
+                        entity,
+                        kind: TaskKind::FarmTending,
+                        grid_tile: transform.world_pos_to_grid(),
+                    });
+                    planted_state.is_tending_pending_for_next_day = false;
+                }
+            };
+        }
+    }
 }
