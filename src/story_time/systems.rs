@@ -4,8 +4,15 @@ pub fn track_time(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut elapsed_time: ResMut<ElapsedTime>,
+    mut event_writer: EventWriter<NewDayEvent>,
 ) {
+    let prev_day= elapsed_time.game_day();
     elapsed_time.0 += time_scale.scale_to_seconds(time.delta_seconds());
+    let new_day = elapsed_time.game_day();
+
+    if new_day != prev_day {
+        event_writer.send(NewDayEvent(new_day));
+    }
 }
 
 pub fn modify_time(

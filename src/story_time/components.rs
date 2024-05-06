@@ -84,17 +84,20 @@ impl ElapsedTime {
         (self.0 % CONFIG.time.day_duration) / CONFIG.time.day_duration
     }
 
-    pub fn game_day(&self) -> f32 {
-        (self.0 / CONFIG.time.day_duration).floor()
+    pub fn game_day(&self) -> u32 {
+        (self.0 / CONFIG.time.day_duration).floor() as u32
     }
 
-    pub fn game_hours(&self) -> f32 {
-        ((self.0 % CONFIG.time.day_duration) / CONFIG.time.hour_duration).floor()
+    pub fn game_hours(&self) -> u32 {
+        ((self.0 % CONFIG.time.day_duration) / CONFIG.time.hour_duration).floor() as u32
     }
 
-    pub fn game_minutes(&self) -> f32 {
+    pub fn game_minutes(&self) -> u32 {
         (((self.0 % CONFIG.time.day_duration) % CONFIG.time.hour_duration)
             / CONFIG.time.minute_duration)
-            .floor()
+            .floor() as u32
     }
 }
+
+#[derive(Event, Debug)]
+pub struct NewDayEvent(pub u32);
