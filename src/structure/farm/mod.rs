@@ -18,6 +18,7 @@ impl Plugin for FarmPlugin {
                     progress_planted_timer,
                     progress_harvested_timer,
                     progress_on_state_changed,
+                    progress_on_new_day,
                 )
                     .chain()
                     .run_if(in_state(AppState::Playing))

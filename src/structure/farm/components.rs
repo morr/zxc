@@ -78,7 +78,8 @@ farm_states!(
         Planted,
         struct PlantedState {
             growth_timer: Timer,
-            tending_rest_timer: Option<Timer>
+            tending_rest_timer: Option<Timer>,
+            tending_rest_started_day: Option<u32>,
         },
         _p
     ),
@@ -114,6 +115,7 @@ impl Farm {
         entity: Entity,
         commands: &mut Commands,
         grid_tile: IVec2,
+        simulation_day: u32,
         assets: &Res<FarmAssets>,
         state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmState>>,
     ) {
@@ -124,6 +126,7 @@ impl Farm {
                     TimerMode::Once,
                 ),
                 tending_rest_timer: Some(Self::new_tending_rest_timer()),
+                tending_rest_started_day: Some(simulation_day)
             }),
             FarmState::Planted(_) => FarmState::Grown,
             FarmState::Grown => FarmState::Harvested(HarvestedState {

@@ -11,7 +11,9 @@ pub fn track_time(
     let new_day = elapsed_time.game_day();
 
     if new_day != prev_day {
-        event_writer.send(NewDayEvent(new_day));
+        let event = NewDayEvent(new_day);
+        // println!("{:?}", event);
+        event_writer.send(event);
     }
 }
 

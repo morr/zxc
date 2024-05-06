@@ -1,6 +1,7 @@
 use super::*;
 
 pub fn progress_on_progress_event(
+    elapsed_time: Res<ElapsedTime>,
     mut event_reader: EventReader<FarmProgressEvent>,
     mut query: Query<(&mut Farm, &Transform)>,
     mut commands: Commands,
@@ -16,6 +17,7 @@ pub fn progress_on_progress_event(
             entity,
             &mut commands,
             transform.world_pos_to_grid(),
+            elapsed_time.game_day(),
             &assets,
             &mut state_change_event_writer,
         );
@@ -41,6 +43,7 @@ pub fn progress_on_tending_event(
 pub fn progress_planted_timer(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
+    elapsed_time: Res<ElapsedTime>,
     mut query: Query<(Entity, &mut Farm, &Transform), With<farm_state::Planted>>,
     mut commands: Commands,
     assets: Res<FarmAssets>,
@@ -74,6 +77,7 @@ pub fn progress_planted_timer(
                 entity,
                 &mut commands,
                 transform.world_pos_to_grid(),
+                elapsed_time.game_day(),
                 &assets,
                 &mut state_change_event_writer,
             );
@@ -84,6 +88,7 @@ pub fn progress_planted_timer(
 pub fn progress_harvested_timer(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
+    elapsed_time: Res<ElapsedTime>,
     mut query: Query<(Entity, &mut Farm, &Transform), With<farm_state::Harvested>>,
     mut commands: Commands,
     assets: Res<FarmAssets>,
@@ -103,6 +108,7 @@ pub fn progress_harvested_timer(
                 entity,
                 &mut commands,
                 transform.world_pos_to_grid(),
+                elapsed_time.game_day(),
                 &assets,
                 &mut state_change_event_writer,
             );
@@ -151,5 +157,16 @@ pub fn progress_on_state_changed(
                 };
             }
         }
+    }
+}
+
+pub fn progress_on_new_day(
+    mut event_reader: EventReader<NewDayEvent>,
+    query: Query<&Farm, With<farm_state::Planted>>,
+) {
+    for event in event_reader.read() {
+        println!("{:?}", event);
+
+        for farm in query.iter() {}
     }
 }
