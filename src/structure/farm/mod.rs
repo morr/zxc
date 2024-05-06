@@ -15,7 +15,7 @@ impl Plugin for FarmPlugin {
                 (
                     progress_on_farm_progress_event,
                     progress_on_farm_tended_event,
-                    progress_planted_timer,
+                    progress_planted_and_tending_rest_timers,
                     progress_harvested_timer,
                     progress_on_state_changed,
                     progress_on_new_day,

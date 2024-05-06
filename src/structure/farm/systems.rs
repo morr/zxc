@@ -40,7 +40,7 @@ pub fn progress_on_farm_tended_event(
     }
 }
 
-pub fn progress_planted_timer(
+pub fn progress_planted_and_tending_rest_timers(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Farm, &Transform), With<farm_state::Planted>>,
