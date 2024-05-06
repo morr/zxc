@@ -156,10 +156,10 @@ impl FarmTile {
             (self.tendings_done as f32).min(max_tendings) / max_tendings
         };
 
-        println!(
-            "basic_yield:{} rest_yield:{} tendings_percent:{}",
-            basic_yield, rest_yield, tendings_percent
-        );
+        // println!(
+        //     "basic_yield:{} rest_yield:{} tendings_percent:{}",
+        //     basic_yield, rest_yield, tendings_percent
+        // );
         (basic_yield + (rest_yield * tendings_percent)).round() as u32
     }
 
