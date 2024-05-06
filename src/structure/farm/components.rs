@@ -80,6 +80,7 @@ farm_states!(
             growth_timer: Timer,
             tending_rest_timer: Timer,
             tending_rest_started_day: u32,
+            is_tending_pending_on_next_day: bool
         },
         _p
     ),
@@ -126,7 +127,8 @@ impl Farm {
                     TimerMode::Once,
                 ),
                 tending_rest_timer: Self::new_tending_rest_timer(),
-                tending_rest_started_day: simulation_day
+                tending_rest_started_day: simulation_day,
+                is_tending_pending_on_next_day: false
             }),
             FarmState::Planted(_) => FarmState::Grown,
             FarmState::Grown => FarmState::Harvested(HarvestedState {

@@ -25,6 +25,7 @@ pub fn progress_on_farm_progress_event(
 }
 
 pub fn progress_on_farm_tended_event(
+    elapsed_time: Res<ElapsedTime>,
     mut event_reader: EventReader<FarmTendedEvent>,
     mut query: Query<&mut Farm, With<farm_state::Planted>>,
 ) {
@@ -35,7 +36,8 @@ pub fn progress_on_farm_tended_event(
             farm.tendings_done += 1;
             if let FarmState::Planted(planted_state) = &mut farm.state {
                 planted_state.tending_rest_timer.reset();
-            }
+                planted_state.tending_rest_started_day = elapsed_time.game_day();
+            } 
         }
     }
 }
@@ -43,36 +45,39 @@ pub fn progress_on_farm_tended_event(
 pub fn progress_planted_and_tending_rest_timers(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
-    // elapsed_time: Res<ElapsedTime>,
+    elapsed_time: Res<ElapsedTime>,
     mut query: Query<(Entity, &mut Farm, &Transform), With<farm_state::Planted>>,
     mut farm_progress_event_writer: EventWriter<FarmProgressEvent>,
     mut work_queue: ResMut<TasksQueue>,
 ) {
     for (entity, mut farm, transform) in query.iter_mut() {
-        let state = match &mut farm.state {
+        let planted_state = match &mut farm.state {
             FarmState::Planted(state) => state,
             _ => panic!("Farm must be in a timer-assigned state"),
         };
 
         let delta = time_scale.scale_to_duration(time.delta_seconds());
-        state.growth_timer.tick(delta);
+        planted_state.growth_timer.tick(delta);
 
-        if !state.tending_rest_timer.finished() {
-            state.tending_rest_timer.tick(delta);
-
-            if state.tending_rest_timer.finished() {
-                // if state.tending_rest_started_day != elapsed_time.game_day() {
-                work_queue.add_task(Task {
-                    entity,
-                    kind: TaskKind::FarmTending,
-                    grid_tile: transform.world_pos_to_grid(),
-                });
-                // }
-            }
+        if planted_state.growth_timer.finished() {
+            farm_progress_event_writer.send(FarmProgressEvent(entity));
         }
 
-        if state.growth_timer.finished() {
-            farm_progress_event_writer.send(FarmProgressEvent(entity));
+        if !planted_state.tending_rest_timer.finished() {
+            planted_state.tending_rest_timer.tick(delta);
+
+            if planted_state.tending_rest_timer.finished() {
+                println!("tending_timer finished. tending_rest_started_day:{} game_day:{}", planted_state.tending_rest_started_day, elapsed_time.game_day());
+                if planted_state.tending_rest_started_day != elapsed_time.game_day() {
+                    work_queue.add_task(Task {
+                        entity,
+                        kind: TaskKind::FarmTending,
+                        grid_tile: transform.world_pos_to_grid(),
+                    });
+                } else {
+                    planted_state.is_tending_pending_on_next_day = true;
+                }
+            }
         }
     }
 }
