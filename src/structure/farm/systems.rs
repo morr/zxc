@@ -1,6 +1,6 @@
 use super::*;
 
-pub fn progress_on_progress_event(
+pub fn progress_on_farm_progress_event(
     elapsed_time: Res<ElapsedTime>,
     mut event_reader: EventReader<FarmProgressEvent>,
     mut query: Query<(&mut Farm, &Transform)>,
@@ -24,7 +24,7 @@ pub fn progress_on_progress_event(
     }
 }
 
-pub fn progress_on_tending_event(
+pub fn progress_on_farm_tended_event(
     mut event_reader: EventReader<FarmTendedEvent>,
     mut query: Query<&mut Farm>,
 ) {
@@ -43,11 +43,8 @@ pub fn progress_on_tending_event(
 pub fn progress_planted_timer(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
-    elapsed_time: Res<ElapsedTime>,
     mut query: Query<(Entity, &mut Farm, &Transform), With<farm_state::Planted>>,
-    mut commands: Commands,
-    assets: Res<FarmAssets>,
-    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmState>>,
+    mut farm_progress_event_writer: EventWriter<FarmProgressEvent>,
     mut work_queue: ResMut<TasksQueue>,
 ) {
     for (entity, mut farm, transform) in query.iter_mut() {
@@ -73,14 +70,7 @@ pub fn progress_planted_timer(
         }
 
         if state.growth_timer.finished() {
-            farm.progress_state(
-                entity,
-                &mut commands,
-                transform.world_pos_to_grid(),
-                elapsed_time.game_day(),
-                &assets,
-                &mut state_change_event_writer,
-            );
+            farm_progress_event_writer.send(FarmProgressEvent(entity));
         }
     }
 }
@@ -88,13 +78,10 @@ pub fn progress_planted_timer(
 pub fn progress_harvested_timer(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
-    elapsed_time: Res<ElapsedTime>,
-    mut query: Query<(Entity, &mut Farm, &Transform), With<farm_state::Harvested>>,
-    mut commands: Commands,
-    assets: Res<FarmAssets>,
-    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmState>>,
+    mut query: Query<(Entity, &mut Farm), With<farm_state::Harvested>>,
+    mut farm_progress_event_writer: EventWriter<FarmProgressEvent>,
 ) {
-    for (entity, mut farm, transform) in query.iter_mut() {
+    for (entity, mut farm) in query.iter_mut() {
         let state = match &mut farm.state {
             FarmState::Harvested(state) => state,
             _ => panic!("Farm must be in a timer-assigned state"),
@@ -104,14 +91,7 @@ pub fn progress_harvested_timer(
         state.rest_timer.tick(delta);
 
         if state.rest_timer.finished() {
-            farm.progress_state(
-                entity,
-                &mut commands,
-                transform.world_pos_to_grid(),
-                elapsed_time.game_day(),
-                &assets,
-                &mut state_change_event_writer,
-            );
+            farm_progress_event_writer.send(FarmProgressEvent(entity));
         }
     }
 }
@@ -160,13 +140,12 @@ pub fn progress_on_state_changed(
     }
 }
 
-pub fn progress_on_new_day(
-    mut event_reader: EventReader<NewDayEvent>,
-    query: Query<&Farm, With<farm_state::Planted>>,
+pub fn progress_on_new_day(// mut event_reader: EventReader<NewDayEvent>,
+    // query: Query<&Farm, With<farm_state::Planted>>,
 ) {
-    for event in event_reader.read() {
-        println!("{:?}", event);
-
-        for farm in query.iter() {}
-    }
+    // for event in event_reader.read() {
+    //     println!("{:?}", event);
+    //
+    //     for farm in query.iter() {}
+    // }
 }

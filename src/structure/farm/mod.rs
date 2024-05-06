@@ -13,8 +13,8 @@ impl Plugin for FarmPlugin {
             .add_systems(
                 FixedUpdate,
                 (
-                    progress_on_progress_event,
-                    progress_on_tending_event,
+                    progress_on_farm_progress_event,
+                    progress_on_farm_tended_event,
                     progress_planted_timer,
                     progress_harvested_timer,
                     progress_on_state_changed,
