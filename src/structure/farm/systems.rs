@@ -1,18 +1,18 @@
 use super::*;
 
 pub fn progress_on_progress_event(
-    mut event_reader: EventReader<FarmTileProgressEvent>,
-    mut query: Query<(&mut FarmTile, &Transform)>,
+    mut event_reader: EventReader<FarmProgressEvent>,
+    mut query: Query<(&mut Farm, &Transform)>,
     mut commands: Commands,
     assets: Res<FarmAssets>,
-    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmTileState>>,
+    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmState>>,
 ) {
     for event in event_reader.read() {
         // println!("{:?}", event);
         let entity = event.0;
-        let (mut farm_tile, transform) = query.get_mut(entity).unwrap();
+        let (mut farm, transform) = query.get_mut(entity).unwrap();
 
-        farm_tile.progress_state(
+        farm.progress_state(
             entity,
             &mut commands,
             transform.world_pos_to_grid(),
@@ -23,16 +23,16 @@ pub fn progress_on_progress_event(
 }
 
 pub fn progress_on_tending_event(
-    mut event_reader: EventReader<FarmTileTendedEvent>,
-    mut query: Query<&mut FarmTile>,
+    mut event_reader: EventReader<FarmTendedEvent>,
+    mut query: Query<&mut Farm>,
 ) {
     for event in event_reader.read() {
         // println!("{:?}", event);
 
-        if let Ok(mut farm_tile) = query.get_mut(event.0) {
-            farm_tile.tendings_done += 1;
-            if let FarmTileState::Planted(planted_state) = &mut farm_tile.state {
-                planted_state.tending_rest_timer = Some(FarmTile::new_tending_rest_timer());
+        if let Ok(mut farm) = query.get_mut(event.0) {
+            farm.tendings_done += 1;
+            if let FarmState::Planted(planted_state) = &mut farm.state {
+                planted_state.tending_rest_timer = Some(Farm::new_tending_rest_timer());
             }
         }
     }
@@ -41,16 +41,16 @@ pub fn progress_on_tending_event(
 pub fn progress_planted_timer(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
-    mut query: Query<(Entity, &mut FarmTile, &Transform), With<farm_tile_state::Planted>>,
+    mut query: Query<(Entity, &mut Farm, &Transform), With<farm_state::Planted>>,
     mut commands: Commands,
     assets: Res<FarmAssets>,
-    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmTileState>>,
+    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmState>>,
     mut work_queue: ResMut<TasksQueue>,
 ) {
-    for (entity, mut farm_tile, transform) in query.iter_mut() {
-        let state = match &mut farm_tile.state {
-            FarmTileState::Planted(state) => state,
-            _ => panic!("FarmTile must be in a timer-assigned state"),
+    for (entity, mut farm, transform) in query.iter_mut() {
+        let state = match &mut farm.state {
+            FarmState::Planted(state) => state,
+            _ => panic!("Farm must be in a timer-assigned state"),
         };
 
         let delta = time_scale.scale_to_duration(time.delta_seconds());
@@ -62,7 +62,7 @@ pub fn progress_planted_timer(
             if tending_rest_timer.finished() {
                 work_queue.add_task(Task {
                     entity,
-                    kind: TaskKind::FarmTileTending,
+                    kind: TaskKind::FarmTending,
                     grid_tile: transform.world_pos_to_grid(),
                 });
                 state.tending_rest_timer = None;
@@ -70,7 +70,7 @@ pub fn progress_planted_timer(
         }
 
         if state.growth_timer.finished() {
-            farm_tile.progress_state(
+            farm.progress_state(
                 entity,
                 &mut commands,
                 transform.world_pos_to_grid(),
@@ -84,22 +84,22 @@ pub fn progress_planted_timer(
 pub fn progress_harvested_timer(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
-    mut query: Query<(Entity, &mut FarmTile, &Transform), With<farm_tile_state::Harvested>>,
+    mut query: Query<(Entity, &mut Farm, &Transform), With<farm_state::Harvested>>,
     mut commands: Commands,
     assets: Res<FarmAssets>,
-    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmTileState>>,
+    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmState>>,
 ) {
-    for (entity, mut farm_tile, transform) in query.iter_mut() {
-        let state = match &mut farm_tile.state {
-            FarmTileState::Harvested(state) => state,
-            _ => panic!("FarmTile must be in a timer-assigned state"),
+    for (entity, mut farm, transform) in query.iter_mut() {
+        let state = match &mut farm.state {
+            FarmState::Harvested(state) => state,
+            _ => panic!("Farm must be in a timer-assigned state"),
         };
 
         let delta = time_scale.scale_to_duration(time.delta_seconds());
         state.rest_timer.tick(delta);
 
         if state.rest_timer.finished() {
-            farm_tile.progress_state(
+            farm.progress_state(
                 entity,
                 &mut commands,
                 transform.world_pos_to_grid(),
@@ -111,9 +111,9 @@ pub fn progress_harvested_timer(
 }
 
 pub fn progress_on_state_changed(
-    mut event_reader: EventReader<EntityStateChangeEvent<FarmTileState>>,
+    mut event_reader: EventReader<EntityStateChangeEvent<FarmState>>,
     mut work_queue: ResMut<TasksQueue>,
-    query: Query<(&FarmTile, &Transform)>,
+    query: Query<(&Farm, &Transform)>,
     mut spawn_food_event_writer: EventWriter<SpawnItemEvent>,
 ) {
     for event in event_reader.read() {
@@ -123,13 +123,13 @@ pub fn progress_on_state_changed(
         let state = &event.1;
 
         let maybe_task_kind = match state {
-            FarmTileState::NotPlanted => Some(TaskKind::FarmTilePlant),
-            FarmTileState::Grown => Some(TaskKind::FarmTileHarvest),
+            FarmState::NotPlanted => Some(TaskKind::FarmPlant),
+            FarmState::Grown => Some(TaskKind::FarmHarvest),
             _ => None,
         };
 
-        if maybe_task_kind.is_some() || matches!(state, FarmTileState::Harvested(_)) {
-            if let Ok((farm_tile, transform)) = query.get(entity) {
+        if maybe_task_kind.is_some() || matches!(state, FarmState::Harvested(_)) {
+            if let Ok((farm, transform)) = query.get(entity) {
                 let grid_tile = transform.world_pos_to_grid();
 
                 if let Some(task_kind) = maybe_task_kind {
@@ -140,12 +140,12 @@ pub fn progress_on_state_changed(
                     });
                 }
 
-                if let FarmTileState::Harvested(_) = state {
-                    // println!("tendings done: {}", farm_tile.tendings_done);
+                if let FarmState::Harvested(_) = state {
+                    // println!("tendings done: {}", farm.tendings_done);
 
                     spawn_food_event_writer.send(SpawnItemEvent {
                         item_type: ItemType::Food,
-                        amount: farm_tile.yield_amount(),
+                        amount: farm.yield_amount(),
                         grid_tile,
                     });
                 };

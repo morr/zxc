@@ -2,7 +2,7 @@ use bevy::sprite::MaterialMesh2dBundle;
 use rand::Rng;
 use rand_distr::{Distribution, UnitCircle};
 
-use self::structure::{FarmTile, Warehouse, BASE_HEIGHT, BASE_WIDTH, FARM_TILE_SIZE};
+use self::structure::{Farm, Warehouse, BASE_HEIGHT, BASE_WIDTH, FARM_TILE_SIZE};
 
 use super::*;
 
@@ -14,7 +14,7 @@ pub fn spawn_pawns(
     assets_collection: Res<AssetsCollection>,
     font_assets: Res<FontAssets>,
     warehouse_query: Query<&Transform, With<Warehouse>>,
-    farm_tile_query: Query<&Transform, With<FarmTile>>,
+    farm_query: Query<&Transform, With<Farm>>,
     // query: Query<&Transform, With<Warehouse>>,
 ) {
     // println!("Spawning pawns");
@@ -28,7 +28,7 @@ pub fn spawn_pawns(
     let radius = CONFIG.tile.size * i32::max(BASE_WIDTH, BASE_HEIGHT) as f32;
 
     let warehouse_transform = warehouse_query.single();
-    let farm_tile_transform = farm_tile_query.iter().next().unwrap();
+    let farm_transform = farm_query.iter().next().unwrap();
 
     for i in 0..CONFIG.starting_scene.pawns {
         let random_angle: f32 = rng.gen_range(0.0..360.0);
@@ -41,9 +41,9 @@ pub fn spawn_pawns(
             )
         } else {
             Vec3::new(
-                farm_tile_transform.translation.x
+                farm_transform.translation.x
                     + random_angle.cos() * 5.0 * FARM_TILE_SIZE as f32 * CONFIG.tile.size,
-                farm_tile_transform.translation.y
+                farm_transform.translation.y
                     + random_angle.sin() * 5.0 * FARM_TILE_SIZE as f32 * CONFIG.tile.size,
                 PAWN_Z_INDEX,
             )

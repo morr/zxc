@@ -2,14 +2,14 @@ use super::*;
 
 expose_submodules!(components, systems);
 
-pub struct FarmTilePlugin;
+pub struct FarmPlugin;
 
-impl Plugin for FarmTilePlugin {
+impl Plugin for FarmPlugin {
     fn build(&self, app: &mut App) {
-        app.register_type::<FarmTile>()
-            .add_event::<FarmTileProgressEvent>()
-            .add_event::<FarmTileTendedEvent>()
-            .add_event::<EntityStateChangeEvent<FarmTileState>>()
+        app.register_type::<Farm>()
+            .add_event::<FarmProgressEvent>()
+            .add_event::<FarmTendedEvent>()
+            .add_event::<EntityStateChangeEvent<FarmState>>()
             .add_systems(
                 FixedUpdate,
                 (

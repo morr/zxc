@@ -2,7 +2,7 @@ use bevy::ecs::system::EntityCommands;
 
 use super::*;
 
-macro_rules! farm_tile_states {
+macro_rules! farm_states {
     (
         $(
             (
@@ -19,7 +19,7 @@ macro_rules! farm_tile_states {
             )),* $(,)?
     ) => {
         #[derive(Debug, Clone, PartialEq, Reflect)]
-        pub enum FarmTileState {
+        pub enum FarmState {
             $($name $(($turple_name))? ),*
         }
 
@@ -33,7 +33,7 @@ macro_rules! farm_tile_states {
         )?)*
 
 
-        pub mod farm_tile_state {
+        pub mod farm_state {
             use bevy::{prelude::*};
 
             $(
@@ -42,27 +42,27 @@ macro_rules! farm_tile_states {
             )*
         }
 
-        impl FarmTile {
+        impl Farm {
             pub fn change_state(
                 &mut self,
-                new_state: FarmTileState,
+                new_state: FarmState,
                 entity: Entity,
                 commands: &mut Commands,
-                state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmTileState>>,
+                state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmState>>,
             ) {
-                // println!("FarmTileState {:?}=>{:?}", self.state, new_state);
+                // println!("FarmState {:?}=>{:?}", self.state, new_state);
 
                 match &self.state {
-                    $(FarmTileState::$name $( ($match_field) )? => {
-                        commands.entity(entity).remove::<farm_tile_state::$name>();
+                    $(FarmState::$name $( ($match_field) )? => {
+                        commands.entity(entity).remove::<farm_state::$name>();
                     },)*
                 }
 
                 self.state = new_state;
 
                 match &self.state {
-                    $(FarmTileState::$name $( ($match_field) )? => {
-                        commands.entity(entity).insert(farm_tile_state::$name);
+                    $(FarmState::$name $( ($match_field) )? => {
+                        commands.entity(entity).insert(farm_state::$name);
                     },)*
                 }
 
@@ -72,7 +72,7 @@ macro_rules! farm_tile_states {
     };
 }
 
-farm_tile_states!(
+farm_states!(
     (NotPlanted),
     (
         Planted,
@@ -94,50 +94,50 @@ farm_tile_states!(
 );
 
 #[derive(Debug, Component, Reflect)]
-pub struct FarmTile {
-    pub state: FarmTileState,
+pub struct Farm {
+    pub state: FarmState,
     pub tendings_done: u32,
 }
 
-impl Default for FarmTile {
+impl Default for Farm {
     fn default() -> Self {
         Self {
-            state: FarmTileState::NotPlanted,
+            state: FarmState::NotPlanted,
             tendings_done: 0,
         }
     }
 }
 
-impl FarmTile {
+impl Farm {
     pub fn progress_state(
         &mut self,
         entity: Entity,
         commands: &mut Commands,
         grid_tile: IVec2,
         assets: &Res<FarmAssets>,
-        state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmTileState>>,
+        state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmState>>,
     ) {
         let new_state = match &self.state {
-            FarmTileState::NotPlanted => FarmTileState::Planted(PlantedState {
+            FarmState::NotPlanted => FarmState::Planted(PlantedState {
                 growth_timer: Timer::from_seconds(
                     days_to_seconds(CONFIG.farming.growth_days),
                     TimerMode::Once,
                 ),
                 tending_rest_timer: Some(Self::new_tending_rest_timer()),
             }),
-            FarmTileState::Planted(_) => FarmTileState::Grown,
-            FarmTileState::Grown => FarmTileState::Harvested(HarvestedState {
+            FarmState::Planted(_) => FarmState::Grown,
+            FarmState::Grown => FarmState::Harvested(HarvestedState {
                 rest_timer: Timer::from_seconds(
                     days_to_seconds(CONFIG.farming.harvested_rest_days),
                     TimerMode::Once,
                 )
             }),
-            FarmTileState::Harvested(_) => FarmTileState::NotPlanted,
+            FarmState::Harvested(_) => FarmState::NotPlanted,
         };
         // println!("progress_state {:?} => {:?}", self.state, new_state);
         self.change_state(new_state, entity, commands, state_change_event_writer);
 
-        if let FarmTileState::NotPlanted = self.state {
+        if let FarmState::NotPlanted = self.state {
             self.tendings_done = 0;
         }
 
@@ -175,18 +175,18 @@ impl FarmTile {
         assets: &Res<FarmAssets>,
         arc_navmesh: &mut Navmesh,
         grid_tile: IVec2,
-        state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmTileState>>,
+        state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmState>>,
     ) {
-        let farm_tile = Self::default();
-        let state = farm_tile.state.clone();
+        let farm = Self::default();
+        let state = farm.state.clone();
 
         let mut entity_commands = commands.spawn((
-            farm_tile,
-            farm_tile_state::NotPlanted,
-            Name::new("FarmTile"),
+            farm,
+            farm_state::NotPlanted,
+            Name::new("Farm"),
         ));
-        FarmTile::sync_sprite_bundle(grid_tile, &state, &mut entity_commands, assets);
-        FarmTile::sync_workable(&state, &mut entity_commands);
+        Farm::sync_sprite_bundle(grid_tile, &state, &mut entity_commands, assets);
+        Farm::sync_workable(&state, &mut entity_commands);
 
         let entity = entity_commands.id();
 
@@ -200,16 +200,16 @@ impl FarmTile {
 
     pub fn sync_sprite_bundle(
         grid_tile: IVec2,
-        state: &FarmTileState,
+        state: &FarmState,
         entity_commands: &mut EntityCommands,
         assets: &Res<FarmAssets>,
     ) {
         let size = IVec2::new(FARM_TILE_SIZE, FARM_TILE_SIZE);
         let texture = match state {
-            FarmTileState::NotPlanted => assets.not_planted.clone(),
-            FarmTileState::Planted(_) => assets.planted.clone(),
-            FarmTileState::Grown => assets.grown.clone(),
-            FarmTileState::Harvested(_) => assets.harvested.clone(),
+            FarmState::NotPlanted => assets.not_planted.clone(),
+            FarmState::Planted(_) => assets.planted.clone(),
+            FarmState::Grown => assets.grown.clone(),
+            FarmState::Harvested(_) => assets.harvested.clone(),
         };
 
         entity_commands.insert(SpriteBundle {
@@ -226,12 +226,12 @@ impl FarmTile {
         });
     }
 
-    pub fn sync_workable(state: &FarmTileState, entity_commands: &mut EntityCommands) {
+    pub fn sync_workable(state: &FarmState, entity_commands: &mut EntityCommands) {
         let maybe_work_amount = match state {
-            FarmTileState::NotPlanted => Some(CONFIG.farming.planting_hours),
-            FarmTileState::Planted(_) => Some(CONFIG.farming.tending_hours),
-            FarmTileState::Grown => Some(CONFIG.farming.harvesting_hours),
-            FarmTileState::Harvested(_) => None,
+            FarmState::NotPlanted => Some(CONFIG.farming.planting_hours),
+            FarmState::Planted(_) => Some(CONFIG.farming.tending_hours),
+            FarmState::Grown => Some(CONFIG.farming.harvesting_hours),
+            FarmState::Harvested(_) => None,
         };
 
         if let Some(work_amount) = maybe_work_amount {
@@ -241,7 +241,7 @@ impl FarmTile {
 }
 
 #[derive(Event, Debug)]
-pub struct FarmTileProgressEvent(pub Entity);
+pub struct FarmProgressEvent(pub Entity);
 
 #[derive(Event, Debug)]
-pub struct FarmTileTendedEvent(pub Entity);
+pub struct FarmTendedEvent(pub Entity);

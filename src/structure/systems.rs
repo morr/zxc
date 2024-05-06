@@ -47,7 +47,7 @@ pub fn spawn_farm(
     mut commands: Commands,
     assets: Res<FarmAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
-    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmTileState>>,
+    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmState>>,
 ) {
     let grid_tile_start = IVec2::new(-13, 0);
     let mut navmesh = arc_navmesh.write();
@@ -59,7 +59,7 @@ pub fn spawn_farm(
                 grid_tile_start.y + FARM_TILE_SIZE * y,
             );
 
-            FarmTile::spawn(
+            Farm::spawn(
                 &mut commands,
                 &assets,
                 &mut navmesh,

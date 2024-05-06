@@ -70,21 +70,21 @@ pub struct TextureAssets {
 // https://itch.io/game-assets/free/tag-textures
 #[derive(AssetCollection, Resource)]
 pub struct FarmAssets {
-    #[asset(path = "sprites/farm_tile/not_planted.png")] // SBS - Tiny Texture Pack 2 - 128x128
+    #[asset(path = "sprites/farm/not_planted.png")] // SBS - Tiny Texture Pack 2 - 128x128
     pub not_planted: Handle<Image>,
 
     // https://lynocs.itch.io/texture-pack
     // Grass/9/9_diffuseOriginal.bmp
-    #[asset(path = "sprites/farm_tile/planted.png")]
+    #[asset(path = "sprites/farm/planted.png")]
     pub planted: Handle<Image>,
 
     // prompt: ripe wheat, minimal details, top down view, pixel art, texture for sprite
     // negativeprompt: blurry, shadows,  disfigured
     // seed: 918053270, steps: 20, cfgscale: 7, aspectratio: 1:1, width: 1024, height: 1024, sampler: dpmpp_sde_gpu, scheduler: karras, model: pixelArtDiffusionXL_spriteShaper.safetensors, swarm_version: 0.6.2.0, date: 2024-05-02, generation_time: 2.05 (prep) and 12.14 (gen) seconds,
-    #[asset(path = "sprites/farm_tile/grown.png")]
+    #[asset(path = "sprites/farm/grown.png")]
     pub grown: Handle<Image>,
 
-    #[asset(path = "sprites/farm_tile/harvested.png")]
+    #[asset(path = "sprites/farm/harvested.png")]
     pub harvested: Handle<Image>,
 }
 

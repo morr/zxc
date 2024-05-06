@@ -1,11 +1,11 @@
 use crate::*;
-expose_submodules!(components, systems, farm_tile);
+expose_submodules!(components, systems, farm);
 
 pub struct StructurePlugin;
 
 impl Plugin for StructurePlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(FarmTilePlugin)
+        app.add_plugins(FarmPlugin)
             .register_type::<Warehouse>()
             .register_type::<House>()
             .register_type::<Well>()
