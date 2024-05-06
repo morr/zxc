@@ -34,7 +34,7 @@ pub fn progress_on_farm_tended_event(
         if let Ok(mut farm) = query.get_mut(event.0) {
             farm.tendings_done += 1;
             if let FarmState::Planted(planted_state) = &mut farm.state {
-                planted_state.tending_rest_timer = Some(Farm::new_tending_rest_timer());
+                planted_state.tending_rest_timer.reset();
             }
         }
     }
@@ -43,6 +43,7 @@ pub fn progress_on_farm_tended_event(
 pub fn progress_planted_and_tending_rest_timers(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
+    // elapsed_time: Res<ElapsedTime>,
     mut query: Query<(Entity, &mut Farm, &Transform), With<farm_state::Planted>>,
     mut farm_progress_event_writer: EventWriter<FarmProgressEvent>,
     mut work_queue: ResMut<TasksQueue>,
@@ -56,16 +57,17 @@ pub fn progress_planted_and_tending_rest_timers(
         let delta = time_scale.scale_to_duration(time.delta_seconds());
         state.growth_timer.tick(delta);
 
-        if let Some(tending_rest_timer) = &mut state.tending_rest_timer {
-            tending_rest_timer.tick(delta);
+        if !state.tending_rest_timer.finished() {
+            state.tending_rest_timer.tick(delta);
 
-            if tending_rest_timer.finished() {
+            if state.tending_rest_timer.finished() {
+                // if state.tending_rest_started_day != elapsed_time.game_day() {
                 work_queue.add_task(Task {
                     entity,
                     kind: TaskKind::FarmTending,
                     grid_tile: transform.world_pos_to_grid(),
                 });
-                state.tending_rest_timer = None;
+                // }
             }
         }
 

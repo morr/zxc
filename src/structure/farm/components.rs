@@ -78,8 +78,8 @@ farm_states!(
         Planted,
         struct PlantedState {
             growth_timer: Timer,
-            tending_rest_timer: Option<Timer>,
-            tending_rest_started_day: Option<u32>,
+            tending_rest_timer: Timer,
+            tending_rest_started_day: u32,
         },
         _p
     ),
@@ -125,8 +125,8 @@ impl Farm {
                     days_to_seconds(CONFIG.farming.growth_days),
                     TimerMode::Once,
                 ),
-                tending_rest_timer: Some(Self::new_tending_rest_timer()),
-                tending_rest_started_day: Some(simulation_day)
+                tending_rest_timer: Self::new_tending_rest_timer(),
+                tending_rest_started_day: simulation_day
             }),
             FarmState::Planted(_) => FarmState::Grown,
             FarmState::Grown => FarmState::Harvested(HarvestedState {
