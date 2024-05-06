@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+
+# Exit the script on any error
+# set -e
+
+# cargo install cargo-watch
+cargo watch -x check -x test
