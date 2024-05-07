@@ -1,6 +1,7 @@
 use super::*;
 
-#[derive(Component)]
+#[derive(Debug, Component, InspectorOptions, Reflect)]
+#[reflect(InspectorOptions)]
 pub struct Pawn {
     pub state: PawnState,
 }
@@ -26,7 +27,7 @@ macro_rules! pawn_states {
     (
         $( ($name:ident $(, $turple_type:ty, $match_field:ident)?)),* $(,)?
     ) => {
-        #[derive(Debug, Clone)]
+        #[derive(Debug, Clone, Reflect)]
         pub enum PawnState {
             $($name $(($turple_type))? ),*
         }
@@ -35,7 +36,7 @@ macro_rules! pawn_states {
             use bevy::{prelude::*};
 
             $(
-                #[derive(Component)]
+                #[derive(Component, Reflect)]
                 pub struct $name;
             )*
         }

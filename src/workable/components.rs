@@ -65,14 +65,14 @@ impl TasksQueue {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Reflect)]
 pub enum TaskKind {
     FarmPlant,
     FarmTending,
     FarmHarvest,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Reflect)]
 pub struct Task {
     pub entity: Entity,
     pub kind: TaskKind,
