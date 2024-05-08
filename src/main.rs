@@ -40,7 +40,7 @@ fn main() {
 
         // .add_plugins(WorldInspectorPlugin::new())
         // .add_plugins(FilterQueryInspectorPlugin::<With<structure::Structure>>::default())
-        .add_plugins(FilterQueryInspectorPlugin::<With<Pawn>>::default())
+        // .add_plugins(FilterQueryInspectorPlugin::<With<Pawn>>::default())
         // .add_plugins(bevy_framepace::FramepacePlugin) // this fixes bevy input lag https://github.com/bevyengine/bevy/issues/3317
         .init_state::<AppState>()
         .add_loading_state(
