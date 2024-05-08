@@ -3,7 +3,7 @@ use bevy_pancam::PanCam;
 use bevy_pancam::PanCamPlugin;
 
 #[derive(Component)]
-pub struct FloorCamera;
+pub struct MainCamera;
 
 pub struct CameraPlugin;
 
@@ -48,8 +48,7 @@ fn spawn_camera(mut commands: Commands) {
                 // },
                 ..default()
             },
-            Name::new("main_camera"),
-            FloorCamera,
+            MainCamera,
         ))
         // .insert(SpriteCamera)
         // .spawn({
