@@ -1,7 +1,13 @@
+// #![allow(ambiguous_glob_reexports)]
 pub use bevy::prelude::*;
 pub use bevy_asset_loader::prelude::*;
 pub use bevy_inspector_egui::prelude::*;
-use kayak_ui::prelude::{widgets::*, *};
+pub use kayak_ui::{
+    prelude::{rsx, FontMapping, KayakContextPlugin, KayakRootContext, EventDispatcher, KChildren},
+    widgets::*,
+    CameraUIKayak,
+};
+// pub use kayak_ui::{prelude::*, widgets::*};
 // pub use bevy_magic_light_2d::prelude::*;
 
 macro_rules! expose_submodules {
