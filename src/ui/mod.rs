@@ -22,7 +22,7 @@ impl Plugin for UiPlugin {
             .add_systems(OnExit(AppState::Loading), (render_ui, setup_kayak_ui))
             .add_systems(
                 Update,
-                (update_ui, handle_ui_keys)
+                (update_ui, handle_ui_keys)//, update_kayak_ui)
                     .chain()
                     .run_if(in_state(AppState::Playing)),
             );
