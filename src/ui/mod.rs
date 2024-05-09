@@ -6,7 +6,7 @@ expose_submodules!(
     debug_grid,
     debug_movepath,
     debug_navmesh,
-    kayak_ui
+    belly_ui
 );
 
 pub struct UiPlugin;
@@ -17,7 +17,7 @@ impl Plugin for UiPlugin {
             .add_plugins(debug_navmesh::DebugNavmeshPlugin)
             .add_plugins(debug_movepath::DebugMovepathPlugin)
             .add_plugins(BellyPlugin)
-            .add_systems(OnExit(AppState::Loading), (render_ui, kayak_ui))
+            .add_systems(OnExit(AppState::Loading), (render_ui, render_belly_ui))
             .add_systems(
                 Update,
                 (update_ui, handle_ui_keys)
