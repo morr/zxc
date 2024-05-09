@@ -16,7 +16,8 @@ impl Plugin for UiPlugin {
         app.add_plugins(debug_grid::DebugGridPlugin)
             .add_plugins(debug_navmesh::DebugNavmeshPlugin)
             .add_plugins(debug_movepath::DebugMovepathPlugin)
-            .add_systems(OnExit(AppState::Loading), (render_ui, setup_kayak_ui))
+            .add_plugins(BellyPlugin)
+            .add_systems(OnExit(AppState::Loading), (render_ui, kayak_ui))
             .add_systems(
                 Update,
                 (update_ui, handle_ui_keys)
