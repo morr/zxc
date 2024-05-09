@@ -3,10 +3,7 @@ pub use bevy::prelude::*;
 pub use bevy_asset_loader::prelude::*;
 pub use bevy_inspector_egui::prelude::*;
 pub use kayak_ui::{
-    prelude::{
-        rsx, EventDispatcher, FontMapping, KChildren, KPositionType, KStyle, KayakContextPlugin,
-        KayakRootContext, StyleProp, Units,
-    },
+    prelude::{rsx, FontMapping, KayakContextPlugin, KayakRootContext, EventDispatcher, KChildren},
     widgets::*,
     CameraUIKayak,
 };
