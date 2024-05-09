@@ -6,19 +6,16 @@ expose_submodules!(
     debug_grid,
     debug_movepath,
     debug_navmesh,
-    kayak_ui_v2
+    kayak_ui
 );
 
 pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((KayakContextPlugin, KayakWidgets))
-            .add_plugins((
-                debug_grid::DebugGridPlugin,
-                debug_navmesh::DebugNavmeshPlugin,
-                debug_movepath::DebugMovepathPlugin,
-            ))
+        app.add_plugins(debug_grid::DebugGridPlugin)
+            .add_plugins(debug_navmesh::DebugNavmeshPlugin)
+            .add_plugins(debug_movepath::DebugMovepathPlugin)
             .add_systems(OnExit(AppState::Loading), (render_ui, setup_kayak_ui))
             .add_systems(
                 Update,

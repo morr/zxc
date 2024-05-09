@@ -1,5 +1,6 @@
 use bevy::window::PresentMode;
 
+use bevy_inspector_egui::quick::FilterQueryInspectorPlugin;
 use zxc::*;
 
 fn main() {
