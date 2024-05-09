@@ -15,7 +15,8 @@ body {
 .status-area {
     background-color: #181a1c;
     padding: 50px 50px 10px 10px;
-    border-radius: 10px;
+    /* border-radius: 10px; */
+    color: #fff;
 }
 /* .controls { */
 /*     width: 200px; */
