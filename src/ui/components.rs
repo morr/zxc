@@ -11,3 +11,6 @@ pub struct DebugStatusText {}
 
 #[derive(Component)]
 pub struct DebugHelpBlock {}
+
+#[derive(Component)]
+pub struct FoodStockText {}

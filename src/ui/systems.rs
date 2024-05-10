@@ -1,8 +1,8 @@
 use super::*;
 
-pub fn render_ui(
+pub fn render_simulation_ui(
     mut commands: Commands,
-    assets: Res<FontAssets>,
+    font_assets: Res<FontAssets>,
     elapsed_time: Res<ElapsedTime>,
     time_state: Res<State<SimulationState>>,
     time_scale: Res<TimeScale>,
@@ -34,7 +34,7 @@ pub fn render_ui(
     let simulation_speed_line = TextBundle::from_section(
         format_simulation_speed_text(&time_state, &time_scale),
         TextStyle {
-            font: assets.fira.clone(),
+            font: font_assets.fira.clone(),
             font_size: 24.,
             color: Color::WHITE,
         },
@@ -44,44 +44,74 @@ pub fn render_ui(
     let date_time_line = TextBundle::from_section(
         format_date_time_text(&elapsed_time),
         TextStyle {
-            font: assets.fira.clone(),
+            font: font_assets.fira.clone(),
             font_size: 24.,
             color: Color::WHITE,
         },
     );
 
-    commands.spawn(container).with_children(|container_parent| {
-        container_parent
+    commands.spawn(container).with_children(|parent| {
+        parent
             .spawn(simulation_speed_line_node)
             .with_children(|parent| {
                 parent.spawn((simulation_speed_line, SimulationSpeedText {}));
             });
 
-        container_parent
-            .spawn(date_time_line_node)
-            .with_children(|parent| {
-                parent.spawn((date_time_line, SimulationDateTimeText {}));
-            });
+        parent.spawn(date_time_line_node).with_children(|parent| {
+            parent.spawn((date_time_line, SimulationDateTimeText {}));
+        });
     });
 }
 
+pub fn render_items_stock_ui(
+    mut commands: Commands,
+    font_assets: Res<FontAssets>,
+    food: Res<FoodStock>,
+) {
+    commands
+        .spawn(NodeBundle {
+            style: Style {
+                position_type: PositionType::Absolute,
+                display: Display::Flex,
+                flex_direction: FlexDirection::Row,
+                align_items: AlignItems::Center,
+                top: Val::Px(5.),
+                left: Val::Px(5.),
+                padding: UiRect {
+                    // top: Val::Px(50.0),
+                    // right: Val::Px(50.0),
+                    top: Val::Px(3.),
+                    right: Val::Px(10.),
+                    bottom: Val::Px(3.),
+                    left: Val::Px(10.),
+                },
+                ..default()
+            },
+            background_color: (*Color::hex("181a1c").unwrap().set_a(0.5)).into(),
+            ..default()
+        })
+        .with_children(|parent| {
+            parent.spawn((
+                TextBundle::from_section(
+                    format_item_text(food.0),
+                    TextStyle {
+                        font: font_assets.fira.clone(),
+                        font_size: 20.,
+                        color: Color::WHITE,
+                    },
+                ),
+                FoodStockText {},
+            ));
+        });
+}
+
 pub fn update_simulation_speed_text(
-    mut simulation_speed_query: Query<&mut Text, With<SimulationSpeedText>>,
+    mut query: Query<&mut Text, With<SimulationSpeedText>>,
     time_state: Res<State<SimulationState>>,
     time_scale: Res<TimeScale>,
 ) {
-    let mut simulation_speed_text = simulation_speed_query.single_mut();
-    simulation_speed_text.sections[0].value =
-        format_simulation_speed_text(&time_state, &time_scale);
-
-}
-
-pub fn update_simulation_date_time_text(
-    mut simulation_date_time_query: Query<&mut Text, With<SimulationDateTimeText>>,
-    elapsed_time: Res<ElapsedTime>,
-) {
-    let mut simulation_date_time_text = simulation_date_time_query.single_mut();
-    simulation_date_time_text.sections[0].value = format_date_time_text(&elapsed_time);
+    let mut text = query.single_mut();
+    text.sections[0].value = format_simulation_speed_text(&time_state, &time_scale);
 }
 
 fn format_simulation_speed_text(
@@ -94,6 +124,14 @@ fn format_simulation_speed_text(
     }
 }
 
+pub fn update_simulation_date_time_text(
+    mut query: Query<&mut Text, With<SimulationDateTimeText>>,
+    elapsed_time: Res<ElapsedTime>,
+) {
+    let mut text = query.single_mut();
+    text.sections[0].value = format_date_time_text(&elapsed_time);
+}
+
 fn format_date_time_text(elapsed_time: &Res<ElapsedTime>) -> String {
     format!(
         "Day {} {:02}:{:02}",
@@ -101,4 +139,16 @@ fn format_date_time_text(elapsed_time: &Res<ElapsedTime>) -> String {
         elapsed_time.game_hours(),
         elapsed_time.game_minutes(),
     )
+}
+
+pub fn update_food_stock_text(
+    mut query: Query<&mut Text, With<FoodStockText>>,
+    food: Res<FoodStock>,
+) {
+    let mut text = query.single_mut();
+    text.sections[0].value = format_item_text(food.0);
+}
+
+fn format_item_text(amount: u32) -> String {
+    format!("{}", amount)
 }

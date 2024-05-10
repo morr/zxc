@@ -1,6 +1,6 @@
 use super::*;
 
-pub fn spawn_item_on_event(mut food: ResMut<Food>, mut event_reader: EventReader<SpawnItemEvent>) {
+pub fn spawn_item_on_event(mut food: ResMut<FoodStock>, mut event_reader: EventReader<SpawnItemEvent>) {
     for event in event_reader.read() {
         match event.item_type {
             ItemType::Food => {

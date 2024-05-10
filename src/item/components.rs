@@ -18,4 +18,4 @@ pub struct SpawnItemEvent {
 }
 
 #[derive(Resource, Default)]
-pub struct Food(pub u32);
+pub struct FoodStock(pub u32);
