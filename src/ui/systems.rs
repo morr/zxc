@@ -26,7 +26,7 @@ pub fn render_simulation_ui(
             },
             ..default()
         },
-        background_color: (*Color::hex("181a1c").unwrap().set_a(0.5)).into(),
+        background_color: (*Color::hex("181a1c").unwrap().set_a(0.65)).into(),
         ..default()
     };
 
@@ -88,7 +88,7 @@ pub fn render_items_stock_ui(
                 },
                 ..default()
             },
-            background_color: (*Color::hex("181a1c").unwrap().set_a(0.5)).into(),
+            background_color: (*Color::hex("181a1c").unwrap().set_a(0.85)).into(),
             ..default()
         })
         .with_children(|parent| {
