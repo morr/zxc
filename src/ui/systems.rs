@@ -65,6 +65,7 @@ pub fn render_simulation_ui(
 
 pub fn render_items_stock_ui(
     mut commands: Commands,
+    texture_assets: Res<TextureAssets>,
     font_assets: Res<FontAssets>,
     food: Res<FoodStock>,
 ) {
@@ -91,6 +92,23 @@ pub fn render_items_stock_ui(
             ..default()
         })
         .with_children(|parent| {
+            parent.spawn(ImageBundle {
+                style: Style {
+                    width: Val::Px(28.),
+                    height: Val::Px(28.),
+                    margin: UiRect {
+                        top: Val::Px(0.),
+                        right: Val::Px(8.),
+                        bottom: Val::Px(0.),
+                        left: Val::Px(0.),
+                    },
+                    ..default() // size: Size::new(Val::Percent(100.0), Val::Percent(100.0)), // Image will fill the node
+                },
+                // material: materials.add(texture_handle.into()),
+                image: texture_assets.bread.clone().into(),
+                ..default()
+            });
+
             parent.spawn((
                 TextBundle::from_section(
                     format_item_text(food.0),
