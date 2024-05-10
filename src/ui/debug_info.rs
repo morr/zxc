@@ -7,9 +7,6 @@ use super::*;
 
 pub fn render_debug_info(
     mut commands: Commands,
-    elapsed_time: Res<ElapsedTime>,
-    time_state: Res<State<SimulationState>>,
-    time_scale: Res<TimeScale>,
     assets: Res<FontAssets>,
     food: Res<Food>,
     tasks_queue: Res<TasksQueue>,
@@ -18,9 +15,6 @@ pub fn render_debug_info(
     commands.spawn((
         TextBundle::from_section(
             format_ui_line(
-                &elapsed_time,
-                &time_state,
-                &time_scale,
                 food.0,
                 &tasks_queue,
                 &async_queue_counter,
@@ -58,9 +52,6 @@ pub fn render_debug_info(
 }
 
 pub fn update_debug_info(
-    elapsed_time: Res<ElapsedTime>,
-    time_state: Res<State<SimulationState>>,
-    time_scale: Res<TimeScale>,
     food: Res<Food>,
     tasks_queue: Res<TasksQueue>,
     async_queue_counter: Res<AsyncQueueCounter>,
@@ -68,9 +59,6 @@ pub fn update_debug_info(
 ) {
     let mut text = query.single_mut();
     text.sections[0].value = format_ui_line(
-        &elapsed_time,
-        &time_state,
-        &time_scale,
         food.0,
         &tasks_queue,
         &async_queue_counter,
@@ -78,26 +66,12 @@ pub fn update_debug_info(
 }
 
 fn format_ui_line(
-    elapsed_time: &Res<ElapsedTime>,
-    time_state: &Res<State<SimulationState>>,
-    time_scale: &Res<TimeScale>,
     food_amount: u32,
     tasks_queue: &Res<TasksQueue>,
     async_queue_counter: &Res<AsyncQueueCounter>,
 ) -> String {
-    let speed_part = match time_state.get() {
-        SimulationState::Running => format!("Speed: {}x", time_scale.0),
-        SimulationState::Paused => "Paused".to_string(),
-    };
-
     format!(
-        // "Total Seconds: {} Day: {} {:02}:{:02} {} Queue: {}",
-        "Day: {} {:02}:{:02} {} Food: {} TasksQueue: {} AsyncQueue: {}",
-        // elapsed_time.total_seconds(),
-        elapsed_time.game_day(),
-        elapsed_time.game_hours(),
-        elapsed_time.game_minutes(),
-        speed_part,
+        "Food: {} TasksQueue: {} AsyncQueue: {}",
         food_amount,
         tasks_queue.len(),
         async_queue_counter.get()
