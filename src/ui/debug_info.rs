@@ -31,7 +31,7 @@ pub fn render_debug_info(
                 color: Color::WHITE,
             },
         ),
-        StatusText {},
+        DebugStatusText {},
     ));
     commands.spawn((
         TextBundle::from_section(
@@ -53,7 +53,7 @@ pub fn render_debug_info(
             top: Val::Px(25.0),
             ..default()
         }),
-        HelpText {},
+        DebugHelpText {},
     ));
 }
 
@@ -64,7 +64,7 @@ pub fn update_debug_info(
     food: Res<Food>,
     tasks_queue: Res<TasksQueue>,
     async_queue_counter: Res<AsyncQueueCounter>,
-    mut query: Query<&mut Text, With<StatusText>>,
+    mut query: Query<&mut Text, With<DebugStatusText>>,
 ) {
     let mut text = query.single_mut();
     text.sections[0].value = format_ui_line(
@@ -109,7 +109,7 @@ pub fn handle_debug_info_keys(
     // mut commands: Commands,
     keys: Res<ButtonInput<KeyCode>>,
     // query: Query<Entity>,
-    mut query: Query<&mut Visibility, With<HelpText>>,
+    mut query: Query<&mut Visibility, With<DebugHelpText>>,
     debug_grid_state: Res<State<DebugGridState>>,
     mut next_debug_grid_state: ResMut<NextState<DebugGridState>>,
     debug_navmesh_state: Res<State<DebugNavmeshState>>,

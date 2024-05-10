@@ -1,160 +1,95 @@
-use self::{
-    debug_grid::DebugGridState, debug_movepath::DebugMovepathState,
-    debug_navmesh::DebugNavmeshState,
-};
 use super::*;
 
 pub fn render_ui(
     mut commands: Commands,
-    elapsed_time: Res<ElapsedTime>,
-    time_state: Res<State<SimulationState>>,
-    time_scale: Res<TimeScale>,
     assets: Res<FontAssets>,
-    food: Res<Food>,
-    tasks_queue: Res<TasksQueue>,
-    async_queue_counter: Res<AsyncQueueCounter>,
-) {
-    commands.spawn((
-        TextBundle::from_section(
-            format_ui_line(
-                &elapsed_time,
-                &time_state,
-                &time_scale,
-                food.0,
-                &tasks_queue,
-                &async_queue_counter,
-            ),
-            TextStyle {
-                font: assets.fira.clone(),
-                font_size: 24.,
-                color: Color::WHITE,
-            },
-        ),
-        StatusText {},
-    ));
-    commands.spawn((
-        TextBundle::from_section(
-            "\"space\" - pause
-\"=\"/\"-\" - change game speed
-\"h\" - toggle help
-\"g\" - toggle grid
-\"n\" - toggle navmesh
-\"m\" - toggle movepath",
-            TextStyle {
-                font: assets.fira.clone(),
-                font_size: 16.,
-                color: Color::WHITE,
-            },
-        )
-        .with_style(Style {
-            position_type: PositionType::Absolute,
-            left: Val::Px(0.0),
-            top: Val::Px(25.0),
-            ..default()
-        }),
-        HelpText {},
-    ));
-}
-
-pub fn update_ui(
     elapsed_time: Res<ElapsedTime>,
     time_state: Res<State<SimulationState>>,
     time_scale: Res<TimeScale>,
-    food: Res<Food>,
-    tasks_queue: Res<TasksQueue>,
-    async_queue_counter: Res<AsyncQueueCounter>,
-    mut query: Query<&mut Text, With<StatusText>>,
 ) {
-    let mut text = query.single_mut();
-    text.sections[0].value = format_ui_line(
-        &elapsed_time,
-        &time_state,
-        &time_scale,
-        food.0,
-        &tasks_queue,
-        &async_queue_counter,
-    );
-}
-
-fn format_ui_line(
-    elapsed_time: &Res<ElapsedTime>,
-    time_state: &Res<State<SimulationState>>,
-    time_scale: &Res<TimeScale>,
-    food_amount: u32,
-    tasks_queue: &Res<TasksQueue>,
-    async_queue_counter: &Res<AsyncQueueCounter>,
-) -> String {
-    let speed_part = match time_state.get() {
-        SimulationState::Running => format!("Speed: {}x", time_scale.0),
-        SimulationState::Paused => "Paused".to_string(),
+    let container = NodeBundle {
+        style: Style {
+            position_type: PositionType::Absolute,
+            display: Display::Flex,
+            flex_direction: FlexDirection::Column,
+            top: Val::Px(0.0),
+            right: Val::Px(0.0),
+            width: Val::Px(270.0),
+            height: Val::Px(100.0),
+            padding: UiRect {
+                top: Val::Px(50.0),
+                right: Val::Px(50.0),
+                bottom: Val::Px(10.0),
+                left: Val::Px(10.0),
+            },
+            ..default()
+        },
+        background_color: (*Color::hex("181a1c").unwrap().set_a(0.5)).into(),
+        ..default()
     };
 
+    let simulation_speed_line_node = NodeBundle::default();
+    let simulation_speed_line = TextBundle::from_section(
+        format_simulation_speed_text(&time_state, &time_scale),
+        TextStyle {
+            font: assets.fira.clone(),
+            font_size: 24.,
+            color: Color::WHITE,
+        },
+    );
+
+    let date_time_line_node = NodeBundle::default();
+    let date_time_line = TextBundle::from_section(
+        format_date_time_text(&elapsed_time),
+        TextStyle {
+            font: assets.fira.clone(),
+            font_size: 24.,
+            color: Color::WHITE,
+        },
+    );
+
+    commands.spawn(container).with_children(|parent| {
+        parent
+            .spawn(simulation_speed_line_node)
+            .with_children(|parent| {
+                parent.spawn((simulation_speed_line, SimulationSpeedText {}));
+            });
+        parent.spawn(date_time_line_node).with_children(|parent| {
+            parent.spawn((date_time_line, SimulationDateTimeText {}));
+        });
+    });
+}
+
+pub fn update_ui_texts(
+    // mut simulation_speed_query: Query<&mut Text, With<SimulationSpeedText>>,
+    // mut simulation_date_time_query: Query<&mut Text, With<SimulationDateTimeText>>,
+    // elapsed_time: Res<ElapsedTime>,
+    // time_state: Res<State<SimulationState>>,
+    // time_scale: Res<TimeScale>,
+) {
+    // let mut simulation_speed_text = simulation_speed_query.single_mut();
+    // simulation_speed_text.sections[0].value =
+    //     format_simulation_speed_text(&time_state, &time_scale);
+    //
+    // let mut simulation_date_time_text = simulation_date_time_query.single_mut();
+    // simulation_date_time_text.sections[0].value = format_date_time_text(&elapsed_time);
+}
+
+fn format_simulation_speed_text(
+    time_state: &Res<State<SimulationState>>,
+    time_scale: &Res<TimeScale>,
+) -> String {
+    match time_state.get() {
+        SimulationState::Running => format!("Speed: {}x", time_scale.0),
+        SimulationState::Paused => "Paused".to_string(),
+    }
+}
+
+fn format_date_time_text(elapsed_time: &Res<ElapsedTime>) -> String {
     format!(
-        // "Total Seconds: {} Day: {} {:02}:{:02} {} Queue: {}",
-        "Day: {} {:02}:{:02} {} Food: {} TasksQueue: {} AsyncQueue: {}",
-        // elapsed_time.total_seconds(),
+        "Day {} {:02}:{:02}",
         elapsed_time.game_day(),
         elapsed_time.game_hours(),
         elapsed_time.game_minutes(),
-        speed_part,
-        food_amount,
-        tasks_queue.len(),
-        async_queue_counter.get()
     )
-}
-
-#[allow(clippy::too_many_arguments)]
-pub fn handle_ui_keys(
-    // mut commands: Commands,
-    keys: Res<ButtonInput<KeyCode>>,
-    // query: Query<Entity>,
-    mut query: Query<&mut Visibility, With<HelpText>>,
-    debug_grid_state: Res<State<DebugGridState>>,
-    mut next_debug_grid_state: ResMut<NextState<DebugGridState>>,
-    debug_navmesh_state: Res<State<DebugNavmeshState>>,
-    mut next_debug_navmesh_state: ResMut<NextState<DebugNavmeshState>>,
-    mut state_change_event_writer: EventWriter<StateChangeEvent<DebugNavmeshState>>,
-    debug_movepath_state: Res<State<DebugMovepathState>>,
-    mut next_debug_movepath_state: ResMut<NextState<DebugMovepathState>>,
-) {
-    if keys.just_pressed(KeyCode::KeyH) {
-        // commands.entity(query.single_mut()).iis
-        let mut visibility = query.single_mut();
-
-        match *visibility {
-            Visibility::Hidden => {
-                *visibility = Visibility::Visible;
-            }
-            _ => {
-                *visibility = Visibility::Hidden;
-            }
-        }
-    }
-
-    if keys.just_pressed(KeyCode::KeyG) {
-        match debug_grid_state.get() {
-            DebugGridState::Visible => next_debug_grid_state.set(DebugGridState::Hidden),
-            DebugGridState::Hidden => next_debug_grid_state.set(DebugGridState::Visible),
-        };
-    }
-
-    if keys.just_pressed(KeyCode::KeyN) {
-        let new_state = match debug_navmesh_state.get() {
-            DebugNavmeshState::Visible => DebugNavmeshState::Hidden,
-            DebugNavmeshState::Hidden => DebugNavmeshState::Visible,
-        };
-        next_debug_navmesh_state.set(new_state.clone());
-        state_change_event_writer.send(StateChangeEvent(new_state));
-    }
-
-    if keys.just_pressed(KeyCode::KeyM) {
-        match debug_movepath_state.get() {
-            DebugMovepathState::Visible => {
-                next_debug_movepath_state.set(DebugMovepathState::Hidden)
-            }
-            DebugMovepathState::Hidden => {
-                next_debug_movepath_state.set(DebugMovepathState::Visible)
-            }
-        };
-    }
 }
