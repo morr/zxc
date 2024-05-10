@@ -8,71 +8,94 @@ use super::*;
 pub fn render_debug_info(
     mut commands: Commands,
     assets: Res<FontAssets>,
-    food: Res<Food>,
     tasks_queue: Res<TasksQueue>,
     async_queue_counter: Res<AsyncQueueCounter>,
 ) {
-    commands.spawn((
-        TextBundle::from_section(
-            format_ui_line(
-                food.0,
-                &tasks_queue,
-                &async_queue_counter,
-            ),
-            TextStyle {
-                font: assets.fira.clone(),
-                font_size: 24.,
-                color: Color::WHITE,
+    commands
+        .spawn(NodeBundle {
+            style: Style {
+                position_type: PositionType::Absolute,
+                display: Display::Flex,
+                flex_direction: FlexDirection::Column,
+                bottom: Val::Px(0.0),
+                left: Val::Px(0.0),
+                padding: UiRect {
+                    top: Val::Px(10.0),
+                    right: Val::Px(10.0),
+                    bottom: Val::Px(10.0),
+                    left: Val::Px(10.0),
+                },
+                ..default()
             },
-        ),
-        DebugStatusText {},
-    ));
-    commands.spawn((
-        TextBundle::from_section(
-            "\"space\" - pause
+            background_color: (*Color::hex("181a1c").unwrap().set_a(0.25)).into(),
+            ..default()
+        })
+        .with_children(|container_parent| {
+            container_parent
+                .spawn(NodeBundle::default())
+                .with_children(|parent| {
+                    parent.spawn((
+                        TextBundle::from_section(
+                            format_debug_line(&tasks_queue, &async_queue_counter),
+                            TextStyle {
+                                font: assets.fira.clone(),
+                                font_size: 18.,
+                                color: Color::WHITE,
+                            },
+                        ),
+                        DebugStatusText {},
+                    ));
+                });
+
+            container_parent
+                .spawn(NodeBundle {
+                    style: Style {
+                        padding: UiRect {
+                            top: Val::Px(8.0),
+                            right: Val::Px(0.0),
+                            bottom: Val::Px(0.0),
+                            left: Val::Px(0.0),
+                        },
+                        ..default()
+                    },
+                    ..default()
+                })
+                .with_children(|parent| {
+                    parent.spawn((
+                        TextBundle::from_section(
+                            "\"space\" - pause
 \"=\"/\"-\" - change game speed
 \"h\" - toggle help
 \"g\" - toggle grid
 \"n\" - toggle navmesh
 \"m\" - toggle movepath",
-            TextStyle {
-                font: assets.fira.clone(),
-                font_size: 16.,
-                color: Color::WHITE,
-            },
-        )
-        .with_style(Style {
-            position_type: PositionType::Absolute,
-            left: Val::Px(0.0),
-            top: Val::Px(25.0),
-            ..default()
-        }),
-        DebugHelpText {},
-    ));
+                            TextStyle {
+                                font: assets.fira.clone(),
+                                font_size: 12.,
+                                color: Color::WHITE,
+                            },
+                        ),
+                        DebugHelpText {},
+                    ));
+                });
+        });
 }
 
 pub fn update_debug_info(
-    food: Res<Food>,
     tasks_queue: Res<TasksQueue>,
     async_queue_counter: Res<AsyncQueueCounter>,
     mut query: Query<&mut Text, With<DebugStatusText>>,
 ) {
     let mut text = query.single_mut();
-    text.sections[0].value = format_ui_line(
-        food.0,
-        &tasks_queue,
-        &async_queue_counter,
-    );
+    text.sections[0].value = format_debug_line(&tasks_queue, &async_queue_counter);
 }
 
-fn format_ui_line(
-    food_amount: u32,
+fn format_debug_line(
     tasks_queue: &Res<TasksQueue>,
     async_queue_counter: &Res<AsyncQueueCounter>,
 ) -> String {
     format!(
-        "Food: {} TasksQueue: {} AsyncQueue: {}",
-        food_amount,
+        "TasksQueue: {} AsyncQueue: {}",
         tasks_queue.len(),
         async_queue_counter.get()
     )
