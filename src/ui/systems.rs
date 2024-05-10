@@ -14,7 +14,7 @@ pub fn render_ui(
             flex_direction: FlexDirection::Column,
             top: Val::Px(0.0),
             right: Val::Px(0.0),
-            width: Val::Px(270.0),
+            // width: Val::Px(270.0),
             height: Val::Px(100.0),
             padding: UiRect {
                 top: Val::Px(50.0),
@@ -48,31 +48,38 @@ pub fn render_ui(
         },
     );
 
-    commands.spawn(container).with_children(|parent| {
-        parent
+    commands.spawn(container).with_children(|container_parent| {
+        container_parent
             .spawn(simulation_speed_line_node)
             .with_children(|parent| {
                 parent.spawn((simulation_speed_line, SimulationSpeedText {}));
             });
-        parent.spawn(date_time_line_node).with_children(|parent| {
-            parent.spawn((date_time_line, SimulationDateTimeText {}));
-        });
+
+        container_parent
+            .spawn(date_time_line_node)
+            .with_children(|parent| {
+                parent.spawn((date_time_line, SimulationDateTimeText {}));
+            });
     });
 }
 
-pub fn update_ui_texts(
-    // mut simulation_speed_query: Query<&mut Text, With<SimulationSpeedText>>,
-    // mut simulation_date_time_query: Query<&mut Text, With<SimulationDateTimeText>>,
-    // elapsed_time: Res<ElapsedTime>,
-    // time_state: Res<State<SimulationState>>,
-    // time_scale: Res<TimeScale>,
+pub fn update_simulation_speed_text(
+    mut simulation_speed_query: Query<&mut Text, With<SimulationSpeedText>>,
+    time_state: Res<State<SimulationState>>,
+    time_scale: Res<TimeScale>,
 ) {
-    // let mut simulation_speed_text = simulation_speed_query.single_mut();
-    // simulation_speed_text.sections[0].value =
-    //     format_simulation_speed_text(&time_state, &time_scale);
-    //
-    // let mut simulation_date_time_text = simulation_date_time_query.single_mut();
-    // simulation_date_time_text.sections[0].value = format_date_time_text(&elapsed_time);
+    let mut simulation_speed_text = simulation_speed_query.single_mut();
+    simulation_speed_text.sections[0].value =
+        format_simulation_speed_text(&time_state, &time_scale);
+
+}
+
+pub fn update_simulation_date_time_text(
+    mut simulation_date_time_query: Query<&mut Text, With<SimulationDateTimeText>>,
+    elapsed_time: Res<ElapsedTime>,
+) {
+    let mut simulation_date_time_text = simulation_date_time_query.single_mut();
+    simulation_date_time_text.sections[0].value = format_date_time_text(&elapsed_time);
 }
 
 fn format_simulation_speed_text(

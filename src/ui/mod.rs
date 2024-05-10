@@ -19,7 +19,7 @@ impl Plugin for UiPlugin {
             .add_systems(OnExit(AppState::Loading), (render_ui, render_debug_info))
             .add_systems(
                 Update,
-                (update_ui_texts, update_debug_info, handle_debug_info_keys)
+                (update_simulation_speed_text, update_simulation_date_time_text, update_debug_info, handle_debug_info_keys)
                     .chain()
                     .run_if(in_state(AppState::Playing)),
             );
