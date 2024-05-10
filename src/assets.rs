@@ -72,6 +72,9 @@ pub struct TextureAssets {
 pub struct IconAssets {
     #[asset(path = "icons/bread.png")]
     pub bread: Handle<Image>,
+
+    #[asset(path = "icons/pawns.png")]
+    pub pawns: Handle<Image>,
 }
 
 // https://itch.io/game-assets/free/tag-textures

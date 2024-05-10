@@ -90,7 +90,7 @@ pub fn render_items_stock_ui(
         PawnStockText {},
         pawns_query.iter().count() as u32,
         font_assets.fira.clone(),
-        icon_assets.bread.clone(),
+        icon_assets.pawns.clone(),
     );
 
     spawn_item::<FoodStockText>(
