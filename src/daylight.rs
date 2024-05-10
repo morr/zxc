@@ -15,6 +15,8 @@ impl Plugin for DaylightPlugin {
 #[derive(Component)]
 struct NightOverlay;
 
+const MAXIMUM_TIME_SCALE_FOR_DAY_NIGHT_CYCLE: f32 = 50.;
+
 fn setup(mut commands: Commands) {
     let grid_size = IVec2::new(CONFIG.grid.size, CONFIG.grid.size);
 
@@ -27,7 +29,7 @@ fn setup(mut commands: Commands) {
                 //
                 ..default()
             },
-            transform: Transform::from_translation(Vec3::new(0.0, 0.0, NIGHT_Z_INDEX)),
+            transform: Transform::from_translation(Vec3::new(0., 0., NIGHT_Z_INDEX)),
 
             ..default()
         })
@@ -36,11 +38,16 @@ fn setup(mut commands: Commands) {
 
 fn day_night_cycle_system(
     elapsed_time: Res<ElapsedTime>,
+    time_scale: Res<TimeScale>,
     mut query: Query<&mut Sprite, With<NightOverlay>>,
 ) {
-    let theta = elapsed_time.game_time_of_day() * 2.0 * std::f32::consts::PI; // Full cycle from 0 to 2π
+    let theta = elapsed_time.game_time_of_day() * 2. * std::f32::consts::PI; // Full cycle from 0 to 2π
 
-    let transparency = 0.5 + 0.5 * theta.cos(); // Transition the transparency
+    let transparency = if time_scale.0 > MAXIMUM_TIME_SCALE_FOR_DAY_NIGHT_CYCLE {
+        0.
+    } else {
+        0.5 + 0.5 * theta.cos()
+    }; // Transition the transparency
     for mut sprite in query.iter_mut() {
         sprite.color.set_a(transparency * 0.7); // Adjust transparency to simulate day/night
     }
