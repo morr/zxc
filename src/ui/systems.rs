@@ -84,7 +84,7 @@ pub fn render_items_stock_ui(
         ..default()
     });
 
-    spawn_item(
+    spawn_item::<FoodStockText>(
         &mut root,
         FoodStockText {},
         food.0,
@@ -96,9 +96,9 @@ pub fn render_items_stock_ui(
 #[derive(Component)]
 pub struct FoodStockText {}
 
-fn spawn_item(
+fn spawn_item<T: Component>(
     root: &mut EntityCommands,
-    placeholder_struct: dyn Component,
+    marker_component: T,
     amount: u32,
     font: Handle<Font>,
     image: Handle<Image>,
@@ -151,7 +151,7 @@ fn spawn_item(
                             color: Color::WHITE,
                         },
                     ),
-                    placeholder_struct,
+                    marker_component,
                 ));
             });
     });
