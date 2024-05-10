@@ -17,8 +17,10 @@ pub fn render_ui(
             // width: Val::Px(270.0),
             // height: Val::Px(100.0),
             padding: UiRect {
-                top: Val::Px(50.0),
-                right: Val::Px(50.0),
+                // top: Val::Px(50.0),
+                // right: Val::Px(50.0),
+                top: Val::Px(25.0),
+                right: Val::Px(25.0),
                 bottom: Val::Px(10.0),
                 left: Val::Px(10.0),
             },

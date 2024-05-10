@@ -10,4 +10,4 @@ pub struct SimulationDateTimeText {}
 pub struct DebugStatusText {}
 
 #[derive(Component)]
-pub struct DebugHelpText {}
+pub struct DebugHelpBlock {}

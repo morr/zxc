@@ -31,53 +31,43 @@ pub fn render_debug_info(
             ..default()
         })
         .with_children(|container_parent| {
-            container_parent
-                .spawn(NodeBundle::default())
-                .with_children(|parent| {
-                    parent.spawn((
-                        TextBundle::from_section(
-                            format_debug_line(&tasks_queue, &async_queue_counter),
-                            TextStyle {
-                                font: assets.fira.clone(),
-                                font_size: 18.,
-                                color: Color::WHITE,
-                            },
-                        ),
-                        DebugStatusText {},
-                    ));
-                });
-
-            container_parent
-                .spawn(NodeBundle {
-                    style: Style {
-                        padding: UiRect {
-                            top: Val::Px(8.0),
-                            right: Val::Px(0.0),
-                            bottom: Val::Px(0.0),
-                            left: Val::Px(0.0),
-                        },
-                        ..default()
+            container_parent.spawn((
+                TextBundle::from_section(
+                    format_debug_line(&tasks_queue, &async_queue_counter),
+                    TextStyle {
+                        font: assets.fira.clone(),
+                        font_size: 18.,
+                        color: Color::WHITE,
                     },
-                    ..default()
-                })
-                .with_children(|parent| {
-                    parent.spawn((
-                        TextBundle::from_section(
-                            "\"space\" - pause
+                ),
+                DebugStatusText {},
+            ));
+
+            container_parent.spawn((
+                TextBundle::from_section(
+                    "\"space\" - pause
 \"=\"/\"-\" - change game speed
 \"h\" - toggle help
 \"g\" - toggle grid
 \"n\" - toggle navmesh
 \"m\" - toggle movepath",
-                            TextStyle {
-                                font: assets.fira.clone(),
-                                font_size: 12.,
-                                color: Color::WHITE,
-                            },
-                        ),
-                        DebugHelpText {},
-                    ));
-                });
+                    TextStyle {
+                        font: assets.fira.clone(),
+                        font_size: 12.,
+                        color: Color::WHITE,
+                    },
+                )
+                .with_style(Style {
+                    margin: UiRect {
+                        top: Val::Px(8.0),
+                        right: Val::Px(0.0),
+                        bottom: Val::Px(0.0),
+                        left: Val::Px(0.0),
+                    },
+                    ..default()
+                }),
+                DebugHelpBlock {},
+            ));
         });
 }
 
@@ -106,7 +96,7 @@ pub fn handle_debug_info_keys(
     // mut commands: Commands,
     keys: Res<ButtonInput<KeyCode>>,
     // query: Query<Entity>,
-    mut query: Query<&mut Visibility, With<DebugHelpText>>,
+    mut query: Query<(&mut Visibility, &mut Style), With<DebugHelpBlock>>,
     debug_grid_state: Res<State<DebugGridState>>,
     mut next_debug_grid_state: ResMut<NextState<DebugGridState>>,
     debug_navmesh_state: Res<State<DebugNavmeshState>>,
@@ -117,14 +107,16 @@ pub fn handle_debug_info_keys(
 ) {
     if keys.just_pressed(KeyCode::KeyH) {
         // commands.entity(query.single_mut()).iis
-        let mut visibility = query.single_mut();
+        let (mut visibility, mut style) = query.single_mut();
 
         match *visibility {
             Visibility::Hidden => {
                 *visibility = Visibility::Visible;
+                style.display = Display::Flex;
             }
             _ => {
                 *visibility = Visibility::Hidden;
+                style.display = Display::None;
             }
         }
     }
