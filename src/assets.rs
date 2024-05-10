@@ -73,6 +73,8 @@ pub struct IconAssets {
     #[asset(path = "icons/bread.png")]
     pub bread: Handle<Image>,
 
+    // https://www.vecteezy.com/vector-art/6470690-team-pixel-art-business-icon
+    // https://www.pinterest.com/pin/892416482393656144/
     #[asset(path = "icons/pawns.png")]
     pub pawns: Handle<Image>,
 }
