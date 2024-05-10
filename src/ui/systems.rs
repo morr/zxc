@@ -1,3 +1,5 @@
+use bevy::ecs::system::EntityCommands;
+
 use super::*;
 
 pub fn render_simulation_ui(
@@ -69,58 +71,90 @@ pub fn render_items_stock_ui(
     font_assets: Res<FontAssets>,
     food: Res<FoodStock>,
 ) {
-    commands
-        .spawn(NodeBundle {
-            style: Style {
-                position_type: PositionType::Absolute,
-                display: Display::Flex,
-                flex_direction: FlexDirection::Row,
-                align_items: AlignItems::Center,
-                top: Val::Px(5.),
-                left: Val::Px(5.),
-                padding: UiRect {
-                    // top: Val::Px(50.0),
-                    // right: Val::Px(50.0),
-                    top: Val::Px(3.),
-                    right: Val::Px(10.),
-                    bottom: Val::Px(3.),
-                    left: Val::Px(10.),
-                },
-                ..default()
-            },
-            background_color: (*Color::hex("181a1c").unwrap().set_a(0.85)).into(),
+    let mut root = commands.spawn(NodeBundle {
+        style: Style {
+            position_type: PositionType::Absolute,
+            display: Display::Flex,
+            flex_direction: FlexDirection::Row,
+            align_items: AlignItems::Center,
+            top: Val::Px(5.),
+            left: Val::Px(5.),
             ..default()
-        })
-        .with_children(|parent| {
-            parent.spawn(ImageBundle {
-                style: Style {
-                    width: Val::Px(28.),
-                    height: Val::Px(28.),
-                    margin: UiRect {
-                        top: Val::Px(0.),
-                        right: Val::Px(8.),
-                        bottom: Val::Px(0.),
-                        left: Val::Px(0.),
-                    },
-                    ..default() // size: Size::new(Val::Percent(100.0), Val::Percent(100.0)), // Image will fill the node
-                },
-                // material: materials.add(texture_handle.into()),
-                image: texture_assets.bread.clone().into(),
-                ..default()
-            });
+        },
+        ..default()
+    });
 
-            parent.spawn((
-                TextBundle::from_section(
-                    format_item_text(food.0),
-                    TextStyle {
-                        font: font_assets.fira.clone(),
-                        font_size: 20.,
-                        color: Color::WHITE,
+    spawn_item(
+        &mut root,
+        FoodStockText {},
+        food.0,
+        font_assets.fira.clone(),
+        texture_assets.bread.clone(),
+    );
+}
+
+#[derive(Component)]
+pub struct FoodStockText {}
+
+fn spawn_item(
+    root: &mut EntityCommands,
+    placeholder_struct: dyn Component,
+    amount: u32,
+    font: Handle<Font>,
+    image: Handle<Image>,
+) {
+    root.with_children(|parent| {
+        parent
+            .spawn(NodeBundle {
+                style: Style {
+                    position_type: PositionType::Absolute,
+                    display: Display::Flex,
+                    flex_direction: FlexDirection::Row,
+                    align_items: AlignItems::Center,
+                    top: Val::Px(5.),
+                    left: Val::Px(5.),
+                    padding: UiRect {
+                        top: Val::Px(3.),
+                        right: Val::Px(10.),
+                        bottom: Val::Px(3.),
+                        left: Val::Px(10.),
                     },
-                ),
-                FoodStockText {},
-            ));
-        });
+                    ..default()
+                },
+                background_color: (*Color::hex("181a1c").unwrap().set_a(0.85)).into(),
+                ..default()
+            })
+            .with_children(|parent| {
+                parent.spawn(ImageBundle {
+                    style: Style {
+                        width: Val::Px(28.),
+                        height: Val::Px(28.),
+                        margin: UiRect {
+                            top: Val::Px(0.),
+                            right: Val::Px(8.),
+                            bottom: Val::Px(0.),
+                            left: Val::Px(0.),
+                        },
+                        ..default() // size: Size::new(Val::Percent(100.0), Val::Percent(100.0)), // Image will fill the node
+                    },
+                    // material: materials.add(texture_handle.into()),
+                    image: image.into(),
+                    ..default()
+                });
+
+                parent.spawn((
+                    TextBundle::from_section(
+                        format_item_text(amount),
+                        TextStyle {
+                            font,
+                            font_size: 20.,
+                            color: Color::WHITE,
+                        },
+                    ),
+                    placeholder_struct,
+                ));
+            });
+    });
 }
 
 pub fn update_simulation_speed_text(
