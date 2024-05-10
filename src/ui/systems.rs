@@ -67,6 +67,7 @@ pub fn render_simulation_ui(
 
 pub fn render_items_stock_ui(
     mut commands: Commands,
+    pawns_query: Query<&Pawn>,
     texture_assets: Res<TextureAssets>,
     font_assets: Res<FontAssets>,
     food: Res<FoodStock>,
@@ -75,14 +76,22 @@ pub fn render_items_stock_ui(
         style: Style {
             position_type: PositionType::Absolute,
             display: Display::Flex,
-            flex_direction: FlexDirection::Row,
-            align_items: AlignItems::Center,
+            flex_direction: FlexDirection::Column,
+            column_gap: Val::Px(20.0),
             top: Val::Px(5.),
             left: Val::Px(5.),
             ..default()
         },
         ..default()
     });
+
+    spawn_item::<PawnStockText>(
+        &mut root,
+        PawnStockText {},
+        pawns_query.iter().count() as u32,
+        font_assets.fira.clone(),
+        texture_assets.bread.clone(),
+    );
 
     spawn_item::<FoodStockText>(
         &mut root,
@@ -92,9 +101,6 @@ pub fn render_items_stock_ui(
         texture_assets.bread.clone(),
     );
 }
-
-#[derive(Component)]
-pub struct FoodStockText {}
 
 fn spawn_item<T: Component>(
     root: &mut EntityCommands,
@@ -107,12 +113,9 @@ fn spawn_item<T: Component>(
         parent
             .spawn(NodeBundle {
                 style: Style {
-                    position_type: PositionType::Absolute,
                     display: Display::Flex,
                     flex_direction: FlexDirection::Row,
                     align_items: AlignItems::Center,
-                    top: Val::Px(5.),
-                    left: Val::Px(5.),
                     padding: UiRect {
                         top: Val::Px(3.),
                         right: Val::Px(10.),
@@ -203,4 +206,12 @@ pub fn update_food_stock_text(
 
 fn format_item_text(amount: u32) -> String {
     format!("{}", amount)
+}
+
+pub fn update_pawn_stock_text(
+    mut text_query: Query<&mut Text, With<PawnStockText>>,
+    pawns_query: Query<&Pawn>,
+) {
+    let mut text = text_query.single_mut();
+    text.sections[0].value = format_item_text(pawns_query.iter().count() as u32);
 }
