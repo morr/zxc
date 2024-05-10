@@ -18,7 +18,7 @@ pub fn render_debug_info(
                 display: Display::Flex,
                 flex_direction: FlexDirection::Column,
                 bottom: Val::Px(0.0),
-                left: Val::Px(0.0),
+                right: Val::Px(0.0),
                 padding: UiRect {
                     top: Val::Px(10.0),
                     right: Val::Px(10.0),
