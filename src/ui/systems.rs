@@ -68,7 +68,7 @@ pub fn render_simulation_ui(
 pub fn render_items_stock_ui(
     mut commands: Commands,
     pawns_query: Query<&Pawn>,
-    texture_assets: Res<TextureAssets>,
+    icon_assets: Res<IconAssets>,
     font_assets: Res<FontAssets>,
     food: Res<FoodStock>,
 ) {
@@ -77,9 +77,9 @@ pub fn render_items_stock_ui(
             position_type: PositionType::Absolute,
             display: Display::Flex,
             flex_direction: FlexDirection::Column,
-            column_gap: Val::Px(20.0),
-            top: Val::Px(5.),
-            left: Val::Px(5.),
+            row_gap: Val::Px(8.),
+            top: Val::Px(8.),
+            left: Val::Px(8.),
             ..default()
         },
         ..default()
@@ -90,7 +90,7 @@ pub fn render_items_stock_ui(
         PawnStockText {},
         pawns_query.iter().count() as u32,
         font_assets.fira.clone(),
-        texture_assets.bread.clone(),
+        icon_assets.bread.clone(),
     );
 
     spawn_item::<FoodStockText>(
@@ -98,7 +98,7 @@ pub fn render_items_stock_ui(
         FoodStockText {},
         food.0,
         font_assets.fira.clone(),
-        texture_assets.bread.clone(),
+        icon_assets.bread.clone(),
     );
 }
 
