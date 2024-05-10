@@ -18,7 +18,11 @@ impl Plugin for UiPlugin {
             .add_plugins(debug_movepath::DebugMovepathPlugin)
             .add_systems(
                 OnExit(AppState::Loading),
-                (render_simulation_ui, render_items_stock_ui, render_debug_info),
+                (
+                    render_simulation_ui,
+                    render_items_stock_ui,
+                    render_debug_info,
+                ),
             )
             .add_systems(
                 Update,
