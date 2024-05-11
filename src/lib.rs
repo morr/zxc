@@ -1,6 +1,7 @@
 pub use bevy::prelude::*;
 pub use bevy_asset_loader::prelude::*;
 pub use bevy_inspector_egui::prelude::*;
+pub use once_cell::sync::Lazy;
 // pub use bevy_magic_light_2d::prelude::*;
 
 macro_rules! expose_submodules {

@@ -1,8 +1,28 @@
 use bevy::ecs::system::EntityCommands;
+pub use once_cell::sync::Lazy;
 
 use super::*;
 
-pub fn render_simulation_ui(
+static UI_COLOR: Lazy<Color> = Lazy::new(|| Color::hex("181a1c").unwrap());
+
+pub fn render_simulation_season_ui(
+    mut commands: Commands,
+    // font_assets: Res<FontAssets>,
+    // elapsed_time: Res<ElapsedTime>,
+) {
+    commands.spawn(NodeBundle {
+        style: Style {
+            display: Display::Flex,
+            ..default()
+        },
+        background_color: (*UI_COLOR.clone().set_a(0.65)).into(),
+        ..default()
+    });
+}
+
+pub fn update_simulation_season_text() {}
+
+pub fn render_simulation_speed_ui(
     mut commands: Commands,
     font_assets: Res<FontAssets>,
     elapsed_time: Res<ElapsedTime>,
@@ -28,7 +48,7 @@ pub fn render_simulation_ui(
             },
             ..default()
         },
-        background_color: (*Color::hex("181a1c").unwrap().set_a(0.65)).into(),
+        background_color: (*UI_COLOR.clone().set_a(0.65)).into(),
         ..default()
     };
 
@@ -124,7 +144,7 @@ fn spawn_item<T: Component>(
                     },
                     ..default()
                 },
-                background_color: (*Color::hex("181a1c").unwrap().set_a(0.85)).into(),
+                background_color: (*UI_COLOR.clone().set_a(0.85)).into(),
                 ..default()
             })
             .with_children(|parent| {

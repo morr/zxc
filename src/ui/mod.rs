@@ -19,7 +19,8 @@ impl Plugin for UiPlugin {
             .add_systems(
                 OnExit(AppState::Loading),
                 (
-                    render_simulation_ui,
+                    render_simulation_season_ui,
+                    render_simulation_speed_ui,
                     render_items_stock_ui,
                     render_debug_info,
                 ),
@@ -27,6 +28,7 @@ impl Plugin for UiPlugin {
             .add_systems(
                 Update,
                 (
+                    update_simulation_season_text,
                     update_simulation_speed_text,
                     update_simulation_date_time_text,
                     update_food_stock_text,
