@@ -29,18 +29,22 @@ impl TimeScale {
     }
 
     pub fn increase(&mut self) {
-        self.0 += if self.0 < 5.0 {
-            2.0
-        } else if self.0 < 15.0 {
-            5.0
-        } else if self.0 < 20.0 {
-            10.0
-        } else if self.0 < 100.0 {
-            25.0
-        } else if self.0 < 200.0 {
-            50.0
+        self.0 += if self.0 < 5. {
+            2.
+        } else if self.0 < 15. {
+            5.
+        } else if self.0 < 20. {
+            10.
+        } else if self.0 < 100. {
+            25.
+        } else if self.0 < 200. {
+            50.
+        } else if self.0 < 500. {
+            100.
+        } else if self.0 < 2000. {
+            500.
         } else {
-            100.0
+            1000.
         }
     }
 
@@ -49,18 +53,22 @@ impl TimeScale {
             return false;
         }
 
-        self.0 -= if self.0 <= 5.0 {
-            2.0
-        } else if self.0 <= 15.0 {
-            5.0
-        } else if self.0 <= 25.0 {
-            10.0
-        } else if self.0 <= 100.0 {
-            25.0
-        } else if self.0 <= 200.0 {
-            50.0
+        self.0 -= if self.0 <= 5. {
+            2.
+        } else if self.0 <= 15. {
+            5.
+        } else if self.0 <= 25. {
+            10.
+        } else if self.0 <= 100. {
+            25.
+        } else if self.0 <= 200. {
+            50.
+        } else if self.0 <= 500. {
+            100.
+        } else if self.0 <= 2000. {
+            500.
         } else {
-            100.0
+            1000.
         };
 
         true
