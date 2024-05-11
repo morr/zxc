@@ -4,12 +4,14 @@ use super::*;
 #[reflect(InspectorOptions)]
 pub struct Pawn {
     pub state: PawnState,
+    pub age: u32,
 }
 
 impl Default for Pawn {
     fn default() -> Self {
         Self {
             state: PawnState::Idle,
+            age: 16
         }
     }
 }
