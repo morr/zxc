@@ -28,8 +28,9 @@ pub fn render_simulation_season_ui(
                             top: Val::Px(10.),
                             right: Val::Px(10.),
                             bottom: Val::Px(10.),
-                            left: Val::Px(10.),
+                            left: Val::Px(15.),
                         },
+                        min_width: Val::Px(325.),
                         ..default()
                     },
                     background_color: (*UI_COLOR.clone().set_a(0.85)).into(),
