@@ -11,6 +11,7 @@ mod story_time {
 
         assert_eq!(subject.total_days(), 1);
         assert_eq!(subject.year_day(), 1);
+        assert_eq!(subject.year_season(), 0);
         assert_eq!(subject.day_hour(), CONFIG.starting_scene.day_hour);
         assert_eq!(subject.hour_minute(), 0);
     }
@@ -23,6 +24,7 @@ mod story_time {
         assert_eq!(subject.day_time(), 0.0);
         assert_eq!(subject.total_days(), 1);
         assert_eq!(subject.year_day(), 1);
+        assert_eq!(subject.year_season(), 0);
         assert_eq!(subject.day_hour(), 0);
         assert_eq!(subject.hour_minute(), 0);
     }
@@ -33,6 +35,7 @@ mod story_time {
 
         assert_eq!(subject.total_days(), 1);
         assert_eq!(subject.year_day(), 1);
+        assert_eq!(subject.year_season(), 0);
         assert_eq!(subject.day_hour(), 1);
         assert_eq!(subject.hour_minute(), 10);
     }
@@ -45,6 +48,7 @@ mod story_time {
         assert_eq!(subject.day_time(), 0.5);
         assert_eq!(subject.total_days(), 1);
         assert_eq!(subject.year_day(), 1);
+        assert_eq!(subject.year_season(), 0);
         assert_eq!(subject.day_hour(), 12);
         assert_eq!(subject.hour_minute(), 0);
     }
@@ -57,6 +61,7 @@ mod story_time {
         assert_eq!(subject.day_time(), 0.0);
         assert_eq!(subject.total_days(), 2);
         assert_eq!(subject.year_day(), 2);
+        assert_eq!(subject.year_season(), 0);
         assert_eq!(subject.day_hour(), 0);
         assert_eq!(subject.hour_minute(), 0);
     }
@@ -68,7 +73,25 @@ mod story_time {
         assert_eq!(subject.day_time(), 0.5);
         assert_eq!(subject.total_days(), 2);
         assert_eq!(subject.year_day(), 2);
+        assert_eq!(subject.year_season(), 0);
         assert_eq!(subject.day_hour(), 12);
+        assert_eq!(subject.hour_minute(), 0);
+    }
+
+    #[test]
+    fn two_seasons() {
+        let subject = ElapsedTime(day_to_seconds(CONFIG.time.days_in_season as f32 * 2.));
+
+        assert_eq!(
+            subject.total_days(),
+            (CONFIG.time.days_in_season as f32 * 2.) as u32 + 1
+        );
+        assert_eq!(
+            subject.year_day(),
+            (CONFIG.time.days_in_season as f32 * 2.) as u32 + 1
+        );
+        assert_eq!(subject.year_season(), 2);
+        assert_eq!(subject.day_hour(), 0);
         assert_eq!(subject.hour_minute(), 0);
     }
 
@@ -79,7 +102,63 @@ mod story_time {
         assert_eq!(subject.day_time(), 0.5);
         assert_eq!(subject.total_days(), 2 + CONFIG.time.days_in_year);
         assert_eq!(subject.year_day(), 2);
+        assert_eq!(subject.year_season(), 0);
         assert_eq!(subject.day_hour(), 12);
         assert_eq!(subject.hour_minute(), 0);
+    }
+
+    #[test]
+    fn year_season() {
+        assert_eq!(
+            ElapsedTime(day_to_seconds(CONFIG.time.days_in_season as f32 * 0.)).year_season(),
+            0
+        );
+        assert_eq!(
+            ElapsedTime(day_to_seconds(CONFIG.time.days_in_season as f32 * 1.) - 1.0).year_season(),
+            0
+        );
+        assert_eq!(
+            ElapsedTime(day_to_seconds(CONFIG.time.days_in_season as f32 * 1.)).year_season(),
+            1
+        );
+        assert_eq!(
+            ElapsedTime(day_to_seconds(CONFIG.time.days_in_season as f32 * 1.) + 1.0).year_season(),
+            1
+        );
+    }
+
+    #[test]
+    fn spring() {
+        let subject = ElapsedTime(day_to_seconds(CONFIG.time.days_in_season as f32 * 0.));
+
+        assert_eq!(subject.year_season(), 0);
+    }
+
+    #[test]
+    fn summer() {
+        let subject = ElapsedTime(day_to_seconds(CONFIG.time.days_in_season as f32 * 1.));
+
+        assert_eq!(subject.year_season(), 1);
+    }
+
+    #[test]
+    fn fall() {
+        let subject = ElapsedTime(day_to_seconds(CONFIG.time.days_in_season as f32 * 2.));
+
+        assert_eq!(subject.year_season(), 2);
+    }
+
+    #[test]
+    fn winter() {
+        let subject = ElapsedTime(day_to_seconds(CONFIG.time.days_in_season as f32 * 3.));
+
+        assert_eq!(subject.year_season(), 3);
+    }
+
+    #[test]
+    fn next_year_spring() {
+        let subject = ElapsedTime(day_to_seconds(CONFIG.time.days_in_season as f32 * 4.));
+
+        assert_eq!(subject.year_season(), 0);
     }
 }

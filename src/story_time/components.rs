@@ -100,6 +100,10 @@ impl ElapsedTime {
         self.total_days() % CONFIG.time.days_in_year
     }
 
+    pub fn year_season(&self) -> u32 {
+        ((self.total_days() - 1) / CONFIG.time.days_in_season) % CONFIG.time.seasons_in_year
+    }
+
     pub fn day_hour(&self) -> u32 {
         ((self.0 % CONFIG.time.day_duration) / CONFIG.time.hour_duration).floor() as u32
     }
