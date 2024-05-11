@@ -7,20 +7,67 @@ static UI_COLOR: Lazy<Color> = Lazy::new(|| Color::hex("181a1c").unwrap());
 
 pub fn render_simulation_season_ui(
     mut commands: Commands,
-    // font_assets: Res<FontAssets>,
-    // elapsed_time: Res<ElapsedTime>,
+    font_assets: Res<FontAssets>,
+    elapsed_time: Res<ElapsedTime>,
 ) {
-    commands.spawn(NodeBundle {
-        style: Style {
-            display: Display::Flex,
+    commands
+        .spawn(NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                // height: Val::Px(100.0),
+                justify_content: JustifyContent::Center,
+                ..default()
+            },
             ..default()
-        },
-        background_color: (*UI_COLOR.clone().set_a(0.65)).into(),
-        ..default()
-    });
+        })
+        .with_children(|parent| {
+            parent
+                .spawn(NodeBundle {
+                    style: Style {
+                        padding: UiRect {
+                            top: Val::Px(10.),
+                            right: Val::Px(10.),
+                            bottom: Val::Px(10.),
+                            left: Val::Px(10.),
+                        },
+                        ..default()
+                    },
+                    background_color: (*UI_COLOR.clone().set_a(0.85)).into(),
+                    ..default()
+                })
+                .with_children(|parent| {
+                    parent.spawn((
+                        TextBundle::from_section(
+                            format_season_text(&elapsed_time),
+                            TextStyle {
+                                font: font_assets.fira.clone(),
+                                font_size: 24.,
+                                color: Color::WHITE,
+                            },
+                        ),
+                        SimulationSeasonText {},
+                    ));
+                });
+        });
 }
 
-pub fn update_simulation_season_text() {}
+pub fn update_simulation_season_text(
+    mut query: Query<&mut Text, With<SimulationSeasonText>>,
+    elapsed_time: Res<ElapsedTime>,
+) {
+    println!("update_simulation_season_text: {}", format_season_text(&elapsed_time));
+    let mut text = query.single_mut();
+    text.sections[0].value = format_season_text(&elapsed_time);
+}
+
+fn format_season_text(elapsed_time: &Res<ElapsedTime>) -> String {
+    format!(
+        "Day {} of {:?}, Year {}",
+        elapsed_time.season_day(),
+        elapsed_time.year_season(),
+        elapsed_time.year()
+    )
+}
 
 pub fn render_simulation_speed_ui(
     mut commands: Commands,
@@ -34,17 +81,13 @@ pub fn render_simulation_speed_ui(
             position_type: PositionType::Absolute,
             display: Display::Flex,
             flex_direction: FlexDirection::Column,
-            top: Val::Px(0.0),
-            right: Val::Px(0.0),
-            // width: Val::Px(270.0),
-            // height: Val::Px(100.0),
+            top: Val::Px(0.),
+            right: Val::Px(0.),
             padding: UiRect {
-                // top: Val::Px(50.0),
-                // right: Val::Px(50.0),
-                top: Val::Px(25.0),
-                right: Val::Px(25.0),
-                bottom: Val::Px(10.0),
-                left: Val::Px(10.0),
+                top: Val::Px(25.),
+                right: Val::Px(25.),
+                bottom: Val::Px(10.),
+                left: Val::Px(10.),
             },
             ..default()
         },

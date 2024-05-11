@@ -97,6 +97,10 @@ impl ElapsedTime {
         1 + (self.0 / CONFIG.time.day_duration).floor() as u32
     }
 
+    pub fn year(&self) -> u32 {
+        1 + self.total_days() / CONFIG.time.days_in_year
+    }
+
     pub fn year_day(&self) -> u32 {
         self.total_days() % CONFIG.time.days_in_year
     }
@@ -113,6 +117,10 @@ impl ElapsedTime {
             3 => YearSeason::Winter,
             _ => panic!("season '{}' is out of index", self.season_index()),
         }
+    }
+
+    pub fn season_day(&self) -> u32 {
+        self.year_day() % CONFIG.time.days_in_season
     }
 
     pub fn day_hour(&self) -> u32 {
