@@ -1,7 +1,7 @@
 use super::*;
 
-#[derive(Component)]
-pub struct SimulationSeasonText {}
+// #[derive(Component)]
+// pub struct SimulationSeasonText {}
 
 #[derive(Component)]
 pub struct SimulationSpeedText {}
