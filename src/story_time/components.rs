@@ -1,3 +1,4 @@
+use core::panic;
 use std::time::Duration;
 
 use super::*;
@@ -70,7 +71,7 @@ impl TimeScale {
 pub struct ElapsedTime(pub f32);
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
-pub enum Season {
+pub enum YearSeason {
     Spring,
     Summer,
     Fall,
@@ -100,8 +101,18 @@ impl ElapsedTime {
         self.total_days() % CONFIG.time.days_in_year
     }
 
-    pub fn year_season(&self) -> u32 {
+    pub fn season_index(&self) -> u32 {
         ((self.total_days() - 1) / CONFIG.time.days_in_season) % CONFIG.time.seasons_in_year
+    }
+
+    pub fn year_season(&self) -> YearSeason {
+        match self.season_index() {
+            0 => YearSeason::Spring,
+            1 => YearSeason::Summer,
+            2 => YearSeason::Fall,
+            3 => YearSeason::Winter,
+            _ => panic!("season '{}' is out of index", self.season_index()),
+        }
     }
 
     pub fn day_hour(&self) -> u32 {
