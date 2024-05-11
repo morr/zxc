@@ -70,6 +70,7 @@ pub struct TextureAssets {
 
 #[derive(AssetCollection, Resource)]
 pub struct IconAssets {
+    // https://ghostpixxells.itch.io/pixelfood
     #[asset(path = "icons/bread.png")]
     pub bread: Handle<Image>,
 

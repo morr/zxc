@@ -79,7 +79,7 @@ pub struct TimeConfig {
     /// in game seconds
     pub day_duration: f32,
 
-    pub days_in_month: i32,
+    pub days_in_season: u32,
 
     #[serde(skip)]
     /// in game seconds
