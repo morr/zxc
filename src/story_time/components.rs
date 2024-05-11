@@ -69,6 +69,14 @@ impl TimeScale {
 #[derive(Resource, Deref, DerefMut)]
 pub struct ElapsedTime(pub f32);
 
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+pub enum Season {
+    Spring,
+    Summer,
+    Fall,
+    Winter,
+}
+
 impl Default for ElapsedTime {
     fn default() -> Self {
         Self(CONFIG.time.hour_duration * CONFIG.starting_scene.day_hour as f32)
@@ -80,19 +88,23 @@ impl ElapsedTime {
         self.0.floor()
     }
 
-    pub fn game_time_of_day(&self) -> f32 {
+    pub fn day_time(&self) -> f32 {
         (self.0 % CONFIG.time.day_duration) / CONFIG.time.day_duration
     }
 
-    pub fn game_day(&self) -> u32 {
-        (self.0 / CONFIG.time.day_duration).floor() as u32
+    pub fn total_days(&self) -> u32 {
+        1 + (self.0 / CONFIG.time.day_duration).floor() as u32
     }
 
-    pub fn game_hours(&self) -> u32 {
+    pub fn year_day(&self) -> u32 {
+        self.total_days() % CONFIG.time.days_in_year
+    }
+
+    pub fn day_hour(&self) -> u32 {
         ((self.0 % CONFIG.time.day_duration) / CONFIG.time.hour_duration).floor() as u32
     }
 
-    pub fn game_minutes(&self) -> u32 {
+    pub fn hour_minute(&self) -> u32 {
         (((self.0 % CONFIG.time.day_duration) % CONFIG.time.hour_duration)
             / CONFIG.time.minute_duration)
             .floor() as u32
@@ -101,3 +113,9 @@ impl ElapsedTime {
 
 #[derive(Event, Debug)]
 pub struct NewDayEvent(pub u32);
+
+#[derive(Event, Debug)]
+pub struct NewSeasonEvent(pub u32);
+
+#[derive(Event, Debug)]
+pub struct NewYearEvent(pub u32);

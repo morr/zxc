@@ -190,9 +190,9 @@ pub fn update_simulation_date_time_text(
 fn format_date_time_text(elapsed_time: &Res<ElapsedTime>) -> String {
     format!(
         "Day {} {:02}:{:02}",
-        elapsed_time.game_day(),
-        elapsed_time.game_hours(),
-        elapsed_time.game_minutes(),
+        elapsed_time.total_days(),
+        elapsed_time.day_hour(),
+        elapsed_time.hour_minute(),
     )
 }
 

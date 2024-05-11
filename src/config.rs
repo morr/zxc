@@ -69,10 +69,12 @@ pub struct TileConfig {
 #[derive(Deserialize, Serialize)]
 pub struct StartingSceneConfig {
     pub pawns: i32,
-    pub day_hour: i32,
+    pub day_hour: u32,
     pub farm_width: i32,
     pub farm_height: i32,
 }
+
+const SEASONS_IN_YEAR: u32 = 4;
 
 #[derive(Deserialize, Serialize)]
 pub struct TimeConfig {
@@ -84,15 +86,24 @@ pub struct TimeConfig {
     #[serde(skip)]
     /// in game seconds
     pub hour_duration: f32,
+
     #[serde(skip)]
     /// in game seconds
     pub minute_duration: f32,
+
+    #[serde(skip)]
+    pub seasons_in_year: u32,
+
+    #[serde(skip)]
+    pub days_in_year: u32,
 }
 
 impl TimeConfig {
     pub fn calculate_derived_fields(&mut self) {
         self.hour_duration = self.day_duration / 24.0;
         self.minute_duration = self.hour_duration / 60.0;
+        self.seasons_in_year = SEASONS_IN_YEAR;
+        self.days_in_year = self.days_in_season * self.seasons_in_year;
     }
 }
 

@@ -17,7 +17,7 @@ pub fn progress_on_farm_progress_event(
             entity,
             &mut commands,
             transform.world_pos_to_grid(),
-            elapsed_time.game_day(),
+            elapsed_time.total_days(),
             &assets,
             &mut state_change_event_writer,
         );
@@ -36,7 +36,7 @@ pub fn progress_on_farm_tended_event(
             farm.tendings_done += 1;
             if let FarmState::Planted(planted_state) = &mut farm.state {
                 planted_state.tending_rest_timer.reset();
-                planted_state.tending_rest_started_day = elapsed_time.game_day();
+                planted_state.tending_rest_started_day = elapsed_time.total_days();
             }
         }
     }
@@ -73,7 +73,7 @@ pub fn progress_planted_and_tending_rest_timers(
                 //     elapsed_time.game_day()
                 // );
 
-                if planted_state.tending_rest_started_day != elapsed_time.game_day() {
+                if planted_state.tending_rest_started_day != elapsed_time.total_days() {
                     work_queue.add_task(Task {
                         entity,
                         kind: TaskKind::FarmTending,
