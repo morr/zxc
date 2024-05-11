@@ -1,4 +1,4 @@
-mod elapsed_time {
+mod story_time {
     use zxc::{ElapsedTime, CONFIG};
 
     fn day_duration() -> f32 {
