@@ -16,6 +16,7 @@ RootConfig(
     ),
     time: TimeConfig(
         day_duration: 60.0,
+        days_in_month: 3
     ),
     pawn: PawnConfig(
         speed: 3.0,
