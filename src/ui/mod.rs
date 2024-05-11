@@ -26,14 +26,21 @@ impl Plugin for UiPlugin {
                 ),
             )
             .add_systems(
-                Update,
+                FixedUpdate,
                 (
                     update_simulation_season_text,
                     update_simulation_speed_text,
                     update_simulation_date_time_text,
                     update_food_stock_text,
                     update_pawn_stock_text,
-                    update_debug_info,
+                    update_debug_info
+                )
+                    .chain()
+                    .run_if(in_state(AppState::Playing)),
+            )
+            .add_systems(
+                Update,
+                (
                     handle_debug_info_keys,
                 )
                     .chain()

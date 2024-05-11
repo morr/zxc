@@ -55,7 +55,6 @@ pub fn update_simulation_season_text(
     mut query: Query<&mut Text, With<SimulationSeasonText>>,
     elapsed_time: Res<ElapsedTime>,
 ) {
-    println!("update_simulation_season_text: {}", format_season_text(&elapsed_time));
     let mut text = query.single_mut();
     text.sections[0].value = format_season_text(&elapsed_time);
 }
