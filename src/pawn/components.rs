@@ -47,9 +47,9 @@ impl Pawn {
         self.birth_year_day == ElapsedTime::total_day_to_year_day(total_day)
     }
 
-    // pub fn is_dying(&self) -> bool {
-    //     self.lifetime < CONFIG.time.year_duration
-    // }
+    pub fn is_dying(&self) -> bool {
+        self.lifetime < 0.0
+    }
 }
 
 macro_rules! pawn_states {
