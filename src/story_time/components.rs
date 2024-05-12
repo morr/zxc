@@ -97,6 +97,23 @@ impl ElapsedTime {
         total_day % CONFIG.time.days_in_year + 1
     }
 
+    pub fn year_day_to_season_day(year_day: u32) -> u32 {
+        (year_day - 1) % CONFIG.time.days_in_season + 1
+    }
+
+    pub fn year_day_to_season(year_day: u32) -> YearSeason {
+        let season_index =
+            ((year_day - 1) / CONFIG.time.days_in_season) % CONFIG.time.seasons_in_year;
+
+        match season_index {
+            0 => YearSeason::Spring,
+            1 => YearSeason::Summer,
+            2 => YearSeason::Fall,
+            3 => YearSeason::Winter,
+            _ => panic!("year_day '{}' is out of season index", year_day),
+        }
+    }
+
     pub fn total_seconds(&self) -> f32 {
         self.0.floor()
     }
@@ -113,8 +130,12 @@ impl ElapsedTime {
         Self::total_day_to_year_day(self.total_days())
     }
 
+    // pub fn season_index(&self) -> u32 {
+    //     (self.total_days() / CONFIG.time.days_in_season) % CONFIG.time.seasons_in_year
+    // }
+
     pub fn season_day(&self) -> u32 {
-        self.total_days() % CONFIG.time.days_in_season + 1
+        Self::year_day_to_season_day(self.year_day())
     }
 
     pub fn year(&self) -> u32 {
@@ -122,17 +143,7 @@ impl ElapsedTime {
     }
 
     pub fn year_season(&self) -> YearSeason {
-        match self.season_index() {
-            0 => YearSeason::Spring,
-            1 => YearSeason::Summer,
-            2 => YearSeason::Fall,
-            3 => YearSeason::Winter,
-            _ => panic!("season '{}' is out of index", self.season_index()),
-        }
-    }
-
-    pub fn season_index(&self) -> u32 {
-        (self.total_days() / CONFIG.time.days_in_season) % CONFIG.time.seasons_in_year
+        Self::year_day_to_season(self.year_day())
     }
 
     pub fn day_hour(&self) -> u32 {
