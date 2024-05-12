@@ -1,6 +1,6 @@
 use bevy::sprite::MaterialMesh2dBundle;
 use rand::Rng;
-use rand_distr::{Distribution, UnitCircle};
+use rand_distr::{num_traits::Zero, Distribution, UnitCircle};
 
 use self::structure::{Farm, Warehouse, BASE_HEIGHT, BASE_WIDTH, FARM_TILE_SIZE};
 
@@ -251,7 +251,7 @@ pub fn progress_pawn_dying(
                 0.0
             );
 
-            if pawn.lifetime == 0.0 {
+            if pawn.lifetime.is_zero() {
                 event_writer.send(PawnDeathEvent(entity));
                 commands.entity(entity).remove::<Dying>();
             }
