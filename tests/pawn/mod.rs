@@ -23,10 +23,16 @@ fn lifetime_loss_to_zero_leads_to_death_event() {
         .id();
 
     app.update();
+    // second update needs so some nanoseconds pass
     app.update();
 
+    // lifetime is changed
     let pawn = app.world.get::<Pawn>(pawn_id).unwrap();
     assert_eq!(pawn.lifetime, 0.0);
+
+    // Dying component is removed
+    let maybe_dying = app.world.get::<DyingMarker>(pawn_id);
+    assert!(maybe_dying.is_none());
 
     let mut reader = app
         .world
@@ -36,6 +42,7 @@ fn lifetime_loss_to_zero_leads_to_death_event() {
         .read(app.world.resource::<Events<PawnDeathEvent>>())
         .next();
 
+    // PawnDeathEvent is sent
     assert!(maybe_event.is_some());
     assert_eq!(maybe_event.unwrap().0, pawn_id);
 }
