@@ -122,5 +122,5 @@ pub struct PawnStateText;
 // #[derive(Event, Debug)]
 // pub struct PawnBirthdayEvent(pub Entity);
 //
-// #[derive(Event, Debug)]
-// pub struct PawnDeadEvent(pub Entity);
+#[derive(Event, Debug)]
+pub struct PawnDeathEvent(pub Entity);

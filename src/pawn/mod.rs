@@ -11,7 +11,7 @@ impl Plugin for PawnPlugin {
         app.register_type::<Pawn>()
             .add_event::<EntityStateChangeEvent<PawnState>>()
             // .add_event::<PawnBirthdayEvent>()
-            // .add_event::<PawnDeathEvent>()
+            .add_event::<PawnDeathEvent>()
             .add_systems(OnExit(AppState::Loading), spawn_pawns.after(spawn_base))
             .add_systems(
                 FixedUpdate,
@@ -21,6 +21,7 @@ impl Plugin for PawnPlugin {
                     wander_idle_pawns,
                     progress_pawn_daily,
                     progress_pawn_dying,
+                    progress_pawn_death,
                     // progress_pawn_age,
                     // progress_pawn_lifetime,
                 )

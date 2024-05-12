@@ -242,19 +242,36 @@ pub fn progress_pawn_dying(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Pawn), With<Dying>>,
-    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    mut event_writer: EventWriter<PawnDeathEvent>,
 ) {
     for (entity, mut pawn) in query.iter_mut() {
-        pawn.lifetime -= time_scale.scale_to_seconds(time.delta_seconds());
+        if pawn.lifetime >= 0. {
+            pawn.lifetime -= time_scale.scale_to_seconds(time.delta_seconds());
 
-        if pawn.lifetime <= 0.0 {
-            pawn.change_state(
-                PawnState::Dead,
-                entity,
-                &mut commands,
-                &mut state_change_event_writer,
-            );
+            if pawn.lifetime <= 0.0 {
+                event_writer.send(PawnDeathEvent(entity));
+                commands.entity(entity).remove::<Dying>();
+            }
         }
+    }
+}
+
+pub fn progress_pawn_death(
+    mut commands: Commands,
+    mut event_reader: EventReader<PawnDeathEvent>,
+    mut query: Query<&mut Pawn>,
+    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+) {
+    for event in event_reader.read() {
+        println!("{:?}", event);
+        let mut pawn = query.get_mut(event.0).unwrap();
+
+        pawn.change_state(
+            PawnState::Dead,
+            event.0,
+            &mut commands,
+            &mut state_change_event_writer,
+        );
     }
 }
 
