@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use super::*;
 
-#[derive(Debug, Component, InspectorOptions, Reflect)]
+#[derive(Debug, Component, Default, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
 pub struct Workable {
     /// in seconds
