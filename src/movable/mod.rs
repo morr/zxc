@@ -11,6 +11,10 @@ impl Plugin for MovablePlugin {
             .add_systems(
                 Update,
                 move_moving_entities.run_if(in_state(SimulationState::Running)),
+            )
+            .add_systems(
+                FixedUpdate,
+                stop_movable_on_death.run_if(in_state(AppState::Playing)),
             );
     }
 }

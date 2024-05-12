@@ -244,12 +244,11 @@ pub fn progress_pawn_dying(
     mut query: Query<(Entity, &mut Pawn), With<DyingMarker>>,
     mut event_writer: EventWriter<PawnDeathEvent>,
 ) {
-    println!("{} {}", time.delta_seconds(), time_scale.scale_to_seconds(time.delta_seconds()));
     for (entity, mut pawn) in query.iter_mut() {
         if pawn.lifetime > 0. {
             pawn.lifetime = f32::max(
                 pawn.lifetime - time_scale.scale_to_seconds(time.delta_seconds()),
-                0.0
+                0.0,
             );
 
             if pawn.lifetime.is_zero() {
@@ -268,16 +267,20 @@ pub fn progress_pawn_death(
     mut work_queue: ResMut<TasksQueue>,
 ) {
     for event in event_reader.read() {
-        println!("{:?}", event);
+        // println!("{:?}", event);
+
+        let entity = event.0;
         let mut pawn = query.get_mut(event.0).unwrap();
 
+        // set pawn dead
         let prev_state = pawn.change_state(
             PawnState::Dead,
-            event.0,
+            entity,
             &mut commands,
             &mut state_change_event_writer,
         );
 
+        // return pawn task back to tasks queue
         if let PawnState::WorkAssigned(task) | PawnState::Working(task) = prev_state {
             work_queue.add_task(task);
         }

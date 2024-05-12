@@ -74,3 +74,21 @@ fn move_to_target_location(
         transform.translation += (direction * distance_to_move).extend(0.0);
     }
 }
+
+pub fn stop_movable_on_death(
+    mut commands: Commands,
+    mut event_reader: EventReader<PawnDeathEvent>,
+    mut query: Query<&mut Movable>,
+    mut movable_state_change_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
+) {
+    for event in event_reader.read() {
+        let entity = event.0;
+        let mut movable = query.get_mut(event.0).unwrap();
+        // println!("{:?}", event);
+        movable.to_idle(
+            entity,
+            &mut commands,
+            &mut movable_state_change_event_writer,
+        );
+    }
+}
