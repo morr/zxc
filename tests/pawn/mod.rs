@@ -18,7 +18,7 @@ fn lifetime_loss_to_zero_leads_to_death_event() {
                 lifetime: 0.0001,
                 ..default()
             },
-            Dying,
+            DyingMarker,
         ))
         .id();
 

@@ -231,7 +231,7 @@ pub fn progress_pawn_daily(
             pawn.lifetime -= CONFIG.time.day_duration;
 
             if pawn.lifetime <= CONFIG.time.day_duration {
-                commands.entity(entity).insert(Dying);
+                commands.entity(entity).insert(DyingMarker);
             }
         }
     }
@@ -241,7 +241,7 @@ pub fn progress_pawn_dying(
     mut commands: Commands,
     time: Res<Time>,
     time_scale: Res<TimeScale>,
-    mut query: Query<(Entity, &mut Pawn), With<Dying>>,
+    mut query: Query<(Entity, &mut Pawn), With<DyingMarker>>,
     mut event_writer: EventWriter<PawnDeathEvent>,
 ) {
     println!("{} {}", time.delta_seconds(), time_scale.scale_to_seconds(time.delta_seconds()));
@@ -254,7 +254,7 @@ pub fn progress_pawn_dying(
 
             if pawn.lifetime.is_zero() {
                 event_writer.send(PawnDeathEvent(entity));
-                commands.entity(entity).remove::<Dying>();
+                commands.entity(entity).remove::<DyingMarker>();
             }
         }
     }

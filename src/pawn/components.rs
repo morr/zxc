@@ -16,7 +16,7 @@ pub struct Pawn {
 }
 
 #[derive(Component)]
-pub struct Dying;
+pub struct DyingMarker;
 
 
 impl Default for Pawn {
