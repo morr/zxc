@@ -208,25 +208,71 @@ mod story_time {
     fn total_day_to_year_day() {
         assert_eq!(ElapsedTime::total_day_to_year_day(0), 1);
         assert_eq!(ElapsedTime::total_day_to_year_day(1), 2);
-        assert_eq!(ElapsedTime::total_day_to_year_day(CONFIG.time.days_in_year), 1);
-        assert_eq!(ElapsedTime::total_day_to_year_day(CONFIG.time.days_in_year * 10), 1);
-        assert_eq!(ElapsedTime::total_day_to_year_day(CONFIG.time.days_in_year * 10 + 1), 2);
+        assert_eq!(
+            ElapsedTime::total_day_to_year_day(CONFIG.time.days_in_year),
+            1
+        );
+        assert_eq!(
+            ElapsedTime::total_day_to_year_day(CONFIG.time.days_in_year * 10),
+            1
+        );
+        assert_eq!(
+            ElapsedTime::total_day_to_year_day(CONFIG.time.days_in_year * 10 + 1),
+            2
+        );
     }
 
     #[test]
     fn year_day_to_season() {
         assert_eq!(ElapsedTime::year_day_to_season(1), YearSeason::Spring);
-        assert_eq!(ElapsedTime::year_day_to_season(CONFIG.time.days_in_season - 1), YearSeason::Spring);
-        assert_eq!(ElapsedTime::year_day_to_season(CONFIG.time.days_in_season), YearSeason::Spring);
-        assert_eq!(ElapsedTime::year_day_to_season(CONFIG.time.days_in_season + 1), YearSeason::Summer);
-        assert_eq!(ElapsedTime::year_day_to_season(CONFIG.time.days_in_season * 2 + 1), YearSeason::Fall);
-        assert_eq!(ElapsedTime::year_day_to_season(CONFIG.time.days_in_season * 3 + 1), YearSeason::Winter);
+        assert_eq!(
+            ElapsedTime::year_day_to_season(CONFIG.time.days_in_season - 1),
+            YearSeason::Spring
+        );
+        assert_eq!(
+            ElapsedTime::year_day_to_season(CONFIG.time.days_in_season),
+            YearSeason::Spring
+        );
+        assert_eq!(
+            ElapsedTime::year_day_to_season(CONFIG.time.days_in_season + 1),
+            YearSeason::Summer
+        );
+        assert_eq!(
+            ElapsedTime::year_day_to_season(CONFIG.time.days_in_season * 2 + 1),
+            YearSeason::Fall
+        );
+        assert_eq!(
+            ElapsedTime::year_day_to_season(CONFIG.time.days_in_season * 3 + 1),
+            YearSeason::Winter
+        );
     }
 
     #[test]
     fn year_day_to_season_day() {
         assert_eq!(ElapsedTime::year_day_to_season_day(1), 1);
-        assert_eq!(ElapsedTime::year_day_to_season_day(CONFIG.time.days_in_season), CONFIG.time.days_in_season);
-        assert_eq!(ElapsedTime::year_day_to_season_day(CONFIG.time.days_in_season + 1), 1);
+        assert_eq!(
+            ElapsedTime::year_day_to_season_day(CONFIG.time.days_in_season),
+            CONFIG.time.days_in_season
+        );
+        assert_eq!(
+            ElapsedTime::year_day_to_season_day(CONFIG.time.days_in_season + 1),
+            1
+        );
+    }
+
+    #[test]
+    fn year_day_to_season_day_label() {
+        assert_eq!(
+            ElapsedTime::year_day_to_season_day_label(1),
+            "1st of Spring"
+        );
+        assert_eq!(
+            ElapsedTime::year_day_to_season_day_label(CONFIG.time.days_in_season),
+            format!("{}th of Spring", CONFIG.time.days_in_season)
+        );
+        assert_eq!(
+            ElapsedTime::year_day_to_season_day_label(CONFIG.time.days_in_season + 1),
+            "1st of Summer"
+        );
     }
 }

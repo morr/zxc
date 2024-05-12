@@ -114,6 +114,19 @@ impl ElapsedTime {
         }
     }
 
+    pub fn year_day_to_season_day_label(year_day: u32) -> String {
+        format!(
+            "{} of {:?}",
+            match Self::year_day_to_season_day(year_day) {
+                1 => "1st".to_string(),
+                2 => "2nd".to_string(),
+                3 => "3rd".to_string(),
+                other => format!("{}th", other),
+            },
+            Self::year_day_to_season(year_day),
+        )
+    }
+
     pub fn total_seconds(&self) -> f32 {
         self.0.floor()
     }

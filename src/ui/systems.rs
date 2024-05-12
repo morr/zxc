@@ -247,14 +247,8 @@ pub fn update_simulation_date_time_text(
 
 fn format_date_time_text(elapsed_time: &Res<ElapsedTime>) -> String {
     format!(
-        "{} of {:?}, {}y, {:02}:{:02}",
-        match elapsed_time.season_day() {
-            1 => "1st".to_string(),
-            2 => "2nd".to_string(),
-            3 => "3rd".to_string(),
-            other => format!("{}th", other)
-        },
-        elapsed_time.year_season(),
+        "{}, {}y, {:02}:{:02}",
+        ElapsedTime::year_day_to_season_day_label(elapsed_time.year_day()),
         elapsed_time.year(),
         elapsed_time.day_hour(),
         elapsed_time.hour_minute()
