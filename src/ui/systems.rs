@@ -3,8 +3,6 @@ pub use once_cell::sync::Lazy;
 
 use super::*;
 
-static UI_COLOR: Lazy<Color> = Lazy::new(|| Color::hex("181a1c").unwrap());
-
 // pub fn render_simulation_season_ui(
 //     mut commands: Commands,
 //     font_assets: Res<FontAssets>,
