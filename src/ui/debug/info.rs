@@ -35,7 +35,7 @@ pub fn render_debug_info(
                         color: Color::WHITE,
                     },
                 ),
-                DebugStatusTextUIMarker {},
+                DebugStatusTextUIMarker::default(),
             ));
 
             container_parent.spawn((
@@ -61,7 +61,7 @@ pub fn render_debug_info(
                     },
                     ..default()
                 }),
-                DebugHelpBlockUIMarker {},
+                DebugHelpBlockUIMarker::default(),
             ));
         });
 }

@@ -1,10 +1,10 @@
 use super::*;
 use bevy::ecs::system::EntityCommands;
 
-#[derive(Component)]
+#[derive(Component, Default)]
 struct PawnStockTextUIMarker {}
 
-#[derive(Component)]
+#[derive(Component, Default)]
 struct FoodStockTextUIMarker {}
 
 pub struct UiItemsStockPlugin;
@@ -43,7 +43,7 @@ fn render_items_stock_ui(
 
     spawn_item::<PawnStockTextUIMarker>(
         &mut root,
-        PawnStockTextUIMarker {},
+        PawnStockTextUIMarker::default(),
         pawns_query.iter().count() as u32,
         font_assets.fira.clone(),
         icon_assets.pawns.clone(),
@@ -51,7 +51,7 @@ fn render_items_stock_ui(
 
     spawn_item::<FoodStockTextUIMarker>(
         &mut root,
-        FoodStockTextUIMarker {},
+        FoodStockTextUIMarker::default(),
         food.0,
         font_assets.fira.clone(),
         icon_assets.bread.clone(),

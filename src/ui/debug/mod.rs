@@ -2,11 +2,11 @@ use crate::*;
 
 expose_submodules!(grid, movepath, navmesh, info);
 
-#[derive(Component)]
-struct DebugStatusTextUIMarker {}
+#[derive(Component, Default)]
+pub struct DebugStatusTextUIMarker {}
 
-#[derive(Component)]
-struct DebugHelpBlockUIMarker {}
+#[derive(Component, Default)]
+pub struct DebugHelpBlockUIMarker {}
 
 pub struct UiDebugPlugin;
 

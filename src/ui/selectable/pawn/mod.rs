@@ -1,12 +1,12 @@
 use super::*;
 
-#[derive(Component)]
+#[derive(Component, Default)]
 struct PawnAgeTextUIMarker {}
 
-#[derive(Component)]
+#[derive(Component, Default)]
 struct PawnLifetimeTextUIMarker {}
 
-#[derive(Component)]
+#[derive(Component, Default)]
 struct PawnBirthdayTextUIMarker {}
 
 pub struct UiPawnPlugin;
@@ -72,7 +72,7 @@ fn render_pawn_ui(
                         color: Color::WHITE,
                     },
                 ),
-                PawnAgeTextUIMarker {},
+                PawnAgeTextUIMarker::default(),
             ));
             parent.spawn((
                 TextBundle::from_section(
@@ -83,7 +83,7 @@ fn render_pawn_ui(
                         color: Color::WHITE,
                     },
                 ),
-                PawnLifetimeTextUIMarker {},
+                PawnLifetimeTextUIMarker::default(),
             ));
             parent.spawn((
                 TextBundle::from_section(
@@ -94,7 +94,7 @@ fn render_pawn_ui(
                         color: Color::WHITE,
                     },
                 ),
-                PawnBirthdayTextUIMarker {},
+                PawnBirthdayTextUIMarker::default(),
             ));
         });
 }

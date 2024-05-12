@@ -1,9 +1,9 @@
 use super::*;
 
-#[derive(Component)]
+#[derive(Component, Default)]
 struct SimulationSpeedTextUIMarker {}
 
-#[derive(Component)]
+#[derive(Component, Default)]
 struct SimulationDateTimeTextUIMarker {}
 
 pub struct UiSimulationStatePlugin;
@@ -61,7 +61,7 @@ fn render_simulation_speed_ui(
                         color: Color::WHITE,
                     },
                 ),
-                SimulationSpeedTextUIMarker {},
+                SimulationSpeedTextUIMarker::default(),
             ));
             parent.spawn((
                 TextBundle::from_section(
@@ -72,7 +72,7 @@ fn render_simulation_speed_ui(
                         color: Color::WHITE,
                     },
                 ),
-                SimulationDateTimeTextUIMarker {},
+                SimulationDateTimeTextUIMarker::default(),
             ));
         });
 }
