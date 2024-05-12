@@ -245,10 +245,13 @@ pub fn progress_pawn_dying(
     mut event_writer: EventWriter<PawnDeathEvent>,
 ) {
     for (entity, mut pawn) in query.iter_mut() {
-        if pawn.lifetime >= 0. {
-            pawn.lifetime -= time_scale.scale_to_seconds(time.delta_seconds());
+        if pawn.lifetime > 0. {
+            pawn.lifetime = f32::max(
+                pawn.lifetime - time_scale.scale_to_seconds(time.delta_seconds()),
+                0.0
+            );
 
-            if pawn.lifetime <= 0.0 {
+            if pawn.lifetime == 0.0 {
                 event_writer.send(PawnDeathEvent(entity));
                 commands.entity(entity).remove::<Dying>();
             }
