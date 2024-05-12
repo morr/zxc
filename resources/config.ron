@@ -25,7 +25,7 @@ RootConfig(
         // lifetime_span: (60, 80)
         spawn_age: (1, 1),
         // lifetime_span: (60, 80)
-        lifetime_span: (1, 2)
+        lifetime_span: (0, 1)
     ),
     farming: FarmingConfig(
         basic_yield_percent: 0.25,

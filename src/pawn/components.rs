@@ -10,9 +10,14 @@ pub struct Pawn {
 
     pub age: u32,
     pub birth_year_day: u32,
+
     /// in seconds
     pub lifetime: f32,
 }
+
+#[derive(Component)]
+pub struct Dying;
+
 
 impl Default for Pawn {
     fn default() -> Self {
@@ -114,5 +119,8 @@ pawn_states!(
 #[derive(Component)]
 pub struct PawnStateText;
 
-#[derive(Event, Debug)]
-pub struct PawnBirthdayEvent(pub Entity);
+// #[derive(Event, Debug)]
+// pub struct PawnBirthdayEvent(pub Entity);
+//
+// #[derive(Event, Debug)]
+// pub struct PawnDeadEvent(pub Entity);
