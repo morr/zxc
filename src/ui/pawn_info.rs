@@ -91,7 +91,7 @@ pub fn update_pawn_birthday_text(
 
 fn format_pawn_birthday_text(maybe_pawn: Option<&Pawn>) -> String {
     if let Some(pawn) = maybe_pawn {
-        format!("Birthday: {}", pawn.birthday)
+        format!("Birthday: {}", pawn.birth_year_day)
     } else {
         "<NONE>".into()
     }

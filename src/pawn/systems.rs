@@ -214,7 +214,7 @@ pub fn test_pawn_birthday(
 ) {
     for event in event_reader.read() {
         for (entity, pawn) in query.iter() {
-            if pawn.birthday == event.0 {
+            if pawn.is_birthday(event.0) {
                 event_writer.send(PawnBirthdayEvent(entity));
             }
         }

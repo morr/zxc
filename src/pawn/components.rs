@@ -8,7 +8,7 @@ use rand::Rng;
 pub struct Pawn {
     pub state: PawnState,
     pub age: u32,
-    pub birthday: u32,
+    pub birth_year_day: u32,
 }
 
 impl Default for Pawn {
@@ -17,11 +17,13 @@ impl Default for Pawn {
 
         Self {
             state: PawnState::Idle,
+            // age: 15,
+            // birth_year_day: 2,
             age: rng.gen_range(RangeInclusive::new(
                 CONFIG.pawn.spawn_ages.0,
                 CONFIG.pawn.spawn_ages.1,
             )),
-            birthday: rng.gen_range(0..CONFIG.time.days_in_year),
+            birth_year_day: rng.gen_range(0..CONFIG.time.days_in_year),
         }
     }
 }
@@ -32,6 +34,10 @@ impl Pawn {
             PawnState::WorkAssigned(task) | PawnState::Working(task) => task,
             _ => panic!("Pawn must be in a task-assigned state"),
         }
+    }
+
+    pub fn is_birthday(&self, year_day: u32) -> bool {
+        self.birth_year_day == year_day
     }
 }
 
