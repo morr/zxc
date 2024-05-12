@@ -1,4 +1,5 @@
 use std::ops::RangeInclusive;
+use std::mem;
 
 use super::*;
 use rand::Rng;
@@ -83,7 +84,7 @@ macro_rules! pawn_states {
                 entity: Entity,
                 commands: &mut Commands,
                 state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<PawnState>>,
-            ) {
+            ) -> PawnState {
                 // println!("PawnState {:?}=>{:?}", self.state, new_state);
                 // Remove the old state component
                 match &self.state {
@@ -92,8 +93,8 @@ macro_rules! pawn_states {
                     },)*
                 }
 
-                // Set the new state
-                self.state = new_state;
+                // Set the new state and put old state into prev_state
+                let prev_state = mem::replace(&mut self.state, new_state);
 
                 // Add the new component
                 match &self.state {
@@ -103,6 +104,7 @@ macro_rules! pawn_states {
                 }
 
                 state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+                prev_state
             }
         }
     };

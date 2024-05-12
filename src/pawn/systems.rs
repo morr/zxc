@@ -265,17 +265,22 @@ pub fn progress_pawn_death(
     mut event_reader: EventReader<PawnDeathEvent>,
     mut query: Query<&mut Pawn>,
     mut state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    mut work_queue: ResMut<TasksQueue>,
 ) {
     for event in event_reader.read() {
         println!("{:?}", event);
         let mut pawn = query.get_mut(event.0).unwrap();
 
-        pawn.change_state(
+        let prev_state = pawn.change_state(
             PawnState::Dead,
             event.0,
             &mut commands,
             &mut state_change_event_writer,
         );
+
+        if let PawnState::WorkAssigned(task) | PawnState::Working(task) = prev_state {
+            work_queue.add_task(task);
+        }
     }
 }
 
