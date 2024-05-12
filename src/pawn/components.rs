@@ -8,6 +8,7 @@ use rand::Rng;
 pub struct Pawn {
     pub state: PawnState,
     pub age: u32,
+    pub birthday: u32,
 }
 
 impl Default for Pawn {
@@ -17,6 +18,7 @@ impl Default for Pawn {
         Self {
             state: PawnState::Idle,
             age: rng.gen_range(RangeInclusive::new(CONFIG.pawn.spawn_ages.0, CONFIG.pawn.spawn_ages.1)),
+            birthday: rng.gen_range(1..=CONFIG.time.days_in_year)
         }
     }
 }
