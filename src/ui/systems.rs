@@ -65,7 +65,7 @@ pub fn render_simulation_speed_ui(
                 right: Val::Px(0.),
                 display: Display::Flex,
                 flex_direction: FlexDirection::Column,
-                min_width: Val::Px(255.),
+                min_width: Val::Px(270.),
                 row_gap: Val::Px(3.),
                 padding: UiRect {
                     top: Val::Px(25.),
