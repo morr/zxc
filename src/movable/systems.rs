@@ -31,7 +31,7 @@ fn move_to_target_location(
     event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     if movable.path.is_empty() {
-        movable.to_idle(entity, commands, event_writer);
+        movable.to_idle(entity, commands, Some(event_writer));
         return;
     }
 
@@ -79,16 +79,11 @@ pub fn stop_movable_on_death(
     mut commands: Commands,
     mut event_reader: EventReader<PawnDeathEvent>,
     mut query: Query<&mut Movable>,
-    mut movable_state_change_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     for event in event_reader.read() {
         let entity = event.0;
         let mut movable = query.get_mut(event.0).unwrap();
         // println!("{:?}", event);
-        movable.to_idle(
-            entity,
-            &mut commands,
-            &mut movable_state_change_event_writer,
-        );
+        movable.to_idle(entity, &mut commands, None);
     }
 }

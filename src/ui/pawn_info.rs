@@ -100,9 +100,7 @@ pub fn update_pawn_lifetime_text(
 
 fn format_pawn_lifetime_text(maybe_pawn: Option<&Pawn>) -> String {
     if let Some(pawn) = maybe_pawn {
-        if pawn.is_dying() {
-            "<DYING>".into()
-        } else if pawn.state == PawnState::Dead {
+        if pawn.state == PawnState::Dead {
             "<DEAD>".into()
         } else {
             format!(

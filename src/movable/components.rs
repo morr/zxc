@@ -36,11 +36,14 @@ impl Movable {
         &mut self,
         entity: Entity,
         commands: &mut Commands,
-        movable_state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
+        maybe_movable_state_change_event_writer: Option<&mut EventWriter<EntityStateChangeEvent<MovableState>>>,
     ) {
         self.stop_moving(entity, commands);
         self.state = MovableState::Idle;
-        movable_state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+
+        if let Some(movable_state_change_event_writer) = maybe_movable_state_change_event_writer {
+            movable_state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+        }
     }
 
     pub fn to_moving(
