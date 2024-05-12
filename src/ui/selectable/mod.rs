@@ -33,7 +33,7 @@ fn render_selectable_container(mut commands: Commands) {
                 },
                 ..default()
             },
-            background_color: (*Color::hex("181a1c").unwrap().set_a(0.25)).into(),
+            background_color: (*Color::hex("181a1c").unwrap().set_a(0.5)).into(),
             ..default()
         },
         SelectableContainerUIMarker::default(),

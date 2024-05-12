@@ -37,27 +37,29 @@ fn render_pawn_ui(
     pawn_query: Query<&Pawn>,
 ) {
     let pawn = pawn_query.iter().next();
+    let container_id = container_query.get_single().unwrap();
 
     commands
-        .spawn(NodeBundle {
-            style: Style {
-                position_type: PositionType::Absolute,
-                display: Display::Flex,
-                flex_direction: FlexDirection::Column,
-                row_gap: Val::Px(4.),
-                top: Val::Px(8.),
-                left: Val::Px(100.),
-                padding: UiRect {
-                    top: Val::Px(10.),
-                    right: Val::Px(10.),
-                    bottom: Val::Px(10.),
-                    left: Val::Px(10.),
-                },
-                ..default()
-            },
-            background_color: (*UI_COLOR.clone().set_a(0.85)).into(),
-            ..default()
-        })
+        .entity(container_id)
+        // .spawn(NodeBundle {
+        //     style: Style {
+        //         position_type: PositionType::Absolute,
+        //         display: Display::Flex,
+        //         flex_direction: FlexDirection::Column,
+        //         row_gap: Val::Px(4.),
+        //         top: Val::Px(8.),
+        //         left: Val::Px(100.),
+        //         padding: UiRect {
+        //             top: Val::Px(10.),
+        //             right: Val::Px(10.),
+        //             bottom: Val::Px(10.),
+        //             left: Val::Px(10.),
+        //         },
+        //         ..default()
+        //     },
+        //     background_color: (*UI_COLOR.clone().set_a(0.85)).into(),
+        //     ..default()
+        // })
         .with_children(|parent| {
             parent.spawn(TextBundle::from_section(
                 "PAWN",
