@@ -13,23 +13,27 @@ pub struct UiPawnPlugin;
 
 impl Plugin for UiPawnPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnExit(AppState::Loading), render_pawn_ui)
-            .add_systems(
-                FixedUpdate,
-                (
-                    update_pawn_age_text,
-                    update_pawn_lifetime_text,
-                    update_pawn_birthday_text,
-                )
-                    .chain()
-                    .run_if(in_state(AppState::Playing)),
-            );
+        app.add_systems(
+            OnExit(AppState::Loading),
+            render_pawn_ui.after(render_selectable_container),
+        )
+        .add_systems(
+            FixedUpdate,
+            (
+                update_pawn_age_text,
+                update_pawn_lifetime_text,
+                update_pawn_birthday_text,
+            )
+                .chain()
+                .run_if(in_state(AppState::Playing)),
+        );
     }
 }
 
 fn render_pawn_ui(
     mut commands: Commands,
     font_assets: Res<FontAssets>,
+    container_query: Query<Entity, With<SelectableContainerUIMarker>>,
     pawn_query: Query<&Pawn>,
 ) {
     let pawn = pawn_query.iter().next();

@@ -3,26 +3,28 @@ use super::*;
 expose_submodules!(pawn, farm);
 
 #[derive(Component, Default)]
-struct SelectableUIMarker {}
+struct SelectableContainerUIMarker {}
 
 pub struct UiSelectablePlugin;
 
 impl Plugin for UiSelectablePlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((UiPawnPlugin, UiFarmPlugin))
-            .add_systems(OnExit(AppState::Loading), render_container);
+        app
+            .add_systems(OnExit(AppState::Loading), render_selectable_container)
+            .add_plugins((UiPawnPlugin, UiFarmPlugin));
     }
 }
 
-fn render_container(mut commands: Commands) {
+fn render_selectable_container(mut commands: Commands) {
     commands.spawn((
         NodeBundle {
             style: Style {
                 position_type: PositionType::Absolute,
                 display: Display::Flex,
                 flex_direction: FlexDirection::Column,
-                bottom: Val::Px(0.0),
-                right: Val::Px(0.0),
+                row_gap: Val::Px(8.),
+                top: Val::Px(8.),
+                left: Val::Px(100.),
                 padding: UiRect {
                     top: Val::Px(10.0),
                     right: Val::Px(10.0),
@@ -34,6 +36,6 @@ fn render_container(mut commands: Commands) {
             background_color: (*Color::hex("181a1c").unwrap().set_a(0.25)).into(),
             ..default()
         },
-        SelectableUIMarker::default(),
+        SelectableContainerUIMarker::default(),
     ));
 }
