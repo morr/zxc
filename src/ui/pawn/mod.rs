@@ -1,4 +1,14 @@
 use super::*;
+
+#[derive(Component)]
+pub struct PawnAgeTextUI {}
+
+#[derive(Component)]
+pub struct PawnLifetimeTextUI {}
+
+#[derive(Component)]
+pub struct PawnBirthdayTextUI {}
+
 pub fn render_pawn_ui(
     mut commands: Commands,
     font_assets: Res<FontAssets>,

@@ -3,7 +3,8 @@ use crate::*;
 expose_submodules!(
     components,
     systems,
-    pawn_info,
+    stocks,
+    pawns,
     debug
 );
 
