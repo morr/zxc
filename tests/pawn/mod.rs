@@ -1,7 +1,4 @@
-use std::time::Duration;
-
 use bevy::time::TimePlugin;
-use bevy_inspector_egui::egui::debug_text::print;
 
 use super::*;
 
