@@ -237,7 +237,7 @@ pub fn progress_pawn_daily(
     }
 }
 
-pub fn progress_pawn_dyuing(
+pub fn progress_pawn_dying(
     mut commands: Commands,
     time: Res<Time>,
     time_scale: Res<TimeScale>,

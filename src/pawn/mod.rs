@@ -20,7 +20,7 @@ impl Plugin for PawnPlugin {
                     update_pawn_state_text,
                     wander_idle_pawns,
                     progress_pawn_daily,
-                    progress_pawn_dyuing,
+                    progress_pawn_dying,
                     // progress_pawn_age,
                     // progress_pawn_lifetime,
                 )
