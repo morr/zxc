@@ -17,8 +17,8 @@ impl Default for Pawn {
 
         Self {
             state: PawnState::Idle,
-            // age: 15,
-            // birth_year_day: 2,
+            // age: 1,
+            // birth_year_day: 1,
             age: rng.gen_range(RangeInclusive::new(
                 CONFIG.pawn.spawn_ages.0,
                 CONFIG.pawn.spawn_ages.1,
@@ -36,8 +36,8 @@ impl Pawn {
         }
     }
 
-    pub fn is_birthday(&self, year_day: u32) -> bool {
-        self.birth_year_day == year_day
+    pub fn is_birthday(&self, total_day: u32) -> bool {
+        self.birth_year_day == ElapsedTime::total_day_to_year_day(total_day)
     }
 }
 

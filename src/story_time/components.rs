@@ -93,6 +93,10 @@ impl Default for ElapsedTime {
 }
 
 impl ElapsedTime {
+    pub fn total_day_to_year_day(total_day: u32) -> u32 {
+        total_day % CONFIG.time.days_in_year + 1
+    }
+
     pub fn total_seconds(&self) -> f32 {
         self.0.floor()
     }
@@ -106,7 +110,7 @@ impl ElapsedTime {
     }
 
     pub fn year_day(&self) -> u32 {
-        self.total_days() % CONFIG.time.days_in_year + 1
+        Self::total_day_to_year_day(self.total_days())
     }
 
     pub fn season_day(&self) -> u32 {

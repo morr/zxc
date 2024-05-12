@@ -6,14 +6,14 @@ pub fn track_time(
     mut elapsed_time: ResMut<ElapsedTime>,
     mut event_writer: EventWriter<NewDayEvent>,
 ) {
-    let prev_day= elapsed_time.year_day();
+    let prev_day= elapsed_time.total_days();
     elapsed_time.0 += time_scale.scale_to_seconds(time.delta_seconds());
-    let new_day = elapsed_time.year_day();
+    let new_day = elapsed_time.total_days();
 
     if new_day != prev_day {
-        let event = NewDayEvent(new_day);
-        // println!("{:?}", event);
-        event_writer.send(event);
+        for total_day in (prev_day + 1)..=new_day {
+            event_writer.send(NewDayEvent(total_day));
+        }
     }
 }
 
