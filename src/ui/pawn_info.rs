@@ -1,6 +1,5 @@
 use super::*;
-
-pub fn render_pawn_ui(
+ pub fn render_pawn_ui(
     mut commands: Commands,
     font_assets: Res<FontAssets>,
     pawn_query: Query<&Pawn>,
@@ -49,6 +48,17 @@ pub fn render_pawn_ui(
             ));
             parent.spawn((
                 TextBundle::from_section(
+                    format_pawn_lifetime_text(pawn),
+                    TextStyle {
+                        font: font_assets.fira.clone(),
+                        font_size: 16.,
+                        color: Color::WHITE,
+                    },
+                ),
+                PawnLifetimeTextUI {},
+            ));
+            parent.spawn((
+                TextBundle::from_section(
                     format_pawn_birthday_text(pawn),
                     TextStyle {
                         font: font_assets.fira.clone(),
@@ -74,6 +84,23 @@ pub fn update_pawn_age_text(
 fn format_pawn_age_text(maybe_pawn: Option<&Pawn>) -> String {
     if let Some(pawn) = maybe_pawn {
         format!("Age: {}", pawn.age)
+    } else {
+        "<NONE>".into()
+    }
+}
+pub fn update_pawn_lifetime_text(
+    mut text_query: Query<&mut Text, With<PawnLifetimeTextUI>>,
+    pawn_query: Query<&Pawn>,
+) {
+    let mut text = text_query.single_mut();
+    let pawn = pawn_query.iter().next();
+
+    text.sections[0].value = format_pawn_lifetime_text(pawn);
+}
+
+fn format_pawn_lifetime_text(maybe_pawn: Option<&Pawn>) -> String {
+    if let Some(pawn) = maybe_pawn {
+        format!("Lifetime: {}", pawn.lifetime)
     } else {
         "<NONE>".into()
     }

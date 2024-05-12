@@ -6,6 +6,9 @@ pub static UI_COLOR: Lazy<Color> = Lazy::new(|| Color::hex("181a1c").unwrap());
 pub struct PawnAgeTextUI {}
 
 #[derive(Component)]
+pub struct PawnLifetimeTextUI {}
+
+#[derive(Component)]
 pub struct PawnBirthdayTextUI {}
 
 #[derive(Component)]

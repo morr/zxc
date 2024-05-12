@@ -10,7 +10,7 @@ pub struct Pawn {
     pub age: u32,
     pub birth_year_day: u32,
     // in seconds
-    pub lifetime: u32,
+    pub lifetime: f32,
 }
 
 impl Default for Pawn {
@@ -27,7 +27,7 @@ impl Default for Pawn {
             lifetime: rng.gen_range(RangeInclusive::new(
                 CONFIG.pawn.lifetime_span.0,
                 CONFIG.pawn.lifetime_span.1,
-            )) * CONFIG.time.seasons_in_year
+            )) as f32 * CONFIG.time.day_duration * CONFIG.time.days_in_year as f32,
         }
     }
 }

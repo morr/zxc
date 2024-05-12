@@ -34,6 +34,7 @@ impl Plugin for UiPlugin {
                     update_simulation_speed_text,
                     update_simulation_date_time_text,
                     update_pawn_age_text,
+                    update_pawn_lifetime_text,
                     update_pawn_birthday_text,
                     update_food_stock_text,
                     update_pawn_stock_text,
