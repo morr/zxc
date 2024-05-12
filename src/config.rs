@@ -81,6 +81,10 @@ pub struct TimeConfig {
     /// in game seconds
     pub day_duration: f32,
 
+    #[serde(skip)]
+    // in game seconds
+    pub year_duration: f32,
+
     pub days_in_season: u32,
 
     #[serde(skip)]
@@ -104,6 +108,7 @@ impl TimeConfig {
         self.minute_duration = self.hour_duration / 60.0;
         self.seasons_in_year = SEASONS_IN_YEAR;
         self.days_in_year = self.days_in_season * self.seasons_in_year;
+        self.year_duration = self.day_duration * self.days_in_year as f32;
     }
 }
 

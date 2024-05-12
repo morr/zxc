@@ -27,7 +27,7 @@ impl Default for Pawn {
             lifetime: rng.gen_range(RangeInclusive::new(
                 CONFIG.pawn.lifetime_span.0,
                 CONFIG.pawn.lifetime_span.1,
-            )) as f32 * CONFIG.time.day_duration * CONFIG.time.days_in_year as f32,
+            )) as f32 * CONFIG.time.year_duration,
         }
     }
 }

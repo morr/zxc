@@ -221,13 +221,14 @@ pub fn test_pawn_birthday(
     }
 }
 
-pub fn progress_pawn_age(
+pub fn progress_pawn_age_lifetime(
     mut event_reader: EventReader<PawnBirthdayEvent>,
     mut query: Query<&mut Pawn>,
 ) {
     for event in event_reader.read() {
         if let Ok(mut pawn) = query.get_mut(event.0) {
             pawn.age += 1;
+            pawn.lifetime -= CONFIG.time.year_duration;
         }
     }
 }
