@@ -17,8 +17,11 @@ impl Default for Pawn {
 
         Self {
             state: PawnState::Idle,
-            age: rng.gen_range(RangeInclusive::new(CONFIG.pawn.spawn_ages.0, CONFIG.pawn.spawn_ages.1)),
-            birthday: rng.gen_range(1..=CONFIG.time.days_in_year)
+            age: rng.gen_range(RangeInclusive::new(
+                CONFIG.pawn.spawn_ages.0,
+                CONFIG.pawn.spawn_ages.1,
+            )),
+            birthday: rng.gen_range(0..CONFIG.time.days_in_year),
         }
     }
 }
@@ -91,3 +94,6 @@ pawn_states!(
 
 #[derive(Component)]
 pub struct PawnStateText;
+
+#[derive(Event, Debug)]
+pub struct PawnBirthdayEvent(pub Entity);

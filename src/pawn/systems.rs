@@ -206,3 +206,28 @@ pub fn update_pawn_state_text(
         }
     }
 }
+
+pub fn test_pawn_birthday(
+    mut event_reader: EventReader<NewDayEvent>,
+    mut event_writer: EventWriter<PawnBirthdayEvent>,
+    query: Query<(Entity, &Pawn)>,
+) {
+    for event in event_reader.read() {
+        for (entity, pawn) in query.iter() {
+            if pawn.birthday == event.0 {
+                event_writer.send(PawnBirthdayEvent(entity));
+            }
+        }
+    }
+}
+
+pub fn progress_pawn_age(
+    mut event_reader: EventReader<PawnBirthdayEvent>,
+    mut query: Query<&mut Pawn>,
+) {
+    for event in event_reader.read() {
+        if let Ok(mut pawn) = query.get_mut(event.0) {
+            pawn.age += 1;
+        }
+    }
+}
