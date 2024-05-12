@@ -203,4 +203,13 @@ mod story_time {
 
         assert_eq!(subject.year_season(), YearSeason::Spring);
     }
+
+    #[test]
+    fn total_day_to_year_day() {
+        assert_eq!(ElapsedTime::total_day_to_year_day(0), 1);
+        assert_eq!(ElapsedTime::total_day_to_year_day(1), 2);
+        assert_eq!(ElapsedTime::total_day_to_year_day(CONFIG.time.days_in_year), 1);
+        assert_eq!(ElapsedTime::total_day_to_year_day(CONFIG.time.days_in_year * 10), 1);
+        assert_eq!(ElapsedTime::total_day_to_year_day(CONFIG.time.days_in_year * 10 + 1), 2);
+    }
 }
