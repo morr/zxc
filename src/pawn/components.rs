@@ -17,6 +17,11 @@ pub struct Pawn {
 impl Default for Pawn {
     fn default() -> Self {
         let mut rng = rand::thread_rng();
+        let lifetime = rng.gen_range(RangeInclusive::new(
+            CONFIG.pawn.lifetime_span.0 as f32,
+            CONFIG.pawn.lifetime_span.1 as f32,
+        )) as f32
+            * CONFIG.time.year_duration;
 
         Self {
             state: PawnState::Idle,
@@ -25,10 +30,7 @@ impl Default for Pawn {
                 CONFIG.pawn.spawn_age.1,
             )),
             birth_year_day: rng.gen_range(0..CONFIG.time.days_in_year),
-            lifetime: rng.gen_range(RangeInclusive::new(
-                CONFIG.pawn.lifetime_span.0,
-                CONFIG.pawn.lifetime_span.1,
-            )) as f32 * CONFIG.time.year_duration,
+            lifetime,
         }
     }
 }
@@ -45,9 +47,9 @@ impl Pawn {
         self.birth_year_day == ElapsedTime::total_day_to_year_day(total_day)
     }
 
-    pub fn is_dying(&self) -> bool {
-        self.lifetime < CONFIG.time.year_duration
-    }
+    // pub fn is_dying(&self) -> bool {
+    //     self.lifetime < CONFIG.time.year_duration
+    // }
 }
 
 macro_rules! pawn_states {
@@ -106,7 +108,6 @@ pawn_states!(
     (Moving),
     (WorkAssigned, Task, _a),
     (Working, Task, _b),
-    (Dying),
     (Dead),
 );
 

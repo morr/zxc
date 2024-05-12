@@ -18,8 +18,9 @@ impl Plugin for PawnPlugin {
                     update_pawn_color,
                     update_pawn_state_text,
                     wander_idle_pawns,
-                    test_pawn_birthday,
-                    progress_pawn_age_lifetime,
+                    progress_pawn_daily,
+                    // progress_pawn_age,
+                    // progress_pawn_lifetime,
                 )
                     .chain()
                     .run_if(in_state(AppState::Playing)),

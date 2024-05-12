@@ -207,28 +207,41 @@ pub fn update_pawn_state_text(
     }
 }
 
-pub fn test_pawn_birthday(
+pub fn progress_pawn_daily(
     mut event_reader: EventReader<NewDayEvent>,
     mut event_writer: EventWriter<PawnBirthdayEvent>,
-    query: Query<(Entity, &Pawn)>,
+    mut query: Query<(Entity, &mut Pawn)>,
 ) {
     for event in event_reader.read() {
-        for (entity, pawn) in query.iter() {
+        for (entity, mut pawn) in query.iter_mut() {
             if pawn.is_birthday(event.0) {
+                pawn.age += 1;
                 event_writer.send(PawnBirthdayEvent(entity));
             }
+            pawn.lifetime -= CONFIG.time.day_duration;
         }
     }
 }
 
-pub fn progress_pawn_age_lifetime(
-    mut event_reader: EventReader<PawnBirthdayEvent>,
-    mut query: Query<&mut Pawn>,
-) {
-    for event in event_reader.read() {
-        if let Ok(mut pawn) = query.get_mut(event.0) {
-            pawn.age += 1;
-            pawn.lifetime -= CONFIG.time.year_duration;
-        }
-    }
-}
+// pub fn progress_pawn_age(
+//     mut event_reader: EventReader<PawnBirthdayEvent>,
+//     mut query: Query<&mut Pawn>,
+// ) {
+//     for event in event_reader.read() {
+//         if let Ok(mut pawn) = query.get_mut(event.0) {
+//             pawn.age += 1;
+//         }
+//     }
+// }
+//
+// pub fn progress_pawn_lifetime(
+//     mut event_reader: EventReader<NewDayEvent>,
+//     mut query: Query<&mut Pawn>,
+// ) {
+//     for event in event_reader.read() {
+//         println!("{:?}", event);
+//         for mut pawn in query.iter_mut() {
+//             pawn.lifetime -= CONFIG.time.day_duration;
+//         }
+//     }
+// }
