@@ -1,4 +1,7 @@
+use std::ops::RangeInclusive;
+
 use super::*;
+use rand::Rng;
 
 #[derive(Debug, Component, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
@@ -9,9 +12,11 @@ pub struct Pawn {
 
 impl Default for Pawn {
     fn default() -> Self {
+        let mut rng = rand::thread_rng();
+
         Self {
             state: PawnState::Idle,
-            age: 16
+            age: rng.gen_range(RangeInclusive::new(CONFIG.pawn.spawn_ages.0, CONFIG.pawn.spawn_ages.1)),
         }
     }
 }
