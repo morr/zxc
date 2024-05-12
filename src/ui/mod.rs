@@ -3,7 +3,7 @@ use crate::*;
 expose_submodules!(
     components,
     systems,
-    pawn_ui,
+    pawn_info,
     debug_grid,
     debug_movepath,
     debug_navmesh,
@@ -33,7 +33,8 @@ impl Plugin for UiPlugin {
                     // update_simulation_season_text,
                     update_simulation_speed_text,
                     update_simulation_date_time_text,
-                    update_pawn_ui_text,
+                    update_pawn_age_text,
+                    update_pawn_birthday_text,
                     update_food_stock_text,
                     update_pawn_stock_text,
                     update_debug_info
