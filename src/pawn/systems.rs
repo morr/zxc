@@ -244,6 +244,7 @@ pub fn progress_pawn_dying(
     mut query: Query<(Entity, &mut Pawn), With<Dying>>,
     mut event_writer: EventWriter<PawnDeathEvent>,
 ) {
+    println!("{} {}", time.delta_seconds(), time_scale.scale_to_seconds(time.delta_seconds()));
     for (entity, mut pawn) in query.iter_mut() {
         if pawn.lifetime > 0. {
             pawn.lifetime = f32::max(
