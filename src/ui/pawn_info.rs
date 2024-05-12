@@ -1,5 +1,5 @@
 use super::*;
- pub fn render_pawn_ui(
+pub fn render_pawn_ui(
     mut commands: Commands,
     font_assets: Res<FontAssets>,
     pawn_query: Query<&Pawn>,
@@ -100,7 +100,13 @@ pub fn update_pawn_lifetime_text(
 
 fn format_pawn_lifetime_text(maybe_pawn: Option<&Pawn>) -> String {
     if let Some(pawn) = maybe_pawn {
-        format!("Lifetime: {}", pawn.lifetime)
+        if pawn.state == PawnState::Dying {
+            "<DYING>".into()
+        } else if pawn.state == PawnState::Dead {
+            "<DEAD>".into()
+        } else {
+            format!("Lifetime: {}y", (pawn.lifetime / CONFIG.time.year_duration).floor())
+        }
     } else {
         "<NONE>".into()
     }
@@ -118,9 +124,11 @@ pub fn update_pawn_birthday_text(
 
 fn format_pawn_birthday_text(maybe_pawn: Option<&Pawn>) -> String {
     if let Some(pawn) = maybe_pawn {
-        format!("Birthday: {}", ElapsedTime::year_day_to_season_day_label(pawn.birth_year_day))
+        format!(
+            "Birthday: {}",
+            ElapsedTime::year_day_to_season_day_label(pawn.birth_year_day)
+        )
     } else {
         "<NONE>".into()
     }
 }
-

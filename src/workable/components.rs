@@ -72,7 +72,7 @@ pub enum TaskKind {
     FarmHarvest,
 }
 
-#[derive(Debug, Clone, Reflect)]
+#[derive(Debug, Clone, PartialEq, Eq, Reflect)]
 pub struct Task {
     pub entity: Entity,
     pub kind: TaskKind,

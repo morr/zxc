@@ -7,9 +7,10 @@ use rand::Rng;
 #[reflect(InspectorOptions)]
 pub struct Pawn {
     pub state: PawnState,
+
     pub age: u32,
     pub birth_year_day: u32,
-    // in seconds
+    /// in seconds
     pub lifetime: f32,
 }
 
@@ -43,13 +44,18 @@ impl Pawn {
     pub fn is_birthday(&self, total_day: u32) -> bool {
         self.birth_year_day == ElapsedTime::total_day_to_year_day(total_day)
     }
+
+    pub fn is_dying(&self) -> bool {
+        self.lifetime < CONFIG.time.year_duration
+    }
 }
 
 macro_rules! pawn_states {
     (
         $( ($name:ident $(, $turple_type:ty, $match_field:ident)?)),* $(,)?
     ) => {
-        #[derive(Debug, Clone, Reflect)]
+        #[derive(Debug, Clone, PartialEq, Eq, Reflect)]
+
         pub enum PawnState {
             $($name $(($turple_type))? ),*
         }
@@ -100,6 +106,8 @@ pawn_states!(
     (Moving),
     (WorkAssigned, Task, _a),
     (Working, Task, _b),
+    (Dying),
+    (Dead),
 );
 
 #[derive(Component)]
