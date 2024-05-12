@@ -1,22 +1,19 @@
 use super::*;
 
-// #[derive(Component)]
-// pub struct SimulationSeasonText {}
+#[derive(Component)]
+pub struct SimulationSpeedTextUI {}
 
 #[derive(Component)]
-pub struct SimulationSpeedText {}
+pub struct SimulationDateTimeTextUI {}
 
 #[derive(Component)]
-pub struct SimulationDateTimeText {}
+pub struct DebugStatusTextUI {}
 
 #[derive(Component)]
-pub struct DebugStatusText {}
+pub struct DebugHelpBlockUI {}
 
 #[derive(Component)]
-pub struct DebugHelpBlock {}
+pub struct PawnStockTextUI {}
 
 #[derive(Component)]
-pub struct PawnStockText {}
-
-#[derive(Component)]
-pub struct FoodStockText {}
+pub struct FoodStockTextUI {}

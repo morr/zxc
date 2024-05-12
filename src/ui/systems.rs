@@ -90,7 +90,7 @@ pub fn render_simulation_speed_ui(
                         color: Color::WHITE,
                     },
                 ),
-                SimulationSpeedText {},
+                SimulationSpeedTextUI {},
             ));
             parent.spawn((
                 TextBundle::from_section(
@@ -101,7 +101,7 @@ pub fn render_simulation_speed_ui(
                         color: Color::WHITE,
                     },
                 ),
-                SimulationDateTimeText {},
+                SimulationDateTimeTextUI {},
             ));
             // parent.spawn((
             //     TextBundle::from_section(
@@ -137,17 +137,17 @@ pub fn render_items_stock_ui(
         ..default()
     });
 
-    spawn_item::<PawnStockText>(
+    spawn_item::<PawnStockTextUI>(
         &mut root,
-        PawnStockText {},
+        PawnStockTextUI {},
         pawns_query.iter().count() as u32,
         font_assets.fira.clone(),
         icon_assets.pawns.clone(),
     );
 
-    spawn_item::<FoodStockText>(
+    spawn_item::<FoodStockTextUI>(
         &mut root,
-        FoodStockText {},
+        FoodStockTextUI {},
         food.0,
         font_assets.fira.clone(),
         icon_assets.bread.clone(),
@@ -213,7 +213,7 @@ fn spawn_item<T: Component>(
 }
 
 pub fn update_simulation_speed_text(
-    mut query: Query<&mut Text, With<SimulationSpeedText>>,
+    mut query: Query<&mut Text, With<SimulationSpeedTextUI>>,
     time_state: Res<State<SimulationState>>,
     time_scale: Res<TimeScale>,
 ) {
@@ -232,7 +232,7 @@ fn format_simulation_speed_text(
 }
 
 pub fn update_simulation_date_time_text(
-    mut query: Query<&mut Text, With<SimulationDateTimeText>>,
+    mut query: Query<&mut Text, With<SimulationDateTimeTextUI>>,
     elapsed_time: Res<ElapsedTime>,
 ) {
     let mut text = query.single_mut();
@@ -272,7 +272,7 @@ fn format_date_time_text(elapsed_time: &Res<ElapsedTime>) -> String {
 // }
 
 pub fn update_food_stock_text(
-    mut query: Query<&mut Text, With<FoodStockText>>,
+    mut query: Query<&mut Text, With<FoodStockTextUI>>,
     food: Res<FoodStock>,
 ) {
     let mut text = query.single_mut();
@@ -284,7 +284,7 @@ fn format_item_text(amount: u32) -> String {
 }
 
 pub fn update_pawn_stock_text(
-    mut text_query: Query<&mut Text, With<PawnStockText>>,
+    mut text_query: Query<&mut Text, With<PawnStockTextUI>>,
     pawns_query: Query<&Pawn>,
 ) {
     let mut text = text_query.single_mut();
