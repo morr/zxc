@@ -2,10 +2,10 @@ use super::*;
 use bevy::ecs::system::EntityCommands;
 
 #[derive(Component)]
-pub struct PawnStockTextUI {}
+struct PawnStockTextUI {}
 
 #[derive(Component)]
-pub struct FoodStockTextUI {}
+struct FoodStockTextUI {}
 
 pub struct UiItemsStockPlugin;
 
@@ -21,7 +21,7 @@ impl Plugin for UiItemsStockPlugin {
     }
 }
 
-pub fn render_items_stock_ui(
+fn render_items_stock_ui(
     mut commands: Commands,
     pawns_query: Query<&Pawn>,
     icon_assets: Res<IconAssets>,
@@ -116,7 +116,7 @@ fn spawn_item<T: Component>(
     });
 }
 
-pub fn update_food_stock_text(
+fn update_food_stock_text(
     mut query: Query<&mut Text, With<FoodStockTextUI>>,
     food: Res<FoodStock>,
 ) {
@@ -128,7 +128,7 @@ fn format_item_text(amount: u32) -> String {
     format!("{}", amount)
 }
 
-pub fn update_pawn_stock_text(
+fn update_pawn_stock_text(
     mut text_query: Query<&mut Text, With<PawnStockTextUI>>,
     pawns_query: Query<&Pawn>,
 ) {

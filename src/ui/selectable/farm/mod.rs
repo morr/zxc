@@ -15,6 +15,6 @@ impl Plugin for UiFarmPlugin {
     }
 }
 
-pub fn render_farm_ui() {}
+fn render_farm_ui() {}
 
-pub fn update_farm_text() {}
+fn update_farm_text() {}

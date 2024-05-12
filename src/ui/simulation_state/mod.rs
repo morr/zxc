@@ -1,10 +1,10 @@
 use super::*;
 
 #[derive(Component)]
-pub struct SimulationSpeedTextUI {}
+struct SimulationSpeedTextUI {}
 
 #[derive(Component)]
-pub struct SimulationDateTimeTextUI {}
+struct SimulationDateTimeTextUI {}
 
 pub struct UiSimulationStatePlugin;
 
@@ -23,7 +23,7 @@ impl Plugin for UiSimulationStatePlugin {
     }
 }
 
-pub fn render_simulation_speed_ui(
+fn render_simulation_speed_ui(
     mut commands: Commands,
     font_assets: Res<FontAssets>,
     elapsed_time: Res<ElapsedTime>,
@@ -77,7 +77,7 @@ pub fn render_simulation_speed_ui(
         });
 }
 
-pub fn update_simulation_speed_text(
+fn update_simulation_speed_text(
     mut query: Query<&mut Text, With<SimulationSpeedTextUI>>,
     time_state: Res<State<SimulationState>>,
     time_scale: Res<TimeScale>,
@@ -96,7 +96,7 @@ fn format_simulation_speed_text(
     }
 }
 
-pub fn update_simulation_date_time_text(
+fn update_simulation_date_time_text(
     mut query: Query<&mut Text, With<SimulationDateTimeTextUI>>,
     elapsed_time: Res<ElapsedTime>,
 ) {

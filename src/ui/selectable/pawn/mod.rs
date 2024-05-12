@@ -1,13 +1,13 @@
 use super::*;
 
 #[derive(Component)]
-pub struct PawnAgeTextUI {}
+struct PawnAgeTextUI {}
 
 #[derive(Component)]
-pub struct PawnLifetimeTextUI {}
+struct PawnLifetimeTextUI {}
 
 #[derive(Component)]
-pub struct PawnBirthdayTextUI {}
+struct PawnBirthdayTextUI {}
 
 pub struct UiPawnPlugin;
 
@@ -27,7 +27,7 @@ impl Plugin for UiPawnPlugin {
     }
 }
 
-pub fn render_pawn_ui(
+fn render_pawn_ui(
     mut commands: Commands,
     font_assets: Res<FontAssets>,
     pawn_query: Query<&Pawn>,
@@ -99,7 +99,7 @@ pub fn render_pawn_ui(
         });
 }
 
-pub fn update_pawn_age_text(
+fn update_pawn_age_text(
     mut text_query: Query<&mut Text, With<PawnAgeTextUI>>,
     pawn_query: Query<&Pawn>,
 ) {
@@ -116,7 +116,7 @@ fn format_pawn_age_text(maybe_pawn: Option<&Pawn>) -> String {
         "<NONE>".into()
     }
 }
-pub fn update_pawn_lifetime_text(
+fn update_pawn_lifetime_text(
     mut text_query: Query<&mut Text, With<PawnLifetimeTextUI>>,
     pawn_query: Query<&Pawn>,
 ) {
@@ -142,7 +142,7 @@ fn format_pawn_lifetime_text(maybe_pawn: Option<&Pawn>) -> String {
     }
 }
 
-pub fn update_pawn_birthday_text(
+fn update_pawn_birthday_text(
     mut text_query: Query<&mut Text, With<PawnBirthdayTextUI>>,
     pawn_query: Query<&Pawn>,
 ) {

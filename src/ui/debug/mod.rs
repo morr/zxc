@@ -3,10 +3,10 @@ use crate::*;
 expose_submodules!(grid, movepath, navmesh, info);
 
 #[derive(Component)]
-pub struct DebugStatusTextUI {}
+struct DebugStatusTextUI {}
 
 #[derive(Component)]
-pub struct DebugHelpBlockUI {}
+struct DebugHelpBlockUI {}
 
 pub struct UiDebugPlugin;
 
