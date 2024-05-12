@@ -1,10 +1,10 @@
 use super::*;
 
 #[derive(Component)]
-struct SimulationSpeedTextUI {}
+struct SimulationSpeedTextUIMarker {}
 
 #[derive(Component)]
-struct SimulationDateTimeTextUI {}
+struct SimulationDateTimeTextUIMarker {}
 
 pub struct UiSimulationStatePlugin;
 
@@ -61,7 +61,7 @@ fn render_simulation_speed_ui(
                         color: Color::WHITE,
                     },
                 ),
-                SimulationSpeedTextUI {},
+                SimulationSpeedTextUIMarker {},
             ));
             parent.spawn((
                 TextBundle::from_section(
@@ -72,13 +72,13 @@ fn render_simulation_speed_ui(
                         color: Color::WHITE,
                     },
                 ),
-                SimulationDateTimeTextUI {},
+                SimulationDateTimeTextUIMarker {},
             ));
         });
 }
 
 fn update_simulation_speed_text(
-    mut query: Query<&mut Text, With<SimulationSpeedTextUI>>,
+    mut query: Query<&mut Text, With<SimulationSpeedTextUIMarker>>,
     time_state: Res<State<SimulationState>>,
     time_scale: Res<TimeScale>,
 ) {
@@ -97,7 +97,7 @@ fn format_simulation_speed_text(
 }
 
 fn update_simulation_date_time_text(
-    mut query: Query<&mut Text, With<SimulationDateTimeTextUI>>,
+    mut query: Query<&mut Text, With<SimulationDateTimeTextUIMarker>>,
     elapsed_time: Res<ElapsedTime>,
 ) {
     let mut text = query.single_mut();

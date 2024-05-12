@@ -2,10 +2,10 @@ use super::*;
 use bevy::ecs::system::EntityCommands;
 
 #[derive(Component)]
-struct PawnStockTextUI {}
+struct PawnStockTextUIMarker {}
 
 #[derive(Component)]
-struct FoodStockTextUI {}
+struct FoodStockTextUIMarker {}
 
 pub struct UiItemsStockPlugin;
 
@@ -41,17 +41,17 @@ fn render_items_stock_ui(
         ..default()
     });
 
-    spawn_item::<PawnStockTextUI>(
+    spawn_item::<PawnStockTextUIMarker>(
         &mut root,
-        PawnStockTextUI {},
+        PawnStockTextUIMarker {},
         pawns_query.iter().count() as u32,
         font_assets.fira.clone(),
         icon_assets.pawns.clone(),
     );
 
-    spawn_item::<FoodStockTextUI>(
+    spawn_item::<FoodStockTextUIMarker>(
         &mut root,
-        FoodStockTextUI {},
+        FoodStockTextUIMarker {},
         food.0,
         font_assets.fira.clone(),
         icon_assets.bread.clone(),
@@ -117,7 +117,7 @@ fn spawn_item<T: Component>(
 }
 
 fn update_food_stock_text(
-    mut query: Query<&mut Text, With<FoodStockTextUI>>,
+    mut query: Query<&mut Text, With<FoodStockTextUIMarker>>,
     food: Res<FoodStock>,
 ) {
     let mut text = query.single_mut();
@@ -129,7 +129,7 @@ fn format_item_text(amount: u32) -> String {
 }
 
 fn update_pawn_stock_text(
-    mut text_query: Query<&mut Text, With<PawnStockTextUI>>,
+    mut text_query: Query<&mut Text, With<PawnStockTextUIMarker>>,
     pawns_query: Query<&Pawn>,
 ) {
     let mut text = text_query.single_mut();

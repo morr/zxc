@@ -1,13 +1,13 @@
 use super::*;
 
 #[derive(Component)]
-struct PawnAgeTextUI {}
+struct PawnAgeTextUIMarker {}
 
 #[derive(Component)]
-struct PawnLifetimeTextUI {}
+struct PawnLifetimeTextUIMarker {}
 
 #[derive(Component)]
-struct PawnBirthdayTextUI {}
+struct PawnBirthdayTextUIMarker {}
 
 pub struct UiPawnPlugin;
 
@@ -72,7 +72,7 @@ fn render_pawn_ui(
                         color: Color::WHITE,
                     },
                 ),
-                PawnAgeTextUI {},
+                PawnAgeTextUIMarker {},
             ));
             parent.spawn((
                 TextBundle::from_section(
@@ -83,7 +83,7 @@ fn render_pawn_ui(
                         color: Color::WHITE,
                     },
                 ),
-                PawnLifetimeTextUI {},
+                PawnLifetimeTextUIMarker {},
             ));
             parent.spawn((
                 TextBundle::from_section(
@@ -94,13 +94,13 @@ fn render_pawn_ui(
                         color: Color::WHITE,
                     },
                 ),
-                PawnBirthdayTextUI {},
+                PawnBirthdayTextUIMarker {},
             ));
         });
 }
 
 fn update_pawn_age_text(
-    mut text_query: Query<&mut Text, With<PawnAgeTextUI>>,
+    mut text_query: Query<&mut Text, With<PawnAgeTextUIMarker>>,
     pawn_query: Query<&Pawn>,
 ) {
     let mut text = text_query.single_mut();
@@ -117,7 +117,7 @@ fn format_pawn_age_text(maybe_pawn: Option<&Pawn>) -> String {
     }
 }
 fn update_pawn_lifetime_text(
-    mut text_query: Query<&mut Text, With<PawnLifetimeTextUI>>,
+    mut text_query: Query<&mut Text, With<PawnLifetimeTextUIMarker>>,
     pawn_query: Query<&Pawn>,
 ) {
     let mut text = text_query.single_mut();
@@ -143,7 +143,7 @@ fn format_pawn_lifetime_text(maybe_pawn: Option<&Pawn>) -> String {
 }
 
 fn update_pawn_birthday_text(
-    mut text_query: Query<&mut Text, With<PawnBirthdayTextUI>>,
+    mut text_query: Query<&mut Text, With<PawnBirthdayTextUIMarker>>,
     pawn_query: Query<&Pawn>,
 ) {
     let mut text = text_query.single_mut();

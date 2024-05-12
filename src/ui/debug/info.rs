@@ -35,7 +35,7 @@ pub fn render_debug_info(
                         color: Color::WHITE,
                     },
                 ),
-                DebugStatusTextUI {},
+                DebugStatusTextUIMarker {},
             ));
 
             container_parent.spawn((
@@ -61,7 +61,7 @@ pub fn render_debug_info(
                     },
                     ..default()
                 }),
-                DebugHelpBlockUI {},
+                DebugHelpBlockUIMarker {},
             ));
         });
 }
@@ -69,7 +69,7 @@ pub fn render_debug_info(
 pub fn update_debug_info(
     tasks_queue: Res<TasksQueue>,
     async_queue_counter: Res<AsyncQueueCounter>,
-    mut query: Query<&mut Text, With<DebugStatusTextUI>>,
+    mut query: Query<&mut Text, With<DebugStatusTextUIMarker>>,
 ) {
     let mut text = query.single_mut();
     text.sections[0].value = format_debug_line(&tasks_queue, &async_queue_counter);
@@ -91,7 +91,7 @@ pub fn handle_debug_info_keys(
     // mut commands: Commands,
     keys: Res<ButtonInput<KeyCode>>,
     // query: Query<Entity>,
-    mut query: Query<(&mut Visibility, &mut Style), With<DebugHelpBlockUI>>,
+    mut query: Query<(&mut Visibility, &mut Style), With<DebugHelpBlockUIMarker>>,
     debug_grid_state: Res<State<DebugGridState>>,
     mut next_debug_grid_state: ResMut<NextState<DebugGridState>>,
     debug_navmesh_state: Res<State<DebugNavmeshState>>,
