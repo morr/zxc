@@ -1,6 +1,6 @@
 use crate::*;
 
-expose_submodules!(simulation_state, items_stock, pawn, farm, debug);
+expose_submodules!(simulation_state, items_stock, selectable, debug);
 
 pub static UI_COLOR: Lazy<Color> = Lazy::new(|| Color::hex("181a1c").unwrap());
 
@@ -11,8 +11,7 @@ impl Plugin for UiPlugin {
         app.add_plugins((
             UiSimulationStatePlugin,
             UiItemsStockPlugin,
-            UiPawnPlugin,
-            UiFarmPlugin,
+            UiSelectablePlugin,
             UiDebugPlugin,
         ));
     }
