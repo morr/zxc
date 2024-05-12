@@ -21,7 +21,10 @@ RootConfig(
     pawn: PawnConfig(
         speed: 3.0,
         work_force: 1.0,
-        spawn_ages: (15, 25)
+        // spawn_age: (15, 25),
+        // lifetime_span: (60, 80)
+        spawn_age: (1, 1),
+        lifetime_span: (10, 10)
     ),
     farming: FarmingConfig(
         basic_yield_percent: 0.25,

@@ -9,6 +9,8 @@ pub struct Pawn {
     pub state: PawnState,
     pub age: u32,
     pub birth_year_day: u32,
+    // in seconds
+    pub lifetime: u32,
 }
 
 impl Default for Pawn {
@@ -17,13 +19,15 @@ impl Default for Pawn {
 
         Self {
             state: PawnState::Idle,
-            // age: 1,
-            // birth_year_day: 1,
             age: rng.gen_range(RangeInclusive::new(
-                CONFIG.pawn.spawn_ages.0,
-                CONFIG.pawn.spawn_ages.1,
+                CONFIG.pawn.spawn_age.0,
+                CONFIG.pawn.spawn_age.1,
             )),
             birth_year_day: rng.gen_range(0..CONFIG.time.days_in_year),
+            lifetime: rng.gen_range(RangeInclusive::new(
+                CONFIG.pawn.lifetime_span.0,
+                CONFIG.pawn.lifetime_span.1,
+            )) * CONFIG.time.seasons_in_year
         }
     }
 }
