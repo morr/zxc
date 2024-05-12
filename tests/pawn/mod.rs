@@ -66,3 +66,47 @@ fn state_changed_to_death_by_event() {
     let pawn = app.world.get::<Pawn>(pawn_id).unwrap();
     assert_eq!(pawn.state, PawnState::Dead);
 }
+
+#[test]
+fn dead_pawn_returns_task_to_tasks_queue() {
+    let mut app = App::new();
+
+    app.add_plugins(WorkablePlugin)
+        .add_event::<EntityStateChangeEvent<PawnState>>()
+        .add_event::<PawnDeathEvent>()
+        .add_systems(Update, progress_pawn_death);
+
+    let workable_id = app.world.spawn(Workable::default()).id();
+
+    let original_task = Task {
+        entity: workable_id,
+        kind: TaskKind::FarmTending,
+        grid_tile: IVec2::default(),
+    };
+    let pawn_id = app
+        .world
+        .spawn(Pawn {
+            state: PawnState::Working(original_task.clone()),
+            ..default()
+        })
+        .id();
+
+    app.world
+        .resource_mut::<Events<PawnDeathEvent>>()
+        .send(PawnDeathEvent(pawn_id));
+
+    {
+        let queue = app.world.resource::<TasksQueue>();
+        assert!(queue.is_empty());
+    }
+
+    app.update();
+
+    let pawn = app.world.get::<Pawn>(pawn_id).unwrap();
+    assert_eq!(pawn.state, PawnState::Dead);
+
+    let mut queue = app.world.resource_mut::<TasksQueue>();
+    assert!(!queue.is_empty());
+    let task = queue.get_task().unwrap();
+    assert_eq!(task, original_task);
+}
