@@ -21,6 +21,8 @@ pub struct AssetsCollection {
     pub pawn_moving: Handle<ColorMaterial>,
     pub pawn_pathfinding: Handle<ColorMaterial>,
     pub pawn_pathfinding_error: Handle<ColorMaterial>,
+    pub pawn_working: Handle<ColorMaterial>,
+    pub pawn_dead: Handle<ColorMaterial>,
     pub navmesh_passable: Handle<ColorMaterial>,
     pub navmesh_impassable: Handle<ColorMaterial>,
     pub food: Handle<ColorMaterial>,
@@ -111,6 +113,8 @@ impl FromWorld for AssetsCollection {
             // pawn_moving: materials.add(ColorMaterial::from(Color::hex("e178c5").unwrap())),
             pawn_pathfinding: materials.add(ColorMaterial::from(Color::hex("fb8f44").unwrap())),
             pawn_pathfinding_error: materials.add(ColorMaterial::from(Color::RED)),
+            pawn_working: materials.add(ColorMaterial::from(Color::hex("74d61f").unwrap())),
+            pawn_dead: materials.add(ColorMaterial::from(Color::hex("181a1c").unwrap())),
             navmesh_passable: materials.add(ColorMaterial::from(Color::rgba(0.0, 0.0, 0.75, 0.5))),
             navmesh_impassable: materials
                 .add(ColorMaterial::from(Color::rgba(1.0, 0.0, 0.0, 0.75))),
