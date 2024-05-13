@@ -1,11 +1,5 @@
 use super::*;
 
-// #[derive(Component, Default)]
-// struct PawnUIMarker {}
-//
-// #[derive(Component, Default)]
-// struct MovableUIMarker {}
-
 #[derive(Component, Default)]
 struct PawnAgeTextUIMarker {}
 #[derive(Component, Default)]
@@ -133,14 +127,14 @@ fn update_pawn_ui(
 }
 
 fn pawn_age_text(pawn: &Pawn) -> String {
-    format!("Age: {}", pawn.age)
+    format!("age: {}", pawn.age)
 }
 fn pawn_lifetime_text(pawn: &Pawn) -> String {
     if pawn.state == PawnState::Dead {
-        "<DEAD>".into()
+        "lifetime: <DEAD>".into()
     } else {
         format!(
-            "Lifetime: {}y {}d",
+            "lifetime: {}y {}d",
             (pawn.lifetime / CONFIG.time.year_duration).floor(),
             ((pawn.lifetime % CONFIG.time.year_duration) / CONFIG.time.day_duration).floor()
         )
@@ -148,12 +142,12 @@ fn pawn_lifetime_text(pawn: &Pawn) -> String {
 }
 fn pawn_birthday_text(pawn: &Pawn) -> String {
     format!(
-        "Birthday: {}",
+        "birthday: {}",
         ElapsedTime::year_day_to_season_day_label(pawn.birth_year_day)
     )
 }
 fn pawn_state_text(pawn: &Pawn) -> String {
-    format!("State: {:?}", pawn.state)
+    format!("state: {:?}", pawn.state)
 }
 
 
@@ -187,11 +181,11 @@ fn update_movable_ui(
 }
 
 fn movable_speed_text(movable: &Movable) -> String {
-    format!("Speed: {}", movable.speed)
+    format!("speed: {}", movable.speed)
 }
 fn movable_path_text(movable: &Movable) -> String {
-    format!("Path: {:?}", movable.path)
+    format!("path: {:?}", movable.path)
 }
 fn movable_state_text(movable: &Movable) -> String {
-    format!("State: {:?}", movable.state)
+    format!("state: {:?}", movable.state)
 }
