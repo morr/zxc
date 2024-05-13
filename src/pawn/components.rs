@@ -1,5 +1,5 @@
-use std::ops::RangeInclusive;
 use std::mem;
+use std::ops::RangeInclusive;
 
 use super::*;
 use rand::Rng;
@@ -18,7 +18,6 @@ pub struct Pawn {
 
 #[derive(Component)]
 pub struct DyingMarker;
-
 
 impl Default for Pawn {
     fn default() -> Self {
@@ -51,6 +50,10 @@ impl Pawn {
 
     pub fn is_birthday(&self, total_day: u32) -> bool {
         self.birth_year_day == ElapsedTime::total_day_to_year_day(total_day)
+    }
+
+    pub fn decrease_lifetime(&mut self, amount: f32) {
+        self.lifetime = f32::max(self.lifetime - amount, 0.0);
     }
 }
 

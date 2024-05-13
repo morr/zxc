@@ -220,7 +220,7 @@ pub fn progress_pawn_daily(
     mut commands: Commands,
     mut event_reader: EventReader<NewDayEvent>,
     // mut event_writer: EventWriter<PawnBirthdayEvent>,
-    mut query: Query<(Entity, &mut Pawn)>,
+    mut query: Query<(Entity, &mut Pawn), Without<DyingMarker>>,
 ) {
     for event in event_reader.read() {
         for (entity, mut pawn) in query.iter_mut() {
@@ -228,7 +228,7 @@ pub fn progress_pawn_daily(
                 pawn.age += 1;
                 // event_writer.send(PawnBirthdayEvent(entity));
             }
-            pawn.lifetime -= CONFIG.time.day_duration;
+            pawn.decrease_lifetime(CONFIG.time.day_duration);
 
             if pawn.lifetime <= CONFIG.time.day_duration {
                 commands.entity(entity).insert(DyingMarker);
@@ -245,16 +245,11 @@ pub fn progress_pawn_dying(
     mut event_writer: EventWriter<PawnDeathEvent>,
 ) {
     for (entity, mut pawn) in query.iter_mut() {
-        if pawn.lifetime > 0. {
-            pawn.lifetime = f32::max(
-                pawn.lifetime - time_scale.scale_to_seconds(time.delta_seconds()),
-                0.0,
-            );
+        pawn.decrease_lifetime(time_scale.scale_to_seconds(time.delta_seconds()));
 
-            if pawn.lifetime.is_zero() {
-                event_writer.send(PawnDeathEvent(entity));
-                commands.entity(entity).remove::<DyingMarker>();
-            }
+        if pawn.lifetime.is_zero() {
+            event_writer.send(PawnDeathEvent(entity));
+            commands.entity(entity).remove::<DyingMarker>();
         }
     }
 }
@@ -267,7 +262,7 @@ pub fn progress_pawn_death(
     mut work_queue: ResMut<TasksQueue>,
 ) {
     for event in event_reader.read() {
-        // println!("{:?}", event);
+        println!("{:?}", event);
 
         let entity = event.0;
         let mut pawn = query.get_mut(event.0).unwrap();
