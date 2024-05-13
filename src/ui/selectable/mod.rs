@@ -49,7 +49,7 @@ fn selectable_node_bunlde() -> NodeBundle {
                 bottom: Val::Px(10.),
                 left: Val::Px(10.),
             },
-            max_width: Val::Px(300.),
+            width: Val::Px(300.),
             ..default()
         },
         background_color: bg_color(UiOpacity::Heavy),
