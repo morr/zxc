@@ -54,7 +54,7 @@ fn render_farm_ui(
                     ));
                     parent.spawn((
                         TextBundle::from_section(
-                            format_state_text(farm),
+                            state_text(farm),
                             TextStyle {
                                 font: font_assets.fira.clone(),
                                 font_size: 16.,
@@ -65,7 +65,7 @@ fn render_farm_ui(
                     ));
                     parent.spawn((
                         TextBundle::from_section(
-                            format_tendings_text(farm),
+                            tendings_text(farm),
                             TextStyle {
                                 font: font_assets.fira.clone(),
                                 font_size: 16.,
@@ -93,17 +93,17 @@ fn update_farm_ui(
 
     for (mut text, state_marker, tendings_marker) in texts.iter_mut() {
         if state_marker.is_some() {
-            text.sections[0].value = format_state_text(farm);
+            text.sections[0].value = state_text(farm);
         } else if tendings_marker.is_some() {
-            text.sections[0].value = format_tendings_text(farm);
+            text.sections[0].value = tendings_text(farm);
         }
     }
 }
 
-fn format_state_text(farm: &Farm) -> String {
+fn state_text(farm: &Farm) -> String {
     format!("{:?}", farm.state)
 }
 
-fn format_tendings_text(farm: &Farm) -> String {
+fn tendings_text(farm: &Farm) -> String {
     format!("Tendings: {}", farm.tendings_done)
 }
