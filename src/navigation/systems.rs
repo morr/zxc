@@ -110,10 +110,10 @@ pub fn listen_for_pathfinding_async_tasks(
                         movable.to_pathfinding_error(entity, &mut event_writer);
                     }
                 } else {
-                    println!(
-                        "movable.state != MovableState::Pathfinding, movable.state={:?}",
-                        movable.state
-                    );
+                    // println!(
+                    //     "movable.state != MovableState::Pathfinding, movable.state={:?}",
+                    //     movable.state
+                    // );
                 }
                 false // remove the task
             } else {
@@ -164,10 +164,10 @@ pub fn listen_for_pathfinding_answers(
                 movable.to_pathfinding_error(entity, &mut event_writer);
             }
         } else {
-            println!(
-                "movable.state != MovableState::Pathfinding, movable.state={:?}",
-                movable.state
-            );
+            // println!(
+            //     "movable.state != MovableState::Pathfinding, movable.state={:?}",
+            //     movable.state
+            // );
         }
     }
 }
