@@ -220,7 +220,7 @@ pub fn progress_pawn_daily(
     mut commands: Commands,
     mut event_reader: EventReader<NewDayEvent>,
     // mut event_writer: EventWriter<PawnBirthdayEvent>,
-    mut query: Query<(Entity, &mut Pawn), Without<DyingMarker>>,
+    mut query: Query<(Entity, &mut Pawn), Without<pawn_state::Dead>>,
 ) {
     for event in event_reader.read() {
         for (entity, mut pawn) in query.iter_mut() {
@@ -262,7 +262,7 @@ pub fn progress_pawn_death(
     mut work_queue: ResMut<TasksQueue>,
 ) {
     for event in event_reader.read() {
-        println!("{:?}", event);
+        // println!("{:?}", event);
 
         let entity = event.0;
         let mut pawn = query.get_mut(event.0).unwrap();
