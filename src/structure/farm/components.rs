@@ -151,6 +151,10 @@ impl Farm {
     }
 
     pub fn yield_amount(&self) -> u32 {
+        if let FarmState::NotPlanted = self.state {
+            return 0;
+        }
+
         let basic_yield = CONFIG.farming.basic_yield_percent * CONFIG.farming.max_yield;
         let rest_yield = CONFIG.farming.max_yield - basic_yield;
 
