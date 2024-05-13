@@ -131,11 +131,18 @@ fn pawn_age_text(pawn: &Pawn) -> String {
     format!("age: {}", pawn.age)
 }
 fn pawn_lifetime_text(pawn: &Pawn) -> String {
-    format!(
-        "lifetime: {}y {}d",
-        (pawn.lifetime / CONFIG.time.year_duration).floor(),
-        ((pawn.lifetime % CONFIG.time.year_duration) / CONFIG.time.day_duration).floor()
-    )
+    if pawn.lifetime < CONFIG.time.day_duration {
+        format!(
+            "lifetime: 0y 0d {}h",
+            (pawn.lifetime / CONFIG.time.hour_duration).floor()
+        )
+    } else {
+        format!(
+            "lifetime: {}y {}d",
+            (pawn.lifetime / CONFIG.time.year_duration).floor(),
+            ((pawn.lifetime % CONFIG.time.year_duration) / CONFIG.time.day_duration).floor()
+        )
+    }
 }
 fn pawn_birthday_text(pawn: &Pawn) -> String {
     format!(
