@@ -117,10 +117,10 @@ fn farm_tendings_text(farm: &Farm) -> String {
 }
 
 pub fn workable_work_amount_done_text(workable: &Workable) -> String {
-    format!("work_amount_done: {}", workable.work_amount_done)
+    format!("work_amount_done: {:.2}", workable.work_amount_done)
 }
 
 pub fn workable_work_amount_total_text(workable: &Workable) -> String {
-    format!("work_amount_total: {}", workable.work_amount_total)
+    format!("work_amount_total: {:.2}", workable.work_amount_total)
 }
 
