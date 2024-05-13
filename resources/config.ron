@@ -13,6 +13,7 @@ RootConfig(
         day_hour: 8,
         farm_width: 1,
         farm_height: 1,
+        time_scale: 1.0
     ),
     time: TimeConfig(
         day_duration: 60.0,
@@ -23,8 +24,8 @@ RootConfig(
         work_force: 1.0,
         spawn_age: (15, 25),
         lifetime_span: (60, 80)
-        // spawn_age: (1, 1),
-        // lifetime_span: (0, 1)
+        //spawn_age: (1, 1),
+        //lifetime_span: (2, 6)
     ),
     farming: FarmingConfig(
         basic_yield_percent: 0.25,

@@ -72,6 +72,7 @@ pub struct StartingSceneConfig {
     pub day_hour: u32,
     pub farm_width: i32,
     pub farm_height: i32,
+    pub time_scale: f32
 }
 
 const SEASONS_IN_YEAR: u32 = 4;

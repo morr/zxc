@@ -14,7 +14,7 @@ pub enum SimulationState {
 pub struct TimeScale(pub f32);
 impl Default for TimeScale {
     fn default() -> Self {
-        Self(1.0)
+        Self(CONFIG.starting_scene.time_scale)
     }
 }
 
