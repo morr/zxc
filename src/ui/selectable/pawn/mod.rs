@@ -113,7 +113,8 @@ fn update_pawn_ui(
 ) {
     let pawn = pawn_query.iter().next().unwrap();
 
-    for (mut text, age_marker, lifetimer_marker, birthday_marker, state_marker) in texts.iter_mut() {
+    for (mut text, age_marker, lifetimer_marker, birthday_marker, state_marker) in texts.iter_mut()
+    {
         if age_marker.is_some() {
             text.sections[0].value = pawn_age_text(pawn);
         } else if lifetimer_marker.is_some() {
@@ -149,7 +150,6 @@ fn pawn_birthday_text(pawn: &Pawn) -> String {
 fn pawn_state_text(pawn: &Pawn) -> String {
     format!("state: {:?}", pawn.state)
 }
-
 
 fn update_movable_ui(
     mut texts: Query<

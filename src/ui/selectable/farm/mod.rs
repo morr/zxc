@@ -6,6 +6,8 @@ use super::*;
 pub struct FarmStateTextUIMarker {}
 #[derive(Component, Default)]
 pub struct FarmTendingsTextUIMarker {}
+#[derive(Component, Default)]
+pub struct FarmYieldTextUIMarker {}
 
 #[derive(Component, Default)]
 pub struct WorkableWorkAmountDoneTextUIMarker {}
@@ -24,7 +26,8 @@ impl Plugin for UiFarmPlugin {
         )
         .add_systems(
             FixedUpdate,
-            (update_farm_ui, update_workable_ui).chain()
+            (update_farm_ui, update_workable_ui)
+                .chain()
                 .after(render_farm_ui)
                 .run_if(in_state(AppState::Playing)),
         );
@@ -49,16 +52,36 @@ fn render_farm_ui(
                         .spawn(selectable_subnode_bunlde())
                         .with_children(|parent| {
                             parent.spawn(headline_text_bundle("Farm", &font_assets));
-                            parent.spawn(property_text_bundle::<FarmStateTextUIMarker>(farm_state_text(farm), &font_assets));
-                            parent.spawn(property_text_bundle::<FarmTendingsTextUIMarker>(farm_tendings_text(farm), &font_assets));
+                            parent.spawn(property_text_bundle::<FarmStateTextUIMarker>(
+                                farm_state_text(farm),
+                                &font_assets,
+                            ));
+                            parent.spawn(property_text_bundle::<FarmTendingsTextUIMarker>(
+                                farm_tendings_text(farm),
+                                &font_assets,
+                            ));
+                            parent.spawn(property_text_bundle::<FarmYieldTextUIMarker>(
+                                farm_yield_text(farm),
+                                &font_assets,
+                            ));
                         });
 
                     parent
                         .spawn(selectable_subnode_bunlde())
                         .with_children(|parent| {
                             parent.spawn(headline_text_bundle("Workable", &font_assets));
-                            parent.spawn(property_text_bundle::<WorkableWorkAmountDoneTextUIMarker>(workable_work_amount_done_text(workable), &font_assets));
-                            parent.spawn(property_text_bundle::<WorkableWorkAmountTotalTextUIMarker>(workable_work_amount_total_text(workable), &font_assets));
+                            parent.spawn(
+                                property_text_bundle::<WorkableWorkAmountDoneTextUIMarker>(
+                                    workable_work_amount_done_text(workable),
+                                    &font_assets,
+                                ),
+                            );
+                            parent.spawn(
+                                property_text_bundle::<WorkableWorkAmountTotalTextUIMarker>(
+                                    workable_work_amount_total_text(workable),
+                                    &font_assets,
+                                ),
+                            );
                         });
                 });
         });
@@ -70,20 +93,39 @@ fn update_farm_ui(
             &mut Text,
             Option<&FarmStateTextUIMarker>,
             Option<&FarmTendingsTextUIMarker>,
+            Option<&FarmYieldTextUIMarker>,
         ),
-        Or<(With<FarmStateTextUIMarker>, With<FarmTendingsTextUIMarker>)>,
+        Or<(
+            With<FarmStateTextUIMarker>,
+            With<FarmTendingsTextUIMarker>,
+            With<FarmYieldTextUIMarker>,
+        )>,
     >,
     farm_query: Query<&Farm>,
 ) {
     let farm = farm_query.iter().next().unwrap();
 
-    for (mut text, state_marker, tendings_marker) in texts.iter_mut() {
+    for (mut text, state_marker, tendings_marker, yield_marker) in texts.iter_mut() {
         if state_marker.is_some() {
             text.sections[0].value = farm_state_text(farm);
         } else if tendings_marker.is_some() {
             text.sections[0].value = farm_tendings_text(farm);
+        } else if yield_marker.is_some() {
+            text.sections[0].value = farm_yield_text(farm);
         }
     }
+}
+
+fn farm_state_text(farm: &Farm) -> String {
+    format!("state: {:?}", farm.state)
+}
+
+fn farm_tendings_text(farm: &Farm) -> String {
+    format!("tendings: {}", farm.tendings_done)
+}
+
+fn farm_yield_text(farm: &Farm) -> String {
+    format!("yield: {}", farm.yield_amount())
 }
 
 fn update_workable_ui(
@@ -93,7 +135,10 @@ fn update_workable_ui(
             Option<&WorkableWorkAmountDoneTextUIMarker>,
             Option<&WorkableWorkAmountTotalTextUIMarker>,
         ),
-        Or<(With<WorkableWorkAmountDoneTextUIMarker>, With<WorkableWorkAmountTotalTextUIMarker>)>,
+        Or<(
+            With<WorkableWorkAmountDoneTextUIMarker>,
+            With<WorkableWorkAmountTotalTextUIMarker>,
+        )>,
     >,
     workable_query: Query<&Workable>,
 ) {
@@ -108,14 +153,6 @@ fn update_workable_ui(
     }
 }
 
-fn farm_state_text(farm: &Farm) -> String {
-    format!("state: {:?}", farm.state)
-}
-
-fn farm_tendings_text(farm: &Farm) -> String {
-    format!("tendings: {}", farm.tendings_done)
-}
-
 pub fn workable_work_amount_done_text(workable: &Workable) -> String {
     format!("work_amount_done: {:.2}", workable.work_amount_done)
 }
@@ -123,4 +160,3 @@ pub fn workable_work_amount_done_text(workable: &Workable) -> String {
 pub fn workable_work_amount_total_text(workable: &Workable) -> String {
     format!("work_amount_total: {:.2}", workable.work_amount_total)
 }
-
