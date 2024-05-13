@@ -30,7 +30,8 @@ impl Default for Pawn {
             CONFIG.pawn.lifetime_span.0 as f32,
             CONFIG.pawn.lifetime_span.1 as f32,
         )) as f32
-            * CONFIG.time.year_duration - age as f32;
+            * CONFIG.time.year_duration
+            - (age as f32 * CONFIG.time.year_duration);
 
         Self {
             state: PawnState::Idle,
