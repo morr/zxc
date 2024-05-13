@@ -1,4 +1,4 @@
-use self::structure::{spawn_farm, Farm};
+use self::structure::{spawn_farm, Farm, FarmState};
 
 use super::*;
 
@@ -117,7 +117,11 @@ fn update_farm_ui(
 }
 
 fn farm_state_text(farm: &Farm) -> String {
-    format!("state: {:?}", farm.state)
+    match &farm.state {
+        FarmState::Planted(planted_state) => format!("state: {:?}", structure::PlantedStateDebug(planted_state)),
+        FarmState::Harvested(harvested_state) => format!("state: {:?}", structure::HarvestedStateDebug(harvested_state)),
+        _ => format!("state: {:?}", farm.state),
+    }
 }
 
 fn farm_tendings_text(farm: &Farm) -> String {

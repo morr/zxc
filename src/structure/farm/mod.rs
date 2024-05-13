@@ -1,6 +1,6 @@
 use super::*;
 
-expose_submodules!(components, systems);
+expose_submodules!(components, systems, debug_components);
 
 pub struct FarmPlugin;
 
