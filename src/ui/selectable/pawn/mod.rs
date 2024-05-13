@@ -1,6 +1,9 @@
 use super::*;
 
 #[derive(Component, Default)]
+struct PawnUIMarker {}
+
+#[derive(Component, Default)]
 struct PawnAgeTextUIMarker {}
 
 #[derive(Component, Default)]
@@ -15,16 +18,13 @@ impl Plugin for UiPawnPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             OnExit(AppState::Loading),
-            render_pawn_ui.after(render_selectable_container).after(spawn_pawns),
+            render_pawn_ui
+                .after(render_selectable_container)
+                .after(spawn_pawns),
         )
         .add_systems(
             FixedUpdate,
-            (
-                update_pawn_age_text,
-                update_pawn_lifetime_text,
-                update_pawn_birthday_text,
-            )
-                .chain()
+            update_pawn_ui
                 .after(render_pawn_ui)
                 .run_if(in_state(AppState::Playing)),
         );
@@ -43,7 +43,7 @@ fn render_pawn_ui(
         .entity(selectble_id(&container_query))
         .with_children(|parent| {
             parent
-                .spawn(selectable_node_bunlde())
+                .spawn(selectable_node_bunlde::<PawnUIMarker>())
                 .with_children(|parent| {
                     parent.spawn(TextBundle::from_section(
                         "PAWN",
@@ -55,7 +55,7 @@ fn render_pawn_ui(
                     ));
                     parent.spawn((
                         TextBundle::from_section(
-                            format_pawn_age_text(pawn),
+                            age_text(pawn),
                             TextStyle {
                                 font: font_assets.fira.clone(),
                                 font_size: 16.,
@@ -66,7 +66,7 @@ fn render_pawn_ui(
                     ));
                     parent.spawn((
                         TextBundle::from_section(
-                            format_pawn_lifetime_text(pawn),
+                            lifetime_text(pawn),
                             TextStyle {
                                 font: font_assets.fira.clone(),
                                 font_size: 16.,
@@ -77,7 +77,7 @@ fn render_pawn_ui(
                     ));
                     parent.spawn((
                         TextBundle::from_section(
-                            format_pawn_birthday_text(pawn),
+                            birthday_text(pawn),
                             TextStyle {
                                 font: font_assets.fira.clone(),
                                 font_size: 16.,
@@ -90,31 +90,40 @@ fn render_pawn_ui(
         });
 }
 
-fn update_pawn_age_text(
-    mut text_query: Query<&mut Text, With<PawnAgeTextUIMarker>>,
+fn update_pawn_ui(
+    mut texts: Query<
+        (
+            &mut Text,
+            Option<&PawnAgeTextUIMarker>,
+            Option<&PawnLifetimeTextUIMarker>,
+            Option<&PawnBirthdayTextUIMarker>,
+        ),
+        Or<(
+            With<PawnAgeTextUIMarker>,
+            With<PawnLifetimeTextUIMarker>,
+            With<PawnBirthdayTextUIMarker>,
+        )>,
+    >,
     pawn_query: Query<&Pawn>,
 ) {
-    let mut text = text_query.single_mut();
     let pawn = pawn_query.iter().next().unwrap();
 
-    text.sections[0].value = format_pawn_age_text(pawn);
+    for (mut text, age_marker, lifetimer_marker, birthday_marker) in texts.iter_mut() {
+        if age_marker.is_some() {
+            text.sections[0].value = age_text(pawn);
+        } else if lifetimer_marker.is_some() {
+            text.sections[0].value = lifetime_text(pawn);
+        } else if birthday_marker.is_some() {
+            text.sections[0].value = birthday_text(pawn);
+        }
+    }
 }
 
-fn format_pawn_age_text(pawn: &Pawn) -> String {
+fn age_text(pawn: &Pawn) -> String {
     format!("Age: {}", pawn.age)
 }
 
-fn update_pawn_lifetime_text(
-    mut text_query: Query<&mut Text, With<PawnLifetimeTextUIMarker>>,
-    pawn_query: Query<&Pawn>,
-) {
-    let mut text = text_query.single_mut();
-    let pawn = pawn_query.iter().next().unwrap();
-
-    text.sections[0].value = format_pawn_lifetime_text(pawn);
-}
-
-fn format_pawn_lifetime_text(pawn: &Pawn) -> String {
+fn lifetime_text(pawn: &Pawn) -> String {
     if pawn.state == PawnState::Dead {
         "<DEAD>".into()
     } else {
@@ -126,17 +135,7 @@ fn format_pawn_lifetime_text(pawn: &Pawn) -> String {
     }
 }
 
-fn update_pawn_birthday_text(
-    mut text_query: Query<&mut Text, With<PawnBirthdayTextUIMarker>>,
-    pawn_query: Query<&Pawn>,
-) {
-    let mut text = text_query.single_mut();
-    let pawn = pawn_query.iter().next().unwrap();
-
-    text.sections[0].value = format_pawn_birthday_text(pawn);
-}
-
-fn format_pawn_birthday_text(pawn: &Pawn) -> String {
+fn birthday_text(pawn: &Pawn) -> String {
     format!(
         "Birthday: {}",
         ElapsedTime::year_day_to_season_day_label(pawn.birth_year_day)

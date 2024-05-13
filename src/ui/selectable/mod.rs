@@ -10,7 +10,7 @@ pub struct UiSelectablePlugin;
 impl Plugin for UiSelectablePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnExit(AppState::Loading), render_selectable_container)
-            .add_plugins((UiFarmPlugin, UiPawnPlugin));
+            .add_plugins((UiPawnPlugin, UiFarmPlugin));
     }
 }
 
@@ -36,21 +36,23 @@ fn selectble_id(container_query: &Query<Entity, With<SelectableContainerUIMarker
     container_query.get_single().unwrap()
 }
 
-fn selectable_node_bunlde() -> NodeBundle {
-    NodeBundle {
-        style: Style {
-            display: Display::Flex,
-            flex_direction: FlexDirection::Column,
-            padding: UiRect {
-                top: Val::Px(10.),
-                right: Val::Px(10.),
-                bottom: Val::Px(10.),
-                left: Val::Px(10.),
+fn selectable_node_bunlde<T: Default>() -> (NodeBundle, T) {
+    (
+        NodeBundle {
+            style: Style {
+                display: Display::Flex,
+                flex_direction: FlexDirection::Column,
+                padding: UiRect {
+                    top: Val::Px(10.),
+                    right: Val::Px(10.),
+                    bottom: Val::Px(10.),
+                    left: Val::Px(10.),
+                },
+                max_width: Val::Px(300.), ..default()
             },
-            max_width: Val::Px(300.),
+            background_color: bg_color(UiOpacity::Heavy),
             ..default()
         },
-        background_color: bg_color(UiOpacity::Heavy),
-        ..default()
-    }
+        T::default()
+    )
 }

@@ -56,10 +56,10 @@ fn main() {
             movable::MovablePlugin,
             workable::WorkablePlugin,
             navigation::NavigationPlugin,
+            pawn::PawnPlugin,
             structure::StructurePlugin,
             ui::UiPlugin,
             input::InputPlugin,
-            pawn::PawnPlugin,
         ))
         // .add_plugins((
         //     bevy::diagnostic::LogDiagnosticsPlugin::default(),
