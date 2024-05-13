@@ -42,11 +42,12 @@ fn selectable_node_bunlde() -> NodeBundle {
             display: Display::Flex,
             flex_direction: FlexDirection::Column,
             padding: UiRect {
-                top: Val::Px(10.0),
-                right: Val::Px(10.0),
-                bottom: Val::Px(10.0),
-                left: Val::Px(10.0),
+                top: Val::Px(10.),
+                right: Val::Px(10.),
+                bottom: Val::Px(10.),
+                left: Val::Px(10.),
             },
+            max_width: Val::Px(300.),
             ..default()
         },
         background_color: bg_color(UiOpacity::Heavy),
