@@ -80,7 +80,7 @@ fn spawn_item<T: Component>(
                     },
                     ..default()
                 },
-                background_color: (*UI_COLOR.clone().set_a(0.85)).into(),
+                background_color: bg_color(UiOpacity::Heavy),
                 ..default()
             })
             .with_children(|parent| {

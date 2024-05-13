@@ -33,76 +33,73 @@ impl Plugin for UiPawnPlugin {
 fn render_pawn_ui(
     mut commands: Commands,
     font_assets: Res<FontAssets>,
-    container_query: Query<Entity, With<SelectableContainerUIMarker>>,
     pawn_query: Query<&Pawn>,
+    container_query: Query<Entity, With<SelectableContainerUIMarker>>,
 ) {
     let pawn = pawn_query.iter().next();
     let container_id = container_query.get_single().unwrap();
 
-    commands
-        .entity(container_id)
-        // .spawn(NodeBundle {
-        //     style: Style {
-        //         position_type: PositionType::Absolute,
-        //         display: Display::Flex,
-        //         flex_direction: FlexDirection::Column,
-        //         row_gap: Val::Px(4.),
-        //         top: Val::Px(8.),
-        //         left: Val::Px(100.),
-        //         padding: UiRect {
-        //             top: Val::Px(10.),
-        //             right: Val::Px(10.),
-        //             bottom: Val::Px(10.),
-        //             left: Val::Px(10.),
-        //         },
-        //         ..default()
-        //     },
-        //     background_color: (*UI_COLOR.clone().set_a(0.85)).into(),
-        //     ..default()
-        // })
-        .with_children(|parent| {
-            parent.spawn(TextBundle::from_section(
-                "PAWN",
-                TextStyle {
-                    font: font_assets.fira.clone(),
-                    font_size: 18.,
-                    color: Color::WHITE,
+    commands.entity(container_id).with_children(|parent| {
+        parent
+            .spawn(NodeBundle {
+                style: Style {
+                    display: Display::Flex,
+                    flex_direction: FlexDirection::Column,
+                    padding: UiRect {
+                        top: Val::Px(10.0),
+                        right: Val::Px(10.0),
+                        bottom: Val::Px(10.0),
+                        left: Val::Px(10.0),
+                    },
+                    ..default()
                 },
-            ));
-            parent.spawn((
-                TextBundle::from_section(
-                    format_pawn_age_text(pawn),
+                background_color: bg_color(UiOpacity::Medium),
+                ..default()
+            })
+            .with_children(|parent| {
+                parent.spawn(TextBundle::from_section(
+                    "PAWN",
                     TextStyle {
                         font: font_assets.fira.clone(),
-                        font_size: 16.,
+                        font_size: 18.,
                         color: Color::WHITE,
                     },
-                ),
-                PawnAgeTextUIMarker::default(),
-            ));
-            parent.spawn((
-                TextBundle::from_section(
-                    format_pawn_lifetime_text(pawn),
-                    TextStyle {
-                        font: font_assets.fira.clone(),
-                        font_size: 16.,
-                        color: Color::WHITE,
-                    },
-                ),
-                PawnLifetimeTextUIMarker::default(),
-            ));
-            parent.spawn((
-                TextBundle::from_section(
-                    format_pawn_birthday_text(pawn),
-                    TextStyle {
-                        font: font_assets.fira.clone(),
-                        font_size: 16.,
-                        color: Color::WHITE,
-                    },
-                ),
-                PawnBirthdayTextUIMarker::default(),
-            ));
-        });
+                ));
+                parent.spawn((
+                    TextBundle::from_section(
+                        format_pawn_age_text(pawn),
+                        TextStyle {
+                            font: font_assets.fira.clone(),
+                            font_size: 16.,
+                            color: Color::WHITE,
+                        },
+                    ),
+                    PawnAgeTextUIMarker::default(),
+                ));
+                parent.spawn((
+                    TextBundle::from_section(
+                        format_pawn_lifetime_text(pawn),
+                        TextStyle {
+                            font: font_assets.fira.clone(),
+                            font_size: 16.,
+                            color: Color::WHITE,
+                        },
+                    ),
+                    PawnLifetimeTextUIMarker::default(),
+                ));
+                parent.spawn((
+                    TextBundle::from_section(
+                        format_pawn_birthday_text(pawn),
+                        TextStyle {
+                            font: font_assets.fira.clone(),
+                            font_size: 16.,
+                            color: Color::WHITE,
+                        },
+                    ),
+                    PawnBirthdayTextUIMarker::default(),
+                ));
+            });
+    });
 }
 
 fn update_pawn_age_text(

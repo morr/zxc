@@ -48,7 +48,7 @@ fn render_simulation_speed_ui(
                 },
                 ..default()
             },
-            background_color: (*UI_COLOR.clone().set_a(0.65)).into(),
+            background_color: bg_color(UiOpacity::Medium),
             ..default()
         })
         .with_children(|parent| {

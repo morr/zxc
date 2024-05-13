@@ -1,3 +1,5 @@
+use self::ui::UiOpacity;
+
 use super::*;
 
 pub fn render_debug_info(
@@ -22,7 +24,7 @@ pub fn render_debug_info(
                 },
                 ..default()
             },
-            background_color: (*Color::hex("181a1c").unwrap().set_a(0.25)).into(),
+            background_color: bg_color(UiOpacity::Light),
             ..default()
         })
         .with_children(|container_parent| {

@@ -25,15 +25,8 @@ fn render_selectable_container(mut commands: Commands) {
                 row_gap: Val::Px(8.),
                 top: Val::Px(8.),
                 left: Val::Px(100.),
-                padding: UiRect {
-                    top: Val::Px(10.0),
-                    right: Val::Px(10.0),
-                    bottom: Val::Px(10.0),
-                    left: Val::Px(10.0),
-                },
                 ..default()
             },
-            background_color: (*Color::hex("181a1c").unwrap().set_a(0.5)).into(),
             ..default()
         },
         SelectableContainerUIMarker::default(),
