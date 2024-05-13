@@ -22,18 +22,19 @@ pub struct DyingMarker;
 impl Default for Pawn {
     fn default() -> Self {
         let mut rng = rand::thread_rng();
+        let age = rng.gen_range(RangeInclusive::new(
+            CONFIG.pawn.spawn_age.0,
+            CONFIG.pawn.spawn_age.1,
+        ));
         let lifetime = rng.gen_range(RangeInclusive::new(
             CONFIG.pawn.lifetime_span.0 as f32,
             CONFIG.pawn.lifetime_span.1 as f32,
         )) as f32
-            * CONFIG.time.year_duration;
+            * CONFIG.time.year_duration - age as f32;
 
         Self {
             state: PawnState::Idle,
-            age: rng.gen_range(RangeInclusive::new(
-                CONFIG.pawn.spawn_age.0,
-                CONFIG.pawn.spawn_age.1,
-            )),
+            age,
             birth_year_day: rng.gen_range(0..CONFIG.time.days_in_year),
             lifetime,
         }
