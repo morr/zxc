@@ -1,16 +1,26 @@
 use super::*;
 
-#[derive(Component, Default)]
-struct PawnUIMarker {}
+// #[derive(Component, Default)]
+// struct PawnUIMarker {}
+//
+// #[derive(Component, Default)]
+// struct MovableUIMarker {}
 
 #[derive(Component, Default)]
 struct PawnAgeTextUIMarker {}
-
 #[derive(Component, Default)]
 struct PawnLifetimeTextUIMarker {}
-
 #[derive(Component, Default)]
 struct PawnBirthdayTextUIMarker {}
+#[derive(Component, Default)]
+struct PawnStateTextUIMarker {}
+
+#[derive(Component, Default)]
+struct MovableSpeedTextUIMarker {}
+#[derive(Component, Default)]
+struct MovablePathTextUIMarker {}
+#[derive(Component, Default)]
+struct MovableStateTextUIMarker {}
 
 pub struct UiPawnPlugin;
 
@@ -24,7 +34,8 @@ impl Plugin for UiPawnPlugin {
         )
         .add_systems(
             FixedUpdate,
-            update_pawn_ui
+            (update_pawn_ui, update_movable_ui)
+                .chain()
                 .after(render_pawn_ui)
                 .run_if(in_state(AppState::Playing)),
         );
@@ -34,58 +45,56 @@ impl Plugin for UiPawnPlugin {
 fn render_pawn_ui(
     mut commands: Commands,
     font_assets: Res<FontAssets>,
-    pawn_query: Query<&Pawn>,
+    pawn_query: Query<(&Pawn, &Movable)>,
     container_query: Query<Entity, With<SelectableContainerUIMarker>>,
 ) {
-    let pawn = pawn_query.iter().next().unwrap();
+    let (pawn, movable) = pawn_query.iter().next().unwrap();
 
     commands
         .entity(selectble_id(&container_query))
         .with_children(|parent| {
             parent
-                .spawn(selectable_node_bunlde::<PawnUIMarker>())
+                .spawn(selectable_node_bunlde())
                 .with_children(|parent| {
-                    parent.spawn(TextBundle::from_section(
-                        "PAWN",
-                        TextStyle {
-                            font: font_assets.fira.clone(),
-                            font_size: 18.,
-                            color: Color::WHITE,
-                        },
-                    ));
-                    parent.spawn((
-                        TextBundle::from_section(
-                            age_text(pawn),
-                            TextStyle {
-                                font: font_assets.fira.clone(),
-                                font_size: 16.,
-                                color: Color::WHITE,
-                            },
-                        ),
-                        PawnAgeTextUIMarker::default(),
-                    ));
-                    parent.spawn((
-                        TextBundle::from_section(
-                            lifetime_text(pawn),
-                            TextStyle {
-                                font: font_assets.fira.clone(),
-                                font_size: 16.,
-                                color: Color::WHITE,
-                            },
-                        ),
-                        PawnLifetimeTextUIMarker::default(),
-                    ));
-                    parent.spawn((
-                        TextBundle::from_section(
-                            birthday_text(pawn),
-                            TextStyle {
-                                font: font_assets.fira.clone(),
-                                font_size: 16.,
-                                color: Color::WHITE,
-                            },
-                        ),
-                        PawnBirthdayTextUIMarker::default(),
-                    ));
+                    parent
+                        .spawn(selectable_subnode_bunlde())
+                        .with_children(|parent| {
+                            parent.spawn(headline_text_bundle("Pawn", &font_assets));
+                            parent.spawn(property_text_bundle::<PawnAgeTextUIMarker>(
+                                pawn_age_text(pawn),
+                                &font_assets,
+                            ));
+                            parent.spawn(property_text_bundle::<PawnLifetimeTextUIMarker>(
+                                pawn_lifetime_text(pawn),
+                                &font_assets,
+                            ));
+                            parent.spawn(property_text_bundle::<PawnBirthdayTextUIMarker>(
+                                pawn_birthday_text(pawn),
+                                &font_assets,
+                            ));
+                            parent.spawn(property_text_bundle::<PawnStateTextUIMarker>(
+                                pawn_state_text(pawn),
+                                &font_assets,
+                            ));
+                        });
+
+                    parent
+                        .spawn(selectable_subnode_bunlde())
+                        .with_children(|parent| {
+                            parent.spawn(headline_text_bundle("Movable", &font_assets));
+                            parent.spawn(property_text_bundle::<MovableSpeedTextUIMarker>(
+                                movable_speed_text(movable),
+                                &font_assets,
+                            ));
+                            parent.spawn(property_text_bundle::<MovablePathTextUIMarker>(
+                                movable_path_text(movable),
+                                &font_assets,
+                            ));
+                            parent.spawn(property_text_bundle::<MovableStateTextUIMarker>(
+                                movable_state_text(movable),
+                                &font_assets,
+                            ));
+                        });
                 });
         });
 }
@@ -97,33 +106,36 @@ fn update_pawn_ui(
             Option<&PawnAgeTextUIMarker>,
             Option<&PawnLifetimeTextUIMarker>,
             Option<&PawnBirthdayTextUIMarker>,
+            Option<&PawnStateTextUIMarker>,
         ),
         Or<(
             With<PawnAgeTextUIMarker>,
             With<PawnLifetimeTextUIMarker>,
             With<PawnBirthdayTextUIMarker>,
+            With<PawnStateTextUIMarker>,
         )>,
     >,
     pawn_query: Query<&Pawn>,
 ) {
     let pawn = pawn_query.iter().next().unwrap();
 
-    for (mut text, age_marker, lifetimer_marker, birthday_marker) in texts.iter_mut() {
+    for (mut text, age_marker, lifetimer_marker, birthday_marker, state_marker) in texts.iter_mut() {
         if age_marker.is_some() {
-            text.sections[0].value = age_text(pawn);
+            text.sections[0].value = pawn_age_text(pawn);
         } else if lifetimer_marker.is_some() {
-            text.sections[0].value = lifetime_text(pawn);
+            text.sections[0].value = pawn_lifetime_text(pawn);
         } else if birthday_marker.is_some() {
-            text.sections[0].value = birthday_text(pawn);
+            text.sections[0].value = pawn_birthday_text(pawn);
+        } else if state_marker.is_some() {
+            text.sections[0].value = pawn_state_text(pawn);
         }
     }
 }
 
-fn age_text(pawn: &Pawn) -> String {
+fn pawn_age_text(pawn: &Pawn) -> String {
     format!("Age: {}", pawn.age)
 }
-
-fn lifetime_text(pawn: &Pawn) -> String {
+fn pawn_lifetime_text(pawn: &Pawn) -> String {
     if pawn.state == PawnState::Dead {
         "<DEAD>".into()
     } else {
@@ -134,10 +146,52 @@ fn lifetime_text(pawn: &Pawn) -> String {
         )
     }
 }
-
-fn birthday_text(pawn: &Pawn) -> String {
+fn pawn_birthday_text(pawn: &Pawn) -> String {
     format!(
         "Birthday: {}",
         ElapsedTime::year_day_to_season_day_label(pawn.birth_year_day)
     )
+}
+fn pawn_state_text(pawn: &Pawn) -> String {
+    format!("State: {:?}", pawn.state)
+}
+
+
+fn update_movable_ui(
+    mut texts: Query<
+        (
+            &mut Text,
+            Option<&MovableSpeedTextUIMarker>,
+            Option<&MovablePathTextUIMarker>,
+            Option<&MovableStateTextUIMarker>,
+        ),
+        Or<(
+            With<MovableSpeedTextUIMarker>,
+            With<MovablePathTextUIMarker>,
+            With<MovableStateTextUIMarker>,
+        )>,
+    >,
+    movable_query: Query<&Movable>,
+) {
+    let movable = movable_query.iter().next().unwrap();
+
+    for (mut text, speed_marker, pathr_marker, state_marker) in texts.iter_mut() {
+        if speed_marker.is_some() {
+            text.sections[0].value = movable_speed_text(movable);
+        } else if pathr_marker.is_some() {
+            text.sections[0].value = movable_path_text(movable);
+        } else if state_marker.is_some() {
+            text.sections[0].value = movable_state_text(movable);
+        }
+    }
+}
+
+fn movable_speed_text(movable: &Movable) -> String {
+    format!("Speed: {}", movable.speed)
+}
+fn movable_path_text(movable: &Movable) -> String {
+    format!("Path: {:?}", movable.path)
+}
+fn movable_state_text(movable: &Movable) -> String {
+    format!("State: {:?}", movable.state)
 }

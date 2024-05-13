@@ -18,16 +18,16 @@ pub struct MovableMoving;
 #[derive(Debug, Component, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
 pub struct Movable {
-    pub path: VecDeque<IVec2>,
     pub speed: f32,
+    pub path: VecDeque<IVec2>,
     pub state: MovableState,
 }
 
 impl Movable {
     pub fn new(speed: f32) -> Self {
         Self {
-            path: VecDeque::new(),
             speed,
+            path: VecDeque::new(),
             state: MovableState::Idle,
         }
     }

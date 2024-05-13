@@ -2,8 +2,8 @@ use self::structure::{spawn_farm, Farm};
 
 use super::*;
 
-#[derive(Component, Default)]
-pub struct FarmUIMarker {}
+// #[derive(Component, Default)]
+// pub struct FarmUIMarker {}
 
 #[derive(Component, Default)]
 pub struct FarmStateTextUIMarker {}
@@ -42,38 +42,15 @@ fn render_farm_ui(
         .entity(selectble_id(&container_query))
         .with_children(|parent| {
             parent
-                .spawn(selectable_node_bunlde::<FarmUIMarker>())
+                .spawn(selectable_node_bunlde())
                 .with_children(|parent| {
-                    parent.spawn(TextBundle::from_section(
-                        "FARM",
-                        TextStyle {
-                            font: font_assets.fira.clone(),
-                            font_size: 18.,
-                            color: Color::WHITE,
-                        },
-                    ));
-                    parent.spawn((
-                        TextBundle::from_section(
-                            state_text(farm),
-                            TextStyle {
-                                font: font_assets.fira.clone(),
-                                font_size: 16.,
-                                color: Color::WHITE,
-                            },
-                        ),
-                        FarmStateTextUIMarker::default(),
-                    ));
-                    parent.spawn((
-                        TextBundle::from_section(
-                            tendings_text(farm),
-                            TextStyle {
-                                font: font_assets.fira.clone(),
-                                font_size: 16.,
-                                color: Color::WHITE,
-                            },
-                        ),
-                        FarmTendingsTextUIMarker::default(),
-                    ));
+                    parent
+                        .spawn(selectable_subnode_bunlde())
+                        .with_children(|parent| {
+                            parent.spawn(headline_text_bundle("Farm", &font_assets));
+                            parent.spawn(property_text_bundle::<FarmStateTextUIMarker>(state_text(farm), &font_assets));
+                            parent.spawn(property_text_bundle::<FarmTendingsTextUIMarker>(tendings_text(farm), &font_assets));
+                        });
                 });
         });
 }
@@ -101,7 +78,7 @@ fn update_farm_ui(
 }
 
 fn state_text(farm: &Farm) -> String {
-    format!("{:?}", farm.state)
+    format!("State: {:?}", farm.state)
 }
 
 fn tendings_text(farm: &Farm) -> String {
