@@ -15,7 +15,7 @@ impl Plugin for UiPawnPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             OnExit(AppState::Loading),
-            render_pawn_ui.after(render_selectable_container),
+            render_pawn_ui.after(render_selectable_container).after(spawn_pawns),
         )
         .add_systems(
             FixedUpdate,
@@ -25,6 +25,7 @@ impl Plugin for UiPawnPlugin {
                 update_pawn_birthday_text,
             )
                 .chain()
+                .after(render_pawn_ui)
                 .run_if(in_state(AppState::Playing)),
         );
     }
@@ -36,70 +37,57 @@ fn render_pawn_ui(
     pawn_query: Query<&Pawn>,
     container_query: Query<Entity, With<SelectableContainerUIMarker>>,
 ) {
-    let pawn = pawn_query.iter().next();
-    let container_id = container_query.get_single().unwrap();
+    let pawn = pawn_query.iter().next().unwrap();
 
-    commands.entity(container_id).with_children(|parent| {
-        parent
-            .spawn(NodeBundle {
-                style: Style {
-                    display: Display::Flex,
-                    flex_direction: FlexDirection::Column,
-                    padding: UiRect {
-                        top: Val::Px(10.0),
-                        right: Val::Px(10.0),
-                        bottom: Val::Px(10.0),
-                        left: Val::Px(10.0),
-                    },
-                    ..default()
-                },
-                background_color: bg_color(UiOpacity::Medium),
-                ..default()
-            })
-            .with_children(|parent| {
-                parent.spawn(TextBundle::from_section(
-                    "PAWN",
-                    TextStyle {
-                        font: font_assets.fira.clone(),
-                        font_size: 18.,
-                        color: Color::WHITE,
-                    },
-                ));
-                parent.spawn((
-                    TextBundle::from_section(
-                        format_pawn_age_text(pawn),
+    commands
+        .entity(selectble_id(&container_query))
+        .with_children(|parent| {
+            parent
+                .spawn(selectable_node_bunlde())
+                .with_children(|parent| {
+                    parent.spawn(TextBundle::from_section(
+                        "PAWN",
                         TextStyle {
                             font: font_assets.fira.clone(),
-                            font_size: 16.,
+                            font_size: 18.,
                             color: Color::WHITE,
                         },
-                    ),
-                    PawnAgeTextUIMarker::default(),
-                ));
-                parent.spawn((
-                    TextBundle::from_section(
-                        format_pawn_lifetime_text(pawn),
-                        TextStyle {
-                            font: font_assets.fira.clone(),
-                            font_size: 16.,
-                            color: Color::WHITE,
-                        },
-                    ),
-                    PawnLifetimeTextUIMarker::default(),
-                ));
-                parent.spawn((
-                    TextBundle::from_section(
-                        format_pawn_birthday_text(pawn),
-                        TextStyle {
-                            font: font_assets.fira.clone(),
-                            font_size: 16.,
-                            color: Color::WHITE,
-                        },
-                    ),
-                    PawnBirthdayTextUIMarker::default(),
-                ));
-            });
-    });
+                    ));
+                    parent.spawn((
+                        TextBundle::from_section(
+                            format_pawn_age_text(pawn),
+                            TextStyle {
+                                font: font_assets.fira.clone(),
+                                font_size: 16.,
+                                color: Color::WHITE,
+                            },
+                        ),
+                        PawnAgeTextUIMarker::default(),
+                    ));
+                    parent.spawn((
+                        TextBundle::from_section(
+                            format_pawn_lifetime_text(pawn),
+                            TextStyle {
+                                font: font_assets.fira.clone(),
+                                font_size: 16.,
+                                color: Color::WHITE,
+                            },
+                        ),
+                        PawnLifetimeTextUIMarker::default(),
+                    ));
+                    parent.spawn((
+                        TextBundle::from_section(
+                            format_pawn_birthday_text(pawn),
+                            TextStyle {
+                                font: font_assets.fira.clone(),
+                                font_size: 16.,
+                                color: Color::WHITE,
+                            },
+                        ),
+                        PawnBirthdayTextUIMarker::default(),
+                    ));
+                });
+        });
 }
 
 fn update_pawn_age_text(
@@ -107,41 +95,34 @@ fn update_pawn_age_text(
     pawn_query: Query<&Pawn>,
 ) {
     let mut text = text_query.single_mut();
-    let pawn = pawn_query.iter().next();
+    let pawn = pawn_query.iter().next().unwrap();
 
     text.sections[0].value = format_pawn_age_text(pawn);
 }
 
-fn format_pawn_age_text(maybe_pawn: Option<&Pawn>) -> String {
-    if let Some(pawn) = maybe_pawn {
-        format!("Age: {}", pawn.age)
-    } else {
-        "<NONE>".into()
-    }
+fn format_pawn_age_text(pawn: &Pawn) -> String {
+    format!("Age: {}", pawn.age)
 }
+
 fn update_pawn_lifetime_text(
     mut text_query: Query<&mut Text, With<PawnLifetimeTextUIMarker>>,
     pawn_query: Query<&Pawn>,
 ) {
     let mut text = text_query.single_mut();
-    let pawn = pawn_query.iter().next();
+    let pawn = pawn_query.iter().next().unwrap();
 
     text.sections[0].value = format_pawn_lifetime_text(pawn);
 }
 
-fn format_pawn_lifetime_text(maybe_pawn: Option<&Pawn>) -> String {
-    if let Some(pawn) = maybe_pawn {
-        if pawn.state == PawnState::Dead {
-            "<DEAD>".into()
-        } else {
-            format!(
-                "Lifetime: {}y {}d",
-                (pawn.lifetime / CONFIG.time.year_duration).floor(),
-                ((pawn.lifetime % CONFIG.time.year_duration) / CONFIG.time.day_duration).floor()
-            )
-        }
+fn format_pawn_lifetime_text(pawn: &Pawn) -> String {
+    if pawn.state == PawnState::Dead {
+        "<DEAD>".into()
     } else {
-        "<NONE>".into()
+        format!(
+            "Lifetime: {}y {}d",
+            (pawn.lifetime / CONFIG.time.year_duration).floor(),
+            ((pawn.lifetime % CONFIG.time.year_duration) / CONFIG.time.day_duration).floor()
+        )
     }
 }
 
@@ -150,18 +131,14 @@ fn update_pawn_birthday_text(
     pawn_query: Query<&Pawn>,
 ) {
     let mut text = text_query.single_mut();
-    let pawn = pawn_query.iter().next();
+    let pawn = pawn_query.iter().next().unwrap();
 
     text.sections[0].value = format_pawn_birthday_text(pawn);
 }
 
-fn format_pawn_birthday_text(maybe_pawn: Option<&Pawn>) -> String {
-    if let Some(pawn) = maybe_pawn {
-        format!(
-            "Birthday: {}",
-            ElapsedTime::year_day_to_season_day_label(pawn.birth_year_day)
-        )
-    } else {
-        "<NONE>".into()
-    }
+fn format_pawn_birthday_text(pawn: &Pawn) -> String {
+    format!(
+        "Birthday: {}",
+        ElapsedTime::year_day_to_season_day_label(pawn.birth_year_day)
+    )
 }
