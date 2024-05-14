@@ -7,7 +7,7 @@ pub struct Tile(pub IVec2);
 pub struct TileHovered;
 
 #[derive(Event, Debug)]
-pub struct HoverTileEvent(pub IVec2);
+pub struct TileHoveredEvent(pub IVec2);
 
 #[derive(Event, Debug)]
 pub struct ClickTileEvent(pub IVec2);

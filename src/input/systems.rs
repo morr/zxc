@@ -10,7 +10,7 @@ pub fn mouse_input(
     q_window: Query<&Window, With<PrimaryWindow>>,
     // query to get camera transform
     q_camera: Query<(&Camera, &GlobalTransform), With<FloorCamera>>,
-    mut hover_event_writer: EventWriter<HoverTileEvent>,
+    mut hover_event_writer: EventWriter<TileHoveredEvent>,
     mut click_event_writer: EventWriter<ClickTileEvent>,
     mut prev_hovered_tile_pos: ResMut<PrevHoveredTilePos>,
 ) {
@@ -21,7 +21,7 @@ pub fn mouse_input(
         .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
         .map(|ray| ray.origin.truncate())
     {
-        let event = HoverTileEvent(world_position.world_pos_to_grid());
+        let event = TileHoveredEvent(world_position.world_pos_to_grid());
         // println!("{:?}", event);
 
         let is_new_hover = match prev_hovered_tile_pos.0 {

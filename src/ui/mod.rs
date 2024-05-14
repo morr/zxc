@@ -1,8 +1,9 @@
 use crate::*;
 
-expose_submodules!(simulation_state, items_stock, selectable, debug);
+expose_submodules!(simulation_state, items_stock, selectable, hovered, debug);
 
 pub static UI_COLOR: Lazy<Color> = Lazy::new(|| Color::hex("181a1c").unwrap());
+pub static UI_SCREEN_EDGE_PX_OFFSET: Val = Val::Px(8.);
 
 pub struct UiPlugin;
 
@@ -12,6 +13,7 @@ impl Plugin for UiPlugin {
             UiSimulationStatePlugin,
             UiItemsStockPlugin,
             UiSelectablePlugin,
+            UiHoveredPlugin,
             UiDebugPlugin,
         ));
     }

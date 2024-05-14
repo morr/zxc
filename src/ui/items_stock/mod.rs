@@ -34,8 +34,8 @@ fn render_items_stock_ui(
             display: Display::Flex,
             flex_direction: FlexDirection::Column,
             row_gap: Val::Px(8.),
-            top: Val::Px(8.),
-            left: Val::Px(8.),
+            top: UI_SCREEN_EDGE_PX_OFFSET,
+            left: UI_SCREEN_EDGE_PX_OFFSET,
             ..default()
         },
         ..default()

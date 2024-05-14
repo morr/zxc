@@ -26,7 +26,7 @@ pub fn spawn_map(mut commands: Commands, assets: Res<TextureAssets>) {
 
 // pub fn highlight_hovered_tile(
 //     mut commands: Commands,
-//     mut event_reader: EventReader<HoverTileEvent>,
+//     mut event_reader: EventReader<TileHoveredEvent>,
 //     query_tiles_hovered: Query<Entity, With<TileHovered>>,
 //     query_tiles: Query<(Entity, &Tile)>,
 // ) {

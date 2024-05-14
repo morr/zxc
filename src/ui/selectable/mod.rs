@@ -22,7 +22,7 @@ fn render_selectable_container(mut commands: Commands) {
                 display: Display::Flex,
                 flex_direction: FlexDirection::Row,
                 column_gap: Val::Px(25.),
-                top: Val::Px(8.),
+                top: UI_SCREEN_EDGE_PX_OFFSET,
                 left: Val::Px(100.),
                 ..default()
             },
