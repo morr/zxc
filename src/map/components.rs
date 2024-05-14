@@ -4,9 +4,6 @@ use super::*;
 pub struct Tile(pub IVec2);
 
 #[derive(Event, Debug)]
-pub struct HoverEvent(pub IVec2);
-
-#[derive(Event, Debug)]
 pub struct ClickTileEvent(pub IVec2);
 
 // #[derive(Component)]
