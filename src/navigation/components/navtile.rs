@@ -1,8 +1,6 @@
+use super::*;
 use bevy::utils::HashSet;
 use std::any::TypeId;
-
-use super::*;
-
 
 #[derive(Debug)]
 pub struct Navtile {
@@ -23,7 +21,8 @@ impl Navtile {
     }
 
     pub fn add_entity<T: 'static>(&mut self, entity: Entity) {
-        self.occupied_by.insert(EntityWithComponent::new::<T>(entity));
+        self.occupied_by
+            .insert(EntityWithComponent::new::<T>(entity));
     }
 
     pub fn remove_entity(&mut self, id: &Entity) {
@@ -52,12 +51,8 @@ impl Default for Navtiles {
     fn default() -> Self {
         Self(
             (0..CONFIG.grid.size)
-                .map(|_x| {
-                    (0..CONFIG.grid.size)
-                        .map(|_y| Navtile::new())
-                        .collect::<Vec<Navtile>>()
-                })
-                .collect::<Vec<Vec<Navtile>>>(),
+                .map(|_x| (0..CONFIG.grid.size).map(|_y| Navtile::new()).collect())
+                .collect(),
         )
     }
 }
@@ -102,13 +97,8 @@ impl Navtiles {
     }
 
     pub fn get_passable(&self, grid_tile_x: i32, grid_tile_y: i32) -> Option<&Navtile> {
-        let result = self.get_some(grid_tile_x, grid_tile_y);
-
-        if result?.is_passable() {
-            result
-        } else {
-            None
-        }
+        self.get_some(grid_tile_x, grid_tile_y)
+            .filter(|navtile| navtile.is_passable())
     }
 
     pub fn for_each_tile_mut<F>(&self, mut lambda: F)

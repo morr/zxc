@@ -41,7 +41,6 @@ impl Navmesh {
     }
 
     pub fn update_cost(&mut self, x_range: Range<i32>, y_range: Range<i32>, cost: Option<i32>) {
-        // update cost of navtiles
         for x in x_range.clone() {
             for y in y_range.clone() {
                 self.navtiles.get_mut(x, y).cost = cost;
@@ -58,11 +57,9 @@ impl Navmesh {
     }
 
     pub fn is_passable(&self, x: i32, y: i32) -> bool {
-        if let Some(navtile) = self.navtiles.get_some(x, y) {
-            navtile.is_passable()
-        } else {
-            false
-        }
+        self.navtiles
+            .get_some(x, y)
+            .map_or(false, |navtile| navtile.is_passable())
     }
 
     pub fn add_entity<T: 'static>(&mut self, id: Entity, grid_tile_x: i32, grid_tile_y: i32) {
@@ -97,9 +94,9 @@ fn generate_successors(navtiles: &Navtiles) -> Vec<Vec<Vec<(IVec2, i32)>>> {
                         Vec::new()
                     }
                 })
-                .collect::<Vec<Vec<(IVec2, i32)>>>()
+                .collect()
         })
-        .collect::<Vec<Vec<Vec<(IVec2, i32)>>>>()
+        .collect()
 }
 
 fn tile_successors(x: i32, y: i32, navtiles: &Navtiles) -> Vec<(IVec2, i32)> {
@@ -109,7 +106,7 @@ fn tile_successors(x: i32, y: i32, navtiles: &Navtiles) -> Vec<(IVec2, i32)> {
         (x, y - 1),     // top
         (x + 1, y - 1), // top-right
         (x + 1, y),     // right
-        (x + 1, y + 1), // right-bototm
+        (x + 1, y + 1), // right-bottom
         (x, y + 1),     // bottom
         (x - 1, y + 1), // bottom-left
     ]
@@ -124,7 +121,6 @@ fn tile_successors(x: i32, y: i32, navtiles: &Navtiles) -> Vec<(IVec2, i32)> {
                     && navtiles.get_passable(nx, y).is_some())
             {
                 let tile_cost = navtile.cost.unwrap();
-
                 Some((
                     IVec2 { x: nx, y: ny },
                     if is_diagonal_movable {
@@ -141,5 +137,5 @@ fn tile_successors(x: i32, y: i32, navtiles: &Navtiles) -> Vec<(IVec2, i32)> {
             }
         })
     })
-    .collect::<Vec<_>>()
+    .collect()
 }
