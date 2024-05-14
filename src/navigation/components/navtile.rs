@@ -1,18 +1,19 @@
-use super::*;
-use bevy::utils::HashSet;
 use std::any::TypeId;
+
+use super::*;
+use bevy::utils::{HashMap, HashSet};
 
 #[derive(Debug)]
 pub struct Navtile {
     pub cost: Option<i32>,
-    pub occupied_by: HashSet<EntityWithComponent>,
+    pub occupied_by: HashMap<TypeId, HashSet<Entity>>,
 }
 
 impl Navtile {
     fn new() -> Self {
         Self {
             cost: Some(INITIAL_NAV_COST),
-            occupied_by: HashSet::default(),
+            occupied_by: HashMap::new(),
         }
     }
 
@@ -21,36 +22,27 @@ impl Navtile {
     }
 
     pub fn add_entity<T: 'static>(&mut self, entity: Entity) {
-        self.occupied_by
-            .insert(EntityWithComponent::new::<T>(entity));
+        let type_id = TypeId::of::<T>();
+
+        self.occupied_by.entry(type_id).or_default().insert(entity);
     }
 
-    pub fn remove_entity(&mut self, id: &Entity) {
-        self.occupied_by.retain(|e| e.id != *id);
+    pub fn remove_entity<T: 'static>(&mut self, entity: &Entity) {
+        if let Some(entities) = self.occupied_by.get_mut(&TypeId::of::<T>()) {
+            entities.remove(entity);
+
+            // not sure if it is necessary to cleanup type T from HashMap
+            // if entities.is_empty() {
+            //     self.occupied_by.remove(&TypeId::of::<T>());
+            // }
+        }
     }
 
     pub fn get_entities<T: 'static>(&self) -> impl Iterator<Item = &Entity> {
-        let type_id = TypeId::of::<T>();
-
         self.occupied_by
-            .iter()
-            .filter(move |e| e.component_type == type_id)
-            .map(|e| &e.id)
-    }
-}
-
-#[derive(Debug, Hash, Eq, PartialEq)]
-pub struct EntityWithComponent {
-    pub id: Entity,
-    pub component_type: TypeId,
-}
-
-impl EntityWithComponent {
-    pub fn new<T: 'static>(id: Entity) -> Self {
-        Self {
-            id,
-            component_type: TypeId::of::<T>(),
-        }
+            .get(&TypeId::of::<T>())
+            .into_iter()
+            .flat_map(|set| set.iter())
     }
 }
 

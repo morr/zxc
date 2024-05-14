@@ -27,7 +27,7 @@ pub fn spawn_map(
                 .insert(Tile(IVec2::new(x, y)))
                 .id();
 
-            navmesh.place_entity(id, x, y);
+            navmesh.add_entity::<Tile>(id, x, y);
         }
     }
 }
@@ -35,25 +35,33 @@ pub fn spawn_map(
 pub fn track_hover(
     mut commands: Commands,
     mut event_reader: EventReader<HoverEvent>,
+    arc_navmesh: Res<ArcNavmesh>,
     q_hover_markers: Query<(Entity, &Tile), With<HoverMarker>>,
-    q_tiles: Query<(Entity, &Tile)>,
+    // q_tiles: Query<(Entity, &Tile)>,
 ) {
     for event in event_reader.read() {
         // remove hover from other tiles
-        for (entity, _tile) in q_hover_markers.iter() {
-            commands.entity(entity).remove::<HoverMarker>();
+        for (id, _tile) in q_hover_markers.iter() {
+            commands.entity(id).remove::<HoverMarker>();
             // .remove::<ShowAabbGizmo>();
         }
 
-        println!("{:?} q_tiles.len()={}", event, q_tiles.iter().len());
-        for (entity, tile) in q_tiles.iter() {
-            if tile.0 == event.0 {
-                commands.entity(entity).insert(HoverMarker);
-                // .insert(ShowAabbGizmo {
-                //     color: Some(*Color::WHITE.clone().set_a(0.25)),
-                // });
-                break;
-            }
+        let navmesh = arc_navmesh.read();
+
+        for id in navmesh.get_entities::<Tile>(event.0.x, event.0.y) {
+            commands.entity(*id).insert(HoverMarker);
+            // .insert(ShowAabbGizmo {
+            //     color: Some(*Color::WHITE.clone().set_a(0.25)),
+            // });
         }
+        // for (entity, tile) in q_tiles.iter() {
+        //     if tile.0 == event.0 {
+        //         commands.entity(entity).insert(HoverMarker);
+        //         // .insert(ShowAabbGizmo {
+        //         //     color: Some(*Color::WHITE.clone().set_a(0.25)),
+        //         // });
+        //         break;
+        //     }
+        // }
     }
 }
