@@ -65,10 +65,16 @@ impl Navmesh {
         }
     }
 
-    pub fn place_entity(&mut self, id: Entity, grid_tile_x: i32, grid_tile_y: i32) {
+    pub fn add_entity<T: 'static>(&mut self, id: Entity, grid_tile_x: i32, grid_tile_y: i32) {
         self.navtiles
             .get_mut(grid_tile_x, grid_tile_y)
-            .place_entity(id);
+            .add_entity::<T>(id);
+    }
+
+    pub fn remove_entity(&mut self, id: &Entity, grid_tile_x: i32, grid_tile_y: i32) {
+        self.navtiles
+            .get_mut(grid_tile_x, grid_tile_y)
+            .remove_entity(id);
     }
 }
 

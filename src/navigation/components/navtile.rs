@@ -1,11 +1,13 @@
 use bevy::utils::HashSet;
+use std::any::TypeId;
 
 use super::*;
+
 
 #[derive(Debug)]
 pub struct Navtile {
     pub cost: Option<i32>,
-    pub occupied_by: HashSet<Entity>,
+    pub occupied_by: HashSet<EntityWithComponent>,
 }
 
 impl Navtile {
@@ -20,8 +22,27 @@ impl Navtile {
         self.cost.is_some()
     }
 
-    pub fn place_entity(&mut self, id: Entity) {
-        self.occupied_by.insert(id);
+    pub fn add_entity<T: 'static>(&mut self, entity: Entity) {
+        self.occupied_by.insert(EntityWithComponent::new::<T>(entity));
+    }
+
+    pub fn remove_entity(&mut self, id: &Entity) {
+        self.occupied_by.retain(|e| e.id != *id);
+    }
+}
+
+#[derive(Debug, Hash, Eq, PartialEq)]
+pub struct EntityWithComponent {
+    pub id: Entity,
+    pub component_type: TypeId,
+}
+
+impl EntityWithComponent {
+    pub fn new<T: 'static>(id: Entity) -> Self {
+        Self {
+            id,
+            component_type: TypeId::of::<T>(),
+        }
     }
 }
 
