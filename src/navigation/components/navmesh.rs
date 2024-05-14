@@ -64,6 +64,12 @@ impl Navmesh {
             false
         }
     }
+
+    pub fn place_entity(&mut self, id: Entity, grid_tile_x: i32, grid_tile_y: i32) {
+        self.navtiles
+            .get_mut(grid_tile_x, grid_tile_y)
+            .place_entity(id);
+    }
 }
 
 fn generate_successors(navtiles: &Navtiles) -> Vec<Vec<Vec<(IVec2, i32)>>> {

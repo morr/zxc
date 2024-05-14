@@ -1,21 +1,27 @@
+use bevy::utils::HashSet;
+
 use super::*;
 
 #[derive(Debug)]
 pub struct Navtile {
     pub cost: Option<i32>,
-    // pub occupied_by: HashSet<Entity>,
+    pub occupied_by: HashSet<Entity>,
 }
 
 impl Navtile {
     fn new() -> Self {
         Self {
             cost: Some(INITIAL_NAV_COST),
-            // occupied_by: HashSet::default(),
+            occupied_by: HashSet::default(),
         }
     }
 
     pub fn is_passable(&self) -> bool {
         self.cost.is_some()
+    }
+
+    pub fn place_entity(&mut self, id: Entity) {
+        self.occupied_by.insert(id);
     }
 }
 
