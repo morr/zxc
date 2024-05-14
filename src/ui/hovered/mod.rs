@@ -9,7 +9,7 @@ impl Plugin for UiHoverMarkerPlugin {
 }
 
 fn render_hovered_ui(mut commands: Commands) {
-    let root = commands.spawn(NodeBundle {
+    let _root = commands.spawn(NodeBundle {
         style: Style {
             position_type: PositionType::Absolute,
             display: Display::Flex,
