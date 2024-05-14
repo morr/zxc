@@ -73,6 +73,16 @@ impl Navmesh {
             .get_mut(grid_tile_x, grid_tile_y)
             .remove_entity(id);
     }
+
+    pub fn get_entities<T: 'static>(
+        &self,
+        grid_tile_x: i32,
+        grid_tile_y: i32,
+    ) -> impl Iterator<Item = &Entity> {
+        self.navtiles
+            .get(grid_tile_x, grid_tile_y)
+            .get_entities::<T>()
+    }
 }
 
 fn generate_successors(navtiles: &Navtiles) -> Vec<Vec<Vec<(IVec2, i32)>>> {

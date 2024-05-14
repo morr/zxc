@@ -28,6 +28,15 @@ impl Navtile {
     pub fn remove_entity(&mut self, id: &Entity) {
         self.occupied_by.retain(|e| e.id != *id);
     }
+
+    pub fn get_entities<T: 'static>(&self) -> impl Iterator<Item = &Entity> {
+        let type_id = TypeId::of::<T>();
+
+        self.occupied_by
+            .iter()
+            .filter(move |e| e.component_type == type_id)
+            .map(|e| &e.id)
+    }
 }
 
 #[derive(Debug, Hash, Eq, PartialEq)]
