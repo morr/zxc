@@ -15,6 +15,7 @@ pub fn spawn_pawns(
     font_assets: Res<FontAssets>,
     warehouse_query: Query<&Transform, With<Warehouse>>,
     farm_query: Query<&Transform, With<Farm>>,
+    arc_navmesh: ResMut<ArcNavmesh>,
     // query: Query<&Transform, With<Warehouse>>,
 ) {
     // println!("Spawning pawns");
@@ -30,6 +31,7 @@ pub fn spawn_pawns(
     let warehouse_transform = warehouse_query.single();
     let farm_transform = farm_query.iter().next().unwrap();
 
+    let mut navmesh = arc_navmesh.write();
     for i in 0..CONFIG.starting_scene.pawns {
         let random_angle: f32 = rng.gen_range(0.0..360.0);
 
@@ -51,7 +53,7 @@ pub fn spawn_pawns(
         let pawn = Pawn::default();
         let pawn_state_string = format!("{:?}", pawn.state);
 
-        commands
+        let pawn_id = commands
             .spawn((
                 pawn,
                 pawn_state::Idle,
@@ -84,7 +86,11 @@ pub fn spawn_pawns(
                     },
                     PawnStateText,
                 ));
-            });
+            })
+            .id();
+
+        let grid_tile = position.truncate().world_pos_to_grid();
+        navmesh.add_entity::<Pawn>(pawn_id, grid_tile.x, grid_tile.y);
     }
 }
 
