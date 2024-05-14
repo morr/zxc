@@ -7,10 +7,10 @@ impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<ClickTileEvent>()
             .add_event::<HoverTileEvent>()
-            .add_systems(OnExit(AppState::Loading), spawn_map)
-            .add_systems(
-                Update,
-                highlight_hovered_tile.run_if(in_state(AppState::Playing)),
-            );
+            .add_systems(OnExit(AppState::Loading), spawn_map);
+            // .add_systems(
+            //     Update,
+            //     highlight_hovered_tile.run_if(in_state(AppState::Playing)),
+            // );
     }
 }

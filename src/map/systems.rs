@@ -24,36 +24,36 @@ pub fn spawn_map(mut commands: Commands, assets: Res<TextureAssets>) {
     }
 }
 
-pub fn highlight_hovered_tile(
-    mut commands: Commands,
-    mut event_reader: EventReader<HoverTileEvent>,
-    query_tiles_hovered: Query<Entity, With<TileHovered>>,
-    query_tiles: Query<(Entity, &Tile)>,
-) {
-    for event in event_reader.read() {
-        remove_tile_hovered_from_other_tiles(&query_tiles_hovered, &mut commands);
+// pub fn highlight_hovered_tile(
+//     mut commands: Commands,
+//     mut event_reader: EventReader<HoverTileEvent>,
+//     query_tiles_hovered: Query<Entity, With<TileHovered>>,
+//     query_tiles: Query<(Entity, &Tile)>,
+// ) {
+//     for event in event_reader.read() {
+//         remove_tile_hovered_from_other_tiles(&query_tiles_hovered, &mut commands);
+//
+//         for (entity, tile) in query_tiles.iter() {
+//             if tile.0 == event.0 {
+//                 commands
+//                     .entity(entity)
+//                     .insert(TileHovered {})
+//                     .insert(ShowAabbGizmo {
+//                         color: Some(*Color::WHITE.clone().set_a(0.25)),
+//                     });
+//             }
+//         }
+//     }
+// }
 
-        for (entity, tile) in query_tiles.iter() {
-            if tile.0 == event.0 {
-                commands
-                    .entity(entity)
-                    .insert(TileHovered {})
-                    .insert(ShowAabbGizmo {
-                        color: Some(Color::WHITE),
-                    });
-            }
-        }
-    }
-}
-
-fn remove_tile_hovered_from_other_tiles(
-    query: &Query<Entity, With<TileHovered>>,
-    commands: &mut Commands,
-) {
-    for entity in query.iter() {
-        commands
-            .entity(entity)
-            .remove::<TileHovered>()
-            .remove::<ShowAabbGizmo>();
-    }
-}
+// fn remove_tile_hovered_from_other_tiles(
+//     query: &Query<Entity, With<TileHovered>>,
+//     commands: &mut Commands,
+// ) {
+//     for entity in query.iter() {
+//         commands
+//             .entity(entity)
+//             .remove::<TileHovered>()
+//             .remove::<ShowAabbGizmo>();
+//     }
+// }
