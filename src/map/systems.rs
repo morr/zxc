@@ -1,11 +1,16 @@
 use super::*;
 
-pub fn spawn_map(mut commands: Commands, assets: Res<TextureAssets>) {
+pub fn spawn_map(
+    mut commands: Commands,
+    assets: Res<TextureAssets>,
+    arc_navmesh: ResMut<ArcNavmesh>,
+) {
     // println!("spawn map");
+    let mut navmesh = arc_navmesh.write();
 
     for x in -CONFIG.grid.half_size..CONFIG.grid.half_size {
         for y in -CONFIG.grid.half_size..CONFIG.grid.half_size {
-            commands
+            let id = commands
                 .spawn(SpriteBundle {
                     texture: assets.grass.clone(),
                     sprite: Sprite {
@@ -19,41 +24,36 @@ pub fn spawn_map(mut commands: Commands, assets: Res<TextureAssets>) {
                     ),
                     ..default()
                 })
-                .insert(Tile(IVec2::new(x, y)));
+                .insert(Tile(IVec2::new(x, y)))
+                .id();
+
+            navmesh.place_entity(id, x, y);
         }
     }
 }
 
-// pub fn highlight_hovered_tile(
-//     mut commands: Commands,
-//     mut event_reader: EventReader<HoverEvent>,
-//     query_tiles_hovered: Query<Entity, With<HoverMarker>>,
-//     query_tiles: Query<(Entity, &Tile)>,
-// ) {
-//     for event in event_reader.read() {
-//         remove_tile_hovered_from_other_tiles(&query_tiles_hovered, &mut commands);
-//
-//         for (entity, tile) in query_tiles.iter() {
-//             if tile.0 == event.0 {
-//                 commands
-//                     .entity(entity)
-//                     .insert(HoverMarker {})
-//                     .insert(ShowAabbGizmo {
-//                         color: Some(*Color::WHITE.clone().set_a(0.25)),
-//                     });
-//             }
-//         }
-//     }
-// }
+pub fn track_hover(
+    mut commands: Commands,
+    mut event_reader: EventReader<HoverEvent>,
+    q_hover_markers: Query<(Entity, &Tile), With<HoverMarker>>,
+    q_tiles: Query<(Entity, &Tile)>,
+) {
+    for event in event_reader.read() {
+        // remove hover from other tiles
+        for (entity, _tile) in q_hover_markers.iter() {
+            commands.entity(entity).remove::<HoverMarker>();
+            // .remove::<ShowAabbGizmo>();
+        }
 
-// fn remove_tile_hovered_from_other_tiles(
-//     query: &Query<Entity, With<HoverMarker>>,
-//     commands: &mut Commands,
-// ) {
-//     for entity in query.iter() {
-//         commands
-//             .entity(entity)
-//             .remove::<HoverMarker>()
-//             .remove::<ShowAabbGizmo>();
-//     }
-// }
+        println!("{:?} q_tiles.len()={}", event, q_tiles.iter().len());
+        for (entity, tile) in q_tiles.iter() {
+            if tile.0 == event.0 {
+                commands.entity(entity).insert(HoverMarker);
+                // .insert(ShowAabbGizmo {
+                //     color: Some(*Color::WHITE.clone().set_a(0.25)),
+                // });
+                break;
+            }
+        }
+    }
+}
