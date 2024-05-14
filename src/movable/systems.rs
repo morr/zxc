@@ -9,7 +9,8 @@ pub fn move_moving_entities(
     mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     for (entity, mut movable, mut transform) in &mut query_movable {
-        move_to_target_location(
+        let current_tile = transform.translation.truncate().world_pos_to_grid();
+        let final_tile = move_to_target_location(
             entity,
             &mut movable,
             &mut transform,
@@ -18,6 +19,12 @@ pub fn move_moving_entities(
             &mut commands,
             &mut movable_state_event_writer,
         );
+
+        if current_tile != final_tile {
+            let mut navmesh = arc_navmesh.write();
+            navmesh.remove_entity::<Movable>(&entity, current_tile.x, current_tile.y);
+            navmesh.add_entity::<Movable>(entity, final_tile.x, final_tile.y);
+        }
     }
 }
 
@@ -29,10 +36,10 @@ fn move_to_target_location(
     arc_navmesh: &ArcNavmesh,
     commands: &mut Commands,
     event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
-) {
+) -> IVec2 {
     if movable.path.is_empty() {
         movable.to_idle(entity, commands, Some(event_writer));
-        return;
+        return transform.translation.truncate().world_pos_to_grid();
     }
 
     let current_point_world = transform.translation.truncate();
@@ -60,7 +67,7 @@ fn move_to_target_location(
         let remaining_time = remaining_distance / actual_speed;
 
         if remaining_time > 0.0 {
-            move_to_target_location(
+            return move_to_target_location(
                 entity,
                 movable,
                 transform,
@@ -73,6 +80,9 @@ fn move_to_target_location(
     } else {
         transform.translation += (direction * distance_to_move).extend(0.0);
     }
+
+    transform.translation.truncate().world_pos_to_grid()
+
 }
 
 pub fn stop_movable_on_death(
