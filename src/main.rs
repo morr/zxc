@@ -32,11 +32,9 @@ fn main() {
             //     },
             // }),
         )
-
         // .add_plugins(EguiPlugin)
         // .add_plugins(bevy_inspector_egui::DefaultInspectorConfigPlugin) // adds default options and `InspectorEguiImpl`s
         // .add_systems(OnExit(AppState::Loading), inspector_ui)
-
         // .add_plugins(WorldInspectorPlugin::new())
         // .add_plugins(FilterQueryInspectorPlugin::<With<structure::Structure>>::default())
         // .add_plugins(FilterQueryInspectorPlugin::<With<Pawn>>::default())
@@ -56,6 +54,7 @@ fn main() {
             movable::MovablePlugin,
             workable::WorkablePlugin,
             navigation::NavigationPlugin,
+            selectable::SelectablePlugin,
             pawn::PawnPlugin,
             structure::StructurePlugin,
             ui::UiPlugin,
