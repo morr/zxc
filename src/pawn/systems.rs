@@ -90,7 +90,7 @@ pub fn spawn_pawns(
             .id();
 
         let grid_tile = position.truncate().world_pos_to_grid();
-        navmesh.add_entity::<Pawn>(pawn_id, grid_tile.x, grid_tile.y);
+        navmesh.add_entity::<Movable>(pawn_id, grid_tile.x, grid_tile.y);
     }
 }
 
