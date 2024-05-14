@@ -51,6 +51,29 @@ impl Navtiles {
             [grid_tile_to_navmesh_index(grid_tile_y)]
     }
 
+    // methods with bounds check. this should never happen so I'm fine with rust panicking on
+    // invalid access for now
+    // pub fn get(&self, grid_tile_x: i32, grid_tile_y: i32) -> Option<&Navtile> {
+    //     let x_index = grid_tile_to_navmesh_index(grid_tile_x);
+    //     let y_index = grid_tile_to_navmesh_index(grid_tile_y);
+    //
+    //     if x_index < self.0.len() && y_index < self.0[x_index].len() {
+    //         Some(&self.0[x_index][y_index])
+    //     } else {
+    //         None
+    //     }
+    // }
+    // pub fn get_mut(&mut self, grid_tile_x: i32, grid_tile_y: i32) -> Option<&mut Navtile> {
+    //     let x_index = grid_tile_to_navmesh_index(grid_tile_x);
+    //     let y_index = grid_tile_to_navmesh_index(grid_tile_y);
+    //
+    //     if x_index < self.0.len() && y_index < self.0[x_index].len() {
+    //         Some(&mut self.0[x_index][y_index])
+    //     } else {
+    //         None
+    //     }
+    // }
+
     pub fn get_some(&self, grid_tile_x: i32, grid_tile_y: i32) -> Option<&Navtile> {
         self.0
             .get(grid_tile_to_navmesh_index(grid_tile_x))?
