@@ -1,6 +1,8 @@
 use super::*;
 
 #[derive(Component, Default)]
+pub struct PawnUIMarker {}
+#[derive(Component, Default)]
 struct PawnAgeTextUIMarker {}
 #[derive(Component, Default)]
 struct PawnLifetimeTextUIMarker {}
@@ -48,7 +50,7 @@ fn render_pawn_ui(
         .entity(selectble_id(&container_query))
         .with_children(|parent| {
             parent
-                .spawn(selectable_node_bunlde())
+                .spawn(render_entity_node_bunlde::<PawnUIMarker>())
                 .with_children(|parent| {
                     parent
                         .spawn(selectable_subnode_bunlde())

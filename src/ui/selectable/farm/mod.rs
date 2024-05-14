@@ -3,6 +3,8 @@ use self::structure::{spawn_farm, Farm, FarmState};
 use super::*;
 
 #[derive(Component, Default)]
+pub struct FarmUIMarker {}
+#[derive(Component, Default)]
 pub struct FarmStateTextUIMarker {}
 #[derive(Component, Default)]
 pub struct FarmTendingsTextUIMarker {}
@@ -46,7 +48,7 @@ fn render_farm_ui(
         .entity(selectble_id(&container_query))
         .with_children(|parent| {
             parent
-                .spawn(selectable_node_bunlde())
+                .spawn(render_entity_node_bunlde::<FarmUIMarker>())
                 .with_children(|parent| {
                     parent
                         .spawn(selectable_subnode_bunlde())

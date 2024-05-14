@@ -14,7 +14,7 @@ impl Plugin for UiPlugin {
             UiSimulationStatePlugin,
             UiItemsStockPlugin,
             UiSelectablePlugin,
-            UiHoverMarkerPlugin,
+            UiHoveredMarkerPlugin,
             UiDebugPlugin,
         ));
     }
@@ -23,19 +23,40 @@ impl Plugin for UiPlugin {
 pub enum UiOpacity {
     Light,
     Medium,
-    Heavy
+    Heavy,
 }
 
 pub fn ui_color(opacity: UiOpacity) -> Color {
-    *UI_COLOR.clone().set_a(
-        match opacity {
-            UiOpacity::Light => 0.25,
-            UiOpacity::Medium => 0.65,
-            UiOpacity::Heavy => 0.85
-        }
-    )
+    *UI_COLOR.clone().set_a(match opacity {
+        UiOpacity::Light => 0.25,
+        UiOpacity::Medium => 0.65,
+        UiOpacity::Heavy => 0.85,
+    })
 }
 
 pub fn bg_color(opacity: UiOpacity) -> BackgroundColor {
     ui_color(opacity).into()
+}
+
+fn render_entity_node_bunlde<T: Default>() -> (NodeBundle, T) {
+    (
+        NodeBundle {
+            style: Style {
+                display: Display::Flex,
+                flex_direction: FlexDirection::Column,
+                row_gap: Val::Px(10.),
+                padding: UiRect {
+                    top: Val::Px(10.),
+                    right: Val::Px(10.),
+                    bottom: Val::Px(10.),
+                    left: Val::Px(10.),
+                },
+                width: Val::Px(300.),
+                ..default()
+            },
+            background_color: bg_color(UiOpacity::Heavy),
+            ..default()
+        },
+        T::default(),
+    )
 }
