@@ -4,4 +4,4 @@ use bevy::prelude::*;
 pub struct PrevHoveredTilePos(pub Option<IVec2>);
 
 #[derive(Component)]
-pub struct MouseHovered;
+pub struct HoverMarker;

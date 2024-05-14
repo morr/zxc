@@ -1,8 +1,8 @@
 use super::*;
 
-pub struct UiHoveredPlugin;
+pub struct UiHoverMarkerPlugin;
 
-impl Plugin for UiHoveredPlugin {
+impl Plugin for UiHoverMarkerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnExit(AppState::Loading), render_hovered_ui);
     }

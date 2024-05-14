@@ -26,8 +26,8 @@ pub fn spawn_map(mut commands: Commands, assets: Res<TextureAssets>) {
 
 // pub fn highlight_hovered_tile(
 //     mut commands: Commands,
-//     mut event_reader: EventReader<TileHoveredEvent>,
-//     query_tiles_hovered: Query<Entity, With<TileHovered>>,
+//     mut event_reader: EventReader<HoverEvent>,
+//     query_tiles_hovered: Query<Entity, With<HoverMarker>>,
 //     query_tiles: Query<(Entity, &Tile)>,
 // ) {
 //     for event in event_reader.read() {
@@ -37,7 +37,7 @@ pub fn spawn_map(mut commands: Commands, assets: Res<TextureAssets>) {
 //             if tile.0 == event.0 {
 //                 commands
 //                     .entity(entity)
-//                     .insert(TileHovered {})
+//                     .insert(HoverMarker {})
 //                     .insert(ShowAabbGizmo {
 //                         color: Some(*Color::WHITE.clone().set_a(0.25)),
 //                     });
@@ -47,13 +47,13 @@ pub fn spawn_map(mut commands: Commands, assets: Res<TextureAssets>) {
 // }
 
 // fn remove_tile_hovered_from_other_tiles(
-//     query: &Query<Entity, With<TileHovered>>,
+//     query: &Query<Entity, With<HoverMarker>>,
 //     commands: &mut Commands,
 // ) {
 //     for entity in query.iter() {
 //         commands
 //             .entity(entity)
-//             .remove::<TileHovered>()
+//             .remove::<HoverMarker>()
 //             .remove::<ShowAabbGizmo>();
 //     }
 // }

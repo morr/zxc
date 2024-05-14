@@ -13,7 +13,7 @@ impl Plugin for UiPlugin {
             UiSimulationStatePlugin,
             UiItemsStockPlugin,
             UiSelectablePlugin,
-            UiHoveredPlugin,
+            UiHoverMarkerPlugin,
             UiDebugPlugin,
         ));
     }
