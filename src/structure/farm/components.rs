@@ -182,7 +182,7 @@ impl Farm {
     pub fn spawn(
         commands: &mut Commands,
         assets: &Res<FarmAssets>,
-        arc_navmesh: &mut Navmesh,
+        navmesh: &mut Navmesh,
         grid_tile: IVec2,
         state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmState>>,
     ) {
@@ -199,11 +199,13 @@ impl Farm {
 
         let entity = entity_commands.id();
 
-        arc_navmesh.update_cost(
+        navmesh.update_cost(
             grid_tile.x..grid_tile.x + FARM_TILE_SIZE,
             grid_tile.y..grid_tile.y + FARM_TILE_SIZE,
             Some((3.0 * COST_MULTIPLIER) as i32),
         );
+        navmesh.add_entity::<Farm>(entity, grid_tile.x, grid_tile.y);
+
         state_change_event_writer.send(EntityStateChangeEvent(entity, state));
     }
 
