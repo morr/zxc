@@ -1,4 +1,4 @@
-use bevy::ecs::entity;
+use self::structure::Farm;
 
 use super::*;
 
@@ -46,6 +46,7 @@ fn update_ui_on_hover_event(
     hover_container_ui_query: Query<Entity, With<HoverContainerUIMarker>>,
     font_assets: Res<FontAssets>,
     pawn_query: Query<(&Pawn, &Movable)>,
+    farm_query: Query<(&Farm, &Workable)>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     for event in hover_event_reader.read() {
@@ -55,13 +56,29 @@ fn update_ui_on_hover_event(
 
         hover_container_ui_commands.despawn_descendants();
 
-        for _tile_id in navmesh.get_entities::<Tile>(event.0.x, event.0.y) {
+        for _id in navmesh.get_entities::<Tile>(event.0.x, event.0.y) {
             render_tile_ui(&mut hover_container_ui_commands, event.0, &font_assets);
         }
 
-        for movable_id in navmesh.get_entities::<Movable>(event.0.x, event.0.y) {
-            if let Ok((pawn, movable)) = pawn_query.get(*movable_id) {
-                render_pawn_ui(&mut hover_container_ui_commands, pawn, movable, &font_assets);
+        for id in navmesh.get_entities::<Movable>(event.0.x, event.0.y) {
+            if let Ok((pawn, movable)) = pawn_query.get(*id) {
+                render_pawn_ui(
+                    &mut hover_container_ui_commands,
+                    pawn,
+                    movable,
+                    &font_assets,
+                );
+            }
+        }
+
+        for id in navmesh.get_entities::<Farm>(event.0.x, event.0.y) {
+            if let Ok((farm, workable)) = farm_query.get(*id) {
+                render_farm_ui(
+                    &mut hover_container_ui_commands,
+                    farm,
+                    workable,
+                    &font_assets,
+                );
             }
         }
     }

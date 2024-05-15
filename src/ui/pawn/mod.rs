@@ -103,63 +103,6 @@ pub fn render_pawn_ui(
     });
 }
 
-// fn render_pawn_ui(
-//     mut commands: Commands,
-//     font_assets: Res<FontAssets>,
-//     pawn_query: Query<(&Pawn, &Movable)>,
-//     container_query: Query<Entity, With<SelectableContainerUIMarker>>,
-// ) {
-//     let (pawn, movable) = pawn_query.iter().next().unwrap();
-//
-//     commands
-//         .entity(container_query.get_single().unwrap())
-//         .with_children(|parent| {
-//             parent
-//                 .spawn(render_entity_node_bunlde::<PawnUIMarker>())
-//                 .with_children(|parent| {
-//                     parent
-//                         .spawn(render_entity_component_node_bunlde())
-//                         .with_children(|parent| {
-//                             parent.spawn(headline_text_bundle("Pawn", &font_assets));
-//                             parent.spawn(property_text_bundle::<PawnAgeTextUIMarker>(
-//                                 pawn_age_text(pawn),
-//                                 &font_assets,
-//                             ));
-//                             parent.spawn(property_text_bundle::<PawnLifetimeTextUIMarker>(
-//                                 pawn_lifetime_text(pawn),
-//                                 &font_assets,
-//                             ));
-//                             parent.spawn(property_text_bundle::<PawnBirthdayTextUIMarker>(
-//                                 pawn_birthday_text(pawn),
-//                                 &font_assets,
-//                             ));
-//                             parent.spawn(property_text_bundle::<PawnStateTextUIMarker>(
-//                                 pawn_state_text(pawn),
-//                                 &font_assets,
-//                             ));
-//                         });
-//
-//                     parent
-//                         .spawn(render_entity_component_node_bunlde())
-//                         .with_children(|parent| {
-//                             parent.spawn(headline_text_bundle("Movable", &font_assets));
-//                             parent.spawn(property_text_bundle::<MovableSpeedTextUIMarker>(
-//                                 movable_speed_text(movable),
-//                                 &font_assets,
-//                             ));
-//                             parent.spawn(property_text_bundle::<MovablePathTextUIMarker>(
-//                                 movable_path_text(movable),
-//                                 &font_assets,
-//                             ));
-//                             parent.spawn(property_text_bundle::<MovableStateTextUIMarker>(
-//                                 movable_state_text(movable),
-//                                 &font_assets,
-//                             ));
-//                         });
-//                 });
-//         });
-// }
-//
 // fn update_pawn_ui(
 //     mut texts: Query<
 //         (
