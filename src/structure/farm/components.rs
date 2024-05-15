@@ -204,7 +204,7 @@ impl Farm {
             grid_tile.y..grid_tile.y + FARM_TILE_SIZE,
             Some((3.0 * COST_MULTIPLIER) as i32),
         );
-        navmesh.add_entity::<Farm>(entity, grid_tile.x, grid_tile.y);
+        navmesh.add_occupation::<Farm>(entity, grid_tile.x, grid_tile.y);
 
         state_change_event_writer.send(EntityStateChangeEvent(entity, state));
     }

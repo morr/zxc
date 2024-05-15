@@ -27,7 +27,7 @@ pub fn spawn_map(
                 .insert(Tile(IVec2::new(x, y)))
                 .id();
 
-            navmesh.add_entity::<Tile>(id, x, y);
+            navmesh.add_occupation::<Tile>(id, x, y);
         }
     }
 }
@@ -48,7 +48,7 @@ pub fn track_hover(
 
         let navmesh = arc_navmesh.read();
 
-        for id in navmesh.get_entities::<Tile>(event.0.x, event.0.y) {
+        for id in navmesh.get_occupation::<Tile>(event.0.x, event.0.y) {
             commands.entity(*id).insert(HoverMarker);
             // .insert(ShowAabbGizmo {
             //     color: Some(*Color::WHITE.clone().set_a(0.25)),

@@ -7,6 +7,8 @@ pub fn move_moving_entities(
     time_scale: Res<TimeScale>,
     arc_navmesh: Res<ArcNavmesh>,
     mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
+    // maybe_hovered_grid_tile: Res<HoveredGridTile>,
+    // mut hovered_tile_occupy_change_event_writer: EventWriter<HoveredTileOccupyChangeEvent>,
 ) {
     for (entity, mut movable, mut transform) in &mut query_movable {
         let current_tile = transform.translation.truncate().world_pos_to_grid();
@@ -22,8 +24,14 @@ pub fn move_moving_entities(
 
         if current_tile != final_tile {
             let mut navmesh = arc_navmesh.write();
-            navmesh.remove_entity::<Movable>(&entity, current_tile.x, current_tile.y);
-            navmesh.add_entity::<Movable>(entity, final_tile.x, final_tile.y);
+            navmesh.remove_occupation::<Movable>(&entity, current_tile.x, current_tile.y);
+            navmesh.add_occupation::<Movable>(entity, final_tile.x, final_tile.y);
+
+            // if let Some(hovered_grid_tile) = maybe_hovered_grid_tile.0 {
+            //     if current_tile == hovered_grid_tile || final_tile == hovered_grid_tile {
+            //         hovered_tile_occupy_change_event_writer.send(HoveredTileOccupyChangeEvent {});
+            //     }
+            // }
         }
     }
 }

@@ -52,7 +52,7 @@ fn update_ui_on_hover_event(
 
         hover_container_ui_commands.despawn_descendants();
 
-        for target_id in navmesh.get_entities::<Tile>(event.0.x, event.0.y) {
+        for target_id in navmesh.get_occupation::<Tile>(event.0.x, event.0.y) {
             render_tile_ui(
                 *target_id,
                 &mut hover_container_ui_commands,
@@ -61,7 +61,7 @@ fn update_ui_on_hover_event(
             );
         }
 
-        for target_id in navmesh.get_entities::<Movable>(event.0.x, event.0.y) {
+        for target_id in navmesh.get_occupation::<Movable>(event.0.x, event.0.y) {
             if let Ok((pawn, movable)) = pawn_query.get(*target_id) {
                 render_pawn_ui(
                     *target_id,
@@ -73,7 +73,7 @@ fn update_ui_on_hover_event(
             }
         }
 
-        for target_id in navmesh.get_entities::<Farm>(event.0.x, event.0.y) {
+        for target_id in navmesh.get_occupation::<Farm>(event.0.x, event.0.y) {
             if let Ok((farm, workable)) = farm_query.get(*target_id) {
                 render_farm_ui(
                     *target_id,
