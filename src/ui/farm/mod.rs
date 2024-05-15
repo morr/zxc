@@ -155,20 +155,20 @@ fn update_text_markers_recursive(
 ) {
     if let Ok((
         mut text,
-        state_marker,
-        tendings_marker,
-        yield_marker,
+        farm_state_marker,
+        farm_tendings_marker,
+        farm_yield_marker,
         work_amount_done_marker,
         work_amount_total_marker,
     )) = texts.get_mut(entity)
     {
-        if state_marker.is_some() {
+        if farm_state_marker.is_some() {
             text.sections[0].value = farm_state_text(farm);
         }
-        if tendings_marker.is_some() {
+        if farm_tendings_marker.is_some() {
             text.sections[0].value = farm_tendings_text(farm);
         }
-        if yield_marker.is_some() {
+        if farm_yield_marker.is_some() {
             text.sections[0].value = farm_yield_text(farm);
         }
         if work_amount_done_marker.is_some() {
