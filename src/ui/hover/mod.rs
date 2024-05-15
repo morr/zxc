@@ -27,7 +27,7 @@ fn render_hovered_ui(mut commands: Commands) {
                 align_items: AlignItems::FlexEnd,
                 column_gap: Val::Px(25.),
                 bottom: UI_SCREEN_EDGE_PX_OFFSET,
-                left: UI_SCREEN_EDGE_PLUS_ITEM_STOCKS_PX_OFFSET,
+                left: UI_SCREEN_EDGE_PX_OFFSET,
                 ..default()
             },
             ..default()

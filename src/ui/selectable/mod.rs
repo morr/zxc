@@ -21,7 +21,7 @@ fn render_selectable_container(mut commands: Commands) {
                 flex_direction: FlexDirection::Row,
                 column_gap: Val::Px(25.),
                 top: UI_SCREEN_EDGE_PX_OFFSET,
-                left: UI_SCREEN_EDGE_PLUS_ITEM_STOCKS_PX_OFFSET,
+                left: Val::Px(100.),
                 ..default()
             },
             ..default()
