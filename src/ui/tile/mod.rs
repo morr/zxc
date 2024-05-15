@@ -7,5 +7,4 @@ pub struct TileUIMarker {}
 pub struct TileComponentUIMarker {}
 
 #[derive(Component, Default)]
-pub struct TileCoordsTextUIMarker {}
-
+pub struct TileTextUIMarker {}

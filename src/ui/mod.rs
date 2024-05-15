@@ -4,7 +4,7 @@ expose_submodules!(
     simulation_state,
     items_stock,
     selectable,
-    hovered,
+    hover,
     pawn,
     farm,
     tile,
@@ -23,7 +23,7 @@ impl Plugin for UiPlugin {
             UiSimulationStatePlugin,
             UiItemsStockPlugin,
             UiSelectablePlugin,
-            UiHoveredMarkerPlugin,
+            UiHoverMarkerPlugin,
             UiDebugPlugin,
         ));
     }
@@ -63,7 +63,7 @@ fn render_entity_node_bunlde<T: Default>() -> (NodeBundle, T) {
                 // width: Val::Px(300.),
                 ..default()
             },
-            background_color: bg_color(UiOpacity::Heavy),
+            background_color: bg_color(UiOpacity::Medium),
             ..default()
         },
         T::default(),
