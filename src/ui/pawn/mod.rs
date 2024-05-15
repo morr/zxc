@@ -1,7 +1,13 @@
+use bevy::ecs::system::EntityCommands;
+
 use super::*;
 
 #[derive(Component, Default)]
 pub struct PawnUIMarker {}
+
+#[derive(Component, Default)]
+pub struct PawnComponentUIMarker {}
+
 #[derive(Component, Default)]
 struct PawnAgeTextUIMarker {}
 #[derive(Component, Default)]
@@ -12,6 +18,9 @@ struct PawnBirthdayTextUIMarker {}
 struct PawnStateTextUIMarker {}
 
 #[derive(Component, Default)]
+pub struct MovableComponentUIMarker {}
+
+#[derive(Component, Default)]
 struct MovableSpeedTextUIMarker {}
 #[derive(Component, Default)]
 struct MovablePathTextUIMarker {}
@@ -20,23 +29,78 @@ struct MovableStateTextUIMarker {}
 
 pub struct UiPawnPlugin;
 
-impl Plugin for UiPawnPlugin {
-    fn build(&self, app: &mut App) {
-        app;
-        //     .add_systems(
-        //     OnExit(AppState::Loading),
-        //     render_pawn_ui
-        //         .after(render_selectable_container)
-        //         .after(spawn_pawns),
-        // )
-        // .add_systems(
-        //     FixedUpdate,
-        //     (update_pawn_ui, update_movable_ui)
-        //         .chain()
-        //         .after(render_pawn_ui)
-        //         .run_if(in_state(AppState::Playing)),
-        // );
-    }
+// impl Plugin for UiPawnPlugin {
+//     fn build(&self, app: &mut App) {
+//         app;
+//     .add_systems(
+//     OnExit(AppState::Loading),
+//     render_pawn_ui
+//         .after(render_selectable_container)
+//         .after(spawn_pawns),
+// )
+// .add_systems(
+//     FixedUpdate,
+//     (update_pawn_ui, update_movable_ui)
+//         .chain()
+//         .after(render_pawn_ui)
+//         .run_if(in_state(AppState::Playing)),
+// );
+//     }
+// }
+
+pub fn render_pawn_ui(
+    container_ui_commands: &mut EntityCommands,
+    pawn: &Pawn,
+    movable: &Movable,
+    font_assets: &Res<FontAssets>,
+) {
+    container_ui_commands.with_children(|parent| {
+        parent
+            .spawn(render_entity_node_bunlde::<PawnUIMarker>())
+            .with_children(|parent| {
+                parent
+                    .spawn(render_entity_component_node_bunlde::<PawnComponentUIMarker>())
+                    .with_children(|parent| {
+                        parent.spawn(headline_text_bundle("Pawn", font_assets));
+                        parent.spawn(property_text_bundle::<PawnAgeTextUIMarker>(
+                            pawn_age_text(pawn),
+                            font_assets,
+                        ));
+                        parent.spawn(property_text_bundle::<PawnLifetimeTextUIMarker>(
+                            pawn_lifetime_text(pawn),
+                            font_assets,
+                        ));
+                        parent.spawn(property_text_bundle::<PawnBirthdayTextUIMarker>(
+                            pawn_birthday_text(pawn),
+                            font_assets,
+                        ));
+                        parent.spawn(property_text_bundle::<PawnStateTextUIMarker>(
+                            pawn_state_text(pawn),
+                            font_assets,
+                        ));
+                    });
+
+                parent
+                    .spawn(render_entity_component_node_bunlde::<
+                        MovableComponentUIMarker,
+                    >())
+                    .with_children(|parent| {
+                        parent.spawn(headline_text_bundle("Movable", font_assets));
+                        parent.spawn(property_text_bundle::<MovableSpeedTextUIMarker>(
+                            movable_speed_text(movable),
+                            font_assets,
+                        ));
+                        parent.spawn(property_text_bundle::<MovablePathTextUIMarker>(
+                            movable_path_text(movable),
+                            font_assets,
+                        ));
+                        parent.spawn(property_text_bundle::<MovableStateTextUIMarker>(
+                            movable_state_text(movable),
+                            font_assets,
+                        ));
+                    });
+            });
+    });
 }
 
 // fn render_pawn_ui(
@@ -129,37 +193,37 @@ impl Plugin for UiPawnPlugin {
 //         }
 //     }
 // }
-//
-// fn pawn_age_text(pawn: &Pawn) -> String {
-//     format!("age: {}", pawn.age)
-// }
-// fn pawn_lifetime_text(pawn: &Pawn) -> String {
-//     if pawn.lifetime > CONFIG.time.day_duration {
-//         format!(
-//             "lifetime: {}y {}d",
-//             (pawn.lifetime / CONFIG.time.year_duration).floor(),
-//             ((pawn.lifetime % CONFIG.time.year_duration) / CONFIG.time.day_duration).floor()
-//         )
-//     } else {
-//         // hours displayed in this case only because only in the last day we track lifetime by
-//         // miniMal chunk of time
-//         format!(
-//             "lifetime: 0y 0d {}h {}m",
-//             (pawn.lifetime / CONFIG.time.hour_duration).floor(),
-//             ((pawn.lifetime % CONFIG.time.hour_duration) / CONFIG.time.minute_duration).floor()
-//         )
-//     }
-// }
-// fn pawn_birthday_text(pawn: &Pawn) -> String {
-//     format!(
-//         "birthday: {}",
-//         ElapsedTime::year_day_to_season_day_label(pawn.birth_year_day)
-//     )
-// }
-// fn pawn_state_text(pawn: &Pawn) -> String {
-//     format!("state: {:?}", pawn.state)
-// }
-//
+
+fn pawn_age_text(pawn: &Pawn) -> String {
+    format!("age: {}", pawn.age)
+}
+fn pawn_lifetime_text(pawn: &Pawn) -> String {
+    if pawn.lifetime > CONFIG.time.day_duration {
+        format!(
+            "lifetime: {}y {}d",
+            (pawn.lifetime / CONFIG.time.year_duration).floor(),
+            ((pawn.lifetime % CONFIG.time.year_duration) / CONFIG.time.day_duration).floor()
+        )
+    } else {
+        // hours displayed in this case only because only in the last day we track lifetime by
+        // miniMal chunk of time
+        format!(
+            "lifetime: 0y 0d {}h {}m",
+            (pawn.lifetime / CONFIG.time.hour_duration).floor(),
+            ((pawn.lifetime % CONFIG.time.hour_duration) / CONFIG.time.minute_duration).floor()
+        )
+    }
+}
+fn pawn_birthday_text(pawn: &Pawn) -> String {
+    format!(
+        "birthday: {}",
+        ElapsedTime::year_day_to_season_day_label(pawn.birth_year_day)
+    )
+}
+fn pawn_state_text(pawn: &Pawn) -> String {
+    format!("state: {:?}", pawn.state)
+}
+
 // fn update_movable_ui(
 //     mut texts: Query<
 //         (
@@ -188,13 +252,13 @@ impl Plugin for UiPawnPlugin {
 //         }
 //     }
 // }
-//
-// fn movable_speed_text(movable: &Movable) -> String {
-//     format!("speed: {}", movable.speed)
-// }
-// fn movable_path_text(movable: &Movable) -> String {
-//     format!("path: {:?}", movable.path)
-// }
-// fn movable_state_text(movable: &Movable) -> String {
-//     format!("state: {:?}", movable.state)
-// }
+
+fn movable_speed_text(movable: &Movable) -> String {
+    format!("speed: {}", movable.speed)
+}
+fn movable_path_text(movable: &Movable) -> String {
+    format!("path: {:?}", movable.path)
+}
+fn movable_state_text(movable: &Movable) -> String {
+    format!("state: {:?}", movable.state)
+}

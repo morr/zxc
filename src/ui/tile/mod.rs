@@ -12,11 +12,11 @@ pub struct TileComponentUIMarker {}
 pub struct TileTextUIMarker {}
 
 pub fn render_tile_ui(
-    hover_container_ui_commands: &mut EntityCommands,
+    container_ui_commands: &mut EntityCommands,
     grid_tile: IVec2,
     font_assets: &Res<FontAssets>,
 ) {
-    hover_container_ui_commands.with_children(|parent| {
+    container_ui_commands.with_children(|parent| {
         parent
             .spawn(render_entity_node_bunlde::<TileUIMarker>())
             .with_children(|parent| {

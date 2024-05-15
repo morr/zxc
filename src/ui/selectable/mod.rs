@@ -7,8 +7,8 @@ pub struct UiSelectablePlugin;
 
 impl Plugin for UiSelectablePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnExit(AppState::Loading), render_selectable_container)
-            .add_plugins((UiPawnPlugin, UiFarmPlugin));
+        app.add_systems(OnExit(AppState::Loading), render_selectable_container);
+        // .add_plugins((UiPawnPlugin, UiFarmPlugin));
     }
 }
 

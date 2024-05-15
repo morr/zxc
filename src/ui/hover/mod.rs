@@ -1,3 +1,5 @@
+use bevy::ecs::entity;
+
 use super::*;
 
 #[derive(Component, Default)]
@@ -42,7 +44,7 @@ fn update_ui_on_hover_event(
     mut hover_event_reader: EventReader<HoverEvent>,
     hover_container_ui_query: Query<Entity, With<HoverContainerUIMarker>>,
     font_assets: Res<FontAssets>,
-    // tile_ui_query: Query<Entity, With<TileUIMarker>>,
+    pawn_query: Query<(&Pawn, &Movable)>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     for event in hover_event_reader.read() {
@@ -52,8 +54,14 @@ fn update_ui_on_hover_event(
 
         hover_container_ui_commands.despawn_descendants();
 
-        for _id in navmesh.get_entities::<Tile>(event.0.x, event.0.y) {
+        for _tile_id in navmesh.get_entities::<Tile>(event.0.x, event.0.y) {
             render_tile_ui(&mut hover_container_ui_commands, event.0, &font_assets);
+        }
+
+        for pawn_id in navmesh.get_entities::<Pawn>(event.0.x, event.0.y) {
+            if let Ok((pawn, movable)) = pawn_query.get(*pawn_id) {
+                render_pawn_ui(&mut hover_container_ui_commands, pawn, movable, &font_assets);
+            }
         }
     }
 }
