@@ -6,7 +6,7 @@ pub struct InputPlugin;
 
 impl Plugin for InputPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<PrevHoveredTilePos>()
+        app.init_resource::<HoveredGridTile>()
             .add_event::<HoverEvent>()
             .add_systems(Update, mouse_input.run_if(in_state(AppState::Playing)));
     }

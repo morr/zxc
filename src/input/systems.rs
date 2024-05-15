@@ -12,7 +12,7 @@ pub fn mouse_input(
     q_camera: Query<(&Camera, &GlobalTransform), With<FloorCamera>>,
     mut hover_event_writer: EventWriter<HoverEvent>,
     mut click_event_writer: EventWriter<ClickTileEvent>,
-    mut prev_hovered_tile_pos: ResMut<PrevHoveredTilePos>,
+    mut prev_hovered_grid_tile: ResMut<HoveredGridTile>,
 ) {
     let (camera, camera_transform) = q_camera.single();
     let window = q_window.single();
@@ -24,14 +24,14 @@ pub fn mouse_input(
         let event = HoverEvent(world_position.world_pos_to_grid());
         // println!("{:?}", event);
 
-        let is_new_hover = match prev_hovered_tile_pos.0 {
+        let is_new_hover = match prev_hovered_grid_tile.0 {
             Some(vec) => vec != event.0,
             None => true,
         };
 
         if is_new_hover {
             // println!("{:?}", event);
-            prev_hovered_tile_pos.0 = Some(event.0);
+            prev_hovered_grid_tile.0 = Some(event.0);
             hover_event_writer.send(event);
         }
     }
