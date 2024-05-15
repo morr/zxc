@@ -6,7 +6,7 @@ pub fn pathfinding_async_on_click(
     arc_navmesh: Res<ArcNavmesh>,
     queue_counter: Res<AsyncQueueCounter>,
     mut commands: Commands,
-    mut click_event_reader: EventReader<ClickTileEvent>,
+    mut click_event_reader: EventReader<ClickEvent>,
     mut query_pawns: Query<
         (
             Entity,

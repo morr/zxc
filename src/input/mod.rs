@@ -8,6 +8,7 @@ impl Plugin for InputPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<HoveredGridTile>()
             .add_event::<HoverEvent>()
+            .add_event::<ClickEvent>()
             .add_systems(Update, mouse_input.run_if(in_state(AppState::Playing)));
     }
 }
