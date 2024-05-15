@@ -40,7 +40,7 @@ pub fn track_hover(
     // q_tiles: Query<(Entity, &Tile)>,
 ) {
     for event in event_reader.read() {
-        // remove hover from other tiles
+        // remove hover markers from other tiles
         for (id, _tile) in q_hover_markers.iter() {
             commands.entity(id).remove::<HoverMarker>();
             // .remove::<ShowAabbGizmo>();

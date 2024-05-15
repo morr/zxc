@@ -35,22 +35,7 @@ fn render_hovered_ui(mut commands: Commands, font_assets: Res<FontAssets>) {
                 ..default()
             },
             HoveredContainerUIMarker::default(),
-        ))
-        .with_children(|parent| {
-            parent
-                .spawn(render_entity_node_bunlde::<TileUIMarker>(Display::None))
-                .with_children(|parent| {
-                    parent
-                        .spawn(render_entity_component_node_bunlde::<TileComponentUIMarker>())
-                        .with_children(|parent| {
-                            parent.spawn(headline_text_bundle("Tile", &font_assets));
-                            parent.spawn(property_text_bundle::<TileCoordsTextUIMarker>(
-                                "".into(),
-                                &font_assets,
-                            ));
-                        });
-                });
-        });
+        ));
 }
 
 // fn selectble_id(container_query: &Query<Entity, With<HoveredContainerUIMarker>>) -> Entity {
@@ -58,12 +43,21 @@ fn render_hovered_ui(mut commands: Commands, font_assets: Res<FontAssets>) {
 // }
 
 fn update_ui_on_hover_event(
+    mut commands: Commands,
     mut hover_event_reader: EventReader<HoverEvent>,
+    hovered_container_ui_query: Query<Entity, With<HoveredContainerUIMarker>>,
+    tile_ui_query: Query<Entity, With<TileUIMarker>>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     for event in hover_event_reader.read() {
+        // despawn all tile UIs
+        for tile_ui_id in tile_ui_query.iter() {
+            commands.entity(tile_ui_id).despawn_recursive();
+        }
+
         let navmesh = arc_navmesh.read();
         for id in navmesh.get_entities::<Tile>(event.0.x, event.0.y) {
+            let a = hovered_container_ui_query.get_single_mut().unwrap();
             // println!("{:?} {:?}", event, id);
         }
     }
@@ -71,4 +65,21 @@ fn update_ui_on_hover_event(
 
 fn update_tile_ui(//
 ) {
+}
+
+fn render_tile_ui(
+) {
+    parent
+        .spawn(render_entity_node_bunlde::<TileUIMarker>())
+        .with_children(|parent| {
+            parent
+                .spawn(render_entity_component_node_bunlde::<TileComponentUIMarker>())
+                .with_children(|parent| {
+                    parent.spawn(headline_text_bundle("Tile", &font_assets));
+                    parent.spawn(property_text_bundle::<TileCoordsTextUIMarker>(
+                        "".into(),
+                        &font_assets,
+                    ));
+                });
+        });
 }

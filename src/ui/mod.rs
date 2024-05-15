@@ -47,11 +47,11 @@ pub fn bg_color(opacity: UiOpacity) -> BackgroundColor {
     ui_color(opacity).into()
 }
 
-fn render_entity_node_bunlde<T: Default>(display: Display) -> (NodeBundle, T) {
+fn render_entity_node_bunlde<T: Default>() -> (NodeBundle, T) {
     (
         NodeBundle {
             style: Style {
-                display,
+                display: Display::Flex,
                 flex_direction: FlexDirection::Column,
                 row_gap: Val::Px(10.),
                 padding: UiRect {
