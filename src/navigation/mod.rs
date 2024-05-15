@@ -8,6 +8,7 @@ impl Plugin for NavigationPlugin {
         app.init_resource::<ArcNavmesh>()
             .add_event::<PathfindRequestEvent>()
             .add_event::<PathfindAnswerEvent>()
+            .add_event::<OccupationChangeEvent>()
             // .add_systems(
             //     FixedUpdate,
             //     pathfinding_algo::measure_pathfinding.run_if(in_state(WorldState::Playing)),

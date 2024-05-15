@@ -4,12 +4,15 @@ pub fn spawn_map(
     mut commands: Commands,
     assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
+    mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
 ) {
     // println!("spawn map");
     let mut navmesh = arc_navmesh.write();
 
     for x in -CONFIG.grid.half_size..CONFIG.grid.half_size {
         for y in -CONFIG.grid.half_size..CONFIG.grid.half_size {
+            let grid_tile = IVec2::new(x, y);
+
             let id = commands
                 .spawn(SpriteBundle {
                     texture: assets.grass.clone(),
@@ -24,10 +27,11 @@ pub fn spawn_map(
                     ),
                     ..default()
                 })
-                .insert(Tile(IVec2::new(x, y)))
+                .insert(Tile(grid_tile))
                 .id();
 
-            navmesh.add_occupation::<Tile>(id, x, y);
+            navmesh.add_occupation::<Tile>(id, grid_tile.x, grid_tile.y);
+            occupation_change_event_writer.send(OccupationChangeEvent::new(grid_tile));
         }
     }
 }

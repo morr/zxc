@@ -16,7 +16,7 @@ pub fn spawn_pawns(
     warehouse_query: Query<&Transform, With<Warehouse>>,
     farm_query: Query<&Transform, With<Farm>>,
     arc_navmesh: ResMut<ArcNavmesh>,
-    // query: Query<&Transform, With<Warehouse>>,
+    mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
 ) {
     // println!("Spawning pawns");
 
@@ -91,6 +91,7 @@ pub fn spawn_pawns(
 
         let grid_tile = position.truncate().world_pos_to_grid();
         navmesh.add_occupation::<Movable>(pawn_id, grid_tile.x, grid_tile.y);
+        occupation_change_event_writer.send(OccupationChangeEvent::new(grid_tile));
     }
 }
 

@@ -49,3 +49,12 @@ pub struct PathfindAnswerEvent {
     pub end_tile: IVec2,
     pub path: Option<Vec<IVec2>>,
 }
+
+#[derive(Event, Debug)]
+pub struct OccupationChangeEvent(pub Vec<IVec2>);
+
+impl OccupationChangeEvent {
+    pub fn new(grid_tile: IVec2) -> Self {
+        Self(vec![grid_tile])
+    }
+}
