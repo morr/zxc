@@ -41,45 +41,120 @@ impl Plugin for UiPawnPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             FixedUpdate,
-            (update_pawn_ui, update_movable_ui)
-                .chain()
-                .run_if(in_state(AppState::Playing)),
+            update_pawn_ui.run_if(in_state(AppState::Playing)),
         );
     }
 }
 
 fn update_pawn_ui(
-    // q_ui: Query<(Entity, &PawnUIMarker)>,
- //     mut texts: Query<
- //         (
- //             &mut Text,
- //             Option<&PawnAgeTextUIMarker>,
- //             Option<&PawnLifetimeTextUIMarker>,
- //             Option<&PawnBirthdayTextUIMarker>,
- //             Option<&PawnStateTextUIMarker>,
- //         ),
- //         Or<(
- //             With<PawnAgeTextUIMarker>,
- //             With<PawnLifetimeTextUIMarker>,
- //             With<PawnBirthdayTextUIMarker>,
- //             With<PawnStateTextUIMarker>,
- //         )>,
- //     >,
- // pawn_query: Query<&Pawn>,
+    ui_query: Query<(Entity, &PawnUIMarker)>,
+    mut texts: Query<
+        (
+            &mut Text,
+            Option<&PawnAgeTextUIMarker>,
+            Option<&PawnLifetimeTextUIMarker>,
+            Option<&PawnBirthdayTextUIMarker>,
+            Option<&PawnStateTextUIMarker>,
+            Option<&MovableSpeedTextUIMarker>,
+            Option<&MovablePathTextUIMarker>,
+            Option<&MovableStateTextUIMarker>,
+        ),
+        Or<(
+            With<PawnAgeTextUIMarker>,
+            With<PawnLifetimeTextUIMarker>,
+            With<PawnBirthdayTextUIMarker>,
+            With<PawnStateTextUIMarker>,
+            With<MovableSpeedTextUIMarker>,
+            With<MovablePathTextUIMarker>,
+            With<MovableStateTextUIMarker>,
+        )>,
+    >,
+    components_query: Query<(&Pawn, &Movable)>,
+    children_query: Query<&Children>,
 ) {
-    //
-    //     for (mut text, age_marker, lifetimer_marker, birthday_marker, state_marker) in texts.iter_mut()
-    //     {
-    //         if age_marker.is_some() {
-    //             text.sections[0].value = pawn_age_text(pawn);
-    //         } else if lifetimer_marker.is_some() {
-    //             text.sections[0].value = pawn_lifetime_text(pawn);
-    //         } else if birthday_marker.is_some() {
-    //             text.sections[0].value = pawn_birthday_text(pawn);
-    //         } else if state_marker.is_some() {
-    //             text.sections[0].value = pawn_state_text(pawn);
-    //         }
-    //     }
+    for (ui_id, ui_marker) in ui_query.iter() {
+        if let Ok((pawn, movable)) = components_query.get(ui_marker.pawn_id) {
+            if let Ok(children) = children_query.get(ui_id) {
+                for &child in children.iter() {
+                    update_text_markers_recursive(
+                        child,
+                        pawn,
+                        movable,
+                        &mut texts,
+                        &children_query,
+                    );
+                }
+            }
+        }
+    }
+}
+
+fn update_text_markers_recursive(
+    entity: Entity,
+    pawn: &Pawn,
+    movable: &Movable,
+    texts: &mut Query<
+        (
+            &mut Text,
+            Option<&PawnAgeTextUIMarker>,
+            Option<&PawnLifetimeTextUIMarker>,
+            Option<&PawnBirthdayTextUIMarker>,
+            Option<&PawnStateTextUIMarker>,
+            Option<&MovableSpeedTextUIMarker>,
+            Option<&MovablePathTextUIMarker>,
+            Option<&MovableStateTextUIMarker>,
+        ),
+        Or<(
+            With<PawnAgeTextUIMarker>,
+            With<PawnLifetimeTextUIMarker>,
+            With<PawnBirthdayTextUIMarker>,
+            With<PawnStateTextUIMarker>,
+            With<MovableSpeedTextUIMarker>,
+            With<MovablePathTextUIMarker>,
+            With<MovableStateTextUIMarker>,
+        )>,
+    >,
+    children_query: &Query<&Children>,
+) {
+    if let Ok((
+        mut text,
+        pawn_age_marker,
+        pwan_lifetime_marker,
+        pawn_birthday_marker,
+        pwan_state_marker,
+        movable_speed_marker,
+        movable_path_marker,
+        movable_state_marker,
+    )) = texts.get_mut(entity)
+    {
+        if pawn_age_marker.is_some() {
+            text.sections[0].value = pawn_age_text(pawn);
+        }
+        if pwan_lifetime_marker.is_some() {
+            text.sections[0].value = pawn_lifetime_text(pawn);
+        }
+        if pawn_birthday_marker.is_some() {
+            text.sections[0].value = pawn_birthday_text(pawn);
+        }
+        if pwan_state_marker.is_some() {
+            text.sections[0].value = pawn_state_text(pawn);
+        }
+        if movable_speed_marker.is_some() {
+            text.sections[0].value = movable_speed_text(movable);
+        }
+        if movable_path_marker.is_some() {
+            text.sections[0].value = movable_path_text(movable);
+        }
+        if movable_state_marker.is_some() {
+            text.sections[0].value = movable_state_text(movable);
+        }
+    }
+
+    if let Ok(children) = children_query.get(entity) {
+        for &child in children.iter() {
+            update_text_markers_recursive(child, pawn, movable, texts, children_query);
+        }
+    }
 }
 
 pub fn render_pawn_ui(

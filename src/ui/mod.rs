@@ -66,7 +66,8 @@ fn render_entity_node_bunlde<T: TargetEntityUiMarker>(target_id: Entity) -> (Nod
                     bottom: Val::Px(10.),
                     left: Val::Px(10.),
                 },
-                // width: Val::Px(300.),
+                // max_width: Val::Percent(25.0),
+                width: Val::Px(300.),
                 ..default()
             },
             background_color: bg_color(UiOpacity::Medium),
