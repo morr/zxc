@@ -17,7 +17,7 @@ impl Plugin for NavigationPlugin {
                 Update,
                 (
                     listen_for_pathfinding_requests,
-                    pathfinding_async_on_click,
+                    // pathfinding_async_on_click,
                     listen_for_pathfinding_answers,
                     listen_for_pathfinding_async_tasks,
                 )
