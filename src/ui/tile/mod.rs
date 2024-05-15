@@ -12,6 +12,7 @@ pub struct TileComponentUIMarker {}
 pub struct TileTextUIMarker {}
 
 pub fn render_tile_ui(
+    id: &Entity,
     container_ui_commands: &mut EntityCommands,
     grid_tile: IVec2,
     font_assets: &Res<FontAssets>,

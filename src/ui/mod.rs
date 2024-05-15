@@ -23,6 +23,8 @@ impl Plugin for UiPlugin {
             UiSimulationStatePlugin,
             UiItemsStockPlugin,
             UiSelectablePlugin,
+            UiPawnPlugin,
+            UiFarmPlugin,
             UiHoverMarkerPlugin,
             UiDebugPlugin,
         ));

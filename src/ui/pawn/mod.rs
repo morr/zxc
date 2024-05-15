@@ -27,28 +27,60 @@ struct MovablePathTextUIMarker {}
 #[derive(Component, Default)]
 struct MovableStateTextUIMarker {}
 
-// pub struct UiPawnPlugin;
+pub struct UiPawnPlugin;
 
-// impl Plugin for UiPawnPlugin {
-//     fn build(&self, app: &mut App) {
-//         app;
-//     .add_systems(
-//     OnExit(AppState::Loading),
-//     render_pawn_ui
-//         .after(render_selectable_container)
-//         .after(spawn_pawns),
-// )
-// .add_systems(
-//     FixedUpdate,
-//     (update_pawn_ui, update_movable_ui)
-//         .chain()
-//         .after(render_pawn_ui)
-//         .run_if(in_state(AppState::Playing)),
-// );
+impl Plugin for UiPawnPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(
+            FixedUpdate,
+            (update_pawn_ui, update_movable_ui)
+                .chain()
+                .run_if(in_state(AppState::Playing)),
+        );
+    }
+}
+
+fn update_pawn_ui(
+    q_ui: Query<Entity, With<PawnUIMarker>>
+//     mut texts: Query<
+//         (
+//             &mut Text,
+//             Option<&PawnAgeTextUIMarker>,
+//             Option<&PawnLifetimeTextUIMarker>,
+//             Option<&PawnBirthdayTextUIMarker>,
+//             Option<&PawnStateTextUIMarker>,
+//         ),
+//         Or<(
+//             With<PawnAgeTextUIMarker>,
+//             With<PawnLifetimeTextUIMarker>,
+//             With<PawnBirthdayTextUIMarker>,
+//             With<PawnStateTextUIMarker>,
+//         )>,
+//     >,
+    // pawn_query: Query<&Pawn>,
+) {
+    for ui_id in q_ui.iter() {
+        println!("{:?}", ui_id);
+    }
+//     let pawn = pawn_query.iter().next().unwrap();
+//
+//     for (mut text, age_marker, lifetimer_marker, birthday_marker, state_marker) in texts.iter_mut()
+//     {
+//         if age_marker.is_some() {
+//             text.sections[0].value = pawn_age_text(pawn);
+//         } else if lifetimer_marker.is_some() {
+//             text.sections[0].value = pawn_lifetime_text(pawn);
+//         } else if birthday_marker.is_some() {
+//             text.sections[0].value = pawn_birthday_text(pawn);
+//         } else if state_marker.is_some() {
+//             text.sections[0].value = pawn_state_text(pawn);
+//         }
 //     }
-// }
+}
+
 
 pub fn render_pawn_ui(
+    id: &Entity,
     container_ui_commands: &mut EntityCommands,
     pawn: &Pawn,
     movable: &Movable,
@@ -103,40 +135,6 @@ pub fn render_pawn_ui(
     });
 }
 
-// fn update_pawn_ui(
-//     mut texts: Query<
-//         (
-//             &mut Text,
-//             Option<&PawnAgeTextUIMarker>,
-//             Option<&PawnLifetimeTextUIMarker>,
-//             Option<&PawnBirthdayTextUIMarker>,
-//             Option<&PawnStateTextUIMarker>,
-//         ),
-//         Or<(
-//             With<PawnAgeTextUIMarker>,
-//             With<PawnLifetimeTextUIMarker>,
-//             With<PawnBirthdayTextUIMarker>,
-//             With<PawnStateTextUIMarker>,
-//         )>,
-//     >,
-//     pawn_query: Query<&Pawn>,
-// ) {
-//     let pawn = pawn_query.iter().next().unwrap();
-//
-//     for (mut text, age_marker, lifetimer_marker, birthday_marker, state_marker) in texts.iter_mut()
-//     {
-//         if age_marker.is_some() {
-//             text.sections[0].value = pawn_age_text(pawn);
-//         } else if lifetimer_marker.is_some() {
-//             text.sections[0].value = pawn_lifetime_text(pawn);
-//         } else if birthday_marker.is_some() {
-//             text.sections[0].value = pawn_birthday_text(pawn);
-//         } else if state_marker.is_some() {
-//             text.sections[0].value = pawn_state_text(pawn);
-//         }
-//     }
-// }
-
 fn pawn_age_text(pawn: &Pawn) -> String {
     format!("age: {}", pawn.age)
 }
@@ -167,7 +165,7 @@ fn pawn_state_text(pawn: &Pawn) -> String {
     format!("state: {:?}", pawn.state)
 }
 
-// fn update_movable_ui(
+fn update_movable_ui(
 //     mut texts: Query<
 //         (
 //             &mut Text,
@@ -182,7 +180,7 @@ fn pawn_state_text(pawn: &Pawn) -> String {
 //         )>,
 //     >,
 //     movable_query: Query<&Movable>,
-// ) {
+) {
 //     let movable = movable_query.iter().next().unwrap();
 //
 //     for (mut text, speed_marker, pathr_marker, state_marker) in texts.iter_mut() {
@@ -194,7 +192,7 @@ fn pawn_state_text(pawn: &Pawn) -> String {
 //             text.sections[0].value = movable_state_text(movable);
 //         }
 //     }
-// }
+}
 
 fn movable_speed_text(movable: &Movable) -> String {
     format!("speed: {}", movable.speed)

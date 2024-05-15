@@ -1,5 +1,5 @@
-use bevy::ecs::system::EntityCommands;
 use self::structure::{Farm, FarmState};
+use bevy::ecs::system::EntityCommands;
 
 use super::*;
 
@@ -24,28 +24,29 @@ pub struct WorkableWorkAmountDoneTextUIMarker {}
 #[derive(Component, Default)]
 pub struct WorkableWorkAmountTotalTextUIMarker {}
 
-// pub struct UiFarmPlugin;
-//
-// impl Plugin for UiFarmPlugin {
-//     fn build(&self, app: &mut App) {
-//         app;
-//             .add_systems(
-//             OnExit(AppState::Loading),
-//             render_farm_ui
-//                 .after(render_selectable_container)
-//                 .after(spawn_farm),
-//         )
-//         .add_systems(
-//             FixedUpdate,
-//             (update_farm_ui, update_workable_ui)
-//                 .chain()
-//                 .after(render_farm_ui)
-//                 .run_if(in_state(AppState::Playing)),
-//         );
-//     }
-// }
+pub struct UiFarmPlugin;
+
+impl Plugin for UiFarmPlugin {
+    fn build(&self, app: &mut App) {
+        app;
+        //             .add_systems(
+        //             OnExit(AppState::Loading),
+        //             render_farm_ui
+        //                 .after(render_selectable_container)
+        //                 .after(spawn_farm),
+        //         )
+        //         .add_systems(
+        //             FixedUpdate,
+        //             (update_farm_ui, update_workable_ui)
+        //                 .chain()
+        //                 .after(render_farm_ui)
+        //                 .run_if(in_state(AppState::Playing)),
+        //         );
+    }
+}
 
 pub fn render_farm_ui(
+    id: &Entity,
     container_ui_commands: &mut EntityCommands,
     farm: &Farm,
     workable: &Workable,
@@ -74,7 +75,9 @@ pub fn render_farm_ui(
                     });
 
                 parent
-                    .spawn(render_entity_component_node_bunlde::<WorkableComponentUIMarker>())
+                    .spawn(render_entity_component_node_bunlde::<
+                        WorkableComponentUIMarker,
+                    >())
                     .with_children(|parent| {
                         parent.spawn(headline_text_bundle("Workable", font_assets));
                         parent.spawn(property_text_bundle::<WorkableWorkAmountDoneTextUIMarker>(
