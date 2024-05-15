@@ -31,6 +31,10 @@ impl Plugin for UiPlugin {
     }
 }
 
+pub trait TargetEntityUiMarker {
+    fn new(target_id: Entity) -> Self;
+}
+
 pub enum UiOpacity {
     Light,
     Medium,
@@ -49,7 +53,7 @@ pub fn bg_color(opacity: UiOpacity) -> BackgroundColor {
     ui_color(opacity).into()
 }
 
-fn render_entity_node_bunlde<T: Default>() -> (NodeBundle, T) {
+fn render_entity_node_bunlde<T: TargetEntityUiMarker>(target_id: Entity) -> (NodeBundle, T) {
     (
         NodeBundle {
             style: Style {
@@ -68,7 +72,7 @@ fn render_entity_node_bunlde<T: Default>() -> (NodeBundle, T) {
             background_color: bg_color(UiOpacity::Medium),
             ..default()
         },
-        T::default(),
+        T::new(target_id),
     )
 }
 

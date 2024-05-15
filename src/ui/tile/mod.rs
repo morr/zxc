@@ -2,8 +2,17 @@ use bevy::ecs::system::EntityCommands;
 
 use super::*;
 
-#[derive(Component, Default)]
-pub struct TileUIMarker {}
+#[derive(Component)]
+pub struct TileUIMarker {
+    target_id: Entity
+}
+
+impl TargetEntityUiMarker for TileUIMarker {
+    fn new(target_id: Entity) -> Self {
+        Self { target_id }
+    }
+
+}
 
 #[derive(Component, Default)]
 pub struct TileComponentUIMarker {}
@@ -12,14 +21,14 @@ pub struct TileComponentUIMarker {}
 pub struct TileTextUIMarker {}
 
 pub fn render_tile_ui(
-    id: &Entity,
+    target_id: Entity,
     container_ui_commands: &mut EntityCommands,
     grid_tile: IVec2,
     font_assets: &Res<FontAssets>,
 ) {
     container_ui_commands.with_children(|parent| {
         parent
-            .spawn(render_entity_node_bunlde::<TileUIMarker>())
+            .spawn(render_entity_node_bunlde::<TileUIMarker>(target_id))
             .with_children(|parent| {
                 parent
                     .spawn(render_entity_component_node_bunlde::<TileComponentUIMarker>())

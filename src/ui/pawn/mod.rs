@@ -2,8 +2,17 @@ use bevy::ecs::system::EntityCommands;
 
 use super::*;
 
-#[derive(Component, Default)]
-pub struct PawnUIMarker {}
+#[derive(Component)]
+pub struct PawnUIMarker {
+    target_id: Entity
+}
+
+impl TargetEntityUiMarker for PawnUIMarker {
+    fn new(target_id: Entity) -> Self {
+        Self { target_id }
+    }
+
+}
 
 #[derive(Component, Default)]
 pub struct PawnComponentUIMarker {}
@@ -80,7 +89,7 @@ fn update_pawn_ui(
 
 
 pub fn render_pawn_ui(
-    id: &Entity,
+    target_id: Entity,
     container_ui_commands: &mut EntityCommands,
     pawn: &Pawn,
     movable: &Movable,
@@ -88,7 +97,7 @@ pub fn render_pawn_ui(
 ) {
     container_ui_commands.with_children(|parent| {
         parent
-            .spawn(render_entity_node_bunlde::<PawnUIMarker>())
+            .spawn(render_entity_node_bunlde::<PawnUIMarker>(target_id))
             .with_children(|parent| {
                 parent
                     .spawn(render_entity_component_node_bunlde::<PawnComponentUIMarker>())

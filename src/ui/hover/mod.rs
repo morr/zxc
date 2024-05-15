@@ -56,14 +56,19 @@ fn update_ui_on_hover_event(
 
         hover_container_ui_commands.despawn_descendants();
 
-        for id in navmesh.get_entities::<Tile>(event.0.x, event.0.y) {
-            render_tile_ui(id, &mut hover_container_ui_commands, event.0, &font_assets);
+        for target_id in navmesh.get_entities::<Tile>(event.0.x, event.0.y) {
+            render_tile_ui(
+                *target_id,
+                &mut hover_container_ui_commands,
+                event.0,
+                &font_assets,
+            );
         }
 
-        for id in navmesh.get_entities::<Movable>(event.0.x, event.0.y) {
-            if let Ok((pawn, movable)) = pawn_query.get(*id) {
+        for target_id in navmesh.get_entities::<Movable>(event.0.x, event.0.y) {
+            if let Ok((pawn, movable)) = pawn_query.get(*target_id) {
                 render_pawn_ui(
-                    id,
+                    *target_id,
                     &mut hover_container_ui_commands,
                     pawn,
                     movable,
@@ -72,10 +77,10 @@ fn update_ui_on_hover_event(
             }
         }
 
-        for id in navmesh.get_entities::<Farm>(event.0.x, event.0.y) {
-            if let Ok((farm, workable)) = farm_query.get(*id) {
+        for target_id in navmesh.get_entities::<Farm>(event.0.x, event.0.y) {
+            if let Ok((farm, workable)) = farm_query.get(*target_id) {
                 render_farm_ui(
-                    id,
+                    *target_id,
                     &mut hover_container_ui_commands,
                     farm,
                     workable,

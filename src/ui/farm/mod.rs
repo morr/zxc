@@ -3,8 +3,17 @@ use bevy::ecs::system::EntityCommands;
 
 use super::*;
 
-#[derive(Component, Default)]
-pub struct FarmUIMarker {}
+#[derive(Component)]
+pub struct FarmUIMarker {
+    target_id: Entity
+}
+
+impl TargetEntityUiMarker for FarmUIMarker  {
+    fn new(target_id: Entity) -> Self {
+        Self { target_id }
+    }
+
+}
 
 #[derive(Component, Default)]
 pub struct FarmComponentUIMarker {}
@@ -46,7 +55,7 @@ impl Plugin for UiFarmPlugin {
 }
 
 pub fn render_farm_ui(
-    id: &Entity,
+    target_id: Entity,
     container_ui_commands: &mut EntityCommands,
     farm: &Farm,
     workable: &Workable,
@@ -54,7 +63,7 @@ pub fn render_farm_ui(
 ) {
     container_ui_commands.with_children(|parent| {
         parent
-            .spawn(render_entity_node_bunlde::<FarmUIMarker>())
+            .spawn(render_entity_node_bunlde::<FarmUIMarker>(target_id))
             .with_children(|parent| {
                 parent
                     .spawn(render_entity_component_node_bunlde::<FarmComponentUIMarker>())
