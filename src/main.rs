@@ -54,7 +54,7 @@ fn main() {
             movable::MovablePlugin,
             workable::WorkablePlugin,
             navigation::NavigationPlugin,
-            selectable::SelectablePlugin,
+            user_select::UserSelectPlugin,
             pawn::PawnPlugin,
             structure::StructurePlugin,
             ui::UiPlugin,

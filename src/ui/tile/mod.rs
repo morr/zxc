@@ -26,10 +26,11 @@ pub fn render_tile_ui(
     container_ui_commands: &mut EntityCommands,
     grid_tile: IVec2,
     font_assets: &Res<FontAssets>,
+    opacity: UiOpacity,
 ) {
     container_ui_commands.with_children(|parent| {
         parent
-            .spawn(render_entity_node_bunlde::<TileUIMarker>(tile_id))
+            .spawn(render_entity_node_bunlde::<TileUIMarker>(tile_id, opacity))
             .with_children(|parent| {
                 parent
                     .spawn(render_entity_component_node_bunlde::<TileComponentUIMarker>())

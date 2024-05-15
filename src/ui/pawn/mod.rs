@@ -163,10 +163,11 @@ pub fn render_pawn_ui(
     pawn: &Pawn,
     movable: &Movable,
     font_assets: &Res<FontAssets>,
+    opacity: UiOpacity,
 ) {
     container_ui_commands.with_children(|parent| {
         parent
-            .spawn(render_entity_node_bunlde::<PawnUIMarker>(pawn_id))
+            .spawn(render_entity_node_bunlde::<PawnUIMarker>(pawn_id, opacity))
             .with_children(|parent| {
                 parent
                     .spawn(render_entity_component_node_bunlde::<PawnComponentUIMarker>())

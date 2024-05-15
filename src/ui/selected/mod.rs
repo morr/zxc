@@ -12,7 +12,7 @@ impl Plugin for UiSelectedPlugin {
         app.add_systems(OnExit(AppState::Loading), render_selected_ui)
             .add_systems(
                 Update,
-                update_ui_on_click_event.run_if(in_state(AppState::Playing)),
+                update_ui_on_user_select_event.run_if(in_state(AppState::Playing)),
             );
     }
 }
@@ -35,12 +35,12 @@ fn render_selected_ui(mut commands: Commands) {
     ));
 }
 
-fn update_ui_on_click_event(
+fn update_ui_on_user_select_event(
     mut commands: Commands,
-    mut click_event_reader: EventReader<ClickEvent>,
+    mut click_event_reader: EventReader<UserSelectEvent>,
     selected_root_ui_query: Query<Entity, With<SelectedRootUIMarker>>,
-    pawn_query: Query<(Entity, &Pawn, &Movable), With<UserSelected>>,
-    farm_query: Query<(Entity, &Farm, &Workable), With<UserSelected>>,
+    pawn_query: Query<(Entity, &Pawn, &Movable), With<UserSelect>>,
+    farm_query: Query<(Entity, &Farm, &Workable), With<UserSelect>>,
     font_assets: Res<FontAssets>,
 ) {
     for _event in click_event_reader.read() {
@@ -55,6 +55,7 @@ fn update_ui_on_click_event(
                 pawn,
                 movable,
                 &font_assets,
+                UiOpacity::Heavy,
             );
         }
 
@@ -65,6 +66,7 @@ fn update_ui_on_click_event(
                 farm,
                 workable,
                 &font_assets,
+                UiOpacity::Heavy,
             );
         }
     }

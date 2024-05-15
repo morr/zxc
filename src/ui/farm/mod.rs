@@ -49,10 +49,11 @@ pub fn render_farm_ui(
     farm: &Farm,
     workable: &Workable,
     font_assets: &Res<FontAssets>,
+    opacity: UiOpacity,
 ) {
     container_ui_commands.with_children(|parent| {
         parent
-            .spawn(render_entity_node_bunlde::<FarmUIMarker>(farm_id))
+            .spawn(render_entity_node_bunlde::<FarmUIMarker>(farm_id, opacity))
             .with_children(|parent| {
                 parent
                     .spawn(render_entity_component_node_bunlde::<FarmComponentUIMarker>())

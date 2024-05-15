@@ -2,16 +2,20 @@ use crate::*;
 
 use self::structure::Farm;
 
-#[derive(Component, Default)]
-pub struct UserSelected;
+pub struct UserSelectPlugin;
 
-pub struct SelectablePlugin;
-
-impl Plugin for SelectablePlugin {
+impl Plugin for UserSelectPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, select_on_click.run_if(in_state(AppState::Playing)));
+        app.add_event::<UserSelectEvent>()
+            .add_systems(Update, select_on_click.run_if(in_state(AppState::Playing)));
     }
 }
+
+#[derive(Component, Default)]
+pub struct UserSelect;
+
+#[derive(Event, Debug)]
+pub struct UserSelectEvent;
 
 fn select_on_click(
     mut commands: Commands,
@@ -28,7 +32,7 @@ fn select_on_click(
         for target_id in navmesh.get_occupation::<Movable>(grid_tile.x, grid_tile.y) {
             commands
                 .entity(*target_id)
-                .insert(UserSelected::default())
+                .insert(UserSelect)
                 .insert(ShowAabbGizmo {
                     color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
                 });
@@ -40,7 +44,7 @@ fn select_on_click(
         for target_id in navmesh.get_occupation::<Farm>(grid_tile.x, grid_tile.y) {
             commands
                 .entity(*target_id)
-                .insert(UserSelected::default())
+                .insert(UserSelect)
                 .insert(ShowAabbGizmo {
                     color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
                 });

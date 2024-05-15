@@ -75,6 +75,7 @@ fn update_ui_on_hover_event(
                 &mut hovered_root_ui_commands,
                 *grid_tile,
                 &font_assets,
+                UiOpacity::Medium,
             );
         }
 
@@ -86,6 +87,7 @@ fn update_ui_on_hover_event(
                     pawn,
                     movable,
                     &font_assets,
+                    UiOpacity::Medium,
                 );
             }
         }
@@ -98,6 +100,7 @@ fn update_ui_on_hover_event(
                     farm,
                     workable,
                     &font_assets,
+                    UiOpacity::Medium,
                 );
             }
         }

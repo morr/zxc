@@ -52,7 +52,7 @@ pub fn bg_color(opacity: UiOpacity) -> BackgroundColor {
     ui_color(opacity).into()
 }
 
-fn render_entity_node_bunlde<T: TargetEntityUiMarker>(target_id: Entity) -> (NodeBundle, T) {
+fn render_entity_node_bunlde<T: TargetEntityUiMarker>(target_id: Entity, opacity: UiOpacity) -> (NodeBundle, T) {
     (
         NodeBundle {
             style: Style {
@@ -69,7 +69,7 @@ fn render_entity_node_bunlde<T: TargetEntityUiMarker>(target_id: Entity) -> (Nod
                 width: Val::Px(300.),
                 ..default()
             },
-            background_color: bg_color(UiOpacity::Medium),
+            background_color: bg_color(opacity),
             ..default()
         },
         T::new(target_id),
