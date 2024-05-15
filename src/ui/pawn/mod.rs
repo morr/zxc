@@ -243,34 +243,6 @@ fn pawn_state_text(pawn: &Pawn) -> String {
     format!("state: {:?}", pawn.state)
 }
 
-fn update_movable_ui(//     mut texts: Query<
-//         (
-//             &mut Text,
-//             Option<&MovableSpeedTextUIMarker>,
-//             Option<&MovablePathTextUIMarker>,
-//             Option<&MovableStateTextUIMarker>,
-//         ),
-//         Or<(
-//             With<MovableSpeedTextUIMarker>,
-//             With<MovablePathTextUIMarker>,
-//             With<MovableStateTextUIMarker>,
-//         )>,
-//     >,
-//     movable_query: Query<&Movable>,
-) {
-    //     let movable = movable_query.iter().next().unwrap();
-    //
-    //     for (mut text, speed_marker, pathr_marker, state_marker) in texts.iter_mut() {
-    //         if speed_marker.is_some() {
-    //             text.sections[0].value = movable_speed_text(movable);
-    //         } else if pathr_marker.is_some() {
-    //             text.sections[0].value = movable_path_text(movable);
-    //         } else if state_marker.is_some() {
-    //             text.sections[0].value = movable_state_text(movable);
-    //         }
-    //     }
-}
-
 fn movable_speed_text(movable: &Movable) -> String {
     format!("speed: {}", movable.speed)
 }

@@ -14,10 +14,6 @@ impl Plugin for UiHoverMarkerPlugin {
                 FixedUpdate,
                 update_ui_on_hover_event.run_if(in_state(AppState::Playing)),
             );
-        // .add_systems(
-        //     FixedUpdate,
-        //     (update_tile_ui).chain().run_if(in_state(AppState::Playing)),
-        // );
     }
 }
 
