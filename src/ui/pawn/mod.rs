@@ -158,7 +158,7 @@ fn update_text_markers_recursive(
 }
 
 pub fn render_pawn_ui(
-    target_id: Entity,
+    pawn_id: Entity,
     container_ui_commands: &mut EntityCommands,
     pawn: &Pawn,
     movable: &Movable,
@@ -166,12 +166,12 @@ pub fn render_pawn_ui(
 ) {
     container_ui_commands.with_children(|parent| {
         parent
-            .spawn(render_entity_node_bunlde::<PawnUIMarker>(target_id))
+            .spawn(render_entity_node_bunlde::<PawnUIMarker>(pawn_id))
             .with_children(|parent| {
                 parent
                     .spawn(render_entity_component_node_bunlde::<PawnComponentUIMarker>())
                     .with_children(|parent| {
-                        parent.spawn(headline_text_bundle(format!("Pawn {:?}", target_id), font_assets));
+                        parent.spawn(headline_text_bundle(format!("Pawn {:?}", pawn_id), font_assets));
                         parent.spawn(property_text_bundle::<PawnAgeTextUIMarker>(
                             pawn_age_text(pawn),
                             font_assets,

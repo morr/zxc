@@ -44,7 +44,7 @@ impl Plugin for UiFarmPlugin {
 }
 
 pub fn render_farm_ui(
-    target_id: Entity,
+    farm_id: Entity,
     container_ui_commands: &mut EntityCommands,
     farm: &Farm,
     workable: &Workable,
@@ -52,12 +52,12 @@ pub fn render_farm_ui(
 ) {
     container_ui_commands.with_children(|parent| {
         parent
-            .spawn(render_entity_node_bunlde::<FarmUIMarker>(target_id))
+            .spawn(render_entity_node_bunlde::<FarmUIMarker>(farm_id))
             .with_children(|parent| {
                 parent
                     .spawn(render_entity_component_node_bunlde::<FarmComponentUIMarker>())
                     .with_children(|parent| {
-                        parent.spawn(headline_text_bundle(format!("Farm {:?}", target_id), font_assets));
+                        parent.spawn(headline_text_bundle(format!("Farm {:?}", farm_id), font_assets));
                         parent.spawn(property_text_bundle::<FarmYieldTextUIMarker>(
                             farm_yield_text(farm),
                             font_assets,
