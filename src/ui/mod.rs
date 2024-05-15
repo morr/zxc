@@ -25,7 +25,7 @@ impl Plugin for UiPlugin {
             UiSelectablePlugin,
             UiPawnPlugin,
             UiFarmPlugin,
-            UiHoverMarkerPlugin,
+            UiHoverPlugin,
             UiDebugPlugin,
         ));
     }
