@@ -14,12 +14,13 @@ impl Plugin for UserSelectPlugin {
 #[derive(Component, Default)]
 pub struct UserSelect;
 
-#[derive(Event, Debug)]
+#[derive(Event, Debug, Default)]
 pub struct UserSelectEvent;
 
 fn select_on_click(
     mut commands: Commands,
     mut click_event_reader: EventReader<ClickEvent>,
+    mut user_select_event_weriter: EventWriter<UserSelectEvent>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     for event in click_event_reader.read() {
@@ -52,5 +53,6 @@ fn select_on_click(
             // if let Ok((farm, workable)) = farm_query.get(*target_id) {
             // }
         }
+        user_select_event_weriter.send(UserSelectEvent);
     }
 }

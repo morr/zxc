@@ -3,7 +3,7 @@ use crate::*;
 expose_submodules!(
     simulation_state,
     items_stock,
-    selected,
+    user_select,
     hovered,
     pawn,
     farm,
@@ -21,7 +21,7 @@ impl Plugin for UiPlugin {
         app.add_plugins((
             UiSimulationStatePlugin,
             UiItemsStockPlugin,
-            UiSelectedPlugin,
+            UiUserSelectedPlugin,
             UiPawnPlugin,
             UiFarmPlugin,
             UiHoveredPlugin,
