@@ -67,9 +67,9 @@ pub fn spawn_pawns(
                 },
                 Movable::new(CONFIG.pawn.speed * CONFIG.tile.size),
             ))
-            .insert(ShowAabbGizmo {
-                color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
-            })
+            // .insert(ShowAabbGizmo {
+            //     color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
+            // })
             .with_children(|parent| {
                 parent.spawn((
                     Text2dBundle {

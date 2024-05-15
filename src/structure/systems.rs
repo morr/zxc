@@ -31,10 +31,10 @@ pub fn spawn_base(
                 ),
                 ..default()
             },
-        ))
-        .insert(ShowAabbGizmo {
-            color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
-        });
+        ));
+        // .insert(ShowAabbGizmo {
+        //     color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
+        // });
 
     arc_navmesh.write().update_cost(
         (grid_tile.x)..(grid_tile.x + size.x),
@@ -94,10 +94,10 @@ pub fn spawn_house(
                 ),
                 ..default()
             },
-        ))
-        .insert(ShowAabbGizmo {
-            color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
-        });
+        ));
+        // .insert(ShowAabbGizmo {
+        //     color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
+        // });
 
     arc_navmesh.write().update_cost(
         (grid_tile.x)..(grid_tile.x + size.x),
@@ -130,10 +130,10 @@ pub fn spawn_well(
                 ),
                 ..default()
             },
-        ))
-        .insert(ShowAabbGizmo {
-            color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
-        });
+        ));
+        // .insert(ShowAabbGizmo {
+        //     color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
+        // });
 
     arc_navmesh.write().update_cost(
         (grid_tile.x)..(grid_tile.x + size.x),
