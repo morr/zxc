@@ -29,7 +29,7 @@ impl Plugin for UiPlugin {
     }
 }
 
-enum UiOpacity {
+pub enum UiOpacity {
     Light,
     Medium,
     Heavy,
