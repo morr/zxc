@@ -27,7 +27,7 @@ struct MovablePathTextUIMarker {}
 #[derive(Component, Default)]
 struct MovableStateTextUIMarker {}
 
-pub struct UiPawnPlugin;
+// pub struct UiPawnPlugin;
 
 // impl Plugin for UiPawnPlugin {
 //     fn build(&self, app: &mut App) {

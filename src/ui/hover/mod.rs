@@ -28,6 +28,7 @@ fn render_hovered_ui(mut commands: Commands) {
                 position_type: PositionType::Absolute,
                 display: Display::Flex,
                 flex_direction: FlexDirection::Row,
+                align_items: AlignItems::FlexEnd,
                 column_gap: Val::Px(25.),
                 bottom: UI_SCREEN_EDGE_PX_OFFSET,
                 left: UI_SCREEN_EDGE_PLUS_ITEM_STOCKS_PX_OFFSET,
@@ -58,8 +59,8 @@ fn update_ui_on_hover_event(
             render_tile_ui(&mut hover_container_ui_commands, event.0, &font_assets);
         }
 
-        for pawn_id in navmesh.get_entities::<Pawn>(event.0.x, event.0.y) {
-            if let Ok((pawn, movable)) = pawn_query.get(*pawn_id) {
+        for movable_id in navmesh.get_entities::<Movable>(event.0.x, event.0.y) {
+            if let Ok((pawn, movable)) = pawn_query.get(*movable_id) {
                 render_pawn_ui(&mut hover_container_ui_commands, pawn, movable, &font_assets);
             }
         }
