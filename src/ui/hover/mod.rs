@@ -1,5 +1,3 @@
-use bevy::ecs::system::{EntityCommand, EntityCommands};
-
 use super::*;
 
 #[derive(Component, Default)]
@@ -39,10 +37,6 @@ fn render_hovered_ui(mut commands: Commands) {
     ));
 }
 
-// fn selectble_id(container_query: &Query<Entity, With<HoveredContainerUIMarker>>) -> Entity {
-//     container_query.get_single().unwrap()
-// }
-
 fn update_ui_on_hover_event(
     mut commands: Commands,
     mut hover_event_reader: EventReader<HoverEvent>,
@@ -62,26 +56,4 @@ fn update_ui_on_hover_event(
             render_tile_ui(&mut hover_container_ui_commands, event.0, &font_assets);
         }
     }
-}
-
-fn render_tile_ui(
-    hover_container_ui_commands: &mut EntityCommands,
-    grid_tile: IVec2,
-    font_assets: &Res<FontAssets>,
-) {
-    hover_container_ui_commands.with_children(|parent| {
-        parent
-            .spawn(render_entity_node_bunlde::<TileUIMarker>())
-            .with_children(|parent| {
-                parent
-                    .spawn(render_entity_component_node_bunlde::<TileComponentUIMarker>())
-                    .with_children(|parent| {
-                        parent.spawn(headline_text_bundle("Tile", font_assets));
-                        parent.spawn(property_text_bundle::<TileTextUIMarker>(
-                            format!("{:?}", grid_tile),
-                            font_assets,
-                        ));
-                    });
-            });
-    });
 }
