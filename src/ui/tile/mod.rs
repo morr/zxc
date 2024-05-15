@@ -4,6 +4,7 @@ use super::*;
 
 #[derive(Component)]
 pub struct TileUIMarker {
+    #[allow(dead_code)]
     tile_id: Entity
 }
 
