@@ -4,12 +4,12 @@ use super::*;
 
 #[derive(Component)]
 pub struct TileUIMarker {
-    target_id: Entity
+    tile_id: Entity
 }
 
 impl TargetEntityUiMarker for TileUIMarker {
-    fn new(target_id: Entity) -> Self {
-        Self { target_id }
+    fn new(tile_id: Entity) -> Self {
+        Self { tile_id }
     }
 
 }
