@@ -1,18 +1,18 @@
 use super::*;
 
 #[derive(Component, Default)]
-pub struct SelectableContainerUIMarker {}
+pub struct SelectedUIRootMarker {}
 
-pub struct UiSelectablePlugin;
+pub struct UiSelectedPlugin;
 
-impl Plugin for UiSelectablePlugin {
+impl Plugin for UiSelectedPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnExit(AppState::Loading), render_selectable_container);
+        app.add_systems(OnExit(AppState::Loading), render_selected_ui);
         // .add_plugins((UiPawnPlugin, UiFarmPlugin));
     }
 }
 
-fn render_selectable_container(mut commands: Commands) {
+fn render_selected_ui(mut commands: Commands) {
     commands.spawn((
         NodeBundle {
             style: Style {
@@ -26,6 +26,6 @@ fn render_selectable_container(mut commands: Commands) {
             },
             ..default()
         },
-        SelectableContainerUIMarker::default(),
+        SelectedUIRootMarker::default(),
     ));
 }

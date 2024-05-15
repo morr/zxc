@@ -3,11 +3,11 @@ use self::structure::Farm;
 use super::*;
 
 #[derive(Component, Default)]
-struct HoverContainerUIMarker {}
+struct HoveredUIRootMarker {}
 
-pub struct UiHoverPlugin;
+pub struct UiHoveredPlugin;
 
-impl Plugin for UiHoverPlugin {
+impl Plugin for UiHoveredPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnExit(AppState::Loading), render_hovered_ui)
             .add_systems(
@@ -32,7 +32,7 @@ fn render_hovered_ui(mut commands: Commands) {
             },
             ..default()
         },
-        HoverContainerUIMarker::default(),
+        HoveredUIRootMarker::default(),
     ));
 }
 
@@ -42,7 +42,7 @@ fn update_ui_on_hover_event(
     mut hover_event_reader: EventReader<HoverEvent>,
     hovered_grid_tile: Res<HoveredGridTile>,
     mut occupation_change_event_reader: EventReader<OccupationChangeEvent>,
-    hover_container_ui_query: Query<Entity, With<HoverContainerUIMarker>>,
+    hover_container_ui_query: Query<Entity, With<HoveredUIRootMarker>>,
     font_assets: Res<FontAssets>,
     pawn_query: Query<(&Pawn, &Movable)>,
     farm_query: Query<(&Farm, &Workable)>,
