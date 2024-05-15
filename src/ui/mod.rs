@@ -1,6 +1,15 @@
 use crate::*;
 
-expose_submodules!(simulation_state, items_stock, selectable, hovered, debug);
+expose_submodules!(
+    simulation_state,
+    items_stock,
+    selectable,
+    hovered,
+    pawn,
+    farm,
+    tile,
+    debug
+);
 
 pub static UI_COLOR: Lazy<Color> = Lazy::new(|| Color::hex("181a1c").unwrap());
 pub static UI_SCREEN_EDGE_PX_OFFSET: Val = Val::Px(8.);
@@ -20,7 +29,7 @@ impl Plugin for UiPlugin {
     }
 }
 
-pub enum UiOpacity {
+enum UiOpacity {
     Light,
     Medium,
     Heavy,
@@ -38,11 +47,11 @@ pub fn bg_color(opacity: UiOpacity) -> BackgroundColor {
     ui_color(opacity).into()
 }
 
-fn render_entity_node_bunlde<T: Default>() -> (NodeBundle, T) {
+fn render_entity_node_bunlde<T: Default>(display: Display) -> (NodeBundle, T) {
     (
         NodeBundle {
             style: Style {
-                display: Display::Flex,
+                display,
                 flex_direction: FlexDirection::Column,
                 row_gap: Val::Px(10.),
                 padding: UiRect {
@@ -51,12 +60,54 @@ fn render_entity_node_bunlde<T: Default>() -> (NodeBundle, T) {
                     bottom: Val::Px(10.),
                     left: Val::Px(10.),
                 },
-                width: Val::Px(300.),
+                // width: Val::Px(300.),
                 ..default()
             },
             background_color: bg_color(UiOpacity::Heavy),
             ..default()
         },
+        T::default(),
+    )
+}
+
+fn render_entity_component_node_bunlde<T: Default>() -> (NodeBundle, T) {
+    (
+        NodeBundle {
+            style: Style {
+                display: Display::Flex,
+                flex_direction: FlexDirection::Column,
+                ..default()
+            },
+            ..default()
+        },
+        T::default(),
+    )
+}
+
+fn headline_text_bundle(text: &str, font_assets: &Res<FontAssets>) -> TextBundle {
+    TextBundle::from_section(
+        text,
+        TextStyle {
+            font: font_assets.fira.clone(),
+            font_size: 18.,
+            color: Color::WHITE,
+        },
+    )
+}
+
+fn property_text_bundle<T: Default>(
+    text: String,
+    font_assets: &Res<FontAssets>,
+) -> (TextBundle, T) {
+    (
+        TextBundle::from_section(
+            text,
+            TextStyle {
+                font: font_assets.fira.clone(),
+                font_size: 16.,
+                color: Color::WHITE,
+            },
+        ),
         T::default(),
     )
 }
