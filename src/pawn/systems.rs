@@ -8,6 +8,7 @@ use super::*;
 
 const MAX_ATTEMPTS_TO_FIND_IDLE_WALK_PATH: usize = 10;
 
+#[allow(clippy::too_many_arguments)]
 pub fn spawn_pawns(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
