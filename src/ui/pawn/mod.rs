@@ -171,7 +171,7 @@ pub fn render_pawn_ui(
                 parent
                     .spawn(render_entity_component_node_bunlde::<PawnComponentUIMarker>())
                     .with_children(|parent| {
-                        parent.spawn(headline_text_bundle("Pawn", font_assets));
+                        parent.spawn(headline_text_bundle(format!("Pawn {:?}", target_id), font_assets));
                         parent.spawn(property_text_bundle::<PawnAgeTextUIMarker>(
                             pawn_age_text(pawn),
                             font_assets,
@@ -195,7 +195,7 @@ pub fn render_pawn_ui(
                         MovableComponentUIMarker,
                     >())
                     .with_children(|parent| {
-                        parent.spawn(headline_text_bundle("Movable", font_assets));
+                        parent.spawn(headline_text_bundle("Movable".into(), font_assets));
                         parent.spawn(property_text_bundle::<MovableSpeedTextUIMarker>(
                             movable_speed_text(movable),
                             font_assets,

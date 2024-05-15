@@ -34,7 +34,7 @@ pub fn render_tile_ui(
                 parent
                     .spawn(render_entity_component_node_bunlde::<TileComponentUIMarker>())
                     .with_children(|parent| {
-                        parent.spawn(headline_text_bundle("Tile", font_assets));
+                        parent.spawn(headline_text_bundle(format!("Tile {:?}", target_id), font_assets));
                         parent.spawn(property_text_bundle::<TileTextUIMarker>(
                             format!("{:?}", grid_tile),
                             font_assets,

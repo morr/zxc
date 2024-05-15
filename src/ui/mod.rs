@@ -90,7 +90,7 @@ fn render_entity_component_node_bunlde<T: Default>() -> (NodeBundle, T) {
     )
 }
 
-fn headline_text_bundle(text: &str, font_assets: &Res<FontAssets>) -> TextBundle {
+fn headline_text_bundle(text: String, font_assets: &Res<FontAssets>) -> TextBundle {
     TextBundle::from_section(
         text,
         TextStyle {

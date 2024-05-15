@@ -57,7 +57,7 @@ pub fn render_farm_ui(
                 parent
                     .spawn(render_entity_component_node_bunlde::<FarmComponentUIMarker>())
                     .with_children(|parent| {
-                        parent.spawn(headline_text_bundle("Farm", font_assets));
+                        parent.spawn(headline_text_bundle(format!("Farm {:?}", target_id), font_assets));
                         parent.spawn(property_text_bundle::<FarmYieldTextUIMarker>(
                             farm_yield_text(farm),
                             font_assets,
@@ -77,7 +77,7 @@ pub fn render_farm_ui(
                         WorkableComponentUIMarker,
                     >())
                     .with_children(|parent| {
-                        parent.spawn(headline_text_bundle("Workable", font_assets));
+                        parent.spawn(headline_text_bundle("Workable".into(), font_assets));
                         parent.spawn(property_text_bundle::<WorkableWorkAmountDoneTextUIMarker>(
                             workable_work_amount_done_text(workable),
                             font_assets,
