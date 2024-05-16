@@ -45,7 +45,7 @@ pub fn find_new_selection_on_click(
     mut commands: Commands,
     mut click_event_reader: EventReader<ClickEvent>,
     arc_navmesh: ResMut<ArcNavmesh>,
-    mut user_selection: ResMut<UserSelection>,
+    mut current_user_selection: ResMut<UserSelection>,
 ) {
     for ClickEvent(grid_tile) in click_event_reader.read() {
         let navmesh = arc_navmesh.read();
@@ -54,7 +54,7 @@ pub fn find_new_selection_on_click(
 
         entities.extend(
             navmesh
-                .get_occupation::<Pawn>(grid_tile.x, grid_tile.y)
+                .get_occupation::<Movable>(grid_tile.x, grid_tile.y)
                 .map(|&id| UserSelectionData {
                     id,
                     kind: SelectionKind::Pawn,
@@ -73,7 +73,7 @@ pub fn find_new_selection_on_click(
         }
 
         let maybe_selection_index =
-            if let Some(UserSelectionData { id: current_id, .. }) = &user_selection.0 {
+            if let Some(UserSelectionData { id: current_id, .. }) = &current_user_selection.0 {
                 let current_index = entities
                     .iter()
                     .position(|UserSelectionData { id, .. }| id == current_id);
@@ -95,24 +95,17 @@ pub fn find_new_selection_on_click(
         let new_selection =
             maybe_selection_index.map(|selection_index| entities[selection_index].clone());
 
-        perform_selection(new_selection, &mut user_selection, &mut commands);
+        // remove aabb from prev selected
+        if let Some(UserSelectionData { id, .. }) = current_user_selection.0 {
+            commands.entity(id).remove::<ShowAabbGizmo>();
+        }
+        // add aabb to to selected
+        if let Some(UserSelectionData { id, .. }) = new_selection {
+            commands.entity(id).insert(ShowAabbGizmo {
+                color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
+            });
+        }
+
+        *current_user_selection = UserSelection(new_selection);
     }
-}
-
-fn perform_selection(
-    maybe_selection: Option<UserSelectionData>,
-    user_selection: &mut ResMut<UserSelection>,
-    commands: &mut Commands,
-) {
-    // if let Some(UserSelectionData { id, .. }) = user_selection.0 {
-    //     commands.entity(id).remove::<ShowAabbGizmo>();
-    // }
-    // if let Some(UserSelectionData { id, .. }) = maybe_selection {
-    //     commands.entity(id).insert(ShowAabbGizmo {
-    //         color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
-    //     });
-    // }
-
-    **user_selection = UserSelection(maybe_selection);
-    println!("{:?}", user_selection);
 }
