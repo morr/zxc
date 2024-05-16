@@ -213,11 +213,15 @@ pub fn update_pawn_state_text(
     children_query: Query<&Children>,
     mut state_text_query: Query<&mut Text, With<PawnStateText>>,
 ) {
-    for event in event_reader.read() {
+    for EntityStateChangeEvent(id, state) in event_reader.read() {
         // println!("{:?}", event);
-        for text_entity in children_query.iter_descendants(event.0) {
+        for text_entity in children_query.iter_descendants(*id) {
             let mut text = state_text_query.get_mut(text_entity).unwrap();
-            text.sections[0].value = format!("{:?}", event.1);
+            text.sections[0].value = match state {
+                PawnState::Working(_) => "Working".into(),
+                // PawnState::WorkAssigned() => format!("state: {:?}", WorkAssignedStateDebug(state)),
+                _ => format!("{:?}", state),
+            };
         }
     }
 }
