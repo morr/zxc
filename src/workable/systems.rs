@@ -1,5 +1,3 @@
-use self::structure::{FarmProgressEvent, FarmTendedEvent};
-
 use super::*;
 
 pub fn assign_tasks_to_pawns(

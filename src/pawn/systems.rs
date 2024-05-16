@@ -2,8 +2,6 @@ use bevy::sprite::MaterialMesh2dBundle;
 use rand::Rng;
 use rand_distr::{num_traits::Zero, Distribution, UnitCircle};
 
-use self::structure::{Farm, Warehouse, BASE_HEIGHT, BASE_WIDTH, FARM_TILE_SIZE};
-
 use super::*;
 
 const MAX_ATTEMPTS_TO_FIND_IDLE_WALK_PATH: usize = 10;

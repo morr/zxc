@@ -1,4 +1,3 @@
-use self::structure::{Farm, FarmState};
 use bevy::ecs::system::EntityCommands;
 
 use super::*;

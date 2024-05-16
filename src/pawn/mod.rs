@@ -1,7 +1,5 @@
 use crate::*;
 
-use self::structure::spawn_base;
-
 expose_submodules!(components, systems);
 
 pub struct PawnPlugin;

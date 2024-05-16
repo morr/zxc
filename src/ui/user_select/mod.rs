@@ -1,5 +1,3 @@
-use self::structure::Farm;
-
 use super::*;
 
 #[derive(Component, Default)]

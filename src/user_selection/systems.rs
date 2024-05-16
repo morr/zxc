@@ -1,4 +1,3 @@
-use self::structure::Farm;
 use super::*;
 
 pub fn select_on_click(
