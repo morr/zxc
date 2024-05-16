@@ -37,10 +37,10 @@ fn render_selected_ui(mut commands: Commands) {
 
 fn update_ui_on_user_select_event(
     mut commands: Commands,
-    mut user_select_event_reader: EventReader<UserSelectEvent>,
+    mut user_select_event_reader: EventReader<UserSelectionEvent>,
     user_selected_root_ui_query: Query<Entity, With<UserSelectedRootUIMarker>>,
-    pawn_query: Query<(Entity, &Pawn, &Movable), With<UserSelect>>,
-    farm_query: Query<(Entity, &Farm, &Workable), With<UserSelect>>,
+    pawn_query: Query<(Entity, &Pawn, &Movable), With<UserSelectionMarker>>,
+    farm_query: Query<(Entity, &Farm, &Workable), With<UserSelectionMarker>>,
     font_assets: Res<FontAssets>,
 ) {
     for event in user_select_event_reader.read() {
