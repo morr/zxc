@@ -19,29 +19,28 @@ pub fn assign_tasks_to_pawns(
     queue_counter: Res<AsyncQueueCounter>,
 ) {
     for (entity, mut pawn, mut movable, transform, mut maybe_pathfinding_task) in query.iter_mut() {
-        if let Some(task) = work_queue.get_task() {
-            // println!("assign_tasks_to_pawns {:?}", task);
+        let Some(task) = work_queue.get_task() else { continue };
+        // println!("assign_tasks_to_pawns {:?}", task);
 
-            let tile = task.grid_tile;
+        let tile = task.grid_tile;
 
-            pawn.change_state(
-                PawnState::WorkAssigned(task),
-                entity,
-                &mut commands,
-                &mut pawn_state_change_event_writer,
-            );
+        pawn.change_state(
+            PawnState::WorkAssigned(task),
+            entity,
+            &mut commands,
+            &mut pawn_state_change_event_writer,
+        );
 
-            movable.to_pathfinding_async(
-                entity,
-                transform.translation.truncate().world_pos_to_grid(),
-                tile,
-                &arc_navmesh,
-                &queue_counter,
-                maybe_pathfinding_task.as_deref_mut(),
-                &mut commands,
-                &mut movable_state_change_event_writer,
-            );
-        }
+        movable.to_pathfinding_async(
+            entity,
+            transform.translation.truncate().world_pos_to_grid(),
+            tile,
+            &arc_navmesh,
+            &queue_counter,
+            maybe_pathfinding_task.as_deref_mut(),
+            &mut commands,
+            &mut movable_state_change_event_writer,
+        );
     }
 }
 

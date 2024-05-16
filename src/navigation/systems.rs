@@ -9,34 +9,33 @@ pub fn pathfinding_async_on_click(
     mut click_event_reader: EventReader<ClickEventStage1>,
     user_selection: Res<UserSelection>,
     mut pawn_query: Query<
-        (
-            &Transform,
-            &mut Movable,
-            Option<&mut PathfindingTask>,
-        ),
+        (&Transform, &mut Movable, Option<&mut PathfindingTask>),
         With<pawn_state::Idle>,
-        // With<Movable>,
-        // (With<Movable>, With<pawn_state::Idle>),
     >,
     mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     for ClickEventStage1(grid_tile) in click_event_reader.read() {
-        if let Some(UserSelectionData { id, kind }) = &user_selection.0 {
-            if let UserSelectionKind::Pawn = kind {
-                if let Ok((transform, mut movable, mut maybe_pathfinding_task)) = pawn_query.get_mut(*id) {
-                    movable.to_pathfinding_async(
-                        *id,
-                        transform.translation.truncate().world_pos_to_grid(),
-                        *grid_tile,
-                        &arc_navmesh,
-                        &queue_counter,
-                        maybe_pathfinding_task.as_deref_mut(),
-                        &mut commands,
-                        &mut movable_state_event_writer,
-                    );
-                }
-            }
-        }
+        let Some(UserSelectionData { id, kind }) = &user_selection.0 else {
+            continue;
+        };
+        let UserSelectionKind::Pawn = kind else {
+            continue;
+        };
+        let Ok((transform, mut movable, mut maybe_pathfinding_task)) = pawn_query.get_mut(*id)
+        else {
+            continue;
+        };
+
+        movable.to_pathfinding_async(
+            *id,
+            transform.translation.truncate().world_pos_to_grid(),
+            *grid_tile,
+            &arc_navmesh,
+            &queue_counter,
+            maybe_pathfinding_task.as_deref_mut(),
+            &mut commands,
+            &mut movable_state_event_writer,
+        );
     }
 }
 
