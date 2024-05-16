@@ -2,39 +2,43 @@ use bevy::tasks::{block_on, futures_lite::future};
 
 use super::*;
 
-// pub fn pathfinding_async_on_click(
-//     arc_navmesh: Res<ArcNavmesh>,
-//     queue_counter: Res<AsyncQueueCounter>,
-//     mut commands: Commands,
-//     mut click_event_reader: EventReader<ClickEvent>,
-//     mut query_pawns: Query<
-//         (
-//             Entity,
-//             &Transform,
-//             &mut Movable,
-//             Option<&mut PathfindingTask>,
-//         ),
-//         With<pawn_state::Idle>,
-//         // With<Movable>,
-//         // (With<Movable>, With<pawn_state::Idle>),
-//     >,
-//     mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
-// ) {
-//     for click_event in click_event_reader.read() {
-//         for (entity, transform, mut movable, mut maybe_pathfinding_task) in &mut query_pawns {
-//             movable.to_pathfinding_async(
-//                 entity,
-//                 transform.translation.truncate().world_pos_to_grid(),
-//                 click_event.0,
-//                 &arc_navmesh,
-//                 &queue_counter,
-//                 maybe_pathfinding_task.as_deref_mut(),
-//                 &mut commands,
-//                 &mut movable_state_event_writer,
-//             );
-//         }
-//     }
-// }
+pub fn pathfinding_async_on_click(
+    arc_navmesh: Res<ArcNavmesh>,
+    queue_counter: Res<AsyncQueueCounter>,
+    mut commands: Commands,
+    mut click_event_reader: EventReader<ClickEventStage1>,
+    user_selection: Res<UserSelection>,
+    mut pawn_query: Query<
+        (
+            &Transform,
+            &mut Movable,
+            Option<&mut PathfindingTask>,
+        ),
+        With<pawn_state::Idle>,
+        // With<Movable>,
+        // (With<Movable>, With<pawn_state::Idle>),
+    >,
+    mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
+) {
+    for ClickEventStage1(grid_tile) in click_event_reader.read() {
+        if let Some(UserSelectionData { id, kind }) = &user_selection.0 {
+            if let UserSelectionKind::Pawn = kind {
+                if let Ok((transform, mut movable, mut maybe_pathfinding_task)) = pawn_query.get_mut(*id) {
+                    movable.to_pathfinding_async(
+                        *id,
+                        transform.translation.truncate().world_pos_to_grid(),
+                        *grid_tile,
+                        &arc_navmesh,
+                        &queue_counter,
+                        maybe_pathfinding_task.as_deref_mut(),
+                        &mut commands,
+                        &mut movable_state_event_writer,
+                    );
+                }
+            }
+        }
+    }
+}
 
 // pub fn pathfinding_on_click(
 //     mut commands: Commands,
