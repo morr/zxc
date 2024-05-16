@@ -37,36 +37,44 @@ fn update_ui_on_user_select_event(
     mut commands: Commands,
     mut user_select_event_reader: EventReader<UserSelectionEvent>,
     user_selected_root_ui_query: Query<Entity, With<UserSelectedRootUIMarker>>,
-    pawn_query: Query<(Entity, &Pawn, &Movable), With<UserSelectionMarker>>,
-    farm_query: Query<(Entity, &Farm, &Workable), With<UserSelectionMarker>>,
+    user_selection: Res<UserSelection>,
+    pawn_query: Query<(&Pawn, &Movable)>,
+    farm_query: Query<(&Farm, &Workable)>,
     font_assets: Res<FontAssets>,
 ) {
-    for event in user_select_event_reader.read() {
-        println!("{:?}", event);
+    for _event in user_select_event_reader.read() {
+        // println!("{:?}", event);
         let selected_root_ui_id = user_selected_root_ui_query.get_single().unwrap();
         let mut user_selected_root_ui_commands = commands.entity(selected_root_ui_id);
         user_selected_root_ui_commands.despawn_descendants();
 
-        for (pawn_id, pawn, movable) in pawn_query.iter() {
-            render_pawn_ui(
-                pawn_id,
-                &mut user_selected_root_ui_commands,
-                pawn,
-                movable,
-                &font_assets,
-                UiOpacity::Heavy,
-            );
-        }
-
-        for (farm_id, farm, workable) in farm_query.iter() {
-            render_farm_ui(
-                farm_id,
-                &mut user_selected_root_ui_commands,
-                farm,
-                workable,
-                &font_assets,
-                UiOpacity::Heavy,
-            );
+        if let Some(UserSelectionData { id, kind }) = &user_selection.0 {
+            match kind {
+                UserSelectionKind::Pawn => {
+                    if let Ok((pawn, movable)) = pawn_query.get(*id) {
+                        render_pawn_ui(
+                            *id,
+                            &mut user_selected_root_ui_commands,
+                            pawn,
+                            movable,
+                            &font_assets,
+                            UiOpacity::Heavy,
+                        );
+                    }
+                }
+                UserSelectionKind::Farm => {
+                    if let Ok((farm, workable)) = farm_query.get(*id) {
+                        render_farm_ui(
+                            *id,
+                            &mut user_selected_root_ui_commands,
+                            farm,
+                            workable,
+                            &font_assets,
+                            UiOpacity::Heavy,
+                        );
+                    }
+                }
+            }
         }
     }
 }

@@ -10,7 +10,7 @@ pub struct UserSelectionEvent;
 pub struct UserSelection(pub Option<UserSelectionData>);
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
-pub enum SelectionKind {
+pub enum UserSelectionKind {
     Pawn,
     Farm,
 }
@@ -18,5 +18,5 @@ pub enum SelectionKind {
 #[derive(Debug, Clone, PartialEq, Hash)]
 pub struct UserSelectionData {
     pub id: Entity,
-    pub kind: SelectionKind,
+    pub kind: UserSelectionKind,
 }
