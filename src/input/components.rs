@@ -10,4 +10,8 @@ pub struct HoverMarker;
 pub struct HoverEvent(pub IVec2);
 
 #[derive(Event, Debug)]
-pub struct ClickEvent(pub IVec2);
+pub struct ClickEventStage0(pub IVec2);
+
+#[derive(Event, Debug)]
+pub struct ClickEventStage1(pub IVec2);
+
