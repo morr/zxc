@@ -8,6 +8,7 @@ expose_submodules!(
     pawn,
     farm,
     tile,
+    bed,
     debug
 );
 

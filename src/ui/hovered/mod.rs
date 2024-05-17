@@ -67,6 +67,8 @@ fn update_ui_on_hover_event(
         hovered_root_ui_commands.despawn_descendants();
 
         let navmesh = arc_navmesh.read();
+
+        // hover over Tile
         for tile_id in navmesh.get_occupation::<Tile>(grid_tile.x, grid_tile.y) {
             render_tile_ui(
                 *tile_id,
@@ -77,6 +79,18 @@ fn update_ui_on_hover_event(
             );
         }
 
+        // hover over Bed
+        for tile_id in navmesh.get_occupation::<Bed>(grid_tile.x, grid_tile.y) {
+            render_bed_ui(
+                *tile_id,
+                &mut hovered_root_ui_commands,
+                *grid_tile,
+                &font_assets,
+                UiOpacity::Medium,
+            );
+        }
+
+        // hover over Pawn
         for movable_id in navmesh.get_occupation::<Movable>(grid_tile.x, grid_tile.y) {
             if let Ok((pawn, movable)) = pawn_query.get(*movable_id) {
                 render_pawn_ui(
@@ -90,6 +104,7 @@ fn update_ui_on_hover_event(
             }
         }
 
+        // hover over Farm
         for farm_id in navmesh.get_occupation::<Farm>(grid_tile.x, grid_tile.y) {
             if let Ok((farm, workable)) = farm_query.get(*farm_id) {
                 render_farm_ui(
