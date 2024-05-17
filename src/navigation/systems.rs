@@ -7,7 +7,7 @@ pub fn pathfinding_async_on_click(
     queue_counter: Res<AsyncQueueCounter>,
     mut commands: Commands,
     mut click_event_reader: EventReader<ClickEventStage1>,
-    user_selection: Res<UserSelection>,
+    user_selection: Res<CurrentUserSelection>,
     mut pawn_query: Query<
         (&Transform, &mut Movable, Option<&mut PathfindingTask>),
         With<pawn_state::Idle>,

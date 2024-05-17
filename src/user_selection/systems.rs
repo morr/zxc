@@ -4,7 +4,7 @@ pub fn find_new_selection_on_click(
     mut click_event_reader: EventReader<ClickEventStage0>,
     mut click_event_writer: EventWriter<ClickEventStage1>,
     arc_navmesh: ResMut<ArcNavmesh>,
-    current_user_selection: Res<UserSelection>,
+    current_user_selection: Res<CurrentUserSelection>,
     mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
 ) {
     for ClickEventStage0(grid_tile) in click_event_reader.read() {
@@ -64,7 +64,7 @@ pub fn find_new_selection_on_click(
 
 pub fn apply_user_selection_command(
     mut commands: Commands,
-    mut current_user_selection: ResMut<UserSelection>,
+    mut current_user_selection: ResMut<CurrentUserSelection>,
     mut user_selection_command_reader: EventReader<UserSelectionCommand>,
     mut user_selection_change_event_writer: EventWriter<UserSelectionChangeEvent>,
 ) {
@@ -80,7 +80,7 @@ pub fn apply_user_selection_command(
             });
         }
 
-        *current_user_selection = UserSelection(maybe_new_selection.clone());
+        *current_user_selection = CurrentUserSelection(maybe_new_selection.clone());
         user_selection_change_event_writer.send(UserSelectionChangeEvent);
     }
 }

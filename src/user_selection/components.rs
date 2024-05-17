@@ -10,7 +10,7 @@ pub struct UserSelectionCommand(pub Option<UserSelectionData>);
 pub struct UserSelectionChangeEvent;
 
 #[derive(Resource, Debug, Deref, DerefMut, Default)]
-pub struct UserSelection(pub Option<UserSelectionData>);
+pub struct CurrentUserSelection(pub Option<UserSelectionData>);
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum UserSelectionKind {

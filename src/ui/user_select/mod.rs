@@ -37,7 +37,7 @@ fn update_ui_on_user_select_event(
     mut commands: Commands,
     mut user_select_event_reader: EventReader<UserSelectionChangeEvent>,
     user_selected_root_ui_query: Query<Entity, With<UserSelectedRootUIMarker>>,
-    user_selection: Res<UserSelection>,
+    user_selection: Res<CurrentUserSelection>,
     pawn_query: Query<(&Pawn, &Movable, &Restable)>,
     farm_query: Query<(&Farm, &Workable)>,
     font_assets: Res<FontAssets>,

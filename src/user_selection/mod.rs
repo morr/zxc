@@ -8,7 +8,7 @@ impl Plugin for UserSelectPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<UserSelectionCommand>()
             .add_event::<UserSelectionChangeEvent>()
-            .init_resource::<UserSelection>()
+            .init_resource::<CurrentUserSelection>()
             .add_systems(
                 Update,
                 (find_new_selection_on_click, apply_user_selection_command)
