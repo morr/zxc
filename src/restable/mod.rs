@@ -32,7 +32,7 @@ fn progress_stamina(
         let diff = match pawn.state {
             PawnState::Idle => time_amount * CONFIG.stamina_cost.idle,
             PawnState::Moving => time_amount * CONFIG.stamina_cost.moving,
-            PawnState::Working(_) => -time_amount * CONFIG.stamina_cost.working,
+            PawnState::Working(_) => time_amount * CONFIG.stamina_cost.working,
             PawnState::Dead | PawnState::WorkAssigned(_) => 0.0,
         };
 

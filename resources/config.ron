@@ -40,8 +40,9 @@ RootConfig(
         furniture: 0.5
     ),
     stamina_cost: StaminaCostConfig(
-        idle: 0.5,
-        moving: -0.1,
-        working: -4.0
+        idle: 1,
+        moving: -0.25,
+        // 12 hours of work => 10% stamina left (90 / 12 = 7.5)
+        working: -7.5
     )
 )

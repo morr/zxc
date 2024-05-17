@@ -41,6 +41,7 @@ impl RootConfig {
     pub fn calculate_derived_fields(&mut self) {
         self.grid.calculate_derived_fields();
         self.time.calculate_derived_fields();
+        self.stamina_cost.calculate_derived_fields(&self.time);
     }
 }
 
@@ -162,4 +163,13 @@ pub struct StaminaCostConfig {
     pub moving: f32,
     /// amount of stamina change per in-game hour of working
     pub working: f32
+}
+
+impl StaminaCostConfig {
+    pub fn calculate_derived_fields(&mut self, time: &TimeConfig) {
+        // convert desired numbers to proper values according to ingame hour duration
+        self.idle /= time.hour_duration;
+        self.moving /= time.hour_duration;
+        self.working /= time.hour_duration;
+    }
 }
