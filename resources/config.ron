@@ -9,9 +9,9 @@ RootConfig(
         size: 32.0,
     ),
     starting_scene: StartingSceneConfig(
-        pawns: 5,
+        pawns: 1,
         day_hour: 8,
-        farm_width: 3,
+        farm_width: 1,
         farm_height: 1,
         time_scale: 1.0
     ),

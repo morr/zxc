@@ -247,7 +247,7 @@ fn pawn_state_text(pawn: &Pawn) -> String {
     match &pawn.state {
         PawnState::Working(working_state) => {
             format!("state: {:?}", WorkingStateDebug(working_state))
-        },
+        }
         _ => format!("state: {:?}", pawn.state),
     }
 }
