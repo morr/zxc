@@ -34,6 +34,7 @@ pub struct RootConfig {
     pub pawn: PawnConfig,
     pub farming: FarmingConfig,
     pub movement_cost: MovementCostConfig,
+    pub stamina_cost: StaminaCostConfig,
 }
 
 impl RootConfig {
@@ -143,7 +144,6 @@ pub struct FarmingConfig {
     pub tending_rest_hours: f32,
 }
 
-
 #[derive(Deserialize, Serialize)]
 pub struct MovementCostConfig {
     /// percentage of speed reduction in number between 0.0..=1.0
@@ -152,4 +152,14 @@ pub struct MovementCostConfig {
     /// percentage of speed reduction in number between 0.0..=1.0
     /// where 0.0 - impassable, 0.5 - half of normal speed, 1.0 0 normal speed
     pub furniture: f32
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct StaminaCostConfig {
+    /// amount of stamina change per in-game hour of idling
+    pub idle: f32,
+    /// amount of stamina change per in-game hour of moving
+    pub moving: f32,
+    /// amount of stamina change per in-game hour of working
+    pub working: f32
 }

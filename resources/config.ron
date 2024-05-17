@@ -38,5 +38,10 @@ RootConfig(
     movement_cost: MovementCostConfig(
         farm: 0.33,
         furniture: 0.5
+    ),
+    stamina_cost: StaminaCostConfig(
+        idle: 0.5,
+        moving: -0.1,
+        working: -4.0
     )
 )
