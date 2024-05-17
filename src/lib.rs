@@ -24,10 +24,11 @@ pub mod map;
 pub mod movable;
 pub mod navigation;
 pub mod pawn;
-pub mod user_selection;
+pub mod restable;
 pub mod story_time;
 pub mod structure;
 pub mod ui;
+pub mod user_selection;
 pub mod workable;
 
 pub use crate::assets::*;
@@ -41,10 +42,11 @@ pub use crate::map::*;
 pub use crate::movable::*;
 pub use crate::navigation::*;
 pub use crate::pawn::*;
-pub use crate::user_selection::*;
+pub use crate::restable::*;
 pub use crate::story_time::*;
 pub use crate::structure::*;
 pub use crate::ui::*;
+pub use crate::user_selection::*;
 pub use crate::workable::*;
 
 #[derive(Debug, Event)]
