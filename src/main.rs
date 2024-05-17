@@ -57,9 +57,11 @@ fn main() {
             user_selection::UserSelectPlugin,
             pawn::PawnPlugin,
             structure::StructurePlugin,
-            restable::RestablePlugin,
             ui::UiPlugin,
             input::InputPlugin,
+        ))
+        .add_plugins((
+            restable::RestablePlugin,
         ))
         // .add_plugins((
         //     bevy::diagnostic::LogDiagnosticsPlugin::default(),

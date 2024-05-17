@@ -7,7 +7,7 @@ pub struct RestablePlugin;
 
 impl Plugin for RestablePlugin {
     fn build(&self, app: &mut App) {
-        app.register_type::<Restable>()
+        app.register_type::<Restable>();
             // .add_event::<WorkCompleteEvent>()
             // .add_event::<WorkStartEvent>()
             // .add_systems(

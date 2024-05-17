@@ -35,6 +35,9 @@ struct MovablePathTextUIMarker {}
 #[derive(Component, Default)]
 struct MovableStateTextUIMarker {}
 
+#[derive(Component, Default)]
+pub struct RestableComponentUIMarker {}
+
 pub struct UiPawnPlugin;
 
 impl Plugin for UiPawnPlugin {
@@ -208,10 +211,30 @@ pub fn render_pawn_ui(
                             movable_path_text(movable),
                             font_assets,
                         ));
-                        parent.spawn(property_text_bundle::<MovableStateTextUIMarker>(
+                        parent.spawn( property_text_bundle::<MovableStateTextUIMarker>(
                             movable_state_text(movable),
                             font_assets,
                         ));
+                    });
+
+               parent
+                    .spawn(render_entity_component_node_bunlde::<
+                        RestableComponentUIMarker,
+                    >())
+                    .with_children(|parent| {
+                        parent.spawn(headline_text_bundle("Restable".into(), font_assets));
+                        // parent.spawn(property_text_bundle::<MovableSpeedTextUIMarker>(
+                        //     movable_speed_text(movable),
+                        //     font_assets,
+                        // ));
+                        // parent.spawn(property_text_bundle::<MovablePathTextUIMarker>(
+                        //     movable_path_text(movable),
+                        //     font_assets,
+                        // ));
+                        // parent.spawn(property_text_bundle::<MovableStateTextUIMarker>(
+                        //     movable_state_text(movable),
+                        //     font_assets,
+                        // ));
                     });
             });
     });
