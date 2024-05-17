@@ -11,7 +11,7 @@ pub struct PathfindingResult {
     pub end_tile: IVec2,
 }
 
-#[derive(Debug, Component)]
+#[derive(Component, Debug)]
 pub struct PathfindingTask(pub Vec<Task<PathfindingResult>>);
 // I want to monitor the size of the async queue so I store multiple tasks instead of a single
 // task. It is done so becuse inside of spawned tasks I decrement queue_counter and thus

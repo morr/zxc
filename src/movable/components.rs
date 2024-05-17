@@ -15,7 +15,7 @@ pub enum MovableState {
 #[derive(Component)]
 pub struct MovableMoving;
 
-#[derive(Debug, Component, InspectorOptions, Reflect)]
+#[derive(Component, Debug, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
 pub struct Movable {
     pub speed: f32,

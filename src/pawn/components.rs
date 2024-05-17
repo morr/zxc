@@ -4,7 +4,7 @@ use std::ops::RangeInclusive;
 use super::*;
 use rand::Rng;
 
-#[derive(Debug, Component, InspectorOptions, Reflect)]
+#[derive(Component, Debug, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
 pub struct Pawn {
     pub state: PawnState,

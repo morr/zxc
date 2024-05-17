@@ -95,7 +95,7 @@ farm_states!(
     ),
 );
 
-#[derive(Debug, Component, Reflect)]
+#[derive(Component, Debug, Reflect)]
 pub struct Farm {
     pub state: FarmState,
     pub tendings_done: u32,

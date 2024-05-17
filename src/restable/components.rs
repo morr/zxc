@@ -1,5 +1,5 @@
 use super::*;
 
-#[derive(Debug, Component, Default, InspectorOptions,, Reflect)]
+#[derive(Component, Debug, Default, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
 pub struct Restable {}
