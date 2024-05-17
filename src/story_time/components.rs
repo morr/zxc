@@ -12,6 +12,7 @@ pub enum SimulationState {
 
 #[derive(Resource, Deref, DerefMut)]
 pub struct TimeScale(pub f32);
+
 impl Default for TimeScale {
     fn default() -> Self {
         Self(CONFIG.starting_scene.time_scale)

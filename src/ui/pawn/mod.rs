@@ -38,6 +38,9 @@ struct MovableStateTextUIMarker {}
 #[derive(Component, Default)]
 pub struct RestableComponentUIMarker {}
 
+#[derive(Component, Default)]
+struct RestableStaminaTextUIMarker {}
+
 pub struct UiPawnPlugin;
 
 impl Plugin for UiPawnPlugin {
@@ -61,6 +64,7 @@ fn update_pawn_ui(
             Option<&MovableSpeedTextUIMarker>,
             Option<&MovablePathTextUIMarker>,
             Option<&MovableStateTextUIMarker>,
+            Option<&RestableStaminaTextUIMarker>,
         ),
         Or<(
             With<PawnAgeTextUIMarker>,
@@ -70,19 +74,21 @@ fn update_pawn_ui(
             With<MovableSpeedTextUIMarker>,
             With<MovablePathTextUIMarker>,
             With<MovableStateTextUIMarker>,
+            With<RestableStaminaTextUIMarker>,
         )>,
     >,
-    components_query: Query<(&Pawn, &Movable)>,
+    components_query: Query<(&Pawn, &Movable, &Restable)>,
     children_query: Query<&Children>,
 ) {
     for (ui_id, ui_marker) in ui_query.iter() {
-        if let Ok((pawn, movable)) = components_query.get(ui_marker.pawn_id) {
+        if let Ok((pawn, movable, restable)) = components_query.get(ui_marker.pawn_id) {
             if let Ok(children) = children_query.get(ui_id) {
                 for &child in children.iter() {
                     update_text_markers_recursive(
                         child,
                         pawn,
                         movable,
+                        restable,
                         &mut texts,
                         &children_query,
                     );
@@ -96,6 +102,7 @@ fn update_text_markers_recursive(
     entity: Entity,
     pawn: &Pawn,
     movable: &Movable,
+    restable: &Restable,
     texts: &mut Query<
         (
             &mut Text,
@@ -106,6 +113,7 @@ fn update_text_markers_recursive(
             Option<&MovableSpeedTextUIMarker>,
             Option<&MovablePathTextUIMarker>,
             Option<&MovableStateTextUIMarker>,
+            Option<&RestableStaminaTextUIMarker>,
         ),
         Or<(
             With<PawnAgeTextUIMarker>,
@@ -115,6 +123,7 @@ fn update_text_markers_recursive(
             With<MovableSpeedTextUIMarker>,
             With<MovablePathTextUIMarker>,
             With<MovableStateTextUIMarker>,
+            With<RestableStaminaTextUIMarker>,
         )>,
     >,
     children_query: &Query<&Children>,
@@ -128,6 +137,7 @@ fn update_text_markers_recursive(
         movable_speed_marker,
         movable_path_marker,
         movable_state_marker,
+        restable_stamina_marker
     )) = texts.get_mut(entity)
     {
         if pawn_age_marker.is_some() {
@@ -151,11 +161,14 @@ fn update_text_markers_recursive(
         if movable_state_marker.is_some() {
             text.sections[0].value = movable_state_text(movable);
         }
+        if restable_stamina_marker.is_some() {
+            text.sections[0].value = restable_stamina_text(restable);
+        }
     }
 
     if let Ok(children) = children_query.get(entity) {
         for &child in children.iter() {
-            update_text_markers_recursive(child, pawn, movable, texts, children_query);
+            update_text_markers_recursive(child, pawn, movable, restable, texts, children_query);
         }
     }
 }
@@ -165,6 +178,7 @@ pub fn render_pawn_ui(
     container_ui_commands: &mut EntityCommands,
     pawn: &Pawn,
     movable: &Movable,
+    restable: &Restable,
     font_assets: &Res<FontAssets>,
     opacity: UiOpacity,
 ) {
@@ -223,18 +237,10 @@ pub fn render_pawn_ui(
                     >())
                     .with_children(|parent| {
                         parent.spawn(headline_text_bundle("Restable".into(), font_assets));
-                        // parent.spawn(property_text_bundle::<MovableSpeedTextUIMarker>(
-                        //     movable_speed_text(movable),
-                        //     font_assets,
-                        // ));
-                        // parent.spawn(property_text_bundle::<MovablePathTextUIMarker>(
-                        //     movable_path_text(movable),
-                        //     font_assets,
-                        // ));
-                        // parent.spawn(property_text_bundle::<MovableStateTextUIMarker>(
-                        //     movable_state_text(movable),
-                        //     font_assets,
-                        // ));
+                        parent.spawn( property_text_bundle::<RestableStaminaTextUIMarker>(
+                            restable_stamina_text(restable),
+                            font_assets,
+                        ));
                     });
             });
     });
@@ -283,4 +289,9 @@ fn movable_path_text(movable: &Movable) -> String {
 }
 fn movable_state_text(movable: &Movable) -> String {
     format!("state: {:?}", movable.state)
+}
+
+
+fn restable_stamina_text(restable: &Restable) -> String {
+    format!("stamina: {:.2}", restable.stamina)
 }

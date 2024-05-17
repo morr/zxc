@@ -38,7 +38,7 @@ fn update_ui_on_user_select_event(
     mut user_select_event_reader: EventReader<UserSelectionEvent>,
     user_selected_root_ui_query: Query<Entity, With<UserSelectedRootUIMarker>>,
     user_selection: Res<UserSelection>,
-    pawn_query: Query<(&Pawn, &Movable)>,
+    pawn_query: Query<(&Pawn, &Movable, &Restable)>,
     farm_query: Query<(&Farm, &Workable)>,
     font_assets: Res<FontAssets>,
 ) {
@@ -51,12 +51,13 @@ fn update_ui_on_user_select_event(
         if let Some(UserSelectionData { id, kind }) = &user_selection.0 {
             match kind {
                 UserSelectionKind::Pawn => {
-                    if let Ok((pawn, movable)) = pawn_query.get(*id) {
+                    if let Ok((pawn, movable, restable)) = pawn_query.get(*id) {
                         render_pawn_ui(
                             *id,
                             &mut user_selected_root_ui_commands,
                             pawn,
                             movable,
+                            restable,
                             &font_assets,
                             UiOpacity::Heavy,
                         );
