@@ -16,6 +16,7 @@ pub fn spawn_pawns(
     farm_query: Query<&Transform, With<Farm>>,
     arc_navmesh: ResMut<ArcNavmesh>,
     mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
+    mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
 ) {
     // println!("Spawning pawns");
 
@@ -65,7 +66,7 @@ pub fn spawn_pawns(
                     ..default()
                 },
                 Movable::new(CONFIG.pawn.speed * CONFIG.tile.size),
-                Restable::default()
+                Restable::default(),
             ))
             // .insert(ShowAabbGizmo {
             //     color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
@@ -92,6 +93,14 @@ pub fn spawn_pawns(
         let grid_tile = position.truncate().world_pos_to_grid();
         navmesh.add_occupation::<Movable>(pawn_id, grid_tile.x, grid_tile.y);
         occupation_change_event_writer.send(OccupationChangeEvent::new(grid_tile));
+
+        // auto-select first pawn
+        if i.is_zero() {
+            user_selection_command_writer.send(UserSelectionCommand(Some(UserSelectionData {
+                id: pawn_id,
+                kind: UserSelectionKind::Pawn,
+            })));
+        }
     }
 }
 
