@@ -291,7 +291,6 @@ fn movable_state_text(movable: &Movable) -> String {
     format!("state: {:?}", movable.state)
 }
 
-
 fn restable_stamina_text(restable: &Restable) -> String {
     format!("stamina: {:.2}", restable.stamina)
 }

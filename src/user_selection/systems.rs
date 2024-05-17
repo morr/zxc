@@ -1,12 +1,11 @@
 use super::*;
 
 pub fn find_new_selection_on_click(
-    mut commands: Commands,
     mut click_event_reader: EventReader<ClickEventStage0>,
     mut click_event_writer: EventWriter<ClickEventStage1>,
     arc_navmesh: ResMut<ArcNavmesh>,
-    mut current_user_selection: ResMut<UserSelection>,
-    mut user_selection_event_writer: EventWriter<UserSelectionEvent>,
+    current_user_selection: Res<UserSelection>,
+    mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
 ) {
     for ClickEventStage0(grid_tile) in click_event_reader.read() {
         let navmesh = arc_navmesh.read();
@@ -56,21 +55,32 @@ pub fn find_new_selection_on_click(
                 Some(0)
             };
 
-        let new_selection =
+        let maybe_new_selection =
             maybe_selection_index.map(|selection_index| entities[selection_index].clone());
 
+        user_selection_command_writer.send(UserSelectionCommand(maybe_new_selection));
+    }
+}
+
+pub fn apply_user_selection_command(
+    mut commands: Commands,
+    mut current_user_selection: ResMut<UserSelection>,
+    mut user_selection_command_reader: EventReader<UserSelectionCommand>,
+    mut user_selection_change_event_writer: EventWriter<UserSelectionChangeEvent>,
+) {
+    for UserSelectionCommand(maybe_new_selection) in user_selection_command_reader.read() {
         // remove aabb from prev selected
         if let Some(UserSelectionData { id, .. }) = current_user_selection.0 {
             commands.entity(id).remove::<ShowAabbGizmo>();
         }
         // add aabb to to selected
-        if let Some(UserSelectionData { id, .. }) = new_selection {
-            commands.entity(id).insert(ShowAabbGizmo {
+        if let Some(UserSelectionData { id, .. }) = maybe_new_selection {
+            commands.entity(*id).insert(ShowAabbGizmo {
                 color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
             });
         }
 
-        *current_user_selection = UserSelection(new_selection);
-        user_selection_event_writer.send(UserSelectionEvent);
+        *current_user_selection = UserSelection(maybe_new_selection.clone());
+        user_selection_change_event_writer.send(UserSelectionChangeEvent);
     }
 }
