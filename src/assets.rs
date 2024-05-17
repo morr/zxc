@@ -68,6 +68,14 @@ pub struct TextureAssets {
     // disfigured, seed: 1016497133, steps: 100, cfgscale: 7, aspectratio: 1:1, width: 1024, height: 1024, sampler: dpmpp_sde_gpu, scheduler: karras, model: pixelArtDiffusionXL_spriteShaper.safetensors, swarm_version: 0.6.2.0, date: 2024-04-25, generation_time: 0.02 (prep) and 54.20 (gen) seconds,
     #[asset(path = "sprites/well.png")]
     pub well: Handle<Image>,
+
+    // prompt: bed on white background, (primitive bed for single person:1.2), hay pillow, skin blanket, (white background:1.1), top down view, (pixel art:1.1), for texture, low details
+    //
+    // negativeprompt: blurry, shadows, disfigured, two pillows, extra details, grass, tree, extra furniture, carpet, clothes, cloth pillow
+    //
+    // seed: 1406256067, steps: 60, cfgscale: 7, aspectratio: 1:1, width: 1024, height: 1024, sampler: euler, scheduler: karras, model: pixelArtDiffusionXL_spriteShaper.safetensors, swarm_version: 0.6.2.0, date: 2024-05-17, generation_time: 0.02 (prep) and 16.70 (gen) seconds,
+    #[asset(path = "sprites/bed.png")]
+    pub bed: Handle<Image>,
 }
 
 #[derive(AssetCollection, Resource)]
