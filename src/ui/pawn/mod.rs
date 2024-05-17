@@ -176,16 +176,16 @@ pub fn render_pawn_ui(
                             format!("Pawn {:?}", pawn_id),
                             font_assets,
                         ));
-                        parent.spawn(property_text_bundle::<PawnStateTextUIMarker>(
-                            pawn_state_text(pawn),
-                            font_assets,
-                        ));
                         parent.spawn(property_text_bundle::<PawnAgeTextUIMarker>(
                             pawn_age_text(pawn),
                             font_assets,
                         ));
                         parent.spawn(property_text_bundle::<PawnLifetimeTextUIMarker>(
                             pawn_lifetime_text(pawn),
+                            font_assets,
+                        ));
+                        parent.spawn(property_text_bundle::<PawnStateTextUIMarker>(
+                            pawn_state_text(pawn),
                             font_assets,
                         ));
                         parent.spawn(property_text_bundle::<PawnBirthdayTextUIMarker>(
