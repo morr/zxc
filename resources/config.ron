@@ -28,9 +28,9 @@ RootConfig(
     farming: FarmingConfig(
         basic_yield_percent: 0.25,
         max_yield: 10,
-        planting_hours: 8.0,
+        planting_hours: 12.0,
         tending_hours: 8.0,
-        harvesting_hours: 8.0,
+        harvesting_hours: 12.0,
         harvested_rest_days: 3.0,
         growth_days: 7.0,
         tending_rest_hours: 8.0,
