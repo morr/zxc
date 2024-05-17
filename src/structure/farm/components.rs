@@ -202,7 +202,7 @@ impl Farm {
         navmesh.update_cost(
             grid_tile.x..grid_tile.x + FARM_TILE_SIZE,
             grid_tile.y..grid_tile.y + FARM_TILE_SIZE,
-            Some((3.0 * COST_MULTIPLIER) as i32),
+            Navtile::config_cost_to_pathfinding_cost(CONFIG.movement_cost.farm)
         );
         navmesh.add_occupation::<Farm>(entity, grid_tile.x, grid_tile.y);
 

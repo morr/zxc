@@ -2,6 +2,12 @@ use std::any::TypeId;
 
 use super::*;
 use bevy::utils::{HashMap, HashSet};
+use rand_distr::num_traits::Zero;
+
+const DEFAULT_COST: i32 = 1;
+pub const COST_MULTIPLIER: f32 = 100.0;
+
+const INITIAL_NAV_COST: i32 = (DEFAULT_COST as f32 * COST_MULTIPLIER) as i32;
 
 #[derive(Debug)]
 pub struct Navtile {
@@ -43,6 +49,14 @@ impl Navtile {
             .get(&TypeId::of::<T>())
             .into_iter()
             .flat_map(|set| set.iter())
+    }
+
+    pub fn config_cost_to_pathfinding_cost(config_cost: f32) -> Option<i32> {
+        if config_cost.is_zero() {
+            None
+        } else {
+            Some((1.0 / config_cost * COST_MULTIPLIER) as i32)
+        }
     }
 }
 

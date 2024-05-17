@@ -172,7 +172,7 @@ pub fn spawn_bed(
     navmesh.update_cost(
         (grid_tile.x)..(grid_tile.x + size.x),
         (grid_tile.y)..(grid_tile.y + size.y),
-        Some((2.0 * COST_MULTIPLIER) as i32),
+        Navtile::config_cost_to_pathfinding_cost(CONFIG.movement_cost.furniture)
     );
     navmesh.add_occupation::<Bed>(id, grid_tile.x, grid_tile.y);
 
