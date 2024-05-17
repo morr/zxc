@@ -172,7 +172,14 @@ pub fn render_pawn_ui(
                 parent
                     .spawn(render_entity_component_node_bunlde::<PawnComponentUIMarker>())
                     .with_children(|parent| {
-                        parent.spawn(headline_text_bundle(format!("Pawn {:?}", pawn_id), font_assets));
+                        parent.spawn(headline_text_bundle(
+                            format!("Pawn {:?}", pawn_id),
+                            font_assets,
+                        ));
+                        parent.spawn(property_text_bundle::<PawnStateTextUIMarker>(
+                            pawn_state_text(pawn),
+                            font_assets,
+                        ));
                         parent.spawn(property_text_bundle::<PawnAgeTextUIMarker>(
                             pawn_age_text(pawn),
                             font_assets,
@@ -183,10 +190,6 @@ pub fn render_pawn_ui(
                         ));
                         parent.spawn(property_text_bundle::<PawnBirthdayTextUIMarker>(
                             pawn_birthday_text(pawn),
-                            font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<PawnStateTextUIMarker>(
-                            pawn_state_text(pawn),
                             font_assets,
                         ));
                     });
@@ -241,7 +244,12 @@ fn pawn_birthday_text(pawn: &Pawn) -> String {
     )
 }
 fn pawn_state_text(pawn: &Pawn) -> String {
-    format!("state: {:?}", pawn.state)
+    match &pawn.state {
+        PawnState::Working(working_state) => {
+            format!("state: {:?}", WorkingStateDebug(working_state))
+        },
+        _ => format!("state: {:?}", pawn.state),
+    }
 }
 
 fn movable_speed_text(movable: &Movable) -> String {
