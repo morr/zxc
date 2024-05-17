@@ -34,5 +34,9 @@ RootConfig(
         harvested_rest_days: 3.0,
         growth_days: 7.0,
         tending_rest_hours: 8.0,
+    ),
+    movement_cost: MovementCostConfig(
+        farm: 0.33,
+        furniture: 0.5
     )
 )

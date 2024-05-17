@@ -1,3 +1,4 @@
+use bevy::math::f32;
 pub use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::{fs::File, io::Read};
@@ -32,6 +33,7 @@ pub struct RootConfig {
     pub time: TimeConfig,
     pub pawn: PawnConfig,
     pub farming: FarmingConfig,
+    pub movement_cost: MovementCostConfig,
 }
 
 impl RootConfig {
@@ -139,4 +141,15 @@ pub struct FarmingConfig {
     pub growth_days: f32,
     /// in hours
     pub tending_rest_hours: f32,
+}
+
+
+#[derive(Deserialize, Serialize)]
+pub struct MovementCostConfig {
+    /// percentage of speed reduction in number between 0.0..=1.0
+    /// where 0.0 - impassable, 0.5 - half of normal speed, 1.0 0 normal speed
+    pub farm: f32,
+    /// percentage of speed reduction in number between 0.0..=1.0
+    /// where 0.0 - impassable, 0.5 - half of normal speed, 1.0 0 normal speed
+    pub furniture: f32
 }
