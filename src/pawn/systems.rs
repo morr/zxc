@@ -65,6 +65,7 @@ pub fn spawn_pawns(
                     ..default()
                 },
                 Movable::new(CONFIG.pawn.speed * CONFIG.tile.size),
+                Restable::default()
             ))
             // .insert(ShowAabbGizmo {
             //     color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
