@@ -113,7 +113,7 @@ macro_rules! pawn_states {
 
 pawn_states!(
     (Idle),
-    (Moving),
+    // (Moving),
     (TaskAssigned, Task, _a),
     (Working, Task, _b),
     (Sleeping),
