@@ -17,13 +17,13 @@ RootConfig(
     ),
     time: TimeConfig(
         day_duration: 60.0,
-        days_in_season: 7
+        days_in_season: 7,
     ),
     pawn: PawnConfig(
         speed: 3.0,
         work_force: 1.0,
         spawn_age: (15, 25),
-        lifetime_span: (50, 90)
+        lifetime_span: (50, 90),
     ),
     farming: FarmingConfig(
         basic_yield_percent: 0.25,
@@ -37,12 +37,14 @@ RootConfig(
     ),
     movement_cost: MovementCostConfig(
         farm: 0.33,
-        furniture: 0.5
+        furniture: 0.5,
     ),
     stamina_cost: StaminaCostConfig(
         idle: 1,
         moving: -0.25,
         // 12 hours of work => 10% stamina left (90 / 12 = 7.5)
-        working: -7.5
+        working: -7.5,
+        // 6 hours of work => 90% stamina restored (90 / 6 = 15.0)
+        sleeping: 15.0
     )
 )

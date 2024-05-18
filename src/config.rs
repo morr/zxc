@@ -76,7 +76,7 @@ pub struct StartingSceneConfig {
     pub day_hour: u32,
     pub farm_width: i32,
     pub farm_height: i32,
-    pub time_scale: f32
+    pub time_scale: f32,
 }
 
 const SEASONS_IN_YEAR: u32 = 4;
@@ -152,7 +152,7 @@ pub struct MovementCostConfig {
     pub farm: f32,
     /// percentage of speed reduction in number between 0.0..=1.0
     /// where 0.0 - impassable, 0.5 - half of normal speed, 1.0 0 normal speed
-    pub furniture: f32
+    pub furniture: f32,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -162,7 +162,9 @@ pub struct StaminaCostConfig {
     /// amount of stamina change per in-game hour of moving
     pub moving: f32,
     /// amount of stamina change per in-game hour of working
-    pub working: f32
+    pub working: f32,
+    /// amount of stamina change per in-game hour of sleeping
+    pub sleeping: f32,
 }
 
 impl StaminaCostConfig {
@@ -171,5 +173,6 @@ impl StaminaCostConfig {
         self.idle /= time.hour_duration;
         self.moving /= time.hour_duration;
         self.working /= time.hour_duration;
+        self.sleeping /= time.hour_duration;
     }
 }
