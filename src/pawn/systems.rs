@@ -151,36 +151,36 @@ pub fn wander_idle_pawns(
     // mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
     mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
-    let mut rng = rand::thread_rng();
-
-    for (entity, mut movable, transform, mut maybe_pathfinding_task) in &mut query {
-        if movable.state != MovableState::Idle {
-            continue;
-        }
-
-        let world_pos = transform.translation.truncate();
-        let start_tile = world_pos.world_pos_to_grid();
-        let end_tile = find_valid_end_tile(world_pos, &arc_navmesh.read(), &mut rng, 0);
-
-        // movable.to_pathfinding(
-        //     entity,
-        //     start_tile,
-        //     end_tile,
-        //     &mut commands,
-        //     &mut pathfind_event_writer,
-        //     &mut movable_state_event_writer,
-        // );
-        movable.to_pathfinding_async(
-            entity,
-            start_tile,
-            end_tile,
-            &arc_navmesh,
-            &queue_counter,
-            maybe_pathfinding_task.as_deref_mut(),
-            &mut commands,
-            &mut movable_state_event_writer,
-        );
-    }
+    // let mut rng = rand::thread_rng();
+    //
+    // for (entity, mut movable, transform, mut maybe_pathfinding_task) in &mut query {
+    //     if movable.state != MovableState::Idle {
+    //         continue;
+    //     }
+    //
+    //     let world_pos = transform.translation.truncate();
+    //     let start_tile = world_pos.world_pos_to_grid();
+    //     let end_tile = find_valid_end_tile(world_pos, &arc_navmesh.read(), &mut rng, 0);
+    //
+    //     // movable.to_pathfinding(
+    //     //     entity,
+    //     //     start_tile,
+    //     //     end_tile,
+    //     //     &mut commands,
+    //     //     &mut pathfind_event_writer,
+    //     //     &mut movable_state_event_writer,
+    //     // );
+    //     movable.to_pathfinding_async(
+    //         entity,
+    //         start_tile,
+    //         end_tile,
+    //         &arc_navmesh,
+    //         &queue_counter,
+    //         maybe_pathfinding_task.as_deref_mut(),
+    //         &mut commands,
+    //         &mut movable_state_event_writer,
+    //     );
+    // }
 }
 
 fn find_valid_end_tile(
