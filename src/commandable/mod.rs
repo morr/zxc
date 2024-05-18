@@ -5,17 +5,52 @@ use crate::*;
 pub struct CommandablePlugin;
 
 impl Plugin for CommandablePlugin {
-    fn build(&self, _app: &mut App) {
-        // app.register_type::<Commandable>()
-        //     .add_systems(Update, progress_stamina.run_if(in_state(AppState::Playing)));
+    fn build(&self, app: &mut App) {
+        app
+            // .register_type::<Commandable>()
+            .add_systems(
+                Update,
+                process_commands
+                    .run_if(in_state(AppState::Playing))
+                    .run_if(in_state(SimulationState::Running)),
+            );
     }
 }
 
-// pub struct Command<T: Event>(T);
+#[derive(Debug)]
+pub enum Command {
+    UserSelection(UserSelectionData),
+    ToRest(Entity),
+    GoTo { id: Entity, grid_tile: IVec2 },
+}
 
-// #[derive(Component, Debug, Default, InspectorOptions, Reflect)]
-// #[reflect(InspectorOptions)]
 #[derive(Component, Debug, Default)]
 pub struct Commandable {
-    // pub queue: VecDeque<Event>,
+    pub queue: VecDeque<Command>,
+}
+
+pub fn process_commands(
+    // mut commands: Commands,
+    mut commandable_query: Query<&mut Commandable>,
+    mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
+    mut to_rest_command_writer: EventWriter<ToRestCommand>,
+    mut go_to_command_writer: EventWriter<GoToCommand>,
+) {
+    for mut commandable in &mut commandable_query {
+        if let Some(command) = commandable.queue.pop_front() {
+            match command {
+                Command::UserSelection(data) => {
+                    user_selection_command_writer.send(UserSelectionCommand(Some(data)));
+                }
+                Command::ToRest(entity) => {
+                    to_rest_command_writer.send(ToRestCommand(entity));
+                }
+                Command::GoTo { id, grid_tile } => {
+                    go_to_command_writer.send(GoToCommand { id, grid_tile });
+                }
+            }
+            // Update the state of the entity to indicate it is executing a command
+            // commands.entity(entity).insert(ExecutingCommand);
+        }
+    }
 }
