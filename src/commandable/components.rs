@@ -1,12 +1,23 @@
 use super::*;
 
 use std::collections::VecDeque;
+use std::vec;
 
 #[derive(Debug)]
 pub enum Command {
     UserSelection(UserSelectionData),
     ToRest(Entity),
     MoveTo(Entity, IVec2),
+}
+
+// it is implemented so a single command can be passed into Commandable.schedule
+impl IntoIterator for Command {
+    type Item = Command;
+    type IntoIter = vec::IntoIter<Command>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        vec![self].into_iter()
+    }
 }
 
 #[derive(Component, Debug)]
@@ -25,9 +36,19 @@ impl Default for Commandable {
 }
 
 impl Commandable {
-    pub fn schedule(&mut self, queue: Vec<Command>, id: Entity, commands: &mut Commands) {
-        // self.queue = queue.into();
-        // self.change_state(CommandableState::Scheduled, id, commands);
+    pub fn schedule<I>(&mut self, command_or_commands: I, id: Entity, commands: &mut Commands)
+    where
+        I: IntoIterator<Item = Command>,
+    {
+        // cleanup queue and maybe do something with its content
+        // while let Some(command) = self.queue.pop_back() {
+        //     match command {
+        //         _ => {}
+        //     }
+        // }
+
+        self.queue = command_or_commands.into_iter().collect();
+        self.change_state(CommandableState::Scheduled, id, commands);
     }
 }
 
