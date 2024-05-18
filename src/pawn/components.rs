@@ -116,6 +116,7 @@ pawn_states!(
     // (Moving),
     (TaskAssigned, Task, _a),
     (Working, Task, _b),
+    // (ExecutingCommand, Vec<Event>, _c)
     (Sleeping),
     (Dead),
 );

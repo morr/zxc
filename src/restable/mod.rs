@@ -39,7 +39,7 @@ fn progress_stamina(
             // PawnState::Sleeping => time_amount * CONFIG.stamina_cost.sleeping,
             // PawnState::Moving => time_amount * CONFIG.stamina_cost.moving,
             // PawnState::Working(_) => time_amount * CONFIG.stamina_cost.working,
-            // PawnState::Dead | PawnState::WorkAssigned(_) => 0.0,
+            // PawnState::Dead | PawnState::TaskAssigned(_) => 0.0,
             PawnState::Sleeping => time_amount * CONFIG.stamina_cost.sleeping,
             PawnState::Dead => 0.0,
             _ => time_amount * CONFIG.stamina_cost.living,

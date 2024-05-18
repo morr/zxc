@@ -4,9 +4,10 @@ use super::*;
 pub struct ToRestCommand(pub Entity);
 
 pub fn to_rest_command(
-    mut to_rest_command_reader: EventReader<ToRestCommand>,
+    mut command_reader: EventReader<ToRestCommand>,
 ) {
-    for command in to_rest_command_reader.read() {
+    for command in command_reader.read() {
         println!("{:?}", command);
+        // it does something
     }
 }

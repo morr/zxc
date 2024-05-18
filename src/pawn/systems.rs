@@ -57,6 +57,7 @@ pub fn spawn_pawns(
             .spawn((
                 pawn,
                 pawn_state::Idle,
+                Commandable::default(),
                 Name::new("Pawn"),
                 // state: PawnState::Idle,
                 MaterialMesh2dBundle {
@@ -229,7 +230,7 @@ pub fn update_pawn_state_text(
             let mut text = state_text_query.get_mut(text_entity).unwrap();
             text.sections[0].value = match state {
                 PawnState::Working(_) => "Working".into(),
-                // PawnState::WorkAssigned() => format!("state: {:?}", WorkAssignedStateDebug(state)),
+                // PawnState::TaskAsigned() => format!("state: {:?}", StateDebug(state)),
                 _ => format!("{:?}", state),
             };
         }
@@ -296,7 +297,8 @@ pub fn progress_pawn_death(
         );
 
         // return pawn task back to tasks queue
-        if let PawnState::TaskAssigned(task) | PawnState::Working(task) = prev_state {
+        // if let PawnState::TaskAssigned(task) | PawnState::Working(task) = prev_state {
+        if let PawnState::Working(task) = prev_state {
             work_queue.add_task(task);
         }
     }

@@ -9,5 +9,6 @@ pub struct GoToCommand {
 pub fn go_to_command(mut command_reader: EventReader<GoToCommand>) {
     for command in command_reader.read() {
         println!("{:?}", command);
+        // it does something
     }
 }

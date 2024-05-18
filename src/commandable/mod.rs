@@ -1,3 +1,4 @@
+use std::collections::VecDeque;
 
 use crate::*;
 
@@ -10,7 +11,11 @@ impl Plugin for CommandablePlugin {
     }
 }
 
-#[derive(Component, Debug, Default, InspectorOptions, Reflect)]
-#[reflect(InspectorOptions)]
+// pub struct Command<T: Event>(T);
+
+// #[derive(Component, Debug, Default, InspectorOptions, Reflect)]
+// #[reflect(InspectorOptions)]
+#[derive(Component, Debug, Default)]
 pub struct Commandable {
+    // pub queue: VecDeque<Event>,
 }
