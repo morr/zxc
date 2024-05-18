@@ -41,6 +41,14 @@ pub struct RestableComponentUIMarker {}
 #[derive(Component, Default)]
 struct RestableStaminaTextUIMarker {}
 
+#[derive(Component, Default)]
+pub struct CommandableComponentUIMarker {}
+
+#[derive(Component, Default)]
+struct CommandableStateTextUIMarker {}
+#[derive(Component, Default)]
+struct CommandableQueueTextUIMarker {}
+
 pub struct UiPawnPlugin;
 
 impl Plugin for UiPawnPlugin {
@@ -65,6 +73,8 @@ fn update_pawn_ui(
             Option<&MovablePathTextUIMarker>,
             Option<&MovableStateTextUIMarker>,
             Option<&RestableStaminaTextUIMarker>,
+            Option<&CommandableStateTextUIMarker>,
+            Option<&CommandableQueueTextUIMarker>,
         ),
         Or<(
             With<PawnAgeTextUIMarker>,
@@ -75,13 +85,16 @@ fn update_pawn_ui(
             With<MovablePathTextUIMarker>,
             With<MovableStateTextUIMarker>,
             With<RestableStaminaTextUIMarker>,
+            With<CommandableStateTextUIMarker>,
+            With<CommandableQueueTextUIMarker>,
         )>,
     >,
-    components_query: Query<(&Pawn, &Movable, &Restable)>,
+    components_query: Query<(&Pawn, &Movable, &Restable, &Commandable)>,
     children_query: Query<&Children>,
 ) {
     for (ui_id, ui_marker) in ui_query.iter() {
-        if let Ok((pawn, movable, restable)) = components_query.get(ui_marker.pawn_id) {
+        if let Ok((pawn, movable, restable, commandable)) = components_query.get(ui_marker.pawn_id)
+        {
             if let Ok(children) = children_query.get(ui_id) {
                 for &child in children.iter() {
                     update_text_markers_recursive(
@@ -89,6 +102,7 @@ fn update_pawn_ui(
                         pawn,
                         movable,
                         restable,
+                        commandable,
                         &mut texts,
                         &children_query,
                     );
@@ -103,6 +117,7 @@ fn update_text_markers_recursive(
     pawn: &Pawn,
     movable: &Movable,
     restable: &Restable,
+    commandable: &Commandable,
     texts: &mut Query<
         (
             &mut Text,
@@ -114,6 +129,8 @@ fn update_text_markers_recursive(
             Option<&MovablePathTextUIMarker>,
             Option<&MovableStateTextUIMarker>,
             Option<&RestableStaminaTextUIMarker>,
+            Option<&CommandableStateTextUIMarker>,
+            Option<&CommandableQueueTextUIMarker>,
         ),
         Or<(
             With<PawnAgeTextUIMarker>,
@@ -124,6 +141,8 @@ fn update_text_markers_recursive(
             With<MovablePathTextUIMarker>,
             With<MovableStateTextUIMarker>,
             With<RestableStaminaTextUIMarker>,
+            With<CommandableStateTextUIMarker>,
+            With<CommandableQueueTextUIMarker>,
         )>,
     >,
     children_query: &Query<&Children>,
@@ -137,7 +156,9 @@ fn update_text_markers_recursive(
         movable_speed_marker,
         movable_path_marker,
         movable_state_marker,
-        restable_stamina_marker
+        restable_stamina_marker,
+        commandable_state_marker,
+        commandable_queue_marker,
     )) = texts.get_mut(entity)
     {
         if pawn_age_marker.is_some() {
@@ -164,21 +185,29 @@ fn update_text_markers_recursive(
         if restable_stamina_marker.is_some() {
             text.sections[0].value = restable_stamina_text(restable);
         }
+        if commandable_state_marker.is_some() {
+            text.sections[0].value = commandable_state_text(commandable);
+        }
+        if commandable_queue_marker.is_some() {
+            text.sections[0].value = commandable_queue_text(commandable);
+        }
     }
 
     if let Ok(children) = children_query.get(entity) {
         for &child in children.iter() {
-            update_text_markers_recursive(child, pawn, movable, restable, texts, children_query);
+            update_text_markers_recursive(child, pawn, movable, restable, commandable, texts, children_query);
         }
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn render_pawn_ui(
     pawn_id: Entity,
     container_ui_commands: &mut EntityCommands,
     pawn: &Pawn,
     movable: &Movable,
     restable: &Restable,
+    commandable: &Commandable,
     font_assets: &Res<FontAssets>,
     opacity: UiOpacity,
 ) {
@@ -225,20 +254,36 @@ pub fn render_pawn_ui(
                             movable_path_text(movable),
                             font_assets,
                         ));
-                        parent.spawn( property_text_bundle::<MovableStateTextUIMarker>(
+                        parent.spawn(property_text_bundle::<MovableStateTextUIMarker>(
                             movable_state_text(movable),
                             font_assets,
                         ));
                     });
 
-               parent
+                parent
                     .spawn(render_entity_component_node_bunlde::<
                         RestableComponentUIMarker,
                     >())
                     .with_children(|parent| {
                         parent.spawn(headline_text_bundle("Restable".into(), font_assets));
-                        parent.spawn( property_text_bundle::<RestableStaminaTextUIMarker>(
+                        parent.spawn(property_text_bundle::<RestableStaminaTextUIMarker>(
                             restable_stamina_text(restable),
+                            font_assets,
+                        ));
+                    });
+
+                parent
+                    .spawn(render_entity_component_node_bunlde::<
+                        CommandableComponentUIMarker,
+                    >())
+                    .with_children(|parent| {
+                        parent.spawn(headline_text_bundle("Commandable".into(), font_assets));
+                        parent.spawn(property_text_bundle::<CommandableStateTextUIMarker>(
+                            commandable_state_text(commandable),
+                            font_assets,
+                        ));
+                        parent.spawn(property_text_bundle::<CommandableQueueTextUIMarker>(
+                            commandable_queue_text(commandable),
                             font_assets,
                         ));
                     });
@@ -293,4 +338,11 @@ fn movable_state_text(movable: &Movable) -> String {
 
 fn restable_stamina_text(restable: &Restable) -> String {
     format!("stamina: {:.2}", restable.stamina)
+}
+
+fn commandable_state_text(commandable: &Commandable) -> String {
+    format!("state: {:?}", commandable.state)
+}
+fn commandable_queue_text(commandable: &Commandable) -> String {
+    format!("queue: {:?}", commandable.queue)
 }

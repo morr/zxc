@@ -17,7 +17,7 @@ impl Plugin for NavigationPlugin {
                 Update,
                 (
                     listen_for_pathfinding_requests,
-                    move_user_selected_pawn_on_click,
+                    move_user_selected_pawn_on_click_stage_1,
                     listen_for_pathfinding_answers,
                     listen_for_pathfinding_async_tasks,
                 )

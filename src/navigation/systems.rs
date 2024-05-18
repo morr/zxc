@@ -2,7 +2,7 @@ use bevy::tasks::{block_on, futures_lite::future};
 
 use super::*;
 
-pub fn move_user_selected_pawn_on_click(
+pub fn move_user_selected_pawn_on_click_stage_1(
     // arc_navmesh: Res<ArcNavmesh>,
     // queue_counter: Res<AsyncQueueCounter>,
     mut commands: Commands,
