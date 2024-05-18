@@ -6,7 +6,7 @@ pub struct MoveToCommand {
     pub grid_tile: IVec2,
 }
 
-pub fn perform_move_to_command(mut command_reader: EventReader<MoveToCommand>) {
+pub fn execute_move_to(mut command_reader: EventReader<MoveToCommand>) {
     for command in command_reader.read() {
         println!("{:?}", command);
         // it does something

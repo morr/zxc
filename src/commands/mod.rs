@@ -12,9 +12,9 @@ impl Plugin for CommandsPlugin {
             .add_systems(
                 Update,
                 (
-                    perform_user_selection_command,
-                    perform_to_rest_command,
-                    perform_move_to_command,
+                    execute_user_selection,
+                    execute_to_rest,
+                    execute_move_to,
                 )
                     .chain()
                     .run_if(in_state(AppState::Playing)),

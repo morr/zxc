@@ -3,7 +3,7 @@ use super::*;
 #[derive(Event, Debug)]
 pub struct UserSelectionCommand(pub Option<UserSelectionData>);
 
-pub fn user_selection_command(
+pub fn execute_user_selection(
     mut commands: Commands,
     mut current_user_selection: ResMut<CurrentUserSelection>,
     mut user_selection_command_reader: EventReader<UserSelectionCommand>,

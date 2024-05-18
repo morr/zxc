@@ -344,5 +344,5 @@ fn commandable_state_text(commandable: &Commandable) -> String {
     format!("state: {:?}", commandable.state)
 }
 fn commandable_queue_text(commandable: &Commandable) -> String {
-    format!("queue: {:?}", commandable.queue)
+    format!("queue: {:?}", commandable.pending_commands)
 }

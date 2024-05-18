@@ -4,16 +4,16 @@ use std::collections::VecDeque;
 use std::vec;
 
 #[derive(Debug)]
-pub enum Command {
+pub enum CommandType {
     UserSelection(UserSelectionData),
     ToRest(Entity),
     MoveTo(Entity, IVec2),
 }
 
 // it is implemented so a single command can be passed into Commandable.schedule
-impl IntoIterator for Command {
-    type Item = Command;
-    type IntoIter = vec::IntoIter<Command>;
+impl IntoIterator for CommandType {
+    type Item = CommandType;
+    type IntoIter = vec::IntoIter<CommandType>;
 
     fn into_iter(self) -> Self::IntoIter {
         vec![self].into_iter()
@@ -22,23 +22,25 @@ impl IntoIterator for Command {
 
 #[derive(Component, Debug)]
 pub struct Commandable {
-    pub queue: VecDeque<Command>,
+    pub executing_command: Option<CommandType>,
+    pub pending_commands: VecDeque<CommandType>,
     pub state: CommandableState,
 }
 
 impl Default for Commandable {
     fn default() -> Self {
         Self {
-            queue: VecDeque::default(),
+            executing_command: None,
+            pending_commands: VecDeque::default(),
             state: CommandableState::Empty,
         }
     }
 }
 
 impl Commandable {
-    pub fn schedule<I>(&mut self, command_or_commands: I, id: Entity, commands: &mut Commands)
+    pub fn execute<I>(&mut self, command_or_commands: I, id: Entity, commands: &mut Commands)
     where
-        I: IntoIterator<Item = Command>,
+        I: IntoIterator<Item = CommandType>,
     {
         // cleanup queue and maybe do something with its content
         // while let Some(command) = self.queue.pop_back() {
@@ -47,8 +49,8 @@ impl Commandable {
         //     }
         // }
 
-        self.queue = command_or_commands.into_iter().collect();
-        self.change_state(CommandableState::Scheduled, id, commands);
+        self.pending_commands = command_or_commands.into_iter().collect();
+        self.change_state(CommandableState::PendingCommands, id, commands);
     }
 }
 
@@ -108,4 +110,4 @@ macro_rules! commandable_states {
     };
 }
 
-commandable_states!(Empty, Scheduled, Executing);
+commandable_states!(Empty, PendingCommands, Executing);
