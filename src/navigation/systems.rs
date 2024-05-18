@@ -8,7 +8,7 @@ pub fn move_user_selected_pawn_on_click_stage_1(
     mut commands: Commands,
     mut click_event_reader: EventReader<ClickEventStage1>,
     user_selection: Res<CurrentUserSelection>,
-    mut pawn_query: Query<&mut Commandable, (With<pawn_state::Idle>, With<UserSelectionMarker>)>,
+    mut pawn_query: Query<&mut Commandable, With<pawn_state::Idle>>,
     // mut pawn_query: Query<
     //     (&Transform, &mut Movable, &mut Commandable, Option<&mut PathfindingTask>),
     //     (With<pawn_state::Idle>, With<UserSelectionMarker>),
