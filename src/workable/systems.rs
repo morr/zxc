@@ -25,7 +25,7 @@ pub fn assign_tasks_to_pawns(
         let tile = task.grid_tile;
 
         pawn.change_state(
-            PawnState::WorkAssigned(task),
+            PawnState::TaskAssigned(task),
             entity,
             &mut commands,
             &mut pawn_state_change_event_writer,
@@ -47,7 +47,7 @@ pub fn assign_tasks_to_pawns(
 pub fn check_pawn_ready_for_working(
     query: Query<
         (Entity, &Pawn, &Transform),
-        (With<pawn_state::WorkAssigned>, Without<MovableMoving>),
+        (With<pawn_state::TaskAssigned>, Without<MovableMoving>),
     >,
     mut event_writer: EventWriter<WorkStartEvent>,
 ) {

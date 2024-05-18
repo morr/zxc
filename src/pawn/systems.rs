@@ -296,7 +296,7 @@ pub fn progress_pawn_death(
         );
 
         // return pawn task back to tasks queue
-        if let PawnState::WorkAssigned(task) | PawnState::Working(task) = prev_state {
+        if let PawnState::TaskAssigned(task) | PawnState::Working(task) = prev_state {
             work_queue.add_task(task);
         }
     }

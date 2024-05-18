@@ -45,7 +45,7 @@ impl Default for Pawn {
 impl Pawn {
     pub fn get_task(&self) -> &Task {
         match &self.state {
-            PawnState::WorkAssigned(task) | PawnState::Working(task) => task,
+            PawnState::TaskAssigned(task) | PawnState::Working(task) => task,
             _ => panic!("Pawn must be in a task-assigned state"),
         }
     }
@@ -114,7 +114,7 @@ macro_rules! pawn_states {
 pawn_states!(
     (Idle),
     (Moving),
-    (WorkAssigned, Task, _a),
+    (TaskAssigned, Task, _a),
     (Working, Task, _b),
     (Sleeping),
     (Dead),
