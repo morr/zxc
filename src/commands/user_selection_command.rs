@@ -1,6 +1,6 @@
 use super::*;
 
-#[derive(Event, Debug, Default)]
+#[derive(Event, Debug)]
 pub struct UserSelectionCommand(pub Option<UserSelectionData>);
 
 pub fn user_selection_command(
@@ -9,7 +9,10 @@ pub fn user_selection_command(
     mut user_selection_command_reader: EventReader<UserSelectionCommand>,
     mut user_selection_change_event_writer: EventWriter<UserSelectionChangeEvent>,
 ) {
-    for UserSelectionCommand(maybe_new_selection) in user_selection_command_reader.read() {
+    for command in user_selection_command_reader.read() {
+        // println!("{:?", event);
+        let maybe_new_selection = &command.0;
+
         // remove aabb from prev selected
         if let Some(UserSelectionData { id, .. }) = current_user_selection.0 {
             commands.entity(id).remove::<ShowAabbGizmo>();

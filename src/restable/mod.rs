@@ -1,3 +1,5 @@
+use rand_distr::num_traits::Zero;
+
 use crate::*;
 
 pub struct RestablePlugin;
@@ -24,11 +26,14 @@ impl Default for Restable {
 fn progress_stamina(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
-    mut query: Query<(&mut Restable, &Pawn)>,
+    mut query: Query<(Entity, &mut Restable, &Pawn)>,
+    mut to_rest_command: EventWriter<ToRestCommand>,
 ) {
     let time_amount = time_scale.scale_to_seconds(time.delta_seconds());
 
-    for (mut restable, pawn) in query.iter_mut() {
+    for (id, mut restable, pawn) in query.iter_mut() {
+        let was_non_zero = !restable.stamina.is_zero();
+
         let diff = match pawn.state {
             // PawnState::Idle => time_amount * CONFIG.stamina_cost.idle,
             // PawnState::Sleeping => time_amount * CONFIG.stamina_cost.sleeping,
@@ -41,5 +46,9 @@ fn progress_stamina(
         };
 
         restable.stamina = (restable.stamina + diff).clamp(0.0, 100.0);
+
+        if was_non_zero && restable.stamina.is_zero() {
+            to_rest_command.send(ToRestCommand(id));
+        }
     }
 }
