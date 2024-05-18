@@ -10,7 +10,7 @@ impl Plugin for CommandablePlugin {
     }
 }
 
-#[derive(Component, Debug, InspectorOptions, Reflect)]
+#[derive(Component, Debug, Default, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
 pub struct Commandable {
 }

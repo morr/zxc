@@ -27,7 +27,7 @@ fn progress_stamina(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Restable, &Pawn)>,
-    mut to_rest_command: EventWriter<ToRestCommand>,
+    mut command_writer: EventWriter<ToRestCommand>,
 ) {
     let time_amount = time_scale.scale_to_seconds(time.delta_seconds());
 
@@ -48,7 +48,7 @@ fn progress_stamina(
         restable.stamina = (restable.stamina + diff).clamp(0.0, 100.0);
 
         if was_non_zero && restable.stamina.is_zero() {
-            to_rest_command.send(ToRestCommand(id));
+            command_writer.send(ToRestCommand(id));
         }
     }
 }

@@ -1,8 +1,10 @@
 use crate::*;
 
-expose_submodules!(user_selection_command, to_rest_command);
+expose_submodules!(user_selection_command, to_rest_command, go_to_command);
 
 pub struct CommandsPlugin;
+
+// pub struct CommandEvent<T: Command>(pub Entity);
 
 impl Plugin for CommandsPlugin {
     fn build(&self, app: &mut App) {
@@ -10,7 +12,7 @@ impl Plugin for CommandsPlugin {
             .add_event::<ToRestCommand>()
             .add_systems(
                 Update,
-                (user_selection_command, to_rest_command)
+                (user_selection_command, to_rest_command, go_to_command)
                     .chain()
                     .run_if(in_state(AppState::Playing)),
             );
