@@ -19,29 +19,33 @@ pub fn assign_tasks_to_pawns(
     arc_navmesh: Res<ArcNavmesh>,
     queue_counter: Res<AsyncQueueCounter>,
 ) {
-    for (entity, mut pawn, mut commandable, mut movable, transform, mut maybe_pathfinding_task) in query.iter_mut() {
-        let Some(task) = work_queue.get_task() else { continue };
+    for (entity, mut pawn, mut commandable, mut movable, transform, mut maybe_pathfinding_task) in
+        query.iter_mut()
+    {
+        let Some(task) = work_queue.get_task() else {
+            continue;
+        };
         // println!("assign_tasks_to_pawns {:?}", task);
 
         let tile = task.grid_tile;
 
-        pawn.change_state(
-            PawnState::TaskAssigned(task),
-            entity,
-            &mut commands,
-            &mut pawn_state_change_event_writer,
-        );
-        
-        movable.to_pathfinding_async(
-            entity,
-            transform.translation.truncate().world_pos_to_grid(),
-            tile,
-            &arc_navmesh,
-            &queue_counter,
-            maybe_pathfinding_task.as_deref_mut(),
-            &mut commands,
-            &mut movable_state_change_event_writer,
-        );
+        // pawn.change_state(
+        //     PawnState::TaskAssigned(task),
+        //     entity,
+        //     &mut commands,
+        //     &mut pawn_state_change_event_writer,
+        // );
+
+        // movable.to_pathfinding_async(
+        //     entity,
+        //     transform.translation.truncate().world_pos_to_grid(),
+        //     tile,
+        //     &arc_navmesh,
+        //     &queue_counter,
+        //     maybe_pathfinding_task.as_deref_mut(),
+        //     &mut commands,
+        //     &mut movable_state_change_event_writer,
+        // );
     }
 }
 
@@ -55,7 +59,7 @@ pub fn check_pawn_ready_for_working(
     for (entity, pawn, transform) in query.iter() {
         let current_tile = transform.translation.truncate().world_pos_to_grid();
         let is_pawn_reached_workplace = current_tile == pawn.get_task().grid_tile;
-    
+
         if is_pawn_reached_workplace {
             event_writer.send(WorkStartEvent {
                 pawn_entity: entity,

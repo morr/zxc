@@ -1,6 +1,10 @@
 use crate::*;
 
-expose_submodules!(user_selection_command, to_rest_command, move_to_tile_command);
+expose_submodules!(
+    user_selection_command,
+    to_rest_command,
+    move_to_tile_command
+);
 
 pub struct CommandsPlugin;
 
@@ -11,7 +15,11 @@ impl Plugin for CommandsPlugin {
             .add_event::<MoveToTileCommand>()
             .add_systems(
                 Update,
-                (user_selection_command, to_rest_command, move_to_tile_command)
+                (
+                    user_selection_command,
+                    to_rest_command,
+                    move_to_tile_command,
+                )
                     .chain()
                     .run_if(in_state(AppState::Playing)),
             );
