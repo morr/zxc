@@ -63,6 +63,7 @@ fn main() {
             restable::RestablePlugin,
             workable::WorkablePlugin,
             movable::MovablePlugin,
+            commandable::CommandablePlugin,
         ))
         // .add_plugins((
         //     bevy::diagnostic::LogDiagnosticsPlugin::default(),
