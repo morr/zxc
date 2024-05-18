@@ -14,4 +14,3 @@ pub struct ClickEventStage0(pub IVec2);
 
 #[derive(Event, Debug)]
 pub struct ClickEventStage1(pub IVec2);
-
