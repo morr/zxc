@@ -21,7 +21,7 @@ impl Plugin for CommandablePlugin {
 pub enum Command {
     UserSelection(UserSelectionData),
     ToRest(Entity),
-    GoTo { id: Entity, grid_tile: IVec2 },
+    MoveTo { id: Entity, grid_tile: IVec2 },
 }
 
 #[derive(Component, Debug, Default)]
@@ -34,7 +34,7 @@ pub fn process_commands(
     mut commandable_query: Query<&mut Commandable>,
     mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
     mut to_rest_command_writer: EventWriter<ToRestCommand>,
-    mut go_to_command_writer: EventWriter<GoToCommand>,
+    mut move_to_command_writer: EventWriter<MoveToCommand>,
 ) {
     for mut commandable in &mut commandable_query {
         if let Some(command) = commandable.queue.pop_front() {
@@ -45,8 +45,8 @@ pub fn process_commands(
                 Command::ToRest(entity) => {
                     to_rest_command_writer.send(ToRestCommand(entity));
                 }
-                Command::GoTo { id, grid_tile } => {
-                    go_to_command_writer.send(GoToCommand { id, grid_tile });
+                Command::MoveTo { id, grid_tile } => {
+                    move_to_command_writer.send(MoveToCommand { id, grid_tile });
                 }
             }
             // Update the state of the entity to indicate it is executing a command
