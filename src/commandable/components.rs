@@ -19,14 +19,15 @@ impl Default for Commandable {
     fn default() -> Self {
         Self {
             queue: VecDeque::default(),
-            state: CommandableState::Empty
+            state: CommandableState::Empty,
         }
     }
 }
 
 impl Commandable {
-    pub fn schedule(&mut self, command: Command) {
-        self.queue.push_back(command);
+    pub fn schedule(&mut self, queue: Vec<Command>, id: Entity, commands: &mut Commands) {
+        self.queue = queue.into();
+        self.change_state(CommandableState::Scheduled, id, commands);
     }
 }
 
@@ -82,4 +83,4 @@ macro_rules! commandable_states {
     };
 }
 
-commandable_states!(Empty, Pending, Executing);
+commandable_states!(Empty, Scheduled, Executing);

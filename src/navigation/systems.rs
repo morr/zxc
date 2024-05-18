@@ -5,7 +5,7 @@ use super::*;
 pub fn move_user_selected_pawn_on_click(
     // arc_navmesh: Res<ArcNavmesh>,
     // queue_counter: Res<AsyncQueueCounter>,
-    // mut commands: Commands,
+    mut commands: Commands,
     mut click_event_reader: EventReader<ClickEventStage1>,
     user_selection: Res<CurrentUserSelection>,
     mut pawn_query: Query<&mut Commandable, (With<pawn_state::Idle>, With<UserSelectionMarker>)>,
@@ -26,7 +26,11 @@ pub fn move_user_selected_pawn_on_click(
             continue;
         };
 
-        commandable.schedule(Command::MoveTo(*id, *grid_tile));
+        commandable.schedule(
+            vec![Command::MoveTo(*id, *grid_tile)],
+            *id,
+            &mut commands
+        );
 
         // movable.to_pathfinding_async(
         //     *id,
