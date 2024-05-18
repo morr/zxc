@@ -4,9 +4,6 @@ use super::*;
 pub struct UserSelectionMarker;
 
 #[derive(Event, Debug, Default)]
-pub struct UserSelectionCommand(pub Option<UserSelectionData>);
-
-#[derive(Event, Debug, Default)]
 pub struct UserSelectionChangeEvent;
 
 #[derive(Resource, Debug, Deref, DerefMut, Default)]
