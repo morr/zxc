@@ -30,11 +30,14 @@ fn progress_stamina(
 
     for (mut restable, pawn) in query.iter_mut() {
         let diff = match pawn.state {
-            PawnState::Idle => time_amount * CONFIG.stamina_cost.idle,
+            // PawnState::Idle => time_amount * CONFIG.stamina_cost.idle,
+            // PawnState::Sleeping => time_amount * CONFIG.stamina_cost.sleeping,
+            // PawnState::Moving => time_amount * CONFIG.stamina_cost.moving,
+            // PawnState::Working(_) => time_amount * CONFIG.stamina_cost.working,
+            // PawnState::Dead | PawnState::WorkAssigned(_) => 0.0,
             PawnState::Sleeping => time_amount * CONFIG.stamina_cost.sleeping,
-            PawnState::Moving => time_amount * CONFIG.stamina_cost.moving,
-            PawnState::Working(_) => time_amount * CONFIG.stamina_cost.working,
-            PawnState::Dead | PawnState::WorkAssigned(_) => 0.0,
+            PawnState::Dead => 0.0,
+            _ => time_amount * CONFIG.stamina_cost.living,
         };
 
         restable.stamina = (restable.stamina + diff).clamp(0.0, 100.0);

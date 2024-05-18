@@ -40,11 +40,13 @@ RootConfig(
         furniture: 0.5,
     ),
     stamina_cost: StaminaCostConfig(
-        idle: 1,
-        moving: -0.25,
+        // idle: 1,
+        // moving: -0.25,
         // 12 hours of work => 10% stamina left (90 / 12 = 7.5)
-        working: -7.5,
-        // 6 hours of work => 90% stamina restored (90 / 6 = 15.0)
-        sleeping: 15.0
+        // working: -7.5,
+        // 7 hours of sleep => 100% stamina restored (100 / 7 = 14.2857142857)
+        sleeping: 14.2857142857,
+        // 17 hours of living => 100% stamina drained (100 / 17 = 5.8823529412)
+        living: -5.8823529412
     )
 )

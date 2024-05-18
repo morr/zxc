@@ -157,22 +157,25 @@ pub struct MovementCostConfig {
 
 #[derive(Deserialize, Serialize)]
 pub struct StaminaCostConfig {
-    /// amount of stamina change per in-game hour of idling
-    pub idle: f32,
-    /// amount of stamina change per in-game hour of moving
-    pub moving: f32,
-    /// amount of stamina change per in-game hour of working
-    pub working: f32,
+    // /// amount of stamina change per in-game hour of idling
+    // pub idle: f32,
+    // /// amount of stamina change per in-game hour of moving
+    // pub moving: f32,
+    // /// amount of stamina change per in-game hour of working
+    // pub working: f32,
     /// amount of stamina change per in-game hour of sleeping
     pub sleeping: f32,
+    /// amount of stamina change per in-game hour of living
+    pub living: f32,
 }
 
 impl StaminaCostConfig {
     pub fn calculate_derived_fields(&mut self, time: &TimeConfig) {
         // convert desired numbers to proper values according to ingame hour duration
-        self.idle /= time.hour_duration;
-        self.moving /= time.hour_duration;
-        self.working /= time.hour_duration;
+        // self.idle /= time.hour_duration;
+        // self.moving /= time.hour_duration;
+        // self.working /= time.hour_duration;
         self.sleeping /= time.hour_duration;
+        self.living /= time.hour_duration;
     }
 }
