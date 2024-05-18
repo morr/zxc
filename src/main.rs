@@ -51,17 +51,17 @@ fn main() {
             item::ItemPlugin,
             assets::AssetsPlugin,
             map::MapPlugin,
-            movable::MovablePlugin,
-            workable::WorkablePlugin,
             navigation::NavigationPlugin,
             user_selection::UserSelectPlugin,
-            pawn::PawnPlugin,
             structure::StructurePlugin,
             ui::UiPlugin,
             input::InputPlugin,
         ))
         .add_plugins((
+            pawn::PawnPlugin,
             restable::RestablePlugin,
+            workable::WorkablePlugin,
+            movable::MovablePlugin,
         ))
         // .add_plugins((
         //     bevy::diagnostic::LogDiagnosticsPlugin::default(),
