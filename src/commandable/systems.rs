@@ -9,7 +9,7 @@ pub fn process_commands(
         (Entity, &mut Commandable, Option<&mut Pawn>),
         With<commandable_state::PendingExecution>,
     >,
-    mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for (id, mut commandable, maybe_pawn) in &mut commandable_query {
         if let Some(command_type) = commandable.pending.pop_front() {
@@ -32,7 +32,7 @@ pub fn process_commands(
                     PawnState::ExecutingCommand,
                     id,
                     &mut commands,
-                    &mut pawn_state_change_event_writer,
+                    // &mut pawn_state_change_event_writer,
                 );
             }
             // Update the state of the entity to indicate it is executing a command

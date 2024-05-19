@@ -52,7 +52,7 @@ fn state_changed_to_death_by_event() {
     let mut app = App::new();
 
     app.add_plugins(WorkablePlugin)
-        .add_event::<EntityStateChangeEvent<PawnState>>()
+        // .add_event::<EntityStateChangeEvent<PawnState>>()
         .add_event::<PawnDeathEvent>()
         .add_systems(Update, progress_pawn_death);
 

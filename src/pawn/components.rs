@@ -84,7 +84,7 @@ macro_rules! pawn_states {
                 new_state: PawnState,
                 entity: Entity,
                 commands: &mut Commands,
-                state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<PawnState>>,
+                // state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<PawnState>>,
             ) -> PawnState {
                 // println!("PawnState {:?}=>{:?}", self.state, new_state);
                 // Remove the old state component
@@ -104,7 +104,7 @@ macro_rules! pawn_states {
                     },)*
                 }
 
-                state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+                // state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
                 prev_state
             }
         }

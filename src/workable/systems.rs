@@ -79,7 +79,7 @@ pub fn start_pawn_working(
     mut commands: Commands,
     mut event_reader: EventReader<WorkStartEvent>,
     mut query: Query<&mut Pawn>,
-    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    // mut state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for event in event_reader.read() {
         let mut pawn = query.get_mut(event.pawn_entity).unwrap();
@@ -89,7 +89,7 @@ pub fn start_pawn_working(
             PawnState::Working(task),
             event.pawn_entity,
             &mut commands,
-            &mut state_change_event_writer,
+            // &mut state_change_event_writer,
         );
     }
 }
@@ -124,7 +124,7 @@ pub fn complete_pawn_working(
     mut commands: Commands,
     mut event_reader: EventReader<WorkCompleteEvent>,
     mut query: Query<&mut Pawn>,
-    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    // mut state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
     mut farm_progress_event_writer: EventWriter<FarmProgressEvent>,
     mut farm_tending_event_writer: EventWriter<FarmTendedEvent>,
 ) {
@@ -148,7 +148,7 @@ pub fn complete_pawn_working(
             PawnState::Idle,
             event.pawn_entity,
             &mut commands,
-            &mut state_change_event_writer,
+            // &mut state_change_event_writer,
         );
     }
 }

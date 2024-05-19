@@ -220,21 +220,21 @@ fn find_valid_end_tile(
 }
 
 pub fn update_pawn_state_text(
-    mut event_reader: EventReader<EntityStateChangeEvent<PawnState>>,
-    children_query: Query<&Children>,
-    mut state_text_query: Query<&mut Text, With<PawnStateText>>,
+    // mut event_reader: EventReader<EntityStateChangeEvent<PawnState>>,
+    // children_query: Query<&Children>,
+    // mut state_text_query: Query<&mut Text, With<PawnStateText>>,
 ) {
-    for EntityStateChangeEvent(id, state) in event_reader.read() {
-        // println!("{:?}", event);
-        for text_entity in children_query.iter_descendants(*id) {
-            let mut text = state_text_query.get_mut(text_entity).unwrap();
-            text.sections[0].value = match state {
-                PawnState::Working(_) => "Working".into(),
-                // PawnState::TaskAsigned() => format!("state: {:?}", StateDebug(state)),
-                _ => format!("{:?}", state),
-            };
-        }
-    }
+    // for EntityStateChangeEvent(id, state) in event_reader.read() {
+    //     // println!("{:?}", event);
+    //     for text_entity in children_query.iter_descendants(*id) {
+    //         let mut text = state_text_query.get_mut(text_entity).unwrap();
+    //         text.sections[0].value = match state {
+    //             PawnState::Working(_) => "Working".into(),
+    //             // PawnState::TaskAsigned() => format!("state: {:?}", StateDebug(state)),
+    //             _ => format!("{:?}", state),
+    //         };
+    //     }
+    // }
 }
 
 pub fn progress_pawn_daily(
@@ -279,7 +279,7 @@ pub fn progress_pawn_death(
     mut commands: Commands,
     mut event_reader: EventReader<PawnDeathEvent>,
     mut query: Query<&mut Pawn>,
-    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    // mut state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
     mut work_queue: ResMut<TasksQueue>,
 ) {
     for event in event_reader.read() {
@@ -293,7 +293,7 @@ pub fn progress_pawn_death(
             PawnState::Dead,
             entity,
             &mut commands,
-            &mut state_change_event_writer,
+            // &mut state_change_event_writer,
         );
 
         // return pawn task back to tasks queue
