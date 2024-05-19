@@ -1,3 +1,5 @@
+use bevy::ecs::entity;
+
 use super::*;
 
 use std::collections::VecDeque;
@@ -41,14 +43,14 @@ impl Default for Commandable {
 pub struct CommandExecutedEvent(pub Entity);
 
 impl Commandable {
-    pub fn execute<I>(&mut self, command_or_commands: I, id: Entity, commands: &mut Commands)
+    pub fn schedule_execution<I>(&mut self, command_or_commands: I, entity: Entity, commands: &mut Commands)
     where
         I: IntoIterator<Item = CommandType>,
     {
         self.cleanup();
 
         self.pending = command_or_commands.into_iter().collect();
-        self.change_state(CommandableState::PendingExecution, id, commands);
+        self.change_state(CommandableState::PendingExecution, entity, commands);
     }
 
     pub fn complete_execution(
@@ -121,7 +123,7 @@ macro_rules! commandable_states {
             ) -> CommandableState {
                 use std::mem;
 
-                // println!("CommandableState {:?}=>{:?}", self.state, new_state);
+                println!("CommandableState {:?}=>{:?}", self.state, new_state);
 
                 // Remove the old state component
                 match &self.state {
