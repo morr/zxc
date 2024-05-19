@@ -9,7 +9,7 @@ impl Plugin for MoveToCommandPlugin {
     }
 }
 
-#[derive(Event, Debug)]
+#[derive(Event, Debug, Clone)]
 pub struct MoveToCommand(pub Entity, pub IVec2);
 
 fn execute_command(mut command_reader: EventReader<MoveToCommand>) {

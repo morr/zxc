@@ -3,7 +3,7 @@ use super::*;
 use std::collections::VecDeque;
 use std::vec;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum CommandType {
     UserSelection(UserSelectionCommand),
     ToRest(ToRestCommand),

@@ -13,6 +13,8 @@ pub fn process_commands(
 ) {
     for (id, mut commandable, maybe_pawn) in &mut commandable_query {
         if let Some(command_type) = commandable.pending.pop_front() {
+            commandable.executing = Some(command_type.clone());
+
             match command_type {
                 CommandType::UserSelection(command) => {
                     user_selection_command_writer.send(command);
