@@ -6,7 +6,10 @@ pub fn move_user_selected_pawn_on_click_stage_1(
     mut commands: Commands,
     mut click_event_reader: EventReader<ClickEventStage1>,
     user_selection: Res<CurrentUserSelection>,
-    mut pawn_query: Query<&mut Commandable, With<pawn_state::Idle>>,
+    mut pawn_query: Query<
+        &mut Commandable,
+        Or<(With<pawn_state::Idle>, With<pawn_state::ExecutingCommand>)>,
+    >,
     // mut pawn_query: Query<
     //     (&Transform, &mut Movable, &mut Commandable, Option<&mut PathfindingTask>),
     //     (With<pawn_state::Idle>, With<UserSelectionMarker>),
@@ -27,7 +30,7 @@ pub fn move_user_selected_pawn_on_click_stage_1(
         commandable.execute(
             CommandType::MoveTo(MoveToCommand(*id, *grid_tile)),
             *id,
-            &mut commands
+            &mut commands,
         );
 
         // movable.to_pathfinding_async(
@@ -120,7 +123,7 @@ pub fn listen_for_pathfinding_async_tasks(
                             );
                         }
                     } else {
-                        movable.to_pathfinding_error(entity/*, &mut event_writer*/);
+                        movable.to_pathfinding_error(entity /*, &mut event_writer*/);
                     }
                 } else {
                     // println!(
@@ -180,7 +183,7 @@ pub fn listen_for_pathfinding_answers(
                     );
                 }
             } else {
-                movable.to_pathfinding_error(entity/*, &mut event_writer*/);
+                movable.to_pathfinding_error(entity /*, &mut event_writer*/);
             }
         } else {
             // println!(
