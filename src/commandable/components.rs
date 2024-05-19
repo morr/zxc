@@ -5,9 +5,9 @@ use std::vec;
 
 #[derive(Debug)]
 pub enum CommandType {
-    UserSelection(UserSelectionData),
-    ToRest(Entity),
-    MoveTo(Entity, IVec2),
+    UserSelection(UserSelectionCommand),
+    ToRest(ToRestCommand),
+    MoveTo(MoveToCommand),
 }
 
 // it is implemented so a single command can be passed into Commandable.schedule

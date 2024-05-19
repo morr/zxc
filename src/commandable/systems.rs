@@ -12,16 +12,16 @@ pub fn process_commands(
     mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for (id, mut commandable, maybe_pawn) in &mut commandable_query {
-        if let Some(command) = commandable.pending_commands.pop_front() {
-            match command {
-                CommandType::UserSelection(data) => {
-                    user_selection_command_writer.send(UserSelectionCommand(Some(data)));
+        if let Some(command_type) = commandable.pending_commands.pop_front() {
+            match command_type {
+                CommandType::UserSelection(command) => {
+                    user_selection_command_writer.send(command);
                 }
-                CommandType::ToRest(entity) => {
-                    to_rest_command_writer.send(ToRestCommand(entity));
+                CommandType::ToRest(command) => {
+                    to_rest_command_writer.send(command);
                 }
-                CommandType::MoveTo(id, grid_tile) => {
-                    move_to_tile_command_writer.send(MoveToCommand { id, grid_tile });
+                CommandType::MoveTo(command) => {
+                    move_to_tile_command_writer.send(command);
                 }
             }
 
