@@ -59,6 +59,7 @@ impl Commandable {
         commands: &mut Commands,
         commandable_event_writer: &mut EventWriter<CommandExecutedEvent>,
     ) {
+        println!("complete_execution");
         self.executing = None;
 
         self.change_state(

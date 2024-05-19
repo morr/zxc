@@ -29,7 +29,7 @@ fn execute_command(
     queue_counter: Res<AsyncQueueCounter>,
     // mut movable_state_change_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
-    for MoveToCommand(ref entity, ref grid_tile) in command_reader.read() {
+    for MoveToCommand(entity, grid_tile) in command_reader.read() {
         // println!("{:?}", command);
         let (transform, mut movable, mut commandable, mut maybe_pathfinding_task) =
             movable_query.get_mut(*entity).unwrap();
@@ -54,16 +54,17 @@ fn monitor_completion(
     mut command_event_reader: EventReader<MovableReachedDestinationEvent>,
     mut commandable_event_writer: EventWriter<CommandExecutedEvent>,
 ) {
-    for MovableReachedDestinationEvent(ref entity, ref destination_tile) in
+    for MovableReachedDestinationEvent(entity, destination_tile) in
         command_event_reader.read()
     {
+        println!("{:?}", MovableReachedDestinationEvent(*entity, *destination_tile));
         let Ok(mut commandable) = query.get_mut(*entity) else {
             continue;
         };
         let Some(ref command_type) = commandable.executing else {
             continue;
         };
-        let CommandType::MoveTo(MoveToCommand(ref _entity, ref move_to_tile)) = command_type else {
+        let CommandType::MoveTo(MoveToCommand(_entity, move_to_tile)) = command_type else {
             continue;
         };
         if destination_tile != move_to_tile {
