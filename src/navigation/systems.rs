@@ -113,6 +113,7 @@ pub fn listen_for_pathfinding_async_tasks(
                         // then it means that we are pathfinding path to our
                         // current location. no movement needed
                         if path.len() == 1 {
+                            println!("EventWriter<MovableReachedDestinationEvent> 1");
                             movable.to_idle(entity, &mut commands, Some(&mut event_writer));
                         } else {
                             movable.to_moving(
@@ -173,6 +174,7 @@ pub fn listen_for_pathfinding_answers(
                 // then it means that we are pathfinding path to our
                 // current location. no movement needed
                 if path.len() == 1 {
+                    println!("EventWriter<MovableReachedDestinationEvent> 2");
                     movable.to_idle(entity, &mut commands, Some(&mut event_writer));
                 } else {
                     movable.to_moving(

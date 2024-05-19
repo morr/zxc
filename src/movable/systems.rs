@@ -47,8 +47,17 @@ fn move_to_target_location(
     // event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
 ) -> IVec2 {
     if movable.path.is_empty() {
-        movable.to_idle(entity, commands, Some(event_writer));
-        return transform.translation.truncate().world_pos_to_grid();
+        let current_tile = transform.translation.truncate().world_pos_to_grid();
+        let maybe_event_writer = match movable.state {
+            MovableState::Moving(target_tile) if current_tile == target_tile => Some(event_writer),
+            _ => None,
+        };
+        println!("EventWriter<MovableReachedDestinationEvent> current_tile:{:?}, target_tile:{:?}", current_tile, match movable.state {
+            MovableState::Moving(target_tile) => Some(target_tile),
+            _ => None,
+        });
+        movable.to_idle(entity, commands, maybe_event_writer);
+        return current_tile;
     }
 
     let current_point_world = transform.translation.truncate();
