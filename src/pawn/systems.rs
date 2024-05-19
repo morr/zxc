@@ -72,23 +72,23 @@ pub fn spawn_pawns(
             // .insert(ShowAabbGizmo {
             //     color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
             // })
-            .with_children(|parent| {
-                parent.spawn((
-                    Text2dBundle {
-                        text: Text::from_section(
-                            pawn_state_string,
-                            TextStyle {
-                                font: font_assets.fira.clone(),
-                                font_size: 13.0,
-                                color: Color::WHITE,
-                            },
-                        ),
-                        transform: Transform::from_xyz(0.0, 21.0, PAWN_Z_INDEX),
-                        ..default()
-                    },
-                    PawnStateText,
-                ));
-            })
+            // .with_children(|parent| {
+            //     parent.spawn((
+            //         Text2dBundle {
+            //             text: Text::from_section(
+            //                 pawn_state_string,
+            //                 TextStyle {
+            //                     font: font_assets.fira.clone(),
+            //                     font_size: 13.0,
+            //                     color: Color::WHITE,
+            //                 },
+            //             ),
+            //             transform: Transform::from_xyz(0.0, 21.0, PAWN_Z_INDEX),
+            //             ..default()
+            //         },
+            //         PawnStateText,
+            //     ));
+            // })
             .id();
 
         let grid_tile = position.truncate().world_pos_to_grid();
