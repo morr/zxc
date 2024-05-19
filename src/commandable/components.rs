@@ -42,15 +42,26 @@ impl Commandable {
     where
         I: IntoIterator<Item = CommandType>,
     {
-        // cleanup queue and maybe do something with its content
-        // while let Some(command) = self.queue.pop_back() {
-        //     match command {
-        //         _ => {}
-        //     }
-        // }
+        self.cleanup();
 
         self.pending = command_or_commands.into_iter().collect();
         self.change_state(CommandableState::PendingCommands, id, commands);
+    }
+
+    pub fn cleanup(&mut self) {
+        if let Some(command) = self.executing.take() {
+            self.pending.push_front(command);
+        }
+
+        // cleanup queue and maybe do something with its content
+        while let Some(_command) = self.pending.pop_back() {
+            // match command {
+            //     // special logic for some of commands will be here later
+            //     // for example it will return Task to the tasks queue
+            //     _ => {}
+            // }
+        }
+
     }
 }
 
