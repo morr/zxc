@@ -17,7 +17,7 @@ pub fn move_user_selected_pawn_on_click_stage_1(
     // mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     for ClickEventStage1(grid_tile) in click_event_reader.read() {
-        println!("click!");
+        println!("click {:?}", grid_tile);
         let Some(UserSelectionData { entity, kind }) = &user_selection.0 else {
             continue;
         };

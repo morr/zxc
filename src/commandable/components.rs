@@ -50,6 +50,7 @@ impl Commandable {
         self.cleanup();
 
         self.pending = command_or_commands.into_iter().collect();
+        println!("schedule_execution {:?}", self.pending);
         self.change_state(CommandableState::PendingExecution, entity, commands);
     }
 
