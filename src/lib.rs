@@ -16,7 +16,6 @@ macro_rules! expose_submodules {
 pub mod assets;
 pub mod async_queue;
 pub mod camera;
-pub mod commands;
 pub mod commandable;
 pub mod config;
 pub mod daylight;
@@ -36,7 +35,6 @@ pub mod workable;
 pub use crate::assets::*;
 pub use crate::async_queue::*;
 pub use crate::camera::*;
-pub use crate::commands::*;
 pub use crate::commandable::*;
 pub use crate::config::*;
 pub use crate::daylight::*;

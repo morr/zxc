@@ -56,7 +56,6 @@ fn main() {
             structure::StructurePlugin,
             ui::UiPlugin,
             input::InputPlugin,
-            commands::CommandsPlugin,
         ))
         .add_plugins((
             pawn::PawnPlugin,

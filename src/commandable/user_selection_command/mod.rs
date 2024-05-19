@@ -1,9 +1,20 @@
 use super::*;
 
+pub struct UserSelectionCommandPlugin;
+
+impl Plugin for UserSelectionCommandPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_event::<UserSelectionCommand>().add_systems(
+            Update,
+            execute_command.run_if(in_state(AppState::Playing)),
+        );
+    }
+}
+
 #[derive(Event, Debug)]
 pub struct UserSelectionCommand(pub Option<UserSelectionData>);
 
-pub fn execute_user_selection(
+fn execute_command(
     mut commands: Commands,
     mut current_user_selection: ResMut<CurrentUserSelection>,
     mut user_selection_command_reader: EventReader<UserSelectionCommand>,
