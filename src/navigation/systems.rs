@@ -3,8 +3,6 @@ use bevy::tasks::{block_on, futures_lite::future};
 use super::*;
 
 pub fn move_user_selected_pawn_on_click_stage_1(
-    // arc_navmesh: Res<ArcNavmesh>,
-    // queue_counter: Res<AsyncQueueCounter>,
     mut commands: Commands,
     mut click_event_reader: EventReader<ClickEventStage1>,
     user_selection: Res<CurrentUserSelection>,
@@ -16,7 +14,7 @@ pub fn move_user_selected_pawn_on_click_stage_1(
     // mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     for ClickEventStage1(grid_tile) in click_event_reader.read() {
-        let Some(UserSelectionData { id, kind }) = &user_selection.0 else {
+        let Some(UserSelectionData { entity: id, kind }) = &user_selection.0 else {
             continue;
         };
         let UserSelectionKind::Pawn = kind else {

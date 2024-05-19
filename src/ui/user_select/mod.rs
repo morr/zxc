@@ -49,7 +49,7 @@ fn update_ui_on_user_select_event(
         let mut user_selected_root_ui_commands = commands.entity(selected_root_ui_id);
         user_selected_root_ui_commands.despawn_descendants();
 
-        if let Some(UserSelectionData { id, kind }) = &user_selection.0 {
+        if let Some(UserSelectionData { entity: id, kind }) = &user_selection.0 {
             match kind {
                 UserSelectionKind::Pawn => {
                     if let Ok((pawn, movable, restable, commandable)) = pawn_query.get(*id) {

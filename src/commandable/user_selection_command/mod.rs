@@ -25,11 +25,11 @@ fn execute_command(
         let maybe_new_selection = &command.0;
 
         // remove aabb from prev selected
-        if let Some(UserSelectionData { id, .. }) = current_user_selection.0 {
+        if let Some(UserSelectionData { entity: id, .. }) = current_user_selection.0 {
             commands.entity(id).remove::<ShowAabbGizmo>();
         }
         // add aabb to to selected
-        if let Some(UserSelectionData { id, .. }) = maybe_new_selection {
+        if let Some(UserSelectionData { entity: id, .. }) = maybe_new_selection {
             commands.entity(*id).insert(ShowAabbGizmo {
                 color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
             });

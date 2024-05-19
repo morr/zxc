@@ -16,7 +16,7 @@ pub fn find_new_selection_on_click(
             navmesh
                 .get_occupation::<Movable>(grid_tile.x, grid_tile.y)
                 .map(|&id| UserSelectionData {
-                    id,
+                    entity: id,
                     kind: UserSelectionKind::Pawn,
                 }),
         );
@@ -24,7 +24,7 @@ pub fn find_new_selection_on_click(
             navmesh
                 .get_occupation::<Farm>(grid_tile.x, grid_tile.y)
                 .map(|&id| UserSelectionData {
-                    id,
+                    entity: id,
                     kind: UserSelectionKind::Farm,
                 }),
         );
@@ -36,10 +36,10 @@ pub fn find_new_selection_on_click(
         }
 
         let maybe_selection_index =
-            if let Some(UserSelectionData { id: current_id, .. }) = &current_user_selection.0 {
+            if let Some(UserSelectionData { entity: current_id, .. }) = &current_user_selection.0 {
                 let current_index = entities
                     .iter()
-                    .position(|UserSelectionData { id, .. }| id == current_id);
+                    .position(|UserSelectionData { entity: id, .. }| id == current_id);
 
                 match current_index {
                     Some(index) => {

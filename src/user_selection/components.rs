@@ -17,6 +17,6 @@ pub enum UserSelectionKind {
 
 #[derive(Debug, Clone, PartialEq, Hash)]
 pub struct UserSelectionData {
-    pub id: Entity,
+    pub entity: Entity,
     pub kind: UserSelectionKind,
 }

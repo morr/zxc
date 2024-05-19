@@ -98,7 +98,7 @@ pub fn spawn_pawns(
         // auto-select first pawn
         if i.is_zero() {
             user_selection_command_writer.send(UserSelectionCommand(Some(UserSelectionData {
-                id: pawn_id,
+                entity: pawn_id,
                 kind: UserSelectionKind::Pawn,
             })));
         }
