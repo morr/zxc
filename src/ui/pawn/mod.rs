@@ -47,7 +47,9 @@ pub struct CommandableComponentUIMarker {}
 #[derive(Component, Default)]
 struct CommandableStateTextUIMarker {}
 #[derive(Component, Default)]
-struct CommandableQueueTextUIMarker {}
+struct CommandableExecutingCommandTextUIMarker {}
+#[derive(Component, Default)]
+struct CommandablePendingCommandsTextUIMarker {}
 
 pub struct UiPawnPlugin;
 
@@ -74,7 +76,8 @@ fn update_pawn_ui(
             Option<&MovableStateTextUIMarker>,
             Option<&RestableStaminaTextUIMarker>,
             Option<&CommandableStateTextUIMarker>,
-            Option<&CommandableQueueTextUIMarker>,
+            Option<&CommandableExecutingCommandTextUIMarker>,
+            Option<&CommandablePendingCommandsTextUIMarker>,
         ),
         Or<(
             With<PawnAgeTextUIMarker>,
@@ -86,7 +89,8 @@ fn update_pawn_ui(
             With<MovableStateTextUIMarker>,
             With<RestableStaminaTextUIMarker>,
             With<CommandableStateTextUIMarker>,
-            With<CommandableQueueTextUIMarker>,
+            With<CommandableExecutingCommandTextUIMarker>,
+            With<CommandablePendingCommandsTextUIMarker>,
         )>,
     >,
     components_query: Query<(&Pawn, &Movable, &Restable, &Commandable)>,
@@ -130,7 +134,8 @@ fn update_text_markers_recursive(
             Option<&MovableStateTextUIMarker>,
             Option<&RestableStaminaTextUIMarker>,
             Option<&CommandableStateTextUIMarker>,
-            Option<&CommandableQueueTextUIMarker>,
+            Option<&CommandableExecutingCommandTextUIMarker>,
+            Option<&CommandablePendingCommandsTextUIMarker>,
         ),
         Or<(
             With<PawnAgeTextUIMarker>,
@@ -142,7 +147,8 @@ fn update_text_markers_recursive(
             With<MovableStateTextUIMarker>,
             With<RestableStaminaTextUIMarker>,
             With<CommandableStateTextUIMarker>,
-            With<CommandableQueueTextUIMarker>,
+            With<CommandableExecutingCommandTextUIMarker>,
+            With<CommandablePendingCommandsTextUIMarker>,
         )>,
     >,
     children_query: &Query<&Children>,
@@ -158,7 +164,8 @@ fn update_text_markers_recursive(
         movable_state_marker,
         restable_stamina_marker,
         commandable_state_marker,
-        commandable_queue_marker,
+        commandable_executing_command_marker,
+        commandable_pending_commands_marker,
     )) = texts.get_mut(entity)
     {
         if pawn_age_marker.is_some() {
@@ -188,8 +195,11 @@ fn update_text_markers_recursive(
         if commandable_state_marker.is_some() {
             text.sections[0].value = commandable_state_text(commandable);
         }
-        if commandable_queue_marker.is_some() {
-            text.sections[0].value = commandable_queue_text(commandable);
+        if commandable_executing_command_marker.is_some() {
+            text.sections[0].value = commandable_executing_command_text(commandable);
+        }
+        if commandable_pending_commands_marker.is_some() {
+            text.sections[0].value = commandable_pending_commands_text(commandable);
         }
     }
 
@@ -282,8 +292,12 @@ pub fn render_pawn_ui(
                             commandable_state_text(commandable),
                             font_assets,
                         ));
-                        parent.spawn(property_text_bundle::<CommandableQueueTextUIMarker>(
-                            commandable_queue_text(commandable),
+                        parent.spawn(property_text_bundle::<CommandableExecutingCommandTextUIMarker>(
+                            commandable_executing_command_text(commandable),
+                            font_assets,
+                        ));
+                        parent.spawn(property_text_bundle::<CommandablePendingCommandsTextUIMarker>(
+                            commandable_pending_commands_text(commandable),
                             font_assets,
                         ));
                     });
@@ -343,6 +357,9 @@ fn restable_stamina_text(restable: &Restable) -> String {
 fn commandable_state_text(commandable: &Commandable) -> String {
     format!("state: {:?}", commandable.state)
 }
-fn commandable_queue_text(commandable: &Commandable) -> String {
-    format!("queue: {:?}", commandable.pending_commands)
+fn commandable_executing_command_text(commandable: &Commandable) -> String {
+    format!("executing: {:?}", commandable.executing_command)
+}
+fn commandable_pending_commands_text(commandable: &Commandable) -> String {
+    format!("pending: {:?}", commandable.pending_commands)
 }
