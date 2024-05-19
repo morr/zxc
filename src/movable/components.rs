@@ -23,6 +23,9 @@ pub struct Movable {
     pub state: MovableState,
 }
 
+#[derive(Event, Debug, Clone)]
+pub struct MovableReachedDestinationEvent(pub Entity, pub IVec2);
+
 impl Movable {
     pub fn new(speed: f32) -> Self {
         Self {
@@ -36,11 +39,15 @@ impl Movable {
         &mut self,
         entity: Entity,
         commands: &mut Commands,
+        maybe_event_writer: Option<&mut EventWriter<MovableReachedDestinationEvent>>,
         // maybe_movable_state_change_event_writer: Option<&mut EventWriter<EntityStateChangeEvent<MovableState>>>,
     ) {
         self.stop_moving(entity, commands);
         self.state = MovableState::Idle;
 
+        // if let Some(event_writer) = maybe_event_writer {
+        //     event_writer.send(MovableReachedDestinationEvent(entity, self.state.clone()));
+        // }
         // if let Some(movable_state_change_event_writer) = maybe_movable_state_change_event_writer {
         //     movable_state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
         // }

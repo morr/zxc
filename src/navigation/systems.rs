@@ -90,6 +90,7 @@ pub fn listen_for_pathfinding_requests(
 pub fn listen_for_pathfinding_async_tasks(
     mut commands: Commands,
     mut tasks: Query<(Entity, &mut Movable, &mut PathfindingTask), With<PathfindingTask>>,
+    mut event_writer: EventWriter<MovableReachedDestinationEvent>,
     // mut event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     for (entity, mut movable, mut pathfinding_tasks) in &mut tasks {
@@ -103,8 +104,12 @@ pub fn listen_for_pathfinding_async_tasks(
                     }
 
                     if let Some(path) = &result.path {
+                        // pathfindign always return tile of current location,
+                        // so if it has returned only one IVec2,
+                        // then it means that we are pathfinding path to our
+                        // current location. no movement needed
                         if path.len() == 1 {
-                            movable.to_idle(entity, &mut commands/*, Some(&mut event_writer)*/);
+                            movable.to_idle(entity, &mut commands, Some(&mut event_writer));
                         } else {
                             movable.to_moving(
                                 path.iter().skip(1).cloned().collect(),
@@ -138,6 +143,7 @@ pub fn listen_for_pathfinding_answers(
     mut commands: Commands,
     mut pathfind_event_reader: EventReader<PathfindAnswerEvent>,
     mut query_movable: Query<(Entity, &mut Movable), With<Movable>>,
+    mut event_writer: EventWriter<MovableReachedDestinationEvent>,
     // mut event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     for event in pathfind_event_reader.read() {
@@ -157,8 +163,12 @@ pub fn listen_for_pathfinding_answers(
             }
 
             if let Some(path) = &event.path {
+                // pathfindign always return tile of current location,
+                // so if it has returned only one IVec2,
+                // then it means that we are pathfinding path to our
+                // current location. no movement needed
                 if path.len() == 1 {
-                    movable.to_idle(entity, &mut commands/*, Some(&mut event_writer)*/);
+                    movable.to_idle(entity, &mut commands, Some(&mut event_writer));
                 } else {
                     movable.to_moving(
                         path.iter().skip(1).cloned().collect(),
