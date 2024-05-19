@@ -45,7 +45,7 @@ impl Commandable {
         self.cleanup();
 
         self.pending = command_or_commands.into_iter().collect();
-        self.change_state(CommandableState::PendingCommands, id, commands);
+        self.change_state(CommandableState::PendingExecution, id, commands);
     }
 
     pub fn cleanup(&mut self) {
@@ -121,4 +121,4 @@ macro_rules! commandable_states {
     };
 }
 
-commandable_states!(Empty, PendingCommands, Executing);
+commandable_states!(Empty, PendingExecution, Executing);

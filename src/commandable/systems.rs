@@ -7,7 +7,7 @@ pub fn process_commands(
     mut move_to_tile_command_writer: EventWriter<MoveToCommand>,
     mut commandable_query: Query<
         (Entity, &mut Commandable, Option<&mut Pawn>),
-        With<commandable_state::PendingCommands>,
+        With<commandable_state::PendingExecution>,
     >,
     mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
