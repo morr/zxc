@@ -1,3 +1,5 @@
+use bevy::reflect::List;
+
 use super::*;
 
 use std::collections::VecDeque;
@@ -42,12 +44,17 @@ impl Movable {
         maybe_event_writer: Option<&mut EventWriter<MovableReachedDestinationEvent>>,
         // maybe_movable_state_change_event_writer: Option<&mut EventWriter<EntityStateChangeEvent<MovableState>>>,
     ) {
+          if self.path.is_empty() {
+            if let MovableState::Pathfinding(ref end_tile) = self.state {
+                if let Some(event_writer) = maybe_event_writer {
+                    event_writer.send(MovableReachedDestinationEvent(entity, *end_tile));
+                }
+            }
+        }
+
         self.stop_moving(entity, commands);
         self.state = MovableState::Idle;
 
-        // if let Some(event_writer) = maybe_event_writer {
-        //     event_writer.send(MovableReachedDestinationEvent(entity, self.state.clone()));
-        // }
         // if let Some(movable_state_change_event_writer) = maybe_movable_state_change_event_writer {
         //     movable_state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
         // }

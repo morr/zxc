@@ -43,7 +43,7 @@ fn execute_command(
 }
 
 fn monitor_completion(
-    // mut event_reader: EventReader<EntityStateChangeEvent<MovableState>>,
+    mut event_reader: EventReader<MovableReachedDestinationEvent>,
 ) {
     // for EntityStateChangeEvent(entity, movable_state) in event_reader.read() {
         // println!("{:?}", event);
