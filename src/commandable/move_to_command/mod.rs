@@ -4,8 +4,12 @@ pub struct MoveToCommandPlugin;
 
 impl Plugin for MoveToCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<MoveToCommand>()
-            .add_systems(Update, execute_command.run_if(in_state(AppState::Playing)));
+        app.add_event::<MoveToCommand>().add_systems(
+            Update,
+            (execute_command, wait_for_destination_reached)
+                .chain()
+                .run_if(in_state(AppState::Playing)),
+        );
     }
 }
 
@@ -35,5 +39,13 @@ fn execute_command(
             &mut commands,
             &mut movable_state_change_event_writer,
         );
+    }
+}
+
+fn wait_for_destination_reached(
+    mut event_reader: EventReader<EntityStateChangeEvent<MovableState>>,
+) {
+    for EntityStateChangeEvent(entity, movable_state) in event_reader.read() {
+        // println!("{:?}", event);
     }
 }
