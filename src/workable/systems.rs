@@ -1,7 +1,7 @@
 use super::*;
 
 pub fn assign_tasks_to_pawns(
-    mut commands: Commands,
+    // mut commands: Commands,
     mut query: Query<
         (
             Entity,
@@ -14,20 +14,27 @@ pub fn assign_tasks_to_pawns(
         With<pawn_state::Idle>,
     >,
     mut work_queue: ResMut<TasksQueue>,
-    mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
-    mut movable_state_change_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
-    arc_navmesh: Res<ArcNavmesh>,
-    queue_counter: Res<AsyncQueueCounter>,
+    // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    // mut movable_state_change_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
+    // arc_navmesh: Res<ArcNavmesh>,
+    // queue_counter: Res<AsyncQueueCounter>,
 ) {
-    for (entity, mut pawn, mut commandable, mut movable, transform, mut maybe_pathfinding_task) in
-        query.iter_mut()
+    for (
+        _entity,
+        mut _pawn,
+        mut _commandable,
+        mut _movable,
+        _transform,
+        _maybe_pathfinding_task,
+        // mut maybe_pathfinding_task,
+    ) in query.iter_mut()
     {
         let Some(task) = work_queue.get_task() else {
             continue;
         };
         // println!("assign_tasks_to_pawns {:?}", task);
 
-        let tile = task.grid_tile;
+        let _tile = task.grid_tile;
 
         // pawn.change_state(
         //     PawnState::TaskAssigned(task),

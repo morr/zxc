@@ -134,22 +134,22 @@ pub fn update_pawn_color(
 }
 
 pub fn wander_idle_pawns(
-    arc_navmesh: Res<ArcNavmesh>,
-    queue_counter: Res<AsyncQueueCounter>,
-    mut commands: Commands,
-    // time: Res<Time>,
-    mut query: Query<
-        (
-            Entity,
-            &mut Movable,
-            &Transform,
-            Option<&mut PathfindingTask>,
-        ),
-        With<pawn_state::Idle>,
-    >,
-    // time_scale: Res<TimeScale>,
-    // mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
-    mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
+    // arc_navmesh: Res<ArcNavmesh>,
+    // queue_counter: Res<AsyncQueueCounter>,
+    // mut commands: Commands,
+    // // time: Res<Time>,
+    // mut query: Query<
+    //     (
+    //         Entity,
+    //         &mut Movable,
+    //         &Transform,
+    //         Option<&mut PathfindingTask>,
+    //     ),
+    //     With<pawn_state::Idle>,
+    // >,
+    // // time_scale: Res<TimeScale>,
+    // // mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
+    // mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     // let mut rng = rand::thread_rng();
     //
