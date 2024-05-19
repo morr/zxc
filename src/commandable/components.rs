@@ -22,16 +22,16 @@ impl IntoIterator for CommandType {
 
 #[derive(Component, Debug)]
 pub struct Commandable {
-    pub executing_command: Option<CommandType>,
-    pub pending_commands: VecDeque<CommandType>,
+    pub executing: Option<CommandType>,
+    pub pending: VecDeque<CommandType>,
     pub state: CommandableState,
 }
 
 impl Default for Commandable {
     fn default() -> Self {
         Self {
-            executing_command: None,
-            pending_commands: VecDeque::default(),
+            executing: None,
+            pending: VecDeque::default(),
             state: CommandableState::Empty,
         }
     }
@@ -49,7 +49,7 @@ impl Commandable {
         //     }
         // }
 
-        self.pending_commands = command_or_commands.into_iter().collect();
+        self.pending = command_or_commands.into_iter().collect();
         self.change_state(CommandableState::PendingCommands, id, commands);
     }
 }

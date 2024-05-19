@@ -12,7 +12,7 @@ pub fn process_commands(
     mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for (id, mut commandable, maybe_pawn) in &mut commandable_query {
-        if let Some(command_type) = commandable.pending_commands.pop_front() {
+        if let Some(command_type) = commandable.pending.pop_front() {
             match command_type {
                 CommandType::UserSelection(command) => {
                     user_selection_command_writer.send(command);
