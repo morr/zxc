@@ -116,7 +116,7 @@ pawn_states!(
     // (Moving),
     (TaskAssigned, Task, _a),
     (Working, Task, _b),
-    (ExecutingCommandable),
+    (ExecutingCommand),
     (Sleeping),
     (Dead),
 );

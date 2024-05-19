@@ -29,7 +29,7 @@ pub fn process_commands(
 
             if let Some(mut pawn) = maybe_pawn {
                 pawn.change_state(
-                    PawnState::ExecutingCommandable,
+                    PawnState::ExecutingCommand,
                     id,
                     &mut commands,
                     &mut pawn_state_change_event_writer,
