@@ -205,7 +205,15 @@ fn update_text_markers_recursive(
 
     if let Ok(children) = children_query.get(entity) {
         for &child in children.iter() {
-            update_text_markers_recursive(child, pawn, movable, restable, commandable, texts, children_query);
+            update_text_markers_recursive(
+                child,
+                pawn,
+                movable,
+                restable,
+                commandable,
+                texts,
+                children_query,
+            );
         }
     }
 }
@@ -358,7 +366,10 @@ fn commandable_state_text(commandable: &Commandable) -> String {
     format!("state: {:?}", commandable.state)
 }
 fn commandable_executing_text(commandable: &Commandable) -> String {
-    format!("executing: {:?}", commandable.executing)
+    match &commandable.executing {
+        Some(command_type) => format!("executing: {:?}", command_type),
+        None => format!("executing: {:?}", commandable.executing),
+    }
 }
 fn commandable_pending_text(commandable: &Commandable) -> String {
     format!("pending: {:?}", commandable.pending)
