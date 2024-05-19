@@ -51,9 +51,12 @@ fn execute_command(
 fn monitor_completion(
     mut commands: Commands,
     mut query: Query<&mut Commandable, With<commandable_state::Executing>>,
-    mut event_reader: EventReader<MovableReachedDestinationEvent>,
+    mut command_event_reader: EventReader<MovableReachedDestinationEvent>,
+    mut commandable_event_writer: EventWriter<CommandExecutedEvent>,
 ) {
-    for MovableReachedDestinationEvent(ref entity, ref destination_tile) in event_reader.read() {
+    for MovableReachedDestinationEvent(ref entity, ref destination_tile) in
+        command_event_reader.read()
+    {
         let Ok(mut commandable) = query.get_mut(*entity) else {
             continue;
         };
@@ -67,6 +70,6 @@ fn monitor_completion(
             continue;
         }
 
-        commandable.complete_execution(*entity, &mut commands);
+        commandable.complete_execution(*entity, &mut commands, &mut commandable_event_writer);
     }
 }

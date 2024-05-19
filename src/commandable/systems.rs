@@ -11,7 +11,7 @@ pub fn process_commands(
     >,
     // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
-    for (id, mut commandable, maybe_pawn) in &mut commandable_query {
+    for (entity, mut commandable, maybe_pawn) in &mut commandable_query {
         if let Some(command_type) = commandable.pending.pop_front() {
             commandable.executing = Some(command_type.clone());
 
@@ -30,13 +30,37 @@ pub fn process_commands(
             if let Some(mut pawn) = maybe_pawn {
                 pawn.change_state(
                     PawnState::ExecutingCommand,
-                    id,
+                    entity,
                     &mut commands,
                     // &mut pawn_state_change_event_writer,
                 );
             }
             // Update the state of the entity to indicate it is executing a command
             // commands.entity(entity).insert(ExecutingCommand);
+        }
+    }
+}
+
+pub fn finalize_commands_execution(
+    mut commands: Commands,
+    mut commandable_event_reader: EventReader<CommandExecutedEvent>,
+    mut pawn_query: Query<
+        Option<&mut Pawn>,
+        (
+            With<commandable_state::Idle>,
+            With<pawn_state::ExecutingCommand>,
+        ),
+    >,
+    // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+) {
+    for CommandExecutedEvent(entity) in commandable_event_reader.read() {
+        if let Ok(Some(mut pawn)) = pawn_query.get_mut(*entity) {
+            pawn.change_state(
+                PawnState::Idle,
+                *entity,
+                &mut commands,
+                // &mut pawn_state_change_event_writer,
+            );
         }
     }
 }

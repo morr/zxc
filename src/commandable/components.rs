@@ -37,6 +37,9 @@ impl Default for Commandable {
     }
 }
 
+#[derive(Event, Debug)]
+pub struct CommandExecutedEvent(pub Entity);
+
 impl Commandable {
     pub fn execute<I>(&mut self, command_or_commands: I, id: Entity, commands: &mut Commands)
     where
@@ -48,7 +51,12 @@ impl Commandable {
         self.change_state(CommandableState::PendingExecution, id, commands);
     }
 
-    pub fn complete_execution(&mut self, entity: Entity, commands: &mut Commands) {
+    pub fn complete_execution(
+        &mut self,
+        entity: Entity,
+        commands: &mut Commands,
+        commandable_event_writer: &mut EventWriter<CommandExecutedEvent>,
+    ) {
         self.executing = None;
 
         self.change_state(
@@ -60,6 +68,10 @@ impl Commandable {
             entity,
             commands,
         );
+
+        if self.state == CommandableState::Idle {
+            commandable_event_writer.send(CommandExecutedEvent(entity));
+        }
     }
 
     pub fn cleanup(&mut self) {
