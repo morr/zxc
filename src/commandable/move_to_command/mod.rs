@@ -60,7 +60,7 @@ fn monitor_completion(
         let Some(ref command_type) = commandable.executing else {
             continue;
         };
-        let CommandType::MoveTo(MoveToCommand(ref _0, ref move_to_tile)) = command_type else {
+        let CommandType::MoveTo(MoveToCommand(ref _entity, ref move_to_tile)) = command_type else {
             continue;
         };
         if destination_tile != move_to_tile {
