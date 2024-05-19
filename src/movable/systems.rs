@@ -1,3 +1,5 @@
+use bevy::ecs::entity;
+
 use super::*;
 
 pub fn move_moving_entities(
@@ -19,8 +21,7 @@ pub fn move_moving_entities(
             time_scale.scale_to_seconds(time.delta_seconds()),
             &arc_navmesh,
             &mut commands,
-            &mut destination_reached_event_writer
-            // &mut movable_state_event_writer,
+            &mut destination_reached_event_writer, // &mut movable_state_event_writer,
         );
 
         if current_tile != final_tile {
@@ -95,12 +96,15 @@ fn move_to_target_location(
 pub fn stop_movable_on_death(
     mut commands: Commands,
     mut event_reader: EventReader<PawnDeathEvent>,
-    mut query: Query<&mut Movable>,
+    mut query: Query<(&mut Movable, &mut Commandable)>,
 ) {
-    for event in event_reader.read() {
-        let entity = event.0;
-        let mut movable = query.get_mut(event.0).unwrap();
+    for PawnDeathEvent(entity) in event_reader.read() {
         // println!("{:?}", event);
-        movable.to_idle(entity, &mut commands, None);
+        let Ok((mut movable, mut commandable)) = query.get_mut(*entity) else {
+            continue;
+        };
+
+        movable.to_idle(*entity, &mut commands, None);
+        commandable.cleanup();
     }
 }
