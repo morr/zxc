@@ -32,7 +32,7 @@ impl Default for Commandable {
         Self {
             executing: None,
             pending: VecDeque::default(),
-            state: CommandableState::Empty,
+            state: CommandableState::AwaitingCommands,
         }
     }
 }
@@ -53,7 +53,7 @@ impl Commandable {
 
         self.change_state(
             if self.pending.is_empty() {
-                CommandableState::Empty
+                CommandableState::AwaitingCommands
             } else {
                 CommandableState::PendingExecution
             },
@@ -134,4 +134,4 @@ macro_rules! commandable_states {
     };
 }
 
-commandable_states!(Empty, PendingExecution, Executing);
+commandable_states!(AwaitingCommands, PendingExecution, Executing);
