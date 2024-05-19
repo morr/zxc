@@ -1,7 +1,7 @@
 use super::*;
 
 pub fn assign_tasks_to_pawns(
-    // mut commands: Commands,
+    mut commands: Commands,
     mut query: Query<
         (
             Entity,
@@ -20,9 +20,9 @@ pub fn assign_tasks_to_pawns(
     // queue_counter: Res<AsyncQueueCounter>,
 ) {
     for (
-        _entity,
+        entity,
         mut _pawn,
-        mut _commandable,
+        mut commandable,
         mut _movable,
         _transform,
         _maybe_pathfinding_task,
@@ -34,7 +34,14 @@ pub fn assign_tasks_to_pawns(
         };
         // println!("assign_tasks_to_pawns {:?}", task);
 
-        let _tile = task.grid_tile;
+        // let tile = task.grid_tile;
+
+        commandable.schedule_execution(
+            CommandType::MoveTo(MoveToCommand(entity, task.grid_tile)),
+            entity,
+            &mut commands,
+        );
+
 
         // pawn.change_state(
         //     PawnState::TaskAssigned(task),
