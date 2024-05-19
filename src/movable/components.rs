@@ -45,7 +45,7 @@ impl Movable {
         // maybe_movable_state_change_event_writer: Option<&mut EventWriter<EntityStateChangeEvent<MovableState>>>,
     ) {
           if self.path.is_empty() {
-            if let MovableState::Pathfinding(ref end_tile) = self.state {
+            if let MovableState::Moving(ref end_tile) | MovableState::Pathfinding(ref end_tile) = self.state {
                 if let Some(event_writer) = maybe_event_writer {
                     event_writer.send(MovableReachedDestinationEvent(entity, *end_tile));
                 }
