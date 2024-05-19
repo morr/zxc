@@ -48,6 +48,20 @@ impl Commandable {
         self.change_state(CommandableState::PendingExecution, id, commands);
     }
 
+    pub fn complete_execution(&mut self, entity: Entity, commands: &mut Commands) {
+        self.executing = None;
+
+        self.change_state(
+            if self.pending.is_empty() {
+                CommandableState::Empty
+            } else {
+                CommandableState::PendingExecution
+            },
+            entity,
+            commands,
+        );
+    }
+
     pub fn cleanup(&mut self) {
         if let Some(command) = self.executing.take() {
             self.pending.push_front(command);
@@ -61,7 +75,6 @@ impl Commandable {
             //     _ => {}
             // }
         }
-
     }
 }
 
