@@ -112,6 +112,7 @@ pub fn listen_for_pathfinding_async_tasks(
                             movable.to_idle(entity, &mut commands, Some(&mut event_writer));
                         } else {
                             movable.to_moving(
+                                end_tile,
                                 path.iter().skip(1).cloned().collect(),
                                 entity,
                                 &mut commands,
@@ -171,6 +172,7 @@ pub fn listen_for_pathfinding_answers(
                     movable.to_idle(entity, &mut commands, Some(&mut event_writer));
                 } else {
                     movable.to_moving(
+                        event.end_tile,
                         path.iter().skip(1).cloned().collect(),
                         entity,
                         &mut commands,

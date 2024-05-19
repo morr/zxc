@@ -9,7 +9,7 @@ use std::collections::VecDeque;
 pub enum MovableState {
     #[default]
     Idle,
-    Moving,
+    Moving(IVec2),
     Pathfinding(IVec2),
     PathfindingError,
 }
@@ -62,12 +62,13 @@ impl Movable {
 
     pub fn to_moving(
         &mut self,
+        end_tile: IVec2,
         path: VecDeque<IVec2>,
         entity: Entity,
         commands: &mut Commands,
         // movable_state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
     ) {
-        self.state = MovableState::Moving;
+        self.state = MovableState::Moving(end_tile);
         self.path = path;
         commands.entity(entity).insert(MovableMoving);
         // movable_state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
@@ -85,7 +86,7 @@ impl Movable {
         commands: &mut Commands,
         // movable_state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
     ) {
-        if self.state == MovableState::Moving {
+        if let MovableState::Moving(_) = self.state {
             self.stop_moving(entity, commands);
         }
         self.state = MovableState::Pathfinding(end_tile);
