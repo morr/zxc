@@ -6,7 +6,7 @@ impl Plugin for MoveToCommandPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<MoveToCommand>().add_systems(
             Update,
-            (execute_command, wait_for_destination_reached)
+            (execute_command, monitor_completion)
                 .chain()
                 .run_if(in_state(AppState::Playing)),
         );
@@ -22,7 +22,7 @@ fn execute_command(
     mut movable_query: Query<(&Transform, &mut Movable, Option<&mut PathfindingTask>)>,
     arc_navmesh: Res<ArcNavmesh>,
     queue_counter: Res<AsyncQueueCounter>,
-    mut movable_state_change_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
+    // mut movable_state_change_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     for MoveToCommand(entity, grid_tile) in command_reader.read() {
         // println!("{:?}", command);
@@ -37,15 +37,15 @@ fn execute_command(
             &queue_counter,
             maybe_pathfinding_task.as_deref_mut(),
             &mut commands,
-            &mut movable_state_change_event_writer,
+            // &mut movable_state_change_event_writer,
         );
     }
 }
 
-fn wait_for_destination_reached(
-    mut event_reader: EventReader<EntityStateChangeEvent<MovableState>>,
+fn monitor_completion(
+    // mut event_reader: EventReader<EntityStateChangeEvent<MovableState>>,
 ) {
-    for EntityStateChangeEvent(entity, movable_state) in event_reader.read() {
+    // for EntityStateChangeEvent(entity, movable_state) in event_reader.read() {
         // println!("{:?}", event);
-    }
+    // }
 }

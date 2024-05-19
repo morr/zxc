@@ -6,7 +6,7 @@ pub fn move_moving_entities(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     arc_navmesh: Res<ArcNavmesh>,
-    mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
+    // mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
     mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
 ) {
     for (entity, mut movable, mut transform) in &mut query_movable {
@@ -18,7 +18,7 @@ pub fn move_moving_entities(
             time_scale.scale_to_seconds(time.delta_seconds()),
             &arc_navmesh,
             &mut commands,
-            &mut movable_state_event_writer,
+            // &mut movable_state_event_writer,
         );
 
         if current_tile != final_tile {
@@ -40,10 +40,10 @@ fn move_to_target_location(
     remaining_time: f32,
     arc_navmesh: &ArcNavmesh,
     commands: &mut Commands,
-    event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
+    // event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
 ) -> IVec2 {
     if movable.path.is_empty() {
-        movable.to_idle(entity, commands, Some(event_writer));
+        movable.to_idle(entity, commands/*, Some(event_writer)*/);
         return transform.translation.truncate().world_pos_to_grid();
     }
 
@@ -79,7 +79,7 @@ fn move_to_target_location(
                 remaining_time,
                 arc_navmesh,
                 commands,
-                event_writer,
+                // event_writer,
             );
         }
     } else {
@@ -98,6 +98,6 @@ pub fn stop_movable_on_death(
         let entity = event.0;
         let mut movable = query.get_mut(event.0).unwrap();
         // println!("{:?}", event);
-        movable.to_idle(entity, &mut commands, None);
+        movable.to_idle(entity, &mut commands/*, None*/);
     }
 }

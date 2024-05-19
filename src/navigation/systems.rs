@@ -90,7 +90,7 @@ pub fn listen_for_pathfinding_requests(
 pub fn listen_for_pathfinding_async_tasks(
     mut commands: Commands,
     mut tasks: Query<(Entity, &mut Movable, &mut PathfindingTask), With<PathfindingTask>>,
-    mut event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
+    // mut event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     for (entity, mut movable, mut pathfinding_tasks) in &mut tasks {
         pathfinding_tasks.0.retain_mut(|task| {
@@ -104,17 +104,17 @@ pub fn listen_for_pathfinding_async_tasks(
 
                     if let Some(path) = &result.path {
                         if path.len() == 1 {
-                            movable.to_idle(entity, &mut commands, Some(&mut event_writer));
+                            movable.to_idle(entity, &mut commands/*, Some(&mut event_writer)*/);
                         } else {
                             movable.to_moving(
                                 path.iter().skip(1).cloned().collect(),
                                 entity,
                                 &mut commands,
-                                &mut event_writer,
+                                // &mut event_writer,
                             );
                         }
                     } else {
-                        movable.to_pathfinding_error(entity, &mut event_writer);
+                        movable.to_pathfinding_error(entity/*, &mut event_writer*/);
                     }
                 } else {
                     // println!(
@@ -138,7 +138,7 @@ pub fn listen_for_pathfinding_answers(
     mut commands: Commands,
     mut pathfind_event_reader: EventReader<PathfindAnswerEvent>,
     mut query_movable: Query<(Entity, &mut Movable), With<Movable>>,
-    mut event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
+    // mut event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     for event in pathfind_event_reader.read() {
         // println!("{:?}", event);
@@ -158,17 +158,17 @@ pub fn listen_for_pathfinding_answers(
 
             if let Some(path) = &event.path {
                 if path.len() == 1 {
-                    movable.to_idle(entity, &mut commands, Some(&mut event_writer));
+                    movable.to_idle(entity, &mut commands/*, Some(&mut event_writer)*/);
                 } else {
                     movable.to_moving(
                         path.iter().skip(1).cloned().collect(),
                         entity,
                         &mut commands,
-                        &mut event_writer,
+                        // &mut event_writer,
                     );
                 }
             } else {
-                movable.to_pathfinding_error(entity, &mut event_writer);
+                movable.to_pathfinding_error(entity/*, &mut event_writer*/);
             }
         } else {
             // println!(

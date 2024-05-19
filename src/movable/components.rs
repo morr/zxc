@@ -36,14 +36,14 @@ impl Movable {
         &mut self,
         entity: Entity,
         commands: &mut Commands,
-        maybe_movable_state_change_event_writer: Option<&mut EventWriter<EntityStateChangeEvent<MovableState>>>,
+        // maybe_movable_state_change_event_writer: Option<&mut EventWriter<EntityStateChangeEvent<MovableState>>>,
     ) {
         self.stop_moving(entity, commands);
         self.state = MovableState::Idle;
 
-        if let Some(movable_state_change_event_writer) = maybe_movable_state_change_event_writer {
-            movable_state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
-        }
+        // if let Some(movable_state_change_event_writer) = maybe_movable_state_change_event_writer {
+        //     movable_state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+        // }
     }
 
     pub fn to_moving(
@@ -51,12 +51,12 @@ impl Movable {
         path: VecDeque<IVec2>,
         entity: Entity,
         commands: &mut Commands,
-        movable_state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
+        // movable_state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
     ) {
         self.state = MovableState::Moving;
         self.path = path;
         commands.entity(entity).insert(MovableMoving);
-        movable_state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+        // movable_state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -69,13 +69,13 @@ impl Movable {
         queue_counter: &Res<AsyncQueueCounter>,
         maybe_pathfinding_task: Option<&mut PathfindingTask>,
         commands: &mut Commands,
-        movable_state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
+        // movable_state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
     ) {
         if self.state == MovableState::Moving {
             self.stop_moving(entity, commands);
         }
         self.state = MovableState::Pathfinding(end_tile);
-        movable_state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+        // movable_state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
 
         let navmesh_arc_clone = arc_navmesh.0.clone();
         let task = spawn_async_task(queue_counter, async move {
@@ -120,11 +120,11 @@ impl Movable {
     pub fn to_pathfinding_error(
         &mut self,
         entity: Entity,
-        movable_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
+        // movable_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
     ) {
         self.state = MovableState::PathfindingError;
         self.path = [].into();
-        movable_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+        // movable_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
     }
 
     fn stop_moving(&mut self, entity: Entity, commands: &mut Commands) {

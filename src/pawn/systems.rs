@@ -106,31 +106,31 @@ pub fn spawn_pawns(
 }
 
 pub fn update_pawn_color(
-    assets_collection: Res<AssetsCollection>,
-    mut movable_event_reader: EventReader<EntityStateChangeEvent<MovableState>>,
-    mut pawn_event_reader: EventReader<EntityStateChangeEvent<PawnState>>,
-    mut query: Query<&mut Handle<ColorMaterial>>,
+    // assets_collection: Res<AssetsCollection>,
+    // mut movable_event_reader: EventReader<EntityStateChangeEvent<MovableState>>,
+    // mut pawn_event_reader: EventReader<EntityStateChangeEvent<PawnState>>,
+    // mut query: Query<&mut Handle<ColorMaterial>>,
 ) {
-    for event in movable_event_reader.read() {
-        if let Ok(mut material_handle) = query.get_mut(event.0) {
-            *material_handle = match event.1 {
-                MovableState::Idle => assets_collection.pawn_idle.clone(),
-                MovableState::Moving => assets_collection.pawn_moving.clone(),
-                MovableState::Pathfinding(_end_tile) => assets_collection.pawn_pathfinding.clone(),
-                MovableState::PathfindingError => assets_collection.pawn_pathfinding_error.clone(),
-            };
-        }
-    }
-
-    for event in pawn_event_reader.read() {
-        if let Ok(mut material_handle) = query.get_mut(event.0) {
-            match event.1 {
-                PawnState::Working(_) => *material_handle = assets_collection.pawn_working.clone(),
-                PawnState::Dead => *material_handle = assets_collection.pawn_dead.clone(),
-                _ => {}
-            };
-        }
-    }
+    // for event in movable_event_reader.read() {
+    //     if let Ok(mut material_handle) = query.get_mut(event.0) {
+    //         *material_handle = match event.1 {
+    //             MovableState::Idle => assets_collection.pawn_idle.clone(),
+    //             MovableState::Moving => assets_collection.pawn_moving.clone(),
+    //             MovableState::Pathfinding(_end_tile) => assets_collection.pawn_pathfinding.clone(),
+    //             MovableState::PathfindingError => assets_collection.pawn_pathfinding_error.clone(),
+    //         };
+    //     }
+    // }
+    //
+    // for event in pawn_event_reader.read() {
+    //     if let Ok(mut material_handle) = query.get_mut(event.0) {
+    //         match event.1 {
+    //             PawnState::Working(_) => *material_handle = assets_collection.pawn_working.clone(),
+    //             PawnState::Dead => *material_handle = assets_collection.pawn_dead.clone(),
+    //             _ => {}
+    //         };
+    //     }
+    // }
 }
 
 pub fn wander_idle_pawns(
