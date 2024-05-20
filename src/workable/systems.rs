@@ -2,7 +2,7 @@ use super::*;
 
 pub fn assign_tasks_to_pawns(
     mut commands: Commands,
-    mut query: Query<(Entity, &mut Commandable), With<pawn_state::Idle>>,
+    mut query: Query<(Entity, &mut Commandable), With<pawn_state::PawnStateIdleMarker>>,
     mut work_queue: ResMut<TasksQueue>,
 ) {
     for (entity, mut commandable) in query.iter_mut() {
@@ -42,7 +42,7 @@ pub fn start_pawn_working(
 }
 
 pub fn progress_work(
-    query_pawns: Query<(Entity, &Pawn), With<pawn_state::Working>>,
+    query_pawns: Query<(Entity, &Pawn), With<pawn_state::PawnStateWorkingMarker>>,
     mut query_workable: Query<(Entity, &mut Workable)>,
     time: Res<Time>,
     time_scale: Res<TimeScale>,

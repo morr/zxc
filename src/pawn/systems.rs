@@ -56,7 +56,7 @@ pub fn spawn_pawns(
         let pawn_id = commands
             .spawn((
                 pawn,
-                pawn_state::Idle,
+                pawn_state::PawnStateIdleMarker,
                 Commandable::default(),
                 Name::new("Pawn"),
                 // state: PawnState::Idle,
@@ -137,7 +137,7 @@ pub fn wander_idle_pawns(
     arc_navmesh: Res<ArcNavmesh>,
     mut query: Query<
         (Entity, &Movable, &mut Commandable, &Transform),
-        (With<pawn_state::Idle>, With<commandable_state::Idle>),
+        (With<pawn_state::PawnStateIdleMarker>, With<commandable_state::Idle>),
     >,
 ) {
     let mut rng = rand::thread_rng();
@@ -216,7 +216,7 @@ pub fn progress_pawn_daily(
     mut commands: Commands,
     mut event_reader: EventReader<NewDayEvent>,
     // mut event_writer: EventWriter<PawnBirthdayEvent>,
-    mut query: Query<(Entity, &mut Pawn), Without<pawn_state::Dead>>,
+    mut query: Query<(Entity, &mut Pawn), Without<pawn_state::PawnStateDeadMarker>>,
 ) {
     for event in event_reader.read() {
         for (entity, mut pawn) in query.iter_mut() {

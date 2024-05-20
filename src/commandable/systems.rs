@@ -50,7 +50,7 @@ pub fn finalize_commands_execution(
         Option<&mut Pawn>,
         (
             With<commandable_state::Idle>,
-            With<pawn_state::ExecutingCommand>,
+            With<pawn_state::PawnStateExecutingCommandMarker>,
         ),
     >,
     // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
