@@ -11,7 +11,7 @@ impl Plugin for UserSelectionCommandPlugin {
     }
 }
 
-#[derive(Event, Debug, Clone)]
+#[derive(Event, Debug, Clone, Reflect)]
 pub struct UserSelectionCommand(pub Option<UserSelectionData>);
 
 fn execute_command(

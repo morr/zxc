@@ -3,7 +3,7 @@ use super::*;
 use std::collections::VecDeque;
 use std::vec;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Reflect)]
 pub enum CommandType {
     UserSelection(UserSelectionCommand),
     ToRest(ToRestCommand),
@@ -21,7 +21,8 @@ impl IntoIterator for CommandType {
     }
 }
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, InspectorOptions, Reflect)]
+#[reflect(InspectorOptions)]
 pub struct Commandable {
     pub executing: Option<CommandType>,
     pub pending: VecDeque<CommandType>,

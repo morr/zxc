@@ -14,7 +14,7 @@ pub struct CommandablePlugin;
 impl Plugin for CommandablePlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<CommandExecutedEvent>()
-            // .register_type::<Commandable>()
+            .register_type::<Commandable>()
             .add_plugins((
                 MoveToCommandPlugin,
                 ToRestCommandPlugin,

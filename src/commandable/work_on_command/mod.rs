@@ -9,7 +9,7 @@ impl Plugin for WorkOnCommandPlugin {
     }
 }
 
-#[derive(Event, Debug, Clone)]
+#[derive(Event, Debug, Clone, Reflect)]
 pub struct WorkOnCommand(pub Entity, pub Task);
 
 fn execute_command(

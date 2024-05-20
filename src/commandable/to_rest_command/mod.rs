@@ -9,7 +9,7 @@ impl Plugin for ToRestCommandPlugin {
     }
 }
 
-#[derive(Event, Debug, Clone)]
+#[derive(Event, Debug, Clone, Reflect)]
 pub struct ToRestCommand(pub Entity);
 
 fn execute_command(mut command_reader: EventReader<ToRestCommand>) {
