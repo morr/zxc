@@ -3,6 +3,7 @@ use super::*;
 pub fn process_commands(
     mut commands: Commands,
     mut move_to_tile_command_writer: EventWriter<MoveToCommand>,
+    mut sleep_command_writer: EventWriter<SleepCommand>,
     mut to_rest_command_writer: EventWriter<ToRestCommand>,
     mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
     mut work_on_command_writer: EventWriter<WorkOnCommand>,
@@ -24,6 +25,9 @@ pub fn process_commands(
             match command_type {
                 CommandType::MoveTo(command) => {
                     move_to_tile_command_writer.send(command);
+                }
+                CommandType::Sleep(command) => {
+                    sleep_command_writer.send(command);
                 }
                 CommandType::ToRest(command) => {
                     to_rest_command_writer.send(command);
