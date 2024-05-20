@@ -55,7 +55,7 @@ fn execute_command(
 
 fn monitor_completion(
     mut commands: Commands,
-    mut query: Query<&mut Commandable, With<commandable_state::CommandableStateExecutingMarker>>,
+    mut query: Query<&mut Commandable, With<commandable_state::CommandableStateExecutingTag>>,
     mut command_event_reader: EventReader<MovableReachedDestinationEvent>,
     mut commandable_event_writer: EventWriter<CommandExecutedEvent>,
 ) {

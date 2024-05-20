@@ -9,8 +9,8 @@ pub fn move_user_selected_pawn_on_click_stage_1(
     mut pawn_query: Query<
         &mut Commandable,
         Or<(
-            With<pawn_state::PawnStateIdleMarker>,
-            With<pawn_state::PawnStateExecutingCommandMarker>,
+            With<pawn_state::PawnStateIdleTag>,
+            With<pawn_state::PawnStateExecutingCommandTag>,
         )>,
     >,
     mut work_queue: ResMut<TasksQueue>,

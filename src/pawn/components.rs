@@ -112,13 +112,13 @@ macro_rules! pawn_states {
 }
 
 pawn_states!(
-    (Idle, PawnStateIdleMarker),
+    (Idle, PawnStateIdleTag),
     // (Moving),
-    (TaskAssigned, PawnStateTaskAssignedMarker, Task, _a),
-    (Working, PawnStateWorkingMarker, Task, _b),
-    (ExecutingCommand, PawnStateExecutingCommandMarker),
-    (Sleeping, PawnStateSleepingMarker),
-    (Dead, PawnStateDeadMarker),
+    (TaskAssigned, PawnStateTaskAssignedTag, Task, _a),
+    (Working, PawnStateWorkingTag, Task, _b),
+    (ExecutingCommand, PawnStateExecutingCommandTag),
+    (Sleeping, PawnStateSleepingTag),
+    (Dead, PawnStateDeadTag),
 );
 
 #[derive(Component)]

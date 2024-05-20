@@ -171,7 +171,7 @@ macro_rules! commandable_states {
 }
 
 commandable_states!(
-    (Idle, CommandableStateIdleMarker),
-    (PendingExecution, CommandableStatePendingExecutionMarker),
-    (Executing, CommandableStateExecutingMarker)
+    (Idle, CommandableStateIdleTag),
+    (PendingExecution, CommandableStatePendingExecutionTag),
+    (Executing, CommandableStateExecutingTag)
 );

@@ -8,7 +8,7 @@ pub fn process_commands(
     mut work_on_command_writer: EventWriter<WorkOnCommand>,
     mut commandable_query: Query<
         (Entity, &mut Commandable, Option<&mut Pawn>),
-        With<commandable_state::CommandableStatePendingExecutionMarker>,
+        With<commandable_state::CommandableStatePendingExecutionTag>,
     >,
     // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
@@ -54,8 +54,8 @@ pub fn finalize_commands_execution(
     mut pawn_query: Query<
         (Option<&mut Pawn>, &Commandable),
         (
-            With<commandable_state::CommandableStateIdleMarker>,
-            With<pawn_state::PawnStateExecutingCommandMarker>,
+            With<commandable_state::CommandableStateIdleTag>,
+            With<pawn_state::PawnStateExecutingCommandTag>,
         ),
     >,
     // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
