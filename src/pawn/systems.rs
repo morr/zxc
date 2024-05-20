@@ -11,7 +11,7 @@ pub fn spawn_pawns(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     assets_collection: Res<AssetsCollection>,
-    font_assets: Res<FontAssets>,
+    // font_assets: Res<FontAssets>,
     warehouse_query: Query<&Transform, With<Warehouse>>,
     farm_query: Query<&Transform, With<Farm>>,
     arc_navmesh: ResMut<ArcNavmesh>,
