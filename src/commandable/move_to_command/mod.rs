@@ -74,6 +74,6 @@ fn monitor_completion(
             continue;
         }
 
-        commandable.complete_in_progress(*entity, &mut commands, &mut commandable_event_writer);
+        commandable.complete_command(*entity, &mut commands, &mut commandable_event_writer);
     }
 }

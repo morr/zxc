@@ -74,7 +74,7 @@ impl Commandable {
         self.queue.extend(command_or_commands);
     }
 
-    pub fn complete_in_progress(
+    pub fn complete_command(
         &mut self,
         entity: Entity,
         commands: &mut Commands,
