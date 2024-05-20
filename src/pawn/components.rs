@@ -73,7 +73,7 @@ macro_rules! pawn_states {
             use bevy::{prelude::*};
 
             $(
-                #[derive(Component, Reflect)]
+                #[derive(Component, Debug, Reflect)]
                 pub struct $state_component_name;
             )*
         }

@@ -52,11 +52,10 @@ impl Commandable {
     ) where
         I: IntoIterator<Item = CommandType>,
     {
-        self.cleanup(work_queue);
-
-        self.pending = command_or_commands.into_iter().collect();
         // println!("schedule_execution {:?}", self.pending);
         self.change_state(CommandableState::PendingExecution, entity, commands);
+        self.cleanup(work_queue);
+        self.pending = command_or_commands.into_iter().collect();
     }
 
     pub fn complete_execution(
@@ -66,8 +65,6 @@ impl Commandable {
         commandable_event_writer: &mut EventWriter<CommandExecutedEvent>,
     ) {
         // println!("complete_execution");
-        self.executing = None;
-
         self.change_state(
             if self.pending.is_empty() {
                 CommandableState::Idle
@@ -77,6 +74,7 @@ impl Commandable {
             entity,
             commands,
         );
+        self.executing = None;
 
         if self.state == CommandableState::Idle {
             commandable_event_writer.send(CommandExecutedEvent(entity));
@@ -114,7 +112,7 @@ macro_rules! commandable_states {
             use bevy::prelude::*;
 
             $(
-                #[derive(Component, Reflect)]
+                #[derive(Component, Debug, Reflect)]
                 pub struct $state_component_name;
             )*
         }
