@@ -366,11 +366,11 @@ fn commandable_state_text(commandable: &Commandable) -> String {
     format!("state: {:?}", commandable.state)
 }
 fn commandable_executing_text(commandable: &Commandable) -> String {
-    match &commandable.executing {
+    match &commandable.in_progress {
         Some(command_type) => format!("executing: {:?}", command_type),
-        None => format!("executing: {:?}", commandable.executing),
+        None => format!("executing: {:?}", commandable.in_progress),
     }
 }
 fn commandable_pending_text(commandable: &Commandable) -> String {
-    format!("pending: {:?}", commandable.pending)
+    format!("pending: {:?}", commandable.queue)
 }

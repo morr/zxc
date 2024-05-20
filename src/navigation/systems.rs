@@ -27,7 +27,7 @@ pub fn move_user_selected_pawn_on_click_stage_1(
             continue;
         };
 
-        commandable.schedule_execution(
+        commandable.set_queue(
             CommandType::MoveTo(MoveToCommand(*entity, *grid_tile)),
             *entity,
             &mut commands,

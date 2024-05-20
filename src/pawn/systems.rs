@@ -162,7 +162,7 @@ pub fn wander_idle_pawns(
         let world_pos = transform.translation.truncate();
         let end_tile = find_valid_end_tile(world_pos, &arc_navmesh.read(), &mut rng, 0);
 
-        commandable.schedule_execution(
+        commandable.set_queue(
             CommandType::MoveTo(MoveToCommand(entity, end_tile)),
             entity,
             &mut commands,

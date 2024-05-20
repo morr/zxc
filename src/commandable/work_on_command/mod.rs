@@ -24,7 +24,7 @@ fn execute_command(
         // println!("{:?}", WorkOnCommand(*entity, task.clone()));
         match query.get_mut(*entity) {
             Ok((mut pawn, mut commandable)) => {
-                commandable.complete_execution(
+                commandable.complete_in_progress(
                     *entity,
                     &mut commands,
                     &mut commandable_event_writer,

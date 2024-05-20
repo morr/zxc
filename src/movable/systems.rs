@@ -131,6 +131,6 @@ pub fn stop_movable_on_death(
         };
 
         movable.to_idle(*entity, &mut commands, None);
-        commandable.cleanup(&mut work_queue);
+        commandable.cleanup_queue(&mut work_queue);
     }
 }

@@ -18,8 +18,8 @@ pub fn process_commands(
             continue;
         }
 
-        if let Some(command_type) = commandable.pending.pop_front() {
-            commandable.executing = Some(command_type.clone());
+        if let Some(command_type) = commandable.queue.pop_front() {
+            commandable.in_progress = Some(command_type.clone());
 
             match command_type {
                 CommandType::MoveTo(command) => {

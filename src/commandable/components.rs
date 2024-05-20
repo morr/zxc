@@ -24,16 +24,16 @@ impl IntoIterator for CommandType {
 #[derive(Component, Debug, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
 pub struct Commandable {
-    pub executing: Option<CommandType>,
-    pub pending: VecDeque<CommandType>,
+    pub in_progress: Option<CommandType>,
+    pub queue: VecDeque<CommandType>,
     pub state: CommandableState,
 }
 
 impl Default for Commandable {
     fn default() -> Self {
         Self {
-            executing: None,
-            pending: VecDeque::default(),
+            in_progress: None,
+            queue: VecDeque::default(),
             state: CommandableState::Idle,
         }
     }
@@ -43,7 +43,7 @@ impl Default for Commandable {
 pub struct CommandExecutedEvent(pub Entity);
 
 impl Commandable {
-    pub fn schedule_execution<I>(
+    pub fn set_queue<I>(
         &mut self,
         command_or_commands: I,
         entity: Entity,
@@ -54,11 +54,11 @@ impl Commandable {
     {
         // println!("schedule_execution {:?}", self.pending);
         self.change_state(CommandableState::PendingExecution, entity, commands);
-        self.cleanup(work_queue);
-        self.pending = command_or_commands.into_iter().collect();
+        self.cleanup_queue(work_queue);
+        self.queue = command_or_commands.into_iter().collect();
     }
 
-    pub fn append_execution<I>(
+    pub fn extend_queue<I>(
         &mut self,
         command_or_commands: I,
         entity: Entity,
@@ -70,10 +70,10 @@ impl Commandable {
         if self.state == CommandableState::Idle {
             self.change_state(CommandableState::PendingExecution, entity, commands);
         }
-        self.pending.extend(command_or_commands);
+        self.queue.extend(command_or_commands);
     }
 
-    pub fn complete_execution(
+    pub fn complete_in_progress(
         &mut self,
         entity: Entity,
         commands: &mut Commands,
@@ -81,7 +81,7 @@ impl Commandable {
     ) {
         // println!("complete_execution");
         self.change_state(
-            if self.pending.is_empty() {
+            if self.queue.is_empty() {
                 CommandableState::Idle
             } else {
                 CommandableState::PendingExecution
@@ -89,20 +89,20 @@ impl Commandable {
             entity,
             commands,
         );
-        self.executing = None;
+        self.in_progress = None;
 
         if self.state == CommandableState::Idle {
             commandable_event_writer.send(CommandExecutedEvent(entity));
         }
     }
 
-    pub fn cleanup(&mut self, work_queue: &mut ResMut<TasksQueue>) {
-        if let Some(command) = self.executing.take() {
-            self.pending.push_front(command);
+    pub fn cleanup_queue(&mut self, work_queue: &mut ResMut<TasksQueue>) {
+        if let Some(command) = self.in_progress.take() {
+            self.queue.push_front(command);
         }
 
         // cleanup queue and maybe do something with its content
-        while let Some(command_type) = self.pending.pop_back() {
+        while let Some(command_type) = self.queue.pop_back() {
             #[allow(clippy::single_match)]
             match command_type {
                 CommandType::WorkOn(WorkOnCommand(_entity, task)) => {

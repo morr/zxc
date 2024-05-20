@@ -64,7 +64,7 @@ fn monitor_completion(
         let Ok(mut commandable) = query.get_mut(*entity) else {
             continue;
         };
-        let Some(ref command_type) = commandable.executing else {
+        let Some(ref command_type) = commandable.in_progress else {
             continue;
         };
         let CommandType::MoveTo(MoveToCommand(_entity, move_to_tile)) = command_type else {
@@ -74,6 +74,6 @@ fn monitor_completion(
             continue;
         }
 
-        commandable.complete_execution(*entity, &mut commands, &mut commandable_event_writer);
+        commandable.complete_in_progress(*entity, &mut commands, &mut commandable_event_writer);
     }
 }

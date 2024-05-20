@@ -16,7 +16,7 @@ pub fn assign_tasks_to_pawns(
         };
         // println!("assign_tasks_to_pawns {:?}", task);
 
-        commandable.schedule_execution(
+        commandable.set_queue(
             [
                 CommandType::MoveTo(MoveToCommand(entity, task.grid_tile)),
                 CommandType::WorkOn(WorkOnCommand(entity, task)),
