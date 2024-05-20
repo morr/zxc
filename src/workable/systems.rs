@@ -37,7 +37,10 @@ pub fn assign_tasks_to_pawns(
         // let tile = task.grid_tile;
 
         commandable.schedule_execution(
-            CommandType::MoveTo(MoveToCommand(entity, task.grid_tile)),
+            [
+                CommandType::MoveTo(MoveToCommand(entity, task.grid_tile)),
+                CommandType::WorkOn(WorkOnCommand(entity, task))
+            ],
             entity,
             &mut commands,
         );
@@ -63,24 +66,24 @@ pub fn assign_tasks_to_pawns(
     }
 }
 
-pub fn check_pawn_ready_for_working(
-    query: Query<
-        (Entity, &Pawn, &Transform),
-        (With<pawn_state::TaskAssigned>, Without<MovableMoving>),
-    >,
-    mut event_writer: EventWriter<WorkStartEvent>,
-) {
-    for (entity, pawn, transform) in query.iter() {
-        let current_tile = transform.translation.truncate().world_pos_to_grid();
-        let is_pawn_reached_workplace = current_tile == pawn.get_task().grid_tile;
-
-        if is_pawn_reached_workplace {
-            event_writer.send(WorkStartEvent {
-                pawn_entity: entity,
-            });
-        }
-    }
-}
+// pub fn check_pawn_ready_for_working(
+//     query: Query<
+//         (Entity, &Pawn, &Transform),
+//         (With<pawn_state::TaskAssigned>, Without<MovableMoving>),
+//     >,
+//     mut event_writer: EventWriter<WorkStartEvent>,
+// ) {
+//     for (entity, pawn, transform) in query.iter() {
+//         let current_tile = transform.translation.truncate().world_pos_to_grid();
+//         let is_pawn_reached_workplace = current_tile == pawn.get_task().grid_tile;
+//
+//         if is_pawn_reached_workplace {
+//             event_writer.send(WorkStartEvent {
+//                 pawn_entity: entity,
+//             });
+//         }
+//     }
+// }
 
 pub fn start_pawn_working(
     mut commands: Commands,

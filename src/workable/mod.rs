@@ -18,7 +18,7 @@ impl Plugin for WorkablePlugin {
                 FixedUpdate,
                 (
                     assign_tasks_to_pawns,
-                    check_pawn_ready_for_working,
+                    // check_pawn_ready_for_working,
                     start_pawn_working,
                     complete_pawn_working,
                 )
