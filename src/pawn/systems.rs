@@ -143,8 +143,8 @@ pub fn wander_idle_pawns(
     let mut rng = rand::thread_rng();
 
     for (entity, movable, mut commandable, transform) in &mut query {
-        // println!("idle pwan {:?}", pawn);
-        if movable.state != MovableState::Idle {
+        println!("wander idle pawn, commandable:{:?}", commandable);
+        if movable.state != MovableState::Idle || commandable.state != CommandableState::Idle {
             continue;
         }
 
