@@ -1,5 +1,3 @@
-use bevy::ecs::entity;
-
 use super::*;
 
 use std::collections::VecDeque;
@@ -10,6 +8,7 @@ pub enum CommandType {
     UserSelection(UserSelectionCommand),
     ToRest(ToRestCommand),
     MoveTo(MoveToCommand),
+    WorkOn(WorkOnCommand),
 }
 
 // it is implemented so a single command can be passed into Commandable.schedule

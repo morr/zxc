@@ -2,9 +2,10 @@ use super::*;
 
 pub fn process_commands(
     mut commands: Commands,
-    mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
-    mut to_rest_command_writer: EventWriter<ToRestCommand>,
     mut move_to_tile_command_writer: EventWriter<MoveToCommand>,
+    mut to_rest_command_writer: EventWriter<ToRestCommand>,
+    mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
+    mut work_on_command_writer: EventWriter<WorkOnCommand>,
     mut commandable_query: Query<
         (Entity, &mut Commandable, Option<&mut Pawn>),
         With<commandable_state::PendingExecution>,
@@ -16,14 +17,17 @@ pub fn process_commands(
             commandable.executing = Some(command_type.clone());
 
             match command_type {
-                CommandType::UserSelection(command) => {
-                    user_selection_command_writer.send(command);
+                CommandType::MoveTo(command) => {
+                    move_to_tile_command_writer.send(command);
                 }
                 CommandType::ToRest(command) => {
                     to_rest_command_writer.send(command);
                 }
-                CommandType::MoveTo(command) => {
-                    move_to_tile_command_writer.send(command);
+                CommandType::UserSelection(command) => {
+                    user_selection_command_writer.send(command);
+                }
+                CommandType::WorkOn(command) => {
+                    work_on_command_writer.send(command);
                 }
             }
 

@@ -3,9 +3,10 @@ use crate::*;
 expose_submodules!(
     components,
     systems,
-    user_selection_command,
+    move_to_command,
     to_rest_command,
-    move_to_command
+    user_selection_command,
+    work_on_command
 );
 
 pub struct CommandablePlugin;
@@ -18,6 +19,7 @@ impl Plugin for CommandablePlugin {
                 MoveToCommandPlugin,
                 ToRestCommandPlugin,
                 UserSelectionCommandPlugin,
+                WorkOnCommandPlugin,
             ))
             .add_systems(
                 Update,
