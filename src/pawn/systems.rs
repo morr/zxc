@@ -136,7 +136,7 @@ pub fn wander_idle_pawns(
     mut commands: Commands,
     arc_navmesh: Res<ArcNavmesh>,
     mut query: Query<
-        (Entity, &Movable, &mut Commandable, &Transform),
+        (Entity, &Pawn, &Movable, &mut Commandable, &Transform),
         (
             With<pawn_state::PawnStateIdleMarker>,
             With<commandable_state::CommandableStateIdleMarker>,
@@ -146,9 +146,16 @@ pub fn wander_idle_pawns(
 ) {
     let mut rng = rand::thread_rng();
 
-    for (entity, movable, mut commandable, transform) in &mut query {
-        println!("wander idle pawn, commandable:{:?}", commandable);
-        if movable.state != MovableState::Idle || commandable.state != CommandableState::Idle {
+    for (entity, pawn, movable, mut commandable, transform) in &mut query {
+        if movable.state != MovableState::Idle {
+            continue;
+        }
+        if pawn.state != PawnState::Idle {
+            debug!("wander_idle_pawn>> got PawnState::{:?} while expected PawnState::{:?} by Query<With<pawn_state::PawnStateIdleMarker>> param", pawn.state, PawnState::Idle);
+            continue;
+        }
+        if commandable.state != CommandableState::Idle {
+            debug!("wander_idle_pawn>> got CommandableState::{:?} while expected CommandableState::{:?} by Query<With<commandable_state::CommandableStateIdleMarker>> param", commandable.state, CommandableState::Idle);
             continue;
         }
 

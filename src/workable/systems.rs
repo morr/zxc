@@ -2,10 +2,15 @@ use super::*;
 
 pub fn assign_tasks_to_pawns(
     mut commands: Commands,
-    mut query: Query<(Entity, &mut Commandable), With<pawn_state::PawnStateIdleMarker>>,
+    mut query: Query<(Entity, &Pawn, &mut Commandable), With<pawn_state::PawnStateIdleMarker>>,
     mut work_queue: ResMut<TasksQueue>,
 ) {
-    for (entity, mut commandable) in query.iter_mut() {
+    for (entity, pawn, mut commandable) in query.iter_mut() {
+        if pawn.state != PawnState::Idle {
+            debug!("assign_tasks_to_pawns>> got PawnState::{:?} while expected PawnState::{:?} by Query<With<pawn_state::PawnStateIdleMarker>> param", pawn.state, PawnState::Idle);
+            continue;
+        }
+
         let Some(task) = work_queue.get_task() else {
             continue;
         };
@@ -18,7 +23,7 @@ pub fn assign_tasks_to_pawns(
             ],
             entity,
             &mut commands,
-            &mut work_queue
+            &mut work_queue,
         );
     }
 }
