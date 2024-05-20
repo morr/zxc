@@ -105,8 +105,7 @@ pub fn spawn_pawns(
     }
 }
 
-pub fn update_pawn_color(
-    // assets_collection: Res<AssetsCollection>,
+pub fn update_pawn_color(// assets_collection: Res<AssetsCollection>,
     // mut movable_event_reader: EventReader<EntityStateChangeEvent<MovableState>>,
     // mut pawn_event_reader: EventReader<EntityStateChangeEvent<PawnState>>,
     // mut query: Query<&mut Handle<ColorMaterial>>,
@@ -134,53 +133,30 @@ pub fn update_pawn_color(
 }
 
 pub fn wander_idle_pawns(
-    // arc_navmesh: Res<ArcNavmesh>,
-    // queue_counter: Res<AsyncQueueCounter>,
-    // mut commands: Commands,
-    // // time: Res<Time>,
-    // mut query: Query<
-    //     (
-    //         Entity,
-    //         &mut Movable,
-    //         &Transform,
-    //         Option<&mut PathfindingTask>,
-    //     ),
-    //     With<pawn_state::Idle>,
-    // >,
-    // // time_scale: Res<TimeScale>,
-    // // mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
-    // mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
+    mut commands: Commands,
+    arc_navmesh: Res<ArcNavmesh>,
+    mut query: Query<
+        (Entity, &Movable, &mut Commandable, &Transform),
+        (With<pawn_state::Idle>, With<commandable_state::Idle>),
+    >,
 ) {
-    // let mut rng = rand::thread_rng();
-    //
-    // for (entity, mut movable, transform, mut maybe_pathfinding_task) in &mut query {
-    //     if movable.state != MovableState::Idle {
-    //         continue;
-    //     }
-    //
-    //     let world_pos = transform.translation.truncate();
-    //     let start_tile = world_pos.world_pos_to_grid();
-    //     let end_tile = find_valid_end_tile(world_pos, &arc_navmesh.read(), &mut rng, 0);
-    //
-    //     // movable.to_pathfinding(
-    //     //     entity,
-    //     //     start_tile,
-    //     //     end_tile,
-    //     //     &mut commands,
-    //     //     &mut pathfind_event_writer,
-    //     //     &mut movable_state_event_writer,
-    //     // );
-    //     movable.to_pathfinding_async(
-    //         entity,
-    //         start_tile,
-    //         end_tile,
-    //         &arc_navmesh,
-    //         &queue_counter,
-    //         maybe_pathfinding_task.as_deref_mut(),
-    //         &mut commands,
-    //         &mut movable_state_event_writer,
-    //     );
-    // }
+    let mut rng = rand::thread_rng();
+
+    for (entity, movable, mut commandable, transform) in &mut query {
+        // println!("idle pwan {:?}", pawn);
+        if movable.state != MovableState::Idle {
+            continue;
+        }
+
+        let world_pos = transform.translation.truncate();
+        let end_tile = find_valid_end_tile(world_pos, &arc_navmesh.read(), &mut rng, 0);
+
+        commandable.schedule_execution(
+            CommandType::MoveTo(MoveToCommand(entity, end_tile)),
+            entity,
+            &mut commands,
+        );
+    }
 }
 
 fn find_valid_end_tile(
@@ -219,8 +195,7 @@ fn find_valid_end_tile(
     }
 }
 
-pub fn update_pawn_state_text(
-    // mut event_reader: EventReader<EntityStateChangeEvent<PawnState>>,
+pub fn update_pawn_state_text(// mut event_reader: EventReader<EntityStateChangeEvent<PawnState>>,
     // children_query: Query<&Children>,
     // mut state_text_query: Query<&mut Text, With<PawnStateText>>,
 ) {
