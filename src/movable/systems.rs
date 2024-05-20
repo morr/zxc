@@ -49,7 +49,13 @@ fn move_to_target_location(
     if movable.path.is_empty() {
         let current_tile = transform.translation.truncate().world_pos_to_grid();
         let maybe_event_writer = match movable.state {
-            MovableState::Moving(target_tile) if current_tile == target_tile => Some(event_writer),
+            MovableState::Moving(target_tile)
+            | MovableState::Pathfinding(target_tile)
+            | MovableState::PathfindingError(target_tile)
+                if current_tile == target_tile =>
+            {
+                Some(event_writer)
+            }
             _ => None,
         };
         // println!(
