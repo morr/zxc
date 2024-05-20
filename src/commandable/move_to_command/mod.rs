@@ -57,7 +57,7 @@ fn monitor_completion(
     for MovableReachedDestinationEvent(entity, destination_tile) in
         command_event_reader.read()
     {
-        // println!("{:?}", MovableReachedDestinationEvent(*entity, *destination_tile));
+        println!("{:?}", MovableReachedDestinationEvent(*entity, *destination_tile));
         let Ok(mut commandable) = query.get_mut(*entity) else {
             continue;
         };

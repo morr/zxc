@@ -52,14 +52,10 @@ fn move_to_target_location(
             MovableState::Moving(target_tile) if current_tile == target_tile => Some(event_writer),
             _ => None,
         };
-        // println!(
-        //     "EventWriter<MovableReachedDestinationEvent> current_tile:{:?}, target_tile:{:?}",
-        //     current_tile,
-        //     match movable.state {
-        //         MovableState::Moving(target_tile) => Some(target_tile),
-        //         _ => None,
-        //     }
-        // );
+        println!("EventWriter<MovableReachedDestinationEvent> current_tile:{:?}, target_tile:{:?}", current_tile, match movable.state {
+            MovableState::Moving(target_tile) => Some(target_tile),
+            _ => None,
+        });
         movable.to_idle(entity, commands, maybe_event_writer);
         return current_tile;
     }

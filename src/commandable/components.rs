@@ -50,7 +50,7 @@ impl Commandable {
         self.cleanup();
 
         self.pending = command_or_commands.into_iter().collect();
-        // println!("schedule_execution {:?}", self.pending);
+        println!("schedule_execution {:?}", self.pending);
         self.change_state(CommandableState::PendingExecution, entity, commands);
     }
 
@@ -60,7 +60,7 @@ impl Commandable {
         commands: &mut Commands,
         commandable_event_writer: &mut EventWriter<CommandExecutedEvent>,
     ) {
-        // println!("complete_execution");
+        println!("complete_execution");
         self.executing = None;
 
         self.change_state(
@@ -125,7 +125,7 @@ macro_rules! commandable_states {
             ) -> CommandableState {
                 use std::mem;
 
-                // println!("CommandableState {:?}=>{:?}", self.state, new_state);
+                println!("CommandableState {:?}=>{:?}", self.state, new_state);
 
                 // Remove the old state component
                 match &self.state {
