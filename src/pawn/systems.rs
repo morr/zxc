@@ -51,7 +51,7 @@ pub fn spawn_pawns(
             )
         };
         let pawn = Pawn::default();
-        let pawn_state_string = format!("{:?}", pawn.state);
+        // let pawn_state_string = format!("{:?}", pawn.state);
 
         let pawn_id = commands
             .spawn((
