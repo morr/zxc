@@ -92,9 +92,10 @@ impl Movable {
         // movable_state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
     ) {
         println!("MovableState {:?}=>{:?}", self.state, MovableState::Pathfinding(end_tile));
-        if let MovableState::Moving(_) = self.state {
-            self.stop_moving(entity, commands);
-        }
+        // if let MovableState::Moving(_) = self.state {
+        //     self.stop_moving(entity, commands);
+        // }
+        self.stop_moving(entity, commands);
         self.state = MovableState::Pathfinding(end_tile);
         // movable_state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
 
@@ -140,13 +141,14 @@ impl Movable {
 
     pub fn to_pathfinding_error(
         &mut self,
-        _entity: Entity,
+        entity: Entity,
         end_tile: IVec2,
+        commands: &mut Commands,
         // movable_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
     ) {
         println!("MovableState {:?}=>{:?}", self.state, MovableState::PathfindingError(end_tile));
+        self.stop_moving(entity, commands);
         self.state = MovableState::PathfindingError(end_tile);
-        self.path = [].into();
         // movable_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
     }
 
