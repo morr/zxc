@@ -58,14 +58,20 @@ fn move_to_target_location(
             }
             _ => None,
         };
-        // println!(
-        //     "EventWriter<MovableReachedDestinationEvent> current_tile:{:?}, target_tile:{:?}",
-        //     current_tile,
-        //     match movable.state {
-        //         MovableState::Moving(target_tile) => Some(target_tile),
-        //         _ => None,
-        //     }
-        // );
+        if maybe_event_writer.is_some() {
+            println!(
+                "EventWriter<MovableReachedDestinationEvent> current_tile:{:?}, target_tile:{:?}, movable_state:{:?}",
+                current_tile,
+                match movable.state {
+                    MovableState::Moving(target_tile) => Some(target_tile),
+                    // | MovableState::Pathfinding(target_tile)
+                    // | MovableState::PathfindingError(target_tile) => Some(target_tile),
+                    _ => None,
+                },
+                movable.state
+            );
+        }
+        println!("move_to_target_location to_idle state:{:?}", movable.state);
         movable.to_idle(entity, commands, maybe_event_writer);
         return current_tile;
     }
