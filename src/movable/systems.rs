@@ -1,5 +1,3 @@
-use bevy::ecs::entity;
-
 use super::*;
 
 pub fn move_moving_entities(
@@ -13,25 +11,33 @@ pub fn move_moving_entities(
     mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
 ) {
     for (entity, mut movable, mut transform) in &mut query_movable {
-        let current_tile = transform.translation.truncate().world_pos_to_grid();
-        let final_tile = move_to_target_location(
-            entity,
-            &mut movable,
-            &mut transform,
-            time_scale.scale_to_seconds(time.delta_seconds()),
-            &arc_navmesh,
-            &mut commands,
-            &mut destination_reached_event_writer, // &mut movable_state_event_writer,
-        );
+        match movable.state {
+            MovableState::Moving(_) => {
+                let current_tile = transform.translation.truncate().world_pos_to_grid();
+                let final_tile = move_to_target_location(
+                    entity,
+                    &mut movable,
+                    &mut transform,
+                    time_scale.scale_to_seconds(time.delta_seconds()),
+                    &arc_navmesh,
+                    &mut commands,
+                    &mut destination_reached_event_writer, // &mut movable_state_event_writer,
+                );
 
-        if current_tile != final_tile {
-            let mut navmesh = arc_navmesh.write();
+                if current_tile != final_tile {
+                    let mut navmesh = arc_navmesh.write();
 
-            navmesh.remove_occupation::<Movable>(&entity, current_tile.x, current_tile.y);
-            navmesh.add_occupation::<Movable>(entity, final_tile.x, final_tile.y);
+                    navmesh.remove_occupation::<Movable>(&entity, current_tile.x, current_tile.y);
+                    navmesh.add_occupation::<Movable>(entity, final_tile.x, final_tile.y);
 
-            occupation_change_event_writer
-                .send(OccupationChangeEvent(vec![current_tile, final_tile]));
+                    occupation_change_event_writer
+                        .send(OccupationChangeEvent(vec![current_tile, final_tile]));
+                }
+            }
+            _ => {
+                // This can happen between switching states while executing commands
+                continue;
+            }
         }
     }
 }
