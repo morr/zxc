@@ -5,9 +5,10 @@ use std::vec;
 
 #[derive(Debug, Clone, Reflect)]
 pub enum CommandType {
-    UserSelection(UserSelectionCommand),
-    ToRest(ToRestCommand),
     MoveTo(MoveToCommand),
+    Sleep(SleepCommand),
+    ToRest(ToRestCommand),
+    UserSelection(UserSelectionCommand),
     WorkOn(WorkOnCommand),
 }
 
