@@ -48,7 +48,11 @@ pub struct TasksQueue {
 }
 
 impl TasksQueue {
-    pub fn add_task(&mut self, task: Task) {
+    pub fn push_task_front(&mut self, task: Task) {
+        self.tasks.push_front(task);
+    }
+
+    pub fn push_task_back(&mut self, task: Task) {
         self.tasks.push_back(task);
     }
 

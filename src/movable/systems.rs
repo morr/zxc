@@ -122,6 +122,7 @@ pub fn stop_movable_on_death(
     mut commands: Commands,
     mut event_reader: EventReader<PawnDeathEvent>,
     mut query: Query<(&mut Movable, &mut Commandable)>,
+    mut work_queue: ResMut<TasksQueue>,
 ) {
     for PawnDeathEvent(entity) in event_reader.read() {
         // println!("{:?}", event);
@@ -130,6 +131,6 @@ pub fn stop_movable_on_death(
         };
 
         movable.to_idle(*entity, &mut commands, None);
-        commandable.cleanup();
+        commandable.cleanup(&mut work_queue);
     }
 }

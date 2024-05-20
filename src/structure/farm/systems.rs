@@ -74,7 +74,7 @@ pub fn progress_planted_and_tending_rest_timers(
                 // );
 
                 if planted_state.tending_rest_started_day != elapsed_time.total_days() {
-                    work_queue.add_task(Task {
+                    work_queue.push_task_back(Task {
                         entity,
                         kind: TaskKind::FarmTending,
                         grid_tile: transform.world_pos_to_grid(),
@@ -131,7 +131,7 @@ pub fn progress_on_state_changed(
                 let grid_tile = transform.world_pos_to_grid();
 
                 if let Some(task_kind) = maybe_task_kind {
-                    work_queue.add_task(Task {
+                    work_queue.push_task_back(Task {
                         entity,
                         kind: task_kind,
                         grid_tile,
@@ -163,7 +163,7 @@ pub fn progress_on_new_day(
         for (entity, mut farm, transform) in query.iter_mut() {
             if let FarmState::Planted(planted_state) = &mut farm.state {
                 if planted_state.is_tending_pending_for_next_day {
-                    work_queue.add_task(Task {
+                    work_queue.push_task_back(Task {
                         entity,
                         kind: TaskKind::FarmTending,
                         grid_tile: transform.world_pos_to_grid(),

@@ -12,7 +12,7 @@ pub enum MovableState {
     PathfindingError(IVec2),
 }
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct MovableStateMovingMarker;
 
 #[derive(Component, Debug, InspectorOptions, Reflect)]

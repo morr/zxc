@@ -137,8 +137,12 @@ pub fn wander_idle_pawns(
     arc_navmesh: Res<ArcNavmesh>,
     mut query: Query<
         (Entity, &Movable, &mut Commandable, &Transform),
-        (With<pawn_state::PawnStateIdleMarker>, With<commandable_state::CommandableStateIdleMarker>),
+        (
+            With<pawn_state::PawnStateIdleMarker>,
+            With<commandable_state::CommandableStateIdleMarker>,
+        ),
     >,
+    mut work_queue: ResMut<TasksQueue>,
 ) {
     let mut rng = rand::thread_rng();
 
@@ -155,6 +159,7 @@ pub fn wander_idle_pawns(
             CommandType::MoveTo(MoveToCommand(entity, end_tile)),
             entity,
             &mut commands,
+            &mut work_queue,
         );
     }
 }
@@ -274,7 +279,7 @@ pub fn progress_pawn_death(
         // return pawn task back to tasks queue
         // if let PawnState::TaskAssigned(task) | PawnState::Working(task) = prev_state {
         if let PawnState::Working(task) = prev_state {
-            work_queue.add_task(task);
+            work_queue.push_task_back(task);
         }
     }
 }

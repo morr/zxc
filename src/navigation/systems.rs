@@ -8,13 +8,12 @@ pub fn move_user_selected_pawn_on_click_stage_1(
     user_selection: Res<CurrentUserSelection>,
     mut pawn_query: Query<
         &mut Commandable,
-        Or<(With<pawn_state::PawnStateIdleMarker>, With<pawn_state::PawnStateExecutingCommandMarker>)>,
+        Or<(
+            With<pawn_state::PawnStateIdleMarker>,
+            With<pawn_state::PawnStateExecutingCommandMarker>,
+        )>,
     >,
-    // mut pawn_query: Query<
-    //     (&Transform, &mut Movable, &mut Commandable, Option<&mut PathfindingTask>),
-    //     (With<pawn_state::Idle>, With<UserSelectionMarker>),
-    // >,
-    // mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
+    mut work_queue: ResMut<TasksQueue>,
 ) {
     for ClickEventStage1(grid_tile) in click_event_reader.read() {
         // println!("click {:?}", grid_tile);
@@ -32,18 +31,8 @@ pub fn move_user_selected_pawn_on_click_stage_1(
             CommandType::MoveTo(MoveToCommand(*entity, *grid_tile)),
             *entity,
             &mut commands,
+            &mut work_queue
         );
-
-        // movable.to_pathfinding_async(
-        //     *id,
-        //     transform.translation.truncate().world_pos_to_grid(),
-        //     *grid_tile,
-        //     &arc_navmesh,
-        //     &queue_counter,
-        //     maybe_pathfinding_task.as_deref_mut(),
-        //     &mut commands,
-        //     &mut movable_state_event_writer,
-        // );
     }
 }
 
@@ -125,7 +114,11 @@ pub fn listen_for_pathfinding_async_tasks(
                             );
                         }
                     } else {
-                        movable.to_pathfinding_error(entity, end_tile, &mut commands/*, &mut event_writer*/);
+                        movable.to_pathfinding_error(
+                            entity,
+                            end_tile,
+                            &mut commands, /*, &mut event_writer*/
+                        );
                     }
                 } else {
                     // println!(
@@ -186,7 +179,11 @@ pub fn listen_for_pathfinding_answers(
                     );
                 }
             } else {
-                movable.to_pathfinding_error(entity, event.end_tile, &mut commands/*, &mut event_writer*/);
+                movable.to_pathfinding_error(
+                    entity,
+                    event.end_tile,
+                    &mut commands, /*, &mut event_writer*/
+                );
             }
         } else {
             // println!(

@@ -18,6 +18,7 @@ pub fn assign_tasks_to_pawns(
             ],
             entity,
             &mut commands,
+            &mut work_queue
         );
     }
 }

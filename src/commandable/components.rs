@@ -43,11 +43,11 @@ impl Default for Commandable {
 pub struct CommandExecutedEvent(pub Entity);
 
 impl Commandable {
-    pub fn schedule_execution<I>(&mut self, command_or_commands: I, entity: Entity, commands: &mut Commands)
+    pub fn schedule_execution<I>(&mut self, command_or_commands: I, entity: Entity, commands: &mut Commands, work_queue: &mut ResMut<TasksQueue>)
     where
         I: IntoIterator<Item = CommandType>,
     {
-        self.cleanup();
+        self.cleanup(work_queue);
 
         self.pending = command_or_commands.into_iter().collect();
         // println!("schedule_execution {:?}", self.pending);
@@ -78,18 +78,19 @@ impl Commandable {
         }
     }
 
-    pub fn cleanup(&mut self) {
+    pub fn cleanup(&mut self, work_queue: &mut ResMut<TasksQueue>) {
         if let Some(command) = self.executing.take() {
             self.pending.push_front(command);
         }
 
         // cleanup queue and maybe do something with its content
-        while let Some(_command) = self.pending.pop_back() {
-            // match command {
-            //     // special logic for some of commands will be here later
-            //     // for example it will return Task to the tasks queue
-            //     _ => {}
-            // }
+        while let Some(command_type) = self.pending.pop_back() {
+            match command_type {
+                CommandType::WorkOn(WorkOnCommand(_entity, task)) => {
+                    work_queue.push_task_front(task);
+                },
+                _ => {}
+            }
         }
     }
 }
