@@ -43,8 +43,13 @@ impl Default for Commandable {
 pub struct CommandExecutedEvent(pub Entity);
 
 impl Commandable {
-    pub fn schedule_execution<I>(&mut self, command_or_commands: I, entity: Entity, commands: &mut Commands, work_queue: &mut ResMut<TasksQueue>)
-    where
+    pub fn schedule_execution<I>(
+        &mut self,
+        command_or_commands: I,
+        entity: Entity,
+        commands: &mut Commands,
+        work_queue: &mut ResMut<TasksQueue>,
+    ) where
         I: IntoIterator<Item = CommandType>,
     {
         self.cleanup(work_queue);
@@ -85,10 +90,11 @@ impl Commandable {
 
         // cleanup queue and maybe do something with its content
         while let Some(command_type) = self.pending.pop_back() {
+            #[allow(clippy::single_match)]
             match command_type {
                 CommandType::WorkOn(WorkOnCommand(_entity, task)) => {
                     work_queue.push_task_front(task);
-                },
+                }
                 _ => {}
             }
         }
