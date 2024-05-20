@@ -17,7 +17,7 @@ pub fn move_user_selected_pawn_on_click_stage_1(
     // mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     for ClickEventStage1(grid_tile) in click_event_reader.read() {
-        println!("===== CLICK {:?} =====", *grid_tile);
+        // println!("click {:?}", grid_tile);
         let Some(UserSelectionData { entity, kind }) = &user_selection.0 else {
             continue;
         };
@@ -113,7 +113,7 @@ pub fn listen_for_pathfinding_async_tasks(
                         // then it means that we are pathfinding path to our
                         // current location. no movement needed
                         if path.len() == 1 {
-                            println!("EventWriter<MovableReachedDestinationEvent> from listen_for_pathfinding_async_tasks");
+                            // println!("EventWriter<MovableReachedDestinationEvent> from listen_for_pathfinding_async_tasks");
                             movable.to_idle(entity, &mut commands, Some(&mut event_writer));
                         } else {
                             movable.to_moving(
@@ -174,7 +174,7 @@ pub fn listen_for_pathfinding_answers(
                 // then it means that we are pathfinding path to our
                 // current location. no movement needed
                 if path.len() == 1 {
-                    println!("EventWriter<MovableReachedDestinationEvent> from listen_for_pathfinding_answers");
+                    // println!("EventWriter<MovableReachedDestinationEvent> from listen_for_pathfinding_answers");
                     movable.to_idle(entity, &mut commands, Some(&mut event_writer));
                 } else {
                     movable.to_moving(

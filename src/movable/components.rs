@@ -44,8 +44,6 @@ impl Movable {
         maybe_event_writer: Option<&mut EventWriter<MovableReachedDestinationEvent>>,
         // maybe_movable_state_change_event_writer: Option<&mut EventWriter<EntityStateChangeEvent<MovableState>>>,
     ) {
-        println!("MovableState {:?}=>{:?}", self.state, MovableState::Idle);
-
         if self.path.is_empty() {
             if let MovableState::Moving(end_tile) | MovableState::Pathfinding(end_tile) =
                 self.state
@@ -72,7 +70,6 @@ impl Movable {
         commands: &mut Commands,
         // movable_state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
     ) {
-        println!("MovableState {:?}=>{:?}", self.state, MovableState::Moving(end_tile));
         self.state = MovableState::Moving(end_tile);
         self.path = path;
         commands.entity(entity).insert(MovableMoving);
@@ -91,10 +88,7 @@ impl Movable {
         commands: &mut Commands,
         // movable_state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
     ) {
-        println!("MovableState {:?}=>{:?}", self.state, MovableState::Pathfinding(end_tile));
-        // if let MovableState::Moving(_) = self.state {
-        //     self.stop_moving(entity, commands);
-        // }
+        // println!("MovableState {:?}=>{:?}", self.state, MovableState::Pathfinding(end_tile));
         self.stop_moving(entity, commands);
         self.state = MovableState::Pathfinding(end_tile);
         // movable_state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
@@ -146,7 +140,7 @@ impl Movable {
         commands: &mut Commands,
         // movable_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
     ) {
-        println!("MovableState {:?}=>{:?}", self.state, MovableState::PathfindingError(end_tile));
+        // println!("MovableState {:?}=>{:?}", self.state, MovableState::PathfindingError(end_tile));
         self.stop_moving(entity, commands);
         self.state = MovableState::PathfindingError(end_tile);
         // movable_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
