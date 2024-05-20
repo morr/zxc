@@ -6,8 +6,12 @@ pub struct RestablePlugin;
 
 impl Plugin for RestablePlugin {
     fn build(&self, app: &mut App) {
-        app.register_type::<Restable>()
-            .add_systems(Update, progress_stamina.run_if(in_state(AppState::Playing)));
+        app.register_type::<Restable>().add_systems(
+            Update,
+            progress_stamina
+                .run_if(in_state(AppState::Playing))
+                .run_if(in_state(SimulationState::Running)),
+        );
     }
 }
 
