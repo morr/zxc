@@ -25,7 +25,7 @@ impl IntoIterator for CommandType {
 #[derive(Component, Debug, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
 pub struct Commandable {
-    pub in_progress: Option<CommandType>,
+    pub executing: Option<CommandType>,
     pub queue: VecDeque<CommandType>,
     pub state: CommandableState,
 }
@@ -33,7 +33,7 @@ pub struct Commandable {
 impl Default for Commandable {
     fn default() -> Self {
         Self {
-            in_progress: None,
+            executing: None,
             queue: VecDeque::default(),
             state: CommandableState::Idle,
         }
@@ -74,7 +74,7 @@ impl Commandable {
         self.queue.extend(command_or_commands);
     }
 
-    pub fn complete_command(
+    pub fn complete_executing(
         &mut self,
         entity: Entity,
         commands: &mut Commands,
@@ -90,7 +90,7 @@ impl Commandable {
             entity,
             commands,
         );
-        self.in_progress = None;
+        self.executing = None;
 
         if self.state == CommandableState::Idle {
             commandable_event_writer.send(CommandExecutedEvent(entity));
@@ -98,7 +98,7 @@ impl Commandable {
     }
 
     pub fn cleanup_queue(&mut self, work_queue: &mut ResMut<TasksQueue>) {
-        if let Some(command) = self.in_progress.take() {
+        if let Some(command) = self.executing.take() {
             self.queue.push_front(command);
         }
 

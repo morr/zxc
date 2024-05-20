@@ -41,7 +41,7 @@ fn execute_command(
                     // or sleep at the current spot
                     commandable.extend_queue(sleep_command_type, *entity, &mut commands);
                 }
-                commandable.complete_command(*entity, &mut commands, &mut commandable_event_writer);
+                commandable.complete_executing(*entity, &mut commands, &mut commandable_event_writer);
             }
             Err(err) => {
                 warn!("Failed to get query result: {:?}", err);

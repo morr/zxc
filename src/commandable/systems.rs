@@ -20,7 +20,7 @@ pub fn process_commands(
         }
 
         if let Some(command_type) = commandable.queue.pop_front() {
-            commandable.in_progress = Some(command_type.clone());
+            commandable.executing = Some(command_type.clone());
 
             match command_type {
                 CommandType::MoveTo(command) => {
