@@ -61,7 +61,7 @@ impl Pawn {
 
 macro_rules! pawn_states {
     (
-        $( ($name:ident, $component_name:ident $(, $turple_type:ty, $match_field:ident)?)),* $(,)?
+        $( ($name:ident, $state_component_name:ident $(, $turple_type:ty, $match_field:ident)?)),* $(,)?
     ) => {
         #[derive(Debug, Clone, PartialEq, Eq, Reflect)]
 
@@ -74,7 +74,7 @@ macro_rules! pawn_states {
 
             $(
                 #[derive(Component, Reflect)]
-                pub struct $component_name;
+                pub struct $state_component_name;
             )*
         }
 
@@ -90,7 +90,7 @@ macro_rules! pawn_states {
                 // Remove the old state component
                 match &self.state {
                     $(PawnState::$name $( ($match_field) )? => {
-                        commands.entity(entity).remove::<pawn_state::$component_name>();
+                        commands.entity(entity).remove::<pawn_state::$state_component_name>();
                     },)*
                 }
 
@@ -100,7 +100,7 @@ macro_rules! pawn_states {
                 // Add the new component
                 match &self.state {
                     $(PawnState::$name $( ($match_field) )? => {
-                        commands.entity(entity).insert(pawn_state::$component_name);
+                        commands.entity(entity).insert(pawn_state::$state_component_name);
                     },)*
                 }
 

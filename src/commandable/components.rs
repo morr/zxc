@@ -96,7 +96,7 @@ impl Commandable {
 
 macro_rules! commandable_states {
     (
-        $($name:ident),*
+        $( ($name:ident, $state_component_name:ident )),* $(,)?
     ) => {
         #[derive(Debug, Clone, PartialEq, Eq, Reflect)]
         pub enum CommandableState {
@@ -108,7 +108,7 @@ macro_rules! commandable_states {
 
             $(
                 #[derive(Component, Reflect)]
-                pub struct $name;
+                pub struct $state_component_name;
             )*
         }
 
@@ -130,7 +130,7 @@ macro_rules! commandable_states {
                 // Remove the old state component
                 match &self.state {
                     $(CommandableState::$name => {
-                        commands.entity(entity).remove::<commandable_state::$name>();
+                        commands.entity(entity).remove::<commandable_state::$state_component_name>();
                     },)*
                 }
 
@@ -140,7 +140,7 @@ macro_rules! commandable_states {
                 // Add the new component
                 match &self.state {
                     $(CommandableState::$name => {
-                        commands.entity(entity).insert(commandable_state::$name);
+                        commands.entity(entity).insert(commandable_state::$state_component_name);
                     },)*
                 }
 
@@ -150,4 +150,8 @@ macro_rules! commandable_states {
     };
 }
 
-commandable_states!(Idle, PendingExecution, Executing);
+commandable_states!(
+    (Idle, CommandableStateIdleMarker),
+    (PendingExecution, CommandableStatePendingExecutionMarker),
+    (Executing, CommandableStateExecutingMarker)
+);

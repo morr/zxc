@@ -137,7 +137,7 @@ pub fn wander_idle_pawns(
     arc_navmesh: Res<ArcNavmesh>,
     mut query: Query<
         (Entity, &Movable, &mut Commandable, &Transform),
-        (With<pawn_state::PawnStateIdleMarker>, With<commandable_state::Idle>),
+        (With<pawn_state::PawnStateIdleMarker>, With<commandable_state::CommandableStateIdleMarker>),
     >,
 ) {
     let mut rng = rand::thread_rng();
