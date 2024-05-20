@@ -58,6 +58,21 @@ impl Commandable {
         self.pending = command_or_commands.into_iter().collect();
     }
 
+    pub fn append_execution<I>(
+        &mut self,
+        command_or_commands: I,
+        entity: Entity,
+        commands: &mut Commands,
+    ) where
+        I: IntoIterator<Item = CommandType>,
+    {
+        // println!("schedule_execution {:?}", self.pending);
+        if self.state == CommandableState::Idle {
+            self.change_state(CommandableState::PendingExecution, entity, commands);
+        }
+        self.pending.extend(command_or_commands);
+    }
+
     pub fn complete_execution(
         &mut self,
         entity: Entity,
