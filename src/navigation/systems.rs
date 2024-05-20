@@ -125,7 +125,7 @@ pub fn listen_for_pathfinding_async_tasks(
                             );
                         }
                     } else {
-                        movable.to_pathfinding_error(entity /*, &mut event_writer*/);
+                        movable.to_pathfinding_error(entity, end_tile/*, &mut event_writer*/);
                     }
                 } else {
                     // println!(
@@ -186,7 +186,7 @@ pub fn listen_for_pathfinding_answers(
                     );
                 }
             } else {
-                movable.to_pathfinding_error(entity /*, &mut event_writer*/);
+                movable.to_pathfinding_error(entity, event.end_tile/*, &mut event_writer*/);
             }
         } else {
             // println!(

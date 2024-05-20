@@ -11,7 +11,7 @@ pub enum MovableState {
     Idle,
     Moving(IVec2),
     Pathfinding(IVec2),
-    PathfindingError,
+    PathfindingError(IVec2),
 }
 
 #[derive(Component)]
@@ -137,9 +137,10 @@ impl Movable {
     pub fn to_pathfinding_error(
         &mut self,
         entity: Entity,
+        end_tile: IVec2,
         // movable_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
     ) {
-        self.state = MovableState::PathfindingError;
+        self.state = MovableState::PathfindingError(end_tile);
         self.path = [].into();
         // movable_state_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
     }
