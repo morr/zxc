@@ -39,8 +39,6 @@ pub fn process_commands(
                     // &mut pawn_state_change_event_writer,
                 );
             }
-            // Update the state of the entity to indicate it is executing a command
-            // commands.entity(entity).insert(ExecutingCommand);
         }
     }
 }
