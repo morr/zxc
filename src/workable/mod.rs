@@ -9,7 +9,7 @@ impl Plugin for WorkablePlugin {
         app.init_resource::<TasksQueue>()
             .register_type::<Workable>()
             .add_event::<WorkCompleteEvent>()
-            .add_event::<WorkStartEvent>()
+            // .add_event::<WorkStartEvent>()
             .add_systems(
                 FixedUpdate,
                 progress_work.run_if(in_state(SimulationState::Running)),
@@ -18,8 +18,8 @@ impl Plugin for WorkablePlugin {
                 FixedUpdate,
                 (
                     assign_tasks_to_pawns,
-                    start_pawn_working,
-                    complete_pawn_working,
+                    // start_pawn_working,
+                    // complete_pawn_working,
                 )
                     .chain()
                     .run_if(in_state(AppState::Playing)),

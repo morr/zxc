@@ -15,7 +15,7 @@ pub struct Workable {
 impl Workable {
     pub fn new(work_amount_total: f32) -> Self {
         Self {
-            state: WorkableState::Pending,
+            state: WorkableState::Idle,
             work_amount_total,
             work_amount_done: 0.0,
         }
@@ -90,22 +90,18 @@ macro_rules! workable_states {
 }
 
 workable_states!(
-    (Pending, WorkableStatePendingTag),
+    (Idle, WorkableStateIdleTag),
     (BeingWorked, WorkableStateBeingWorkedTag),
-    (Complete, WorkableStateCompleteTag)
 );
 
 
-#[derive(Event, Debug)]
-pub struct WorkStartEvent {
-    pub pawn_entity: Entity,
-}
+// #[derive(Event, Debug)]
+// pub struct WorkStartEvent {
+//     pub pawn_entity: Entity,
+// }
 
 #[derive(Event, Debug)]
-pub struct WorkCompleteEvent {
-    pub pawn_entity: Entity,
-    pub workable_entity: Entity,
-}
+pub struct WorkCompleteEvent(pub Entity);
 
 #[derive(Default, Resource)]
 pub struct TasksQueue {
