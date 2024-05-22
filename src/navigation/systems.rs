@@ -13,7 +13,7 @@ pub fn move_user_selected_pawn_on_click_stage_1(
             With<pawn_state::PawnStateExecutingCommandTag>,
         )>,
     >,
-    mut work_queue: ResMut<TasksQueue>,
+    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     for ClickEventStage1(grid_tile) in click_event_reader.read() {
         // println!("click {:?}", grid_tile);
@@ -31,7 +31,7 @@ pub fn move_user_selected_pawn_on_click_stage_1(
             CommandType::MoveTo(MoveToCommand(*entity, *grid_tile)),
             *entity,
             &mut commands,
-            &mut work_queue
+            &mut tasks_scheduler
         );
     }
 }

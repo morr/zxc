@@ -48,7 +48,7 @@ pub fn progress_planted_and_tending_rest_timers(
     elapsed_time: Res<ElapsedTime>,
     mut query: Query<(Entity, &mut Farm, &Transform), With<farm_state::Planted>>,
     mut farm_progress_event_writer: EventWriter<FarmProgressEvent>,
-    mut work_queue: ResMut<TasksQueue>,
+    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     for (entity, mut farm, transform) in query.iter_mut() {
         let planted_state = match &mut farm.state {
@@ -74,11 +74,14 @@ pub fn progress_planted_and_tending_rest_timers(
                 // );
 
                 if planted_state.tending_rest_started_day != elapsed_time.total_days() {
-                    work_queue.push_task_back(Task {
-                        entity,
-                        kind: TaskKind::FarmTending,
-                        grid_tile: transform.world_pos_to_grid(),
-                    });
+                    tasks_scheduler.send(ScheduleTaskEvent(
+                        Task {
+                            entity,
+                            kind: TaskKind::FarmTending,
+                            grid_tile: transform.world_pos_to_grid(),
+                        },
+                        QueuingType::PushBack,
+                    ));
                 } else {
                     planted_state.is_tending_pending_for_next_day = true;
                 }
@@ -110,9 +113,9 @@ pub fn progress_harvested_timer(
 
 pub fn progress_on_state_changed(
     mut event_reader: EventReader<EntityStateChangeEvent<FarmState>>,
-    mut work_queue: ResMut<TasksQueue>,
     query: Query<(&Farm, &Transform)>,
     mut spawn_food_event_writer: EventWriter<SpawnItemEvent>,
+    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     for event in event_reader.read() {
         // println!("{:?}", event);
@@ -131,11 +134,14 @@ pub fn progress_on_state_changed(
                 let grid_tile = transform.world_pos_to_grid();
 
                 if let Some(task_kind) = maybe_task_kind {
-                    work_queue.push_task_back(Task {
-                        entity,
-                        kind: task_kind,
-                        grid_tile,
-                    });
+                    tasks_scheduler.send(ScheduleTaskEvent(
+                        Task {
+                            entity,
+                            kind: task_kind,
+                            grid_tile,
+                        },
+                        QueuingType::PushBack,
+                    ));
                 }
 
                 if let FarmState::Harvested(_) = state {
@@ -155,7 +161,7 @@ pub fn progress_on_state_changed(
 pub fn progress_on_new_day(
     mut event_reader: EventReader<NewDayEvent>,
     mut query: Query<(Entity, &mut Farm, &Transform), With<farm_state::Planted>>,
-    mut work_queue: ResMut<TasksQueue>,
+    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     for _event in event_reader.read() {
         // println!("{:?}", event);
@@ -163,11 +169,15 @@ pub fn progress_on_new_day(
         for (entity, mut farm, transform) in query.iter_mut() {
             if let FarmState::Planted(planted_state) = &mut farm.state {
                 if planted_state.is_tending_pending_for_next_day {
-                    work_queue.push_task_back(Task {
-                        entity,
-                        kind: TaskKind::FarmTending,
-                        grid_tile: transform.world_pos_to_grid(),
-                    });
+                    tasks_scheduler.send(ScheduleTaskEvent(
+                        Task {
+                            entity,
+                            kind: TaskKind::FarmTending,
+                            grid_tile: transform.world_pos_to_grid(),
+                        },
+                        QueuingType::PushBack,
+                    ));
+
                     planted_state.is_tending_pending_for_next_day = false;
                 }
             };

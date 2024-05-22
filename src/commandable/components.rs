@@ -49,13 +49,13 @@ impl Commandable {
         command_or_commands: I,
         entity: Entity,
         commands: &mut Commands,
-        work_queue: &mut ResMut<TasksQueue>,
+        tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
     ) where
         I: IntoIterator<Item = CommandType>,
     {
         // println!("schedule_execution {:?}", self.pending);
         self.change_state(CommandableState::PendingExecution, entity, commands);
-        self.cleanup_queue(work_queue);
+        self.cleanup_queue(tasks_scheduler);
         self.queue = command_or_commands.into_iter().collect();
     }
 
@@ -107,7 +107,7 @@ impl Commandable {
         }
     }
 
-    pub fn cleanup_queue(&mut self, work_queue: &mut ResMut<TasksQueue>) {
+    pub fn cleanup_queue(&mut self, tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>) {
         if let Some(command) = self.executing.take() {
             self.queue.push_front(command);
         }
@@ -117,7 +117,7 @@ impl Commandable {
             #[allow(clippy::single_match)]
             match command_type {
                 CommandType::WorkOn(WorkOnCommand(_entity, task)) => {
-                    work_queue.push_task_front(task);
+                    tasks_scheduler.send(ScheduleTaskEvent(task, QueuingType::PushFront));
                 }
                 _ => {}
             }

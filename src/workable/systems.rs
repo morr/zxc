@@ -4,6 +4,7 @@ pub fn assign_tasks_to_pawns(
     mut commands: Commands,
     mut query: Query<(Entity, &Pawn, &mut Commandable), With<pawn_state::PawnStateIdleTag>>,
     mut work_queue: ResMut<TasksQueue>,
+    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     for (entity, pawn, mut commandable) in query.iter_mut() {
         ensure_state!(PawnState::Idle, pawn.state);
@@ -20,7 +21,7 @@ pub fn assign_tasks_to_pawns(
             ],
             entity,
             &mut commands,
-            &mut work_queue,
+            &mut tasks_scheduler,
         );
     }
 }

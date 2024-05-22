@@ -142,7 +142,7 @@ pub fn wander_idle_pawns(
             With<commandable_state::CommandableStateIdleTag>,
         ),
     >,
-    mut work_queue: ResMut<TasksQueue>,
+    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     let mut rng = rand::thread_rng();
 
@@ -160,7 +160,7 @@ pub fn wander_idle_pawns(
             CommandType::MoveTo(MoveToCommand(entity, end_tile)),
             entity,
             &mut commands,
-            &mut work_queue,
+            &mut tasks_scheduler,
         );
     }
 }
@@ -260,7 +260,7 @@ pub fn progress_pawn_death(
     mut commands: Commands,
     mut event_reader: EventReader<PawnDeathEvent>,
     mut query: Query<(&mut Pawn, &mut Commandable)>,
-    mut work_queue: ResMut<TasksQueue>,
+    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     for PawnDeathEvent(entity) in event_reader.read() {
         // println!("{:?}", PawnDeathEvent(pawn_entity));
@@ -275,7 +275,7 @@ pub fn progress_pawn_death(
                 );
 
                 commandable.interrupt_executing(*entity, &mut commands);
-                commandable.cleanup_queue(&mut work_queue);
+                commandable.cleanup_queue(&mut tasks_scheduler);
             }
             Err(err) => {
                 warn!("Failed to get query result: {:?}", err);

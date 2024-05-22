@@ -32,8 +32,7 @@ fn progress_stamina(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Restable, &mut Commandable, &Pawn)>,
-    mut command_writer: EventWriter<ToRestCommand>,
-    mut work_queue: ResMut<TasksQueue>,
+    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     let time_amount = time_scale.scale_to_seconds(time.delta_seconds());
 
@@ -58,7 +57,7 @@ fn progress_stamina(
                 CommandType::ToRest(ToRestCommand(entity)),
                 entity,
                 &mut commands,
-                &mut work_queue,
+                &mut tasks_scheduler,
             );
         }
     }

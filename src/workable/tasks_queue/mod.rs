@@ -62,7 +62,7 @@ pub enum QueuingType {
 }
 
 #[derive(Event, Debug)]
-pub struct ScheduleTaskEvent(Task, QueuingType);
+pub struct ScheduleTaskEvent(pub Task, pub QueuingType);
 
 fn schedule_task(
     mut event_reader: EventReader<ScheduleTaskEvent>,
