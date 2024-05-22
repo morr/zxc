@@ -59,6 +59,41 @@ pub fn progress_work(
     }
 }
 
+pub fn complete_work(
+    mut commands: Commands,
+    mut event_reader: EventReader<WorkCompleteEvent>,
+    mut query: Query<&mut Pawn>,
+    // mut state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    mut farm_progress_event_writer: EventWriter<FarmProgressEvent>,
+    mut farm_tending_event_writer: EventWriter<FarmTendedEvent>,
+) {
+    for WorkCompleteEvent { commandable_entity, workable_entity } in event_reader.read() {
+        // println!("{:?}", WorkCompleteEvent { commandable_entity, workable_entity });
+        //
+        // let mut pawn = query.get_mut(event.pawn_entity).unwrap();
+        // let task = pawn.get_task();
+        //
+        //
+        match task.kind {
+            // event.workable_entity the same is task.entity
+            TaskKind::FarmPlant | TaskKind::FarmHarvest => {
+                farm_progress_event_writer.send(FarmProgressEvent(event.workable_entity));
+            }
+            TaskKind::FarmTending => {
+                farm_tending_event_writer.send(FarmTendedEvent(event.workable_entity));
+            }
+        }
+        //
+        // pawn.change_state(
+        //     PawnState::Idle,
+        //     event.pawn_entity,
+        //     &mut commands,
+        //     // &mut state_change_event_writer,
+        // );
+    }
+}
+
+
 // pub fn start_pawn_working(
 //     mut commands: Commands,
 //     mut event_reader: EventReader<WorkStartEvent>,

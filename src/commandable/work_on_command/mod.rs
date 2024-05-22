@@ -52,7 +52,7 @@ fn monitor_completion(
     mut commandable_event_writer: EventWriter<CommandExecutedEvent>,
 ) {
     for WorkCompleteEvent { commandable_entity, workable_entity } in command_complete_event_reader.read() {
-        // println!("{:?}",WorkCompleteEvent { commandable_entity, workable_entity });
+        // println!("{:?}", WorkCompleteEvent { commandable_entity, workable_entity });
 
         let Ok(mut commandable) = query.get_mut(*commandable_entity,) else {
             continue;
