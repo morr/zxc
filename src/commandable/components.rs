@@ -134,10 +134,6 @@ macro_rules! commandable_states {
         }
 
         impl Commandable {
-            // pub fn change_state(&mut self, new_state: CommandableState) {
-            //     self.state = new_state;
-            // }
-
             pub fn change_state(
                 &mut self,
                 new_state: CommandableState,

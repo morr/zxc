@@ -1,4 +1,3 @@
-use std::mem;
 use std::collections::VecDeque;
 
 use super::*;
@@ -60,7 +59,10 @@ macro_rules! workable_states {
                 commands: &mut Commands,
                 // state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<WorkableState>>,
             ) -> WorkableState {
+                use std::mem;
+
                 // println!("WorkableState {:?}=>{:?}", self.state, new_state);
+
                 // Remove the old state component
                 match &self.state {
                     $(WorkableState::$name $( ($match_field) )? => {
@@ -85,12 +87,10 @@ macro_rules! workable_states {
     };
 }
 
-
 workable_states!(
     (Idle, WorkableStateIdleTag),
     (BeingWorked, WorkableStateBeingWorkedTag, Entity, _a),
 );
-
 
 // #[derive(Event, Debug)]
 // pub struct WorkStartEvent {
@@ -98,9 +98,9 @@ workable_states!(
 // }
 
 #[derive(Event, Debug)]
-pub struct WorkCompleteEvent{
+pub struct WorkCompleteEvent {
     pub commandable_entity: Entity,
-    pub workable_entity: Entity
+    pub workable_entity: Entity,
 }
 
 #[derive(Default, Resource)]

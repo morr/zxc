@@ -1,4 +1,3 @@
-use std::mem;
 use std::ops::RangeInclusive;
 
 use super::*;
@@ -61,15 +60,15 @@ impl Pawn {
 
 macro_rules! pawn_states {
     (
-        $( ($name:ident, $state_component_name:ident $(, $turple_type:ty, $match_field:ident)?)),* $(,)?
+        $( ($name:ident, $state_component_name:ident )),* $(,)?
     ) => {
         #[derive(Debug, Clone, PartialEq, Eq, Reflect)]
         pub enum PawnState {
-            $($name $(($turple_type))? ),*
+            $($name),*
         }
 
         pub mod pawn_state {
-            use bevy::{prelude::*};
+            use bevy::prelude::*;
 
             $(
                 #[derive(Component, Debug, Reflect)]
@@ -82,13 +81,15 @@ macro_rules! pawn_states {
                 &mut self,
                 new_state: PawnState,
                 entity: Entity,
-                commands: &mut Commands,
-                // state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<PawnState>>,
+                commands: &mut Commands
             ) -> PawnState {
+                use std::mem;
+
                 // println!("PawnState {:?}=>{:?}", self.state, new_state);
+
                 // Remove the old state component
                 match &self.state {
-                    $(PawnState::$name $( ($match_field) )? => {
+                    $(PawnState::$name => {
                         commands.entity(entity).remove::<pawn_state::$state_component_name>();
                     },)*
                 }
@@ -98,12 +99,11 @@ macro_rules! pawn_states {
 
                 // Add the new component
                 match &self.state {
-                    $(PawnState::$name $( ($match_field) )? => {
+                    $(PawnState::$name => {
                         commands.entity(entity).insert(pawn_state::$state_component_name);
                     },)*
                 }
 
-                // state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
                 prev_state
             }
         }
@@ -112,9 +112,6 @@ macro_rules! pawn_states {
 
 pawn_states!(
     (Idle, PawnStateIdleTag),
-    // (Moving),
-    // (TaskAssigned, PawnStateTaskAssignedTag, Task, _a),
-    // (Working, PawnStateWorkingTag, Task, _b),
     (ExecutingCommand, PawnStateExecutingCommandTag),
     (Sleeping, PawnStateSleepingTag),
     (Dead, PawnStateDeadTag),
