@@ -1,5 +1,3 @@
-use std::collections::VecDeque;
-
 use super::*;
 
 #[derive(Component, Debug, InspectorOptions, Reflect)]
@@ -31,6 +29,12 @@ impl Workable {
     pub fn reset_amount_done(&mut self) {
         self.amount_done = 0.0;
     }
+}
+
+#[derive(Event, Debug)]
+pub struct WorkCompleteEvent {
+    pub commandable_entity: Entity,
+    pub workable_entity: Entity,
 }
 
 macro_rules! workable_states {
@@ -91,55 +95,3 @@ workable_states!(
     (Idle, WorkableStateIdleTag),
     (BeingWorked, WorkableStateBeingWorkedTag, Entity, _a),
 );
-
-// #[derive(Event, Debug)]
-// pub struct WorkStartEvent {
-//     pub pawn_entity: Entity,
-// }
-
-#[derive(Event, Debug)]
-pub struct WorkCompleteEvent {
-    pub commandable_entity: Entity,
-    pub workable_entity: Entity,
-}
-
-#[derive(Default, Resource)]
-pub struct TasksQueue {
-    tasks: VecDeque<Task>,
-}
-
-impl TasksQueue {
-    pub fn push_task_front(&mut self, task: Task) {
-        self.tasks.push_front(task);
-    }
-
-    pub fn push_task_back(&mut self, task: Task) {
-        self.tasks.push_back(task);
-    }
-
-    pub fn get_task(&mut self) -> Option<Task> {
-        self.tasks.pop_front()
-    }
-
-    pub fn len(&self) -> usize {
-        self.tasks.len()
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.tasks.is_empty()
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Reflect)]
-pub enum TaskKind {
-    FarmPlant,
-    FarmTending,
-    FarmHarvest,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Reflect)]
-pub struct Task {
-    pub entity: Entity,
-    pub kind: TaskKind,
-    pub grid_tile: IVec2,
-}
