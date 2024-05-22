@@ -27,7 +27,6 @@ pub fn assign_tasks_to_pawns(
 
 pub fn progress_work(
     mut commands: Commands,
-    // pawns_query: Query<(Entity, &Pawn), With<pawn_state::PawnStateWorkingTag>>,
     mut workable_query: Query<
         (Entity, &mut Workable),
         With<workable_state::WorkableStateBeingWorkedTag>,
@@ -38,21 +37,26 @@ pub fn progress_work(
 ) {
     let elapsed_time = time_scale.scale_to_seconds(time.delta_seconds());
 
-    for (entity, mut workable) in workable_query.iter_mut() {
+    for (workable_entity, mut workable) in workable_query.iter_mut() {
         ensure_state!(WorkableState::BeingWorked(_), workable.state);
 
         workable.perform_work(elapsed_time);
 
         if workable.is_work_complete() {
-            workable.change_state(WorkableState::Idle, entity, &mut commands);
+            let WorkableState::BeingWorked(commandable_entity) = workable.state else {
+                panic!()
+            };
+
+            workable.change_state(WorkableState::Idle, workable_entity, &mut commands);
             workable.reset_amount_done();
 
-            event_writer.send(WorkCompleteEvent(entity));
+            event_writer.send(WorkCompleteEvent {
+                workable_entity,
+                commandable_entity,
+            });
         }
-
     }
 }
-
 
 // pub fn start_pawn_working(
 //     mut commands: Commands,

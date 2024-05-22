@@ -1,3 +1,4 @@
+use std::mem;
 use std::collections::VecDeque;
 
 use super::*;
@@ -35,15 +36,15 @@ impl Workable {
 
 macro_rules! workable_states {
     (
-        $( ($name:ident, $state_component_name:ident )),* $(,)?
+        $( ($name:ident, $state_component_name:ident $(, $turple_type:ty, $match_field:ident)?)),* $(,)?
     ) => {
         #[derive(Debug, Clone, PartialEq, Eq, Reflect)]
         pub enum WorkableState {
-            $($name),*
+            $($name $(($turple_type))? ),*
         }
 
         pub mod workable_state {
-            use bevy::prelude::*;
+            use bevy::{prelude::*};
 
             $(
                 #[derive(Component, Debug, Reflect)]
@@ -52,23 +53,17 @@ macro_rules! workable_states {
         }
 
         impl Workable {
-            // pub fn change_state(&mut self, new_state: CommandableState) {
-            //     self.state = new_state;
-            // }
-
             pub fn change_state(
                 &mut self,
                 new_state: WorkableState,
                 entity: Entity,
-                commands: &mut Commands
+                commands: &mut Commands,
+                // state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<WorkableState>>,
             ) -> WorkableState {
-                use std::mem;
-
                 // println!("WorkableState {:?}=>{:?}", self.state, new_state);
-
                 // Remove the old state component
                 match &self.state {
-                    $(WorkableState::$name => {
+                    $(WorkableState::$name $( ($match_field) )? => {
                         commands.entity(entity).remove::<workable_state::$state_component_name>();
                     },)*
                 }
@@ -78,20 +73,22 @@ macro_rules! workable_states {
 
                 // Add the new component
                 match &self.state {
-                    $(WorkableState::$name => {
+                    $(WorkableState::$name $( ($match_field) )? => {
                         commands.entity(entity).insert(workable_state::$state_component_name);
                     },)*
                 }
 
+                // state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
                 prev_state
             }
         }
     };
 }
 
+
 workable_states!(
     (Idle, WorkableStateIdleTag),
-    (BeingWorked, WorkableStateBeingWorkedTag),
+    (BeingWorked, WorkableStateBeingWorkedTag, Entity, _a),
 );
 
 
@@ -101,7 +98,10 @@ workable_states!(
 // }
 
 #[derive(Event, Debug)]
-pub struct WorkCompleteEvent(pub Entity);
+pub struct WorkCompleteEvent{
+    pub commandable_entity: Entity,
+    pub workable_entity: Entity
+}
 
 #[derive(Default, Resource)]
 pub struct TasksQueue {
