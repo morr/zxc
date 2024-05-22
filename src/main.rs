@@ -3,8 +3,17 @@ use bevy::window::PresentMode;
 use zxc::*;
 
 fn main() {
+    use std::env;
+
+    let current_dir = env::current_dir().unwrap();
+    println!("Current directory: {}", current_dir.display());
+
     App::new()
         .insert_resource(Msaa::Off)
+        // .insert_resource(AssetServerSettings {
+        //     asset_folder: assets_path.to_string_lossy().to_string(),
+        //     ..Default::default()
+        // })
         .add_plugins(
             DefaultPlugins
                 .set(ImagePlugin::default_nearest())
@@ -22,6 +31,10 @@ fn main() {
                         // title: "Test App".to_string(),
                         ..default()
                     }),
+                    ..default()
+                })
+                .set(AssetPlugin {
+                    file_path: "assets".to_string(),
                     ..default()
                 }),
             // .set(ImagePlugin {
@@ -50,19 +63,19 @@ fn main() {
             async_queue::AsyncQueuePlugin,
             item::ItemPlugin,
             assets::AssetsPlugin,
-            map::MapPlugin,
-            navigation::NavigationPlugin,
-            user_selection::UserSelectPlugin,
-            structure::StructurePlugin,
-            ui::UiPlugin,
-            input::InputPlugin,
+            // map::MapPlugin,
+            // navigation::NavigationPlugin,
+            // user_selection::UserSelectPlugin,
+            // structure::StructurePlugin,
+            // ui::UiPlugin,
+            // input::InputPlugin,
         ))
         .add_plugins((
-            pawn::PawnPlugin,
-            restable::RestablePlugin,
-            workable::WorkablePlugin,
-            movable::MovablePlugin,
-            commandable::CommandablePlugin,
+            // pawn::PawnPlugin,
+            // restable::RestablePlugin,
+            // workable::WorkablePlugin,
+            // movable::MovablePlugin,
+            // commandable::CommandablePlugin,
         ))
         // .add_plugins((
         //     bevy::diagnostic::LogDiagnosticsPlugin::default(),
