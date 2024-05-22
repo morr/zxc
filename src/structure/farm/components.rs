@@ -238,15 +238,15 @@ impl Farm {
     }
 
     pub fn sync_workable(state: &FarmState, entity_commands: &mut EntityCommands) {
-        let maybe_work_amount = match state {
+        let maybe_amount = match state {
             FarmState::NotPlanted => Some(CONFIG.farming.planting_hours),
             FarmState::Planted(_) => Some(CONFIG.farming.tending_hours),
             FarmState::Grown => Some(CONFIG.farming.harvesting_hours),
             FarmState::Harvested(_) => None,
         };
 
-        if let Some(work_amount) = maybe_work_amount {
-            entity_commands.insert(Workable::new(hours_to_seconds(work_amount)));
+        if let Some(amount) = maybe_amount {
+            entity_commands.insert(Workable::new(hours_to_seconds(amount)));
         }
     }
 }

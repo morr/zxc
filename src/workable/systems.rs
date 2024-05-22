@@ -48,7 +48,7 @@ pub fn progress_work(
 
         if workable.is_work_complete() {
             workable.change_state(WorkableState::Idle, entity, &mut commands);
-            workable.reset_work_amount_done();
+            workable.reset_amount_done();
 
             event_writer.send(WorkCompleteEvent(workable_entity));
         }
@@ -92,7 +92,7 @@ pub fn progress_work(
 //
 //         if workable.is_work_complete() {
 //             // println!("work_complete {:?}", task);
-//             workable.reset_work_amount_done();
+//             workable.reset_amount_done();
 //
 //             event_writer.send(WorkCompleteEvent {
 //                 pawn_entity,

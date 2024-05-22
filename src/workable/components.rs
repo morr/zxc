@@ -7,29 +7,29 @@ use super::*;
 pub struct Workable {
     pub state: WorkableState,
     /// in seconds
-    pub work_amount_done: f32,
+    pub amount_done: f32,
     /// in seconds
-    pub work_amount_total: f32,
+    pub amount_total: f32,
 }
 
 impl Workable {
-    pub fn new(work_amount_total: f32) -> Self {
+    pub fn new(amount_total: f32) -> Self {
         Self {
             state: WorkableState::Idle,
-            work_amount_total,
-            work_amount_done: 0.0,
+            amount_total,
+            amount_done: 0.0,
         }
     }
     pub fn perform_work(&mut self, elapsed_time: f32) {
-        self.work_amount_done += elapsed_time * CONFIG.pawn.work_force;
+        self.amount_done += elapsed_time * CONFIG.pawn.work_force;
     }
 
     pub fn is_work_complete(&self) -> bool {
-        self.work_amount_done >= self.work_amount_total
+        self.amount_done >= self.amount_total
     }
 
-    pub fn reset_work_amount_done(&mut self) {
-        self.work_amount_done = 0.0;
+    pub fn reset_amount_done(&mut self) {
+        self.amount_done = 0.0;
     }
 }
 

@@ -85,11 +85,11 @@ pub fn render_farm_ui(
                             font_assets,
                         ));
                         parent.spawn(property_text_bundle::<WorkableWorkAmountDoneTextUIMarker>(
-                            workable_work_amount_done_text(workable),
+                            workable_amount_done_text(workable),
                             font_assets,
                         ));
                         parent.spawn(property_text_bundle::<WorkableWorkAmountTotalTextUIMarker>(
-                            workable_work_amount_total_text(workable),
+                            workable_amount_total_text(workable),
                             font_assets,
                         ));
                     });
@@ -164,8 +164,8 @@ fn update_text_markers_recursive(
         farm_state_marker,
         farm_tendings_marker,
         farm_yield_marker,
-        work_amount_done_marker,
-        work_amount_total_marker,
+        amount_done_marker,
+        amount_total_marker,
     )) = texts.get_mut(entity)
     {
         if farm_state_marker.is_some() {
@@ -177,11 +177,11 @@ fn update_text_markers_recursive(
         if farm_yield_marker.is_some() {
             text.sections[0].value = farm_yield_text(farm);
         }
-        if work_amount_done_marker.is_some() {
-            text.sections[0].value = workable_work_amount_done_text(workable);
+        if amount_done_marker.is_some() {
+            text.sections[0].value = workable_amount_done_text(workable);
         }
-        if work_amount_total_marker.is_some() {
-            text.sections[0].value = workable_work_amount_total_text(workable);
+        if amount_total_marker.is_some() {
+            text.sections[0].value = workable_amount_total_text(workable);
         }
     }
 
@@ -216,9 +216,9 @@ fn farm_yield_text(farm: &Farm) -> String {
 pub fn workable_state_text(workable: &Workable) -> String {
     format!("state: {:?}", workable.state)
 }
-pub fn workable_work_amount_done_text(workable: &Workable) -> String {
-    format!("work_amount_done: {:.2}", workable.work_amount_done)
+pub fn workable_amount_done_text(workable: &Workable) -> String {
+    format!("amount_done: {:.2}", workable.amount_done)
 }
-pub fn workable_work_amount_total_text(workable: &Workable) -> String {
-    format!("work_amount_total: {:.2}", workable.work_amount_total)
+pub fn workable_amount_total_text(workable: &Workable) -> String {
+    format!("amount_total: {:.2}", workable.amount_total)
 }
