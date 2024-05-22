@@ -259,29 +259,24 @@ pub fn progress_pawn_dying(
 pub fn progress_pawn_death(
     mut commands: Commands,
     mut event_reader: EventReader<PawnDeathEvent>,
-    mut query: Query<&mut Pawn>,
+    mut query: Query<(&mut Pawn, &mut Commandable)>,
     // mut state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
-    mut work_queue: ResMut<TasksQueue>,
+    // mut work_queue: ResMut<TasksQueue>,
 ) {
-    for event in event_reader.read() {
-        // println!("{:?}", event);
+    for PawnDeathEvent(pawn_entity) in event_reader.read() {
+        // println!("{:?}", PawnDeathEvent(pawn_entity));
 
-        let entity = event.0;
-        let mut pawn = query.get_mut(event.0).unwrap();
+        let Ok(mut pawn, mut commandable) = query.get_mut(pawn_entity) else { continue; }
 
         // set pawn dead
-        let prev_state = pawn.change_state(
+        pawn.change_state(
             PawnState::Dead,
             entity,
             &mut commands,
             // &mut state_change_event_writer,
         );
 
-        // return pawn task back to tasks queue
-        // if let PawnState::TaskAssigned(task) | PawnState::Working(task) = prev_state {
-        // if let PawnState::Working(task) = prev_state {
-        //     work_queue.push_task_back(task);
-        // }
+        commandable.cleanup();
     }
 }
 
