@@ -5,6 +5,7 @@ use super::*;
 #[derive(Component, Debug, Default, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
 pub struct Workable {
+    pub state: WorkableState,
     /// in seconds
     pub work_amount_done: f32,
     /// in seconds
@@ -14,6 +15,7 @@ pub struct Workable {
 impl Workable {
     pub fn new(work_amount_total: f32) -> Self {
         Self {
+            state: WorkableState::Idle,
             work_amount_total,
             work_amount_done: 0.0,
         }
@@ -30,6 +32,69 @@ impl Workable {
         self.work_amount_done = 0.0;
     }
 }
+
+macro_rules! workable_states {
+    (
+        $( ($name:ident, $state_component_name:ident )),* $(,)?
+    ) => {
+        #[derive(Debug, Clone, PartialEq, Eq, Reflect)]
+        pub enum WorkableState {
+            $($name),*
+        }
+
+        pub mod workable_state {
+            use bevy::prelude::*;
+
+            $(
+                #[derive(Component, Debug, Reflect)]
+                pub struct $state_component_name;
+            )*
+        }
+
+        impl Workable {
+            // pub fn change_state(&mut self, new_state: CommandableState) {
+            //     self.state = new_state;
+            // }
+
+            pub fn change_state(
+                &mut self,
+                new_state: WorkableState,
+                entity: Entity,
+                commands: &mut Commands
+            ) -> WorkableState {
+                use std::mem;
+
+                // println!("WorkableState {:?}=>{:?}", self.state, new_state);
+
+                // Remove the old state component
+                match &self.state {
+                    $(WorkableState::$name => {
+                        commands.entity(entity).remove::<workable_state::$state_component_name>();
+                    },)*
+                }
+
+                // Set the new state and put old state into prev_state
+                let prev_state = mem::replace(&mut self.state, new_state);
+
+                // Add the new component
+                match &self.state {
+                    $(WorkableState::$name => {
+                        commands.entity(entity).insert(workable_state::$state_component_name);
+                    },)*
+                }
+
+                prev_state
+            }
+        }
+    };
+}
+
+workable_states!(
+    (Idle, WorkableStateIdleTag),
+    (BeingWorked, WorkableStateBeingWorkedTag),
+    // (Executing, WorkableStateExecutingTag)
+);
+
 
 #[derive(Event, Debug)]
 pub struct WorkStartEvent {
