@@ -64,7 +64,6 @@ macro_rules! pawn_states {
         $( ($name:ident, $state_component_name:ident $(, $turple_type:ty, $match_field:ident)?)),* $(,)?
     ) => {
         #[derive(Debug, Clone, PartialEq, Eq, Reflect)]
-
         pub enum PawnState {
             $($name $(($turple_type))? ),*
         }

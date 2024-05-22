@@ -6,10 +6,7 @@ pub fn assign_tasks_to_pawns(
     mut work_queue: ResMut<TasksQueue>,
 ) {
     for (entity, pawn, mut commandable) in query.iter_mut() {
-        if pawn.state != PawnState::Idle {
-            debug!("assign_tasks_to_pawns>> got PawnState::{:?} while expected PawnState::{:?} by Query<With<pawn_state::PawnStateIdleMarker>> param", pawn.state, PawnState::Idle);
-            continue;
-        }
+        ensure_state!(PawnState::Idle, pawn.state);
 
         let Some(task) = work_queue.get_task() else {
             continue;
@@ -31,7 +28,10 @@ pub fn assign_tasks_to_pawns(
 pub fn progress_work(
     mut commands: Commands,
     // pawns_query: Query<(Entity, &Pawn), With<pawn_state::PawnStateWorkingTag>>,
-    mut workable_query: Query<(Entity, &mut Workable), With<workable_state::WorkableStateBeingWorkedTag>>,
+    mut workable_query: Query<
+        (Entity, &mut Workable),
+        With<workable_state::WorkableStateBeingWorkedTag>,
+    >,
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut event_writer: EventWriter<WorkCompleteEvent>,
@@ -39,10 +39,7 @@ pub fn progress_work(
     let elapsed_time = time_scale.scale_to_seconds(time.delta_seconds());
 
     for (entity, mut workable) in workable_query.iter_mut() {
-        if workable.state != WorkableState::BeingWorked {
-            debug!("progress_work>> got WorkableState::{:?} while expected WorkableState::{:?} by Query<With<workable_state::WorkableStateBeingWorkedTag>> param", workable.state, WorkableState::BeingWorked);
-            continue;
-        }
+        ensure_state!(WorkableState::BeingWorked(_), workable.state);
 
         workable.perform_work(elapsed_time);
 

@@ -63,3 +63,34 @@ pub enum AppState {
     Loading,
     Playing,
 }
+
+#[macro_export]
+macro_rules! ensure_state {
+    ($expected_pattern:pat, $current_state:expr) => {
+        match $current_state {
+            $expected_pattern => {}
+            _ => {
+                debug!(
+                    "In {}:{}>> got {:?} while expected pattern {:?} by Query<With<_>> param",
+                    module_path!(),
+                    line!(),
+                    $current_state,
+                    stringify!($expected_pattern),
+                );
+                continue;
+            }
+        }
+    };
+    ($expected_state:expr, $current_state:expr) => {
+        if $current_state != $expected_state {
+            debug!(
+                "In {}:{}>> got {:?} while expected {:?} by Query<With<_>> param",
+                module_path!(),
+                line!(),
+                $current_state,
+                $expected_state,
+            );
+            continue;
+        }
+    };
+}
