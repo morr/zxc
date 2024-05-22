@@ -48,5 +48,6 @@ RootConfig(
         sleeping: 14.2857142857,
         // 17 hours of living => 100% stamina drained (100 / 17 = 5.8823529412)
         living: -5.8823529412
+        // living: -50.8823529412
     )
 )

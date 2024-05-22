@@ -28,14 +28,16 @@ impl Default for Restable {
 }
 
 fn progress_stamina(
+    mut commands: Commands,
     time: Res<Time>,
     time_scale: Res<TimeScale>,
-    mut query: Query<(Entity, &mut Restable, &Pawn)>,
+    mut query: Query<(Entity, &mut Restable, &mut Commandable, &Pawn)>,
     mut command_writer: EventWriter<ToRestCommand>,
+    mut work_queue: ResMut<TasksQueue>,
 ) {
     let time_amount = time_scale.scale_to_seconds(time.delta_seconds());
 
-    for (id, mut restable, pawn) in query.iter_mut() {
+    for (entity, mut restable, mut commandable, pawn) in query.iter_mut() {
         let was_non_zero = !restable.stamina.is_zero();
 
         let diff = match pawn.state {
@@ -52,7 +54,12 @@ fn progress_stamina(
         restable.stamina = (restable.stamina + diff).clamp(0.0, 100.0);
 
         if was_non_zero && restable.stamina.is_zero() {
-            command_writer.send(ToRestCommand(id));
+            commandable.set_queue(
+                CommandType::ToRest(ToRestCommand(entity)),
+                entity,
+                &mut commands,
+                &mut work_queue,
+            );
         }
     }
 }
