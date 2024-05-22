@@ -97,6 +97,16 @@ impl Commandable {
         }
     }
 
+    pub fn interrupt_executing(&mut self, entity: Entity, commands: &mut Commands) {
+        if let Some(command) = self.executing.take() {
+            self.queue.push_front(command);
+        }
+
+        if self.state != CommandableState::Idle && !self.queue.is_empty() {
+            self.change_state(CommandableState::PendingExecution, entity, commands);
+        }
+    }
+
     pub fn cleanup_queue(&mut self, work_queue: &mut ResMut<TasksQueue>) {
         if let Some(command) = self.executing.take() {
             self.queue.push_front(command);

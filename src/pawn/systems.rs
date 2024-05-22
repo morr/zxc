@@ -260,23 +260,28 @@ pub fn progress_pawn_death(
     mut commands: Commands,
     mut event_reader: EventReader<PawnDeathEvent>,
     mut query: Query<(&mut Pawn, &mut Commandable)>,
-    // mut state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
-    // mut work_queue: ResMut<TasksQueue>,
+    mut work_queue: ResMut<TasksQueue>,
 ) {
-    for PawnDeathEvent(pawn_entity) in event_reader.read() {
+    for PawnDeathEvent(entity) in event_reader.read() {
         // println!("{:?}", PawnDeathEvent(pawn_entity));
 
-        let Ok(mut pawn, mut commandable) = query.get_mut(pawn_entity) else { continue; }
+        match query.get_mut(*entity) {
+            Ok((mut pawn, mut commandable)) => {
+                pawn.change_state(
+                    PawnState::Dead,
+                    *entity,
+                    &mut commands,
+                    // &mut state_change_event_writer,
+                );
 
-        // set pawn dead
-        pawn.change_state(
-            PawnState::Dead,
-            entity,
-            &mut commands,
-            // &mut state_change_event_writer,
-        );
-
-        commandable.cleanup();
+                commandable.interrupt_executing(*entity, &mut commands);
+                commandable.cleanup_queue(&mut work_queue);
+            }
+            Err(err) => {
+                warn!("Failed to get query result: {:?}", err);
+                continue;
+            }
+        }
     }
 }
 
