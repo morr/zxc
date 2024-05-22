@@ -27,6 +27,8 @@ pub struct FarmYieldTextUIMarker {}
 pub struct WorkableComponentUIMarker {}
 
 #[derive(Component, Default)]
+pub struct WorkableStateTextUIMarker {}
+#[derive(Component, Default)]
 pub struct WorkableWorkAmountDoneTextUIMarker {}
 #[derive(Component, Default)]
 pub struct WorkableWorkAmountTotalTextUIMarker {}
@@ -78,6 +80,10 @@ pub fn render_farm_ui(
                     >())
                     .with_children(|parent| {
                         parent.spawn(headline_text_bundle("Workable".into(), font_assets));
+                        parent.spawn(property_text_bundle::<WorkableStateTextUIMarker>(
+                            workable_state_text(workable),
+                            font_assets,
+                        ));
                         parent.spawn(property_text_bundle::<WorkableWorkAmountDoneTextUIMarker>(
                             workable_work_amount_done_text(workable),
                             font_assets,
@@ -207,10 +213,12 @@ fn farm_yield_text(farm: &Farm) -> String {
     format!("yield: {}", farm.yield_amount())
 }
 
+pub fn workable_state_text(workable: &Workable) -> String {
+    format!("state: {:?}", workable.state)
+}
 pub fn workable_work_amount_done_text(workable: &Workable) -> String {
     format!("work_amount_done: {:.2}", workable.work_amount_done)
 }
-
 pub fn workable_work_amount_total_text(workable: &Workable) -> String {
     format!("work_amount_total: {:.2}", workable.work_amount_total)
 }
