@@ -15,7 +15,7 @@ pub struct Workable {
 impl Workable {
     pub fn new(work_amount_total: f32) -> Self {
         Self {
-            state: WorkableState::Idle,
+            state: WorkableState::Pending,
             work_amount_total,
             work_amount_done: 0.0,
         }
@@ -90,9 +90,9 @@ macro_rules! workable_states {
 }
 
 workable_states!(
-    (Idle, WorkableStateIdleTag),
+    (Pending, WorkableStatePendingTag),
     (BeingWorked, WorkableStateBeingWorkedTag),
-    // (Executing, WorkableStateExecutingTag)
+    (Complete, WorkableStateCompleteTag)
 );
 
 
