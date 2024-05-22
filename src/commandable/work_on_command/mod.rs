@@ -25,12 +25,16 @@ fn execute_command(
     // mut commandable_event_writer: EventWriter<CommandExecutedEvent>,
     // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
-    for WorkOnCommand(_commandable_entity, task) in command_reader.read() {
+    for WorkOnCommand(commandable_entity, task) in command_reader.read() {
         // println!("{:?}", WorkOnCommand(*entity, task.clone()));
 
         match workable_query.get_mut(task.entity) {
             Ok(mut workable) => {
-                workable.change_state(WorkableState::BeingWorked, task.entity, &mut commands);
+                workable.change_state(
+                    WorkableState::BeingWorked(*commandable_entity),
+                    task.entity,
+                    &mut commands,
+                );
             }
 
             Err(err) => {
@@ -38,31 +42,31 @@ fn execute_command(
                 continue;
             }
         }
-
-        // match pawn_query.get_mut(*entity) {
-        //     Ok((mut pawn, mut commandable)) => {
-        //         commandable.complete_executing(
-        //             *entity,
-        //             &mut commands,
-        //             &mut commandable_event_writer,
-        //         );
-        //
-        //         pawn.change_state(
-        //             PawnState::TaskAssigned(task.clone()),
-        //             *entity,
-        //             &mut commands,
-        //             // &mut pawn_state_change_event_writer,
-        //         );
-        //         event_writer.send(WorkStartEvent {
-        //             pawn_entity: *entity,
-        //         });
-        //     }
-        //     Err(err) => {
-        //         warn!("Failed to get query result: {:?}", err);
-        //         continue;
-        //     }
-        // }
     }
 }
 
-fn monitor_completion() {}
+fn monitor_completion(
+    mut commands: Commands,
+    mut query: Query<&mut Commandable>,
+    mut command_complete_event_reader: EventReader<WorkCompleteEvent>,
+    mut commandable_event_writer: EventWriter<CommandExecutedEvent>,
+) {
+    for WorkCompleteEvent { commandable_entity, workable_entity } in command_complete_event_reader.read() {
+        // println!("{:?}",WorkCompleteEvent { commandable_entity, workable_entity });
+
+        let Ok(mut commandable) = query.get_mut(*commandable_entity,) else {
+            continue;
+        };
+        let Some(ref command_type) = commandable.executing else {
+            continue;
+        };
+        let CommandType::WorkOn(WorkOnCommand(command_commandable_entity, task)) = command_type else {
+            continue;
+        };
+        if task.entity != *workable_entity || command_commandable_entity != commandable_entity{
+            continue;
+        }
+
+        commandable.complete_executing(*commandable_entity, &mut commands, &mut commandable_event_writer);
+    }
+}
