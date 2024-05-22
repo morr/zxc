@@ -117,7 +117,7 @@ impl Commandable {
             #[allow(clippy::single_match)]
             match command_type {
                 CommandType::WorkOn(WorkOnCommand(_entity, task)) => {
-                    tasks_scheduler.send(ScheduleTaskEvent(task, QueuingType::PushFront));
+                    tasks_scheduler.send(ScheduleTaskEvent::push_front(task));
                 }
                 _ => {}
             }

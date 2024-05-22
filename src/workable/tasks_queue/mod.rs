@@ -64,6 +64,16 @@ pub enum QueuingType {
 #[derive(Event, Debug)]
 pub struct ScheduleTaskEvent(pub Task, pub QueuingType);
 
+impl ScheduleTaskEvent {
+    pub fn push_front(task: Task) -> Self {
+        Self(task, QueuingType::PushFront)
+    }
+
+    pub fn push_back(task: Task) -> Self {
+        Self(task, QueuingType::PushBack)
+    }
+}
+
 fn schedule_task(
     mut event_reader: EventReader<ScheduleTaskEvent>,
     mut work_queue: ResMut<TasksQueue>,

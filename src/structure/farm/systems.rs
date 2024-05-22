@@ -74,14 +74,11 @@ pub fn progress_planted_and_tending_rest_timers(
                 // );
 
                 if planted_state.tending_rest_started_day != elapsed_time.total_days() {
-                    tasks_scheduler.send(ScheduleTaskEvent(
-                        Task {
-                            entity,
-                            kind: TaskKind::FarmTending,
-                            grid_tile: transform.world_pos_to_grid(),
-                        },
-                        QueuingType::PushBack,
-                    ));
+                    tasks_scheduler.send(ScheduleTaskEvent::push_back(Task {
+                        entity,
+                        kind: TaskKind::FarmTending,
+                        grid_tile: transform.world_pos_to_grid(),
+                    }));
                 } else {
                     planted_state.is_tending_pending_for_next_day = true;
                 }
@@ -134,14 +131,11 @@ pub fn progress_on_state_changed(
                 let grid_tile = transform.world_pos_to_grid();
 
                 if let Some(task_kind) = maybe_task_kind {
-                    tasks_scheduler.send(ScheduleTaskEvent(
-                        Task {
-                            entity,
-                            kind: task_kind,
-                            grid_tile,
-                        },
-                        QueuingType::PushBack,
-                    ));
+                    tasks_scheduler.send(ScheduleTaskEvent::push_back(Task {
+                        entity,
+                        kind: task_kind,
+                        grid_tile,
+                    }));
                 }
 
                 if let FarmState::Harvested(_) = state {
@@ -169,13 +163,12 @@ pub fn progress_on_new_day(
         for (entity, mut farm, transform) in query.iter_mut() {
             if let FarmState::Planted(planted_state) = &mut farm.state {
                 if planted_state.is_tending_pending_for_next_day {
-                    tasks_scheduler.send(ScheduleTaskEvent(
+                    tasks_scheduler.send(ScheduleTaskEvent::push_back(
                         Task {
                             entity,
                             kind: TaskKind::FarmTending,
                             grid_tile: transform.world_pos_to_grid(),
                         },
-                        QueuingType::PushBack,
                     ));
 
                     planted_state.is_tending_pending_for_next_day = false;
