@@ -340,12 +340,13 @@ fn pawn_birthday_text(pawn: &Pawn) -> String {
     )
 }
 fn pawn_state_text(pawn: &Pawn) -> String {
-    match &pawn.state {
-        PawnState::Working(working_state) => {
-            format!("state: {:?}", WorkingStateDebug(working_state))
-        }
-        _ => format!("state: {:?}", pawn.state),
-    }
+    // match &pawn.state {
+    //     PawnState::Working(working_state) => {
+    //         format!("state: {:?}", WorkingStateDebug(working_state))
+    //     }
+    //     _ => format!("state: {:?}", pawn.state),
+    // }
+    format!("state: {:?}", pawn.state)
 }
 
 fn movable_speed_text(movable: &Movable) -> String {

@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use super::*;
 
-#[derive(Component, Debug, Default, InspectorOptions, Reflect)]
+#[derive(Component, Debug, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
 pub struct Workable {
     pub state: WorkableState,

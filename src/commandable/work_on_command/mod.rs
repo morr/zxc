@@ -4,8 +4,12 @@ pub struct WorkOnCommandPlugin;
 
 impl Plugin for WorkOnCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<WorkOnCommand>()
-            .add_systems(Update, execute_command.run_if(in_state(AppState::Playing)));
+        app.add_event::<WorkOnCommand>().add_systems(
+            Update,
+            (execute_command, monitor_completion)
+                .chain()
+                .run_if(in_state(AppState::Playing)),
+        );
     }
 }
 
@@ -60,3 +64,5 @@ fn execute_command(
         // }
     }
 }
+
+fn monitor_completion() {}
