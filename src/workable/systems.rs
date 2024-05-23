@@ -39,50 +39,55 @@ pub fn progress_work(
     let elapsed_time = time_scale.scale_to_seconds(time.delta_seconds());
 
     for (workable_entity, mut workable) in workable_query.iter_mut() {
-        ensure_state!(WorkableState::BeingWorked(_), workable.state);
+        ensure_state!(WorkableState::BeingWorked(_, _), workable.state);
 
         workable.perform_work(elapsed_time);
 
         if workable.is_work_complete() {
-            let WorkableState::BeingWorked(commandable_entity) = workable.state else {
+            let prev_state =
+                workable.change_state(WorkableState::Idle, workable_entity, &mut commands);
+            workable.reset_amount_done();
+
+            let WorkableState::BeingWorked(commandable_entity, task) = prev_state else {
                 panic!()
             };
 
-            workable.change_state(WorkableState::Idle, workable_entity, &mut commands);
-            workable.reset_amount_done();
-
             event_writer.send(WorkCompleteEvent {
-                workable_entity,
                 commandable_entity,
+                task,
             });
         }
     }
 }
 
 pub fn complete_work(
-    mut commands: Commands,
+    // mut commands: Commands,
     mut event_reader: EventReader<WorkCompleteEvent>,
-    mut query: Query<&mut Pawn>,
+    // mut query: Query<&mut Pawn>,
     // mut state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
     mut farm_progress_event_writer: EventWriter<FarmProgressEvent>,
     mut farm_tending_event_writer: EventWriter<FarmTendedEvent>,
 ) {
-    for WorkCompleteEvent { commandable_entity, workable_entity } in event_reader.read() {
-        // println!("{:?}", WorkCompleteEvent { commandable_entity, workable_entity });
+    for WorkCompleteEvent {
+        commandable_entity: _,
+        task,
+    } in event_reader.read()
+    {
+        // println!("{:?}", WorkCompleteEvent { commandable_entity, task });
         //
         // let mut pawn = query.get_mut(event.pawn_entity).unwrap();
         // let task = pawn.get_task();
         //
         //
-        // match task.work_kind {
-        //     // event.workable_entity the same is task.entity
-        //     WorkKind::FarmPlant | WorkKind::FarmHarvest => {
-        //         farm_progress_event_writer.send(FarmProgressEvent(event.workable_entity));
-        //     }
-        //     WorkKind::FarmTending => {
-        //         farm_tending_event_writer.send(FarmTendedEvent(event.workable_entity));
-        //     }
-        // }
+        match task.work_kind {
+            // event.workable_entity the same is task.entity
+            WorkKind::FarmPlant | WorkKind::FarmHarvest => {
+                farm_progress_event_writer.send(FarmProgressEvent(task.workable_entity));
+            }
+            WorkKind::FarmTending => {
+                farm_tending_event_writer.send(FarmTendedEvent(task.workable_entity));
+            }
+        }
         //
         // pawn.change_state(
         //     PawnState::Idle,
@@ -92,7 +97,6 @@ pub fn complete_work(
         // );
     }
 }
-
 
 // pub fn start_pawn_working(
 //     mut commands: Commands,

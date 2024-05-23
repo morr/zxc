@@ -1,5 +1,3 @@
-use bevy::ecs::entity;
-
 use super::*;
 
 pub fn progress_on_farm_progress_event(
@@ -164,13 +162,11 @@ pub fn progress_on_new_day(
         for (entity, mut farm, transform) in query.iter_mut() {
             if let FarmState::Planted(planted_state) = &mut farm.state {
                 if planted_state.is_tending_pending_for_next_day {
-                    tasks_scheduler.send(ScheduleTaskEvent::push_back(
-                        Task {
-                            workable_entity: entity,
-                            work_kind: WorkKind::FarmTending,
-                            grid_tile: transform.world_pos_to_grid(),
-                        },
-                    ));
+                    tasks_scheduler.send(ScheduleTaskEvent::push_back(Task {
+                        workable_entity: entity,
+                        work_kind: WorkKind::FarmTending,
+                        grid_tile: transform.world_pos_to_grid(),
+                    }));
 
                     planted_state.is_tending_pending_for_next_day = false;
                 }

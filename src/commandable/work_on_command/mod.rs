@@ -31,7 +31,7 @@ fn execute_command(
         match workable_query.get_mut(task.workable_entity) {
             Ok(mut workable) => {
                 workable.change_state(
-                    WorkableState::BeingWorked(*commandable_entity),
+                    WorkableState::BeingWorked(*commandable_entity, task.clone()),
                     task.workable_entity,
                     &mut commands,
                 );
@@ -51,22 +51,32 @@ fn monitor_completion(
     mut command_complete_event_reader: EventReader<WorkCompleteEvent>,
     mut commandable_event_writer: EventWriter<CommandExecutedEvent>,
 ) {
-    for WorkCompleteEvent { commandable_entity, workable_entity } in command_complete_event_reader.read() {
-        // println!("{:?}", WorkCompleteEvent { commandable_entity, workable_entity });
+    for WorkCompleteEvent {
+        commandable_entity,
+        task,
+    } in command_complete_event_reader.read()
+    {
+        // println!("{:?}", WorkCompleteEvent { commandable_entity, task });
 
-        let Ok(mut commandable) = query.get_mut(*commandable_entity,) else {
+        let Ok(mut commandable) = query.get_mut(*commandable_entity) else {
             continue;
         };
         let Some(ref command_type) = commandable.executing else {
             continue;
         };
-        let CommandType::WorkOn(WorkOnCommand(command_commandable_entity, task)) = command_type else {
+        let CommandType::WorkOn(WorkOnCommand(command_commandable_entity, command_task)) =
+            command_type
+        else {
             continue;
         };
-        if task.workable_entity != *workable_entity || command_commandable_entity != commandable_entity{
+        if commandable_entity != command_commandable_entity || task != command_task {
             continue;
         }
 
-        commandable.complete_executing(*commandable_entity, &mut commands, &mut commandable_event_writer);
+        commandable.complete_executing(
+            *commandable_entity,
+            &mut commands,
+            &mut commandable_event_writer,
+        );
     }
 }

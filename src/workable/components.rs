@@ -34,7 +34,7 @@ impl Workable {
 #[derive(Event, Debug)]
 pub struct WorkCompleteEvent {
     pub commandable_entity: Entity,
-    pub workable_entity: Entity,
+    pub task: Task,
 }
 
 macro_rules! workable_states {
@@ -99,6 +99,5 @@ macro_rules! workable_states {
 // Example usage
 workable_states!(
     (Idle, WorkableStateIdleTag),
-    (BeingWorked, WorkableStateBeingWorkedTag, (Entity), (_a)),
-    // (BeingWorked, WorkableStateBeingWorkedTag, (Entity, Task), (_a, _b)),
+    (BeingWorked, WorkableStateBeingWorkedTag, (Entity, Task), (_a, _b)),
 );
