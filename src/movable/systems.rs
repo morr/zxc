@@ -121,16 +121,14 @@ fn move_to_target_location(
 pub fn stop_movable_on_death(
     mut commands: Commands,
     mut event_reader: EventReader<PawnDeathEvent>,
-    mut query: Query<(&mut Movable, &mut Commandable)>,
-    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
+    mut query: Query<&mut Movable>,
 ) {
     for PawnDeathEvent(entity) in event_reader.read() {
         // println!("{:?}", event);
-        let Ok((mut movable, mut commandable)) = query.get_mut(*entity) else {
+        let Ok(mut movable) = query.get_mut(*entity) else {
             continue;
         };
 
         movable.to_idle(*entity, &mut commands, None);
-        commandable.cleanup_queue(&mut tasks_scheduler);
     }
 }

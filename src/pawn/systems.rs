@@ -274,8 +274,7 @@ pub fn progress_pawn_death(
                     // &mut state_change_event_writer,
                 );
 
-                commandable.interrupt_executing(*entity, &mut commands);
-                commandable.cleanup_queue(&mut tasks_scheduler);
+                commandable.clear_queue(*entity, &mut commands, &mut tasks_scheduler);
             }
             Err(err) => {
                 warn!("Failed to get query result: {:?}", err);

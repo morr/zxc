@@ -44,6 +44,16 @@ impl Default for Commandable {
 pub struct CommandExecutedEvent(pub Entity);
 
 impl Commandable {
+    pub fn clear_queue(
+        &mut self,
+        entity: Entity,
+        commands: &mut Commands,
+        tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
+    ) {
+        self.drain_queue(tasks_scheduler);
+        self.change_state(CommandableState::Idle, entity, commands);
+    }
+
     pub fn set_queue<I>(
         &mut self,
         command_or_commands: I,
@@ -53,9 +63,9 @@ impl Commandable {
     ) where
         I: IntoIterator<Item = CommandType>,
     {
-        // println!("schedule_execution {:?}", self.pending);
+        self.drain_queue(tasks_scheduler);
+
         self.change_state(CommandableState::PendingExecution, entity, commands);
-        self.cleanup_queue(tasks_scheduler);
         self.queue = command_or_commands.into_iter().collect();
     }
 
@@ -67,7 +77,6 @@ impl Commandable {
     ) where
         I: IntoIterator<Item = CommandType>,
     {
-        // println!("schedule_execution {:?}", self.pending);
         if self.state == CommandableState::Idle {
             self.change_state(CommandableState::PendingExecution, entity, commands);
         }
@@ -80,7 +89,6 @@ impl Commandable {
         commands: &mut Commands,
         commandable_event_writer: &mut EventWriter<CommandExecutedEvent>,
     ) {
-        // println!("complete_execution");
         self.change_state(
             if self.queue.is_empty() {
                 CommandableState::Idle
@@ -97,17 +105,17 @@ impl Commandable {
         }
     }
 
-    pub fn interrupt_executing(&mut self, entity: Entity, commands: &mut Commands) {
-        if let Some(command) = self.executing.take() {
-            self.queue.push_front(command);
-        }
+    // pub fn interrupt_executing(&mut self, entity: Entity, commands: &mut Commands) {
+    //     if let Some(command) = self.executing.take() {
+    //         self.queue.push_front(command);
+    //     }
+    //
+    //     if self.state != CommandableState::Idle && !self.queue.is_empty() {
+    //         self.change_state(CommandableState::PendingExecution, entity, commands);
+    //     }
+    // }
 
-        if self.state != CommandableState::Idle && !self.queue.is_empty() {
-            self.change_state(CommandableState::PendingExecution, entity, commands);
-        }
-    }
-
-    pub fn cleanup_queue(&mut self, tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>) {
+    fn drain_queue(&mut self, tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>) {
         if let Some(command) = self.executing.take() {
             self.queue.push_front(command);
         }
