@@ -39,15 +39,15 @@ pub struct WorkCompleteEvent {
 
 macro_rules! workable_states {
     (
-        $( ($name:ident, $state_component_name:ident $(, $turple_type:ty, $match_field:ident)?)),* $(,)?
+        $( ($name:ident, $state_component_name:ident $(, ( $($tuple_type:ty),* ), ( $($match_field:ident),* ))? )),* $(,)?
     ) => {
         #[derive(Debug, Clone, PartialEq, Eq, Reflect)]
         pub enum WorkableState {
-            $($name $(($turple_type))? ),*
+            $($name $( ( $($tuple_type),* ) )? ),*
         }
 
         pub mod workable_state {
-            use bevy::{prelude::*};
+            use bevy::prelude::*;
 
             $(
                 #[derive(Component, Debug, Reflect)]
@@ -69,9 +69,11 @@ macro_rules! workable_states {
 
                 // Remove the old state component
                 match &self.state {
-                    $(WorkableState::$name $( ($match_field) )? => {
-                        commands.entity(entity).remove::<workable_state::$state_component_name>();
-                    },)*
+                    $(
+                        WorkableState::$name $( ( $($match_field),* ) )? => {
+                            commands.entity(entity).remove::<workable_state::$state_component_name>();
+                        },
+                    )*
                 }
 
                 // Set the new state and put old state into prev_state
@@ -79,9 +81,12 @@ macro_rules! workable_states {
 
                 // Add the new component
                 match &self.state {
-                    $(WorkableState::$name $( ($match_field) )? => {
-                        commands.entity(entity).insert(workable_state::$state_component_name);
-                    },)*
+                    $(
+                        WorkableState::$name $( ( $($match_field),* ) )? => {
+                            commands.entity(entity).insert(workable_state::$state_component_name);
+
+                        },
+                    )*
                 }
 
                 // state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
@@ -91,7 +96,9 @@ macro_rules! workable_states {
     };
 }
 
+// Example usage
 workable_states!(
     (Idle, WorkableStateIdleTag),
-    (BeingWorked, WorkableStateBeingWorkedTag, Entity, _a),
+    (BeingWorked, WorkableStateBeingWorkedTag, (Entity), (_a)),
+    // (BeingWorked, WorkableStateBeingWorkedTag, (Entity, Task), (_a, _b)),
 );
