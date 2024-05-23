@@ -14,6 +14,7 @@ RootConfig(
         farm_width: 1,
         farm_height: 1,
         time_scale: 1.0
+        // time_scale: 30000.0
     ),
     time: TimeConfig(
         day_duration: 60.0,
@@ -49,5 +50,6 @@ RootConfig(
         // 17 hours of living => 100% stamina drained (100 / 17 = 5.8823529412)
         living: -5.8823529412
         // living: -50.8823529412
+        // living: -0.0002
     )
 )
