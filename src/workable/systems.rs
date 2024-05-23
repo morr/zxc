@@ -44,9 +44,9 @@ pub fn progress_work(
         workable.perform_work(elapsed_time);
 
         if workable.is_work_complete() {
+            workable.reset_amount_done();
             let prev_state =
                 workable.change_state(WorkableState::Idle, workable_entity, &mut commands);
-            workable.reset_amount_done();
 
             let WorkableState::BeingWorked(commandable_entity, task) = prev_state else {
                 panic!()

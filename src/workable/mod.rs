@@ -6,8 +6,7 @@ pub struct WorkablePlugin;
 
 impl Plugin for WorkablePlugin {
     fn build(&self, app: &mut App) {
-        app
-            .add_plugins(TasksQueuePlugin)
+        app.add_plugins(TasksQueuePlugin)
             .register_type::<Workable>()
             .add_event::<WorkCompleteEvent>()
             // .add_event::<WorkStartEvent>()
@@ -17,11 +16,7 @@ impl Plugin for WorkablePlugin {
             )
             .add_systems(
                 FixedUpdate,
-                (
-                    assign_tasks_to_pawns,
-                    // start_pawn_working,
-                    // complete_pawn_working,
-                )
+                (assign_tasks_to_pawns, complete_work)
                     .chain()
                     .run_if(in_state(AppState::Playing)),
             );
