@@ -74,15 +74,15 @@ pub fn complete_work(
         // let task = pawn.get_task();
         //
         //
-        match task.kind {
-            // event.workable_entity the same is task.entity
-            TaskKind::FarmPlant | TaskKind::FarmHarvest => {
-                farm_progress_event_writer.send(FarmProgressEvent(event.workable_entity));
-            }
-            TaskKind::FarmTending => {
-                farm_tending_event_writer.send(FarmTendedEvent(event.workable_entity));
-            }
-        }
+        // match task.work_kind {
+        //     // event.workable_entity the same is task.entity
+        //     WorkKind::FarmPlant | WorkKind::FarmHarvest => {
+        //         farm_progress_event_writer.send(FarmProgressEvent(event.workable_entity));
+        //     }
+        //     WorkKind::FarmTending => {
+        //         farm_tending_event_writer.send(FarmTendedEvent(event.workable_entity));
+        //     }
+        // }
         //
         // pawn.change_state(
         //     PawnState::Idle,

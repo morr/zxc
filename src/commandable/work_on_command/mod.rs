@@ -28,11 +28,11 @@ fn execute_command(
     for WorkOnCommand(commandable_entity, task) in command_reader.read() {
         // println!("{:?}", WorkOnCommand(*entity, task.clone()));
 
-        match workable_query.get_mut(task.entity) {
+        match workable_query.get_mut(task.workable_entity) {
             Ok(mut workable) => {
                 workable.change_state(
                     WorkableState::BeingWorked(*commandable_entity),
-                    task.entity,
+                    task.workable_entity,
                     &mut commands,
                 );
             }
@@ -63,7 +63,7 @@ fn monitor_completion(
         let CommandType::WorkOn(WorkOnCommand(command_commandable_entity, task)) = command_type else {
             continue;
         };
-        if task.entity != *workable_entity || command_commandable_entity != commandable_entity{
+        if task.workable_entity != *workable_entity || command_commandable_entity != commandable_entity{
             continue;
         }
 

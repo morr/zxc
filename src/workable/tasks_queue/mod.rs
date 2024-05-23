@@ -42,7 +42,7 @@ impl TasksQueue {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Reflect)]
-pub enum TaskKind {
+pub enum WorkKind {
     FarmPlant,
     FarmTending,
     FarmHarvest,
@@ -50,8 +50,8 @@ pub enum TaskKind {
 
 #[derive(Debug, Clone, PartialEq, Eq, Reflect)]
 pub struct Task {
-    pub entity: Entity,
-    pub kind: TaskKind,
+    pub workable_entity: Entity,
+    pub work_kind: WorkKind,
     pub grid_tile: IVec2,
 }
 

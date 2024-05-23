@@ -77,11 +77,11 @@ fn dead_pawn_returns_task_to_tasks_queue() {
         .add_event::<PawnDeathEvent>()
         .add_systems(Update, progress_pawn_death);
 
-    let workable_id = app.world.spawn(Workable::default()).id();
+    let workable_entity = app.world.spawn(Workable::default()).id();
 
     let original_task = Task {
-        entity: workable_id,
-        kind: TaskKind::FarmTending,
+        workable_entity,
+        work_kind: WorkKind::FarmTending,
         grid_tile: IVec2::default(),
     };
     let pawn_id = app
