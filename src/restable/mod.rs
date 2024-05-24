@@ -1,5 +1,3 @@
-use rand_distr::num_traits::Zero;
-
 use crate::*;
 
 pub struct RestablePlugin;
@@ -21,9 +19,28 @@ pub struct Restable {
     pub stamina: f32,
 }
 
+const FULL_STAMINA: f32 = 100.;
+const EMPTY_STAMINA: f32 = 0.;
+
 impl Default for Restable {
     fn default() -> Self {
-        Self { stamina: 100.0 }
+        Self {
+            stamina: FULL_STAMINA,
+        }
+    }
+}
+
+impl Restable {
+    pub fn is_empty(&self) -> bool {
+        self.stamina == EMPTY_STAMINA
+    }
+
+    pub fn is_full(&self) -> bool {
+        self.stamina == FULL_STAMINA
+    }
+
+    pub fn change_stamina(&mut self, amount: f32) {
+        self.stamina = (self.stamina + amount).clamp(EMPTY_STAMINA, FULL_STAMINA);
     }
 }
 
@@ -31,15 +48,16 @@ fn progress_stamina(
     mut commands: Commands,
     time: Res<Time>,
     time_scale: Res<TimeScale>,
-    mut query: Query<(Entity, &mut Restable, &mut Commandable, &Pawn)>,
+    mut query: Query<(Entity, &mut Restable, &mut Commandable, &mut Pawn)>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     let time_amount = time_scale.scale_to_seconds(time.delta_seconds());
 
-    for (entity, mut restable, mut commandable, pawn) in query.iter_mut() {
-        let was_non_zero = !restable.stamina.is_zero();
+    for (entity, mut restable, mut commandable, mut pawn) in query.iter_mut() {
+        let wasnt_empty = !restable.is_empty();
+        let wasnt_full = !restable.is_full();
 
-        let diff = match pawn.state {
+        restable.change_stamina(match pawn.state {
             // PawnState::Idle => time_amount * CONFIG.stamina_cost.idle,
             // PawnState::Sleeping => time_amount * CONFIG.stamina_cost.sleeping,
             // PawnState::Moving => time_amount * CONFIG.stamina_cost.moving,
@@ -48,17 +66,19 @@ fn progress_stamina(
             PawnState::Sleeping => time_amount * CONFIG.stamina_cost.sleeping,
             PawnState::Dead => 0.0,
             _ => time_amount * CONFIG.stamina_cost.living,
-        };
+        });
 
-        restable.stamina = (restable.stamina + diff).clamp(0.0, 100.0);
-
-        if was_non_zero && restable.stamina.is_zero() {
+        if wasnt_empty && restable.is_empty() {
             commandable.set_queue(
                 CommandType::ToRest(ToRestCommand(entity)),
                 entity,
                 &mut commands,
                 &mut tasks_scheduler,
             );
+        }
+
+        if wasnt_full && restable.is_full() {
+            pawn.change_state(PawnState::Idle, entity, &mut commands);
         }
     }
 }
