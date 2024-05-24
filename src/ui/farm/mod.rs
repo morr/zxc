@@ -105,6 +105,7 @@ fn update_farm_ui(
             Option<&FarmStateTextUIMarker>,
             Option<&FarmTendingsTextUIMarker>,
             Option<&FarmYieldTextUIMarker>,
+            Option<&WorkableStateTextUIMarker>,
             Option<&WorkableWorkAmountDoneTextUIMarker>,
             Option<&WorkableWorkAmountTotalTextUIMarker>,
         ),
@@ -112,6 +113,7 @@ fn update_farm_ui(
             With<FarmStateTextUIMarker>,
             With<FarmTendingsTextUIMarker>,
             With<FarmYieldTextUIMarker>,
+            With<WorkableStateTextUIMarker>,
             With<WorkableWorkAmountDoneTextUIMarker>,
             With<WorkableWorkAmountTotalTextUIMarker>,
         )>,
@@ -146,6 +148,7 @@ fn update_text_markers_recursive(
             Option<&FarmStateTextUIMarker>,
             Option<&FarmTendingsTextUIMarker>,
             Option<&FarmYieldTextUIMarker>,
+            Option<&WorkableStateTextUIMarker>,
             Option<&WorkableWorkAmountDoneTextUIMarker>,
             Option<&WorkableWorkAmountTotalTextUIMarker>,
         ),
@@ -153,6 +156,7 @@ fn update_text_markers_recursive(
             With<FarmStateTextUIMarker>,
             With<FarmTendingsTextUIMarker>,
             With<FarmYieldTextUIMarker>,
+            With<WorkableStateTextUIMarker>,
             With<WorkableWorkAmountDoneTextUIMarker>,
             With<WorkableWorkAmountTotalTextUIMarker>,
         )>,
@@ -164,8 +168,9 @@ fn update_text_markers_recursive(
         farm_state_marker,
         farm_tendings_marker,
         farm_yield_marker,
-        amount_done_marker,
-        amount_total_marker,
+        workable_state_marker,
+        workable_amount_done_marker,
+        workable_amount_total_marker,
     )) = texts.get_mut(entity)
     {
         if farm_state_marker.is_some() {
@@ -177,10 +182,13 @@ fn update_text_markers_recursive(
         if farm_yield_marker.is_some() {
             text.sections[0].value = farm_yield_text(farm);
         }
-        if amount_done_marker.is_some() {
+        if workable_state_marker.is_some() {
+            text.sections[0].value = workable_state_text(workable);
+        }
+        if workable_amount_done_marker.is_some() {
             text.sections[0].value = workable_amount_done_text(workable);
         }
-        if amount_total_marker.is_some() {
+        if workable_amount_total_marker.is_some() {
             text.sections[0].value = workable_amount_total_text(workable);
         }
     }
