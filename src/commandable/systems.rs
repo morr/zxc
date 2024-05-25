@@ -62,6 +62,7 @@ pub fn finalize_commands_execution(
     // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for CommandExecutedEvent(entity) in commandable_event_reader.read() {
+        // println!("{:?}", CommandExecutedEvent(*entity));
         if let Ok((Some(mut pawn), commandable)) = pawn_query.get_mut(*entity) {
             ensure_state!(PawnState::ExecutingCommand, pawn.state);
             ensure_state!(CommandableState::Idle, commandable.state);
@@ -76,6 +77,33 @@ pub fn finalize_commands_execution(
     }
 }
 
+pub fn abort_commands_execution(
+    mut commands: Commands,
+    mut commandable_event_reader: EventReader<CommandAbortedEvent>,
+    mut pawn_query: Query<
+        (Option<&mut Pawn>, &Commandable),
+        (
+            With<commandable_state::CommandableStateIdleTag>,
+            With<pawn_state::PawnStateExecutingCommandTag>,
+        ),
+    >,
+) {
+    for CommandAbortedEvent(entity) in commandable_event_reader.read() {
+        println!("{:?}", CommandAbortedEvent(*entity));
+
+        if let Ok((Some(mut pawn), commandable)) = pawn_query.get_mut(*entity) {
+            ensure_state!(PawnState::ExecutingCommand, pawn.state);
+            ensure_state!(CommandableState::Idle, commandable.state);
+
+            pawn.change_state(
+                PawnState::Idle,
+                *entity,
+                &mut commands,
+                // &mut pawn_state_change_event_writer,
+            );
+        }
+    }
+}
 // pub fn finalize_commands_execution(
 //     mut commands: Commands,
 //     mut pawn_query: Query<

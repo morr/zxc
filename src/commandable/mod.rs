@@ -32,7 +32,8 @@ impl Plugin for CommandablePlugin {
             )
             .add_systems(
                 FixedUpdate,
-                finalize_commands_execution
+                (finalize_commands_execution, abort_commands_execution)
+                    .chain()
                     .run_if(in_state(AppState::Playing))
                     .run_if(in_state(SimulationState::Running)),
             );
