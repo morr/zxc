@@ -1,5 +1,3 @@
-use bevy::ecs::entity;
-
 use super::*;
 
 #[derive(Component, Debug, InspectorOptions, Reflect)]
