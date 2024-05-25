@@ -43,6 +43,9 @@ impl Default for Commandable {
 #[derive(Event, Debug)]
 pub struct CommandCompleteEvent(pub Entity);
 
+#[derive(Event, Debug)]
+pub struct InterruptCommandEvent(pub Entity);
+
 impl Commandable {
     pub fn clear_queue(
         &mut self,

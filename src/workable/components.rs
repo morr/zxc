@@ -33,13 +33,20 @@ impl Workable {
         self.amount_done = 0.;
     }
 
-    pub fn reset(&mut self, props: (WorkKind, f32), entity: Entity, commands: &mut Commands) {
+    pub fn reset(
+        &mut self,
+        props: (WorkKind, f32),
+        entity: Entity,
+        commands: &mut Commands,
+        commandable_event_writer: &mut EventWriter<InterruptCommandEvent>,
+    ) {
         self.work_kind = props.0;
         self.amount_total = props.1;
         self.amount_done = 0.;
         let prev_state = self.change_state(WorkableState::Idle, entity, commands);
 
         if let WorkableState::BeingWorked(commandable_entity, _task) = prev_state {
+            commandable_event_writer.send(InterruptCommandEvent(commandable_entity));
         }
     }
 }
