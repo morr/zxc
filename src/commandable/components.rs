@@ -100,6 +100,7 @@ impl Commandable {
         );
         self.executing = None;
 
+        println!("complete_executing Commandable.state={:?}", self.state);
         if self.state == CommandableState::Idle {
             commandable_event_writer.send(CommandExecutedEvent(entity));
         }
