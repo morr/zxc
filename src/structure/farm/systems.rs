@@ -3,17 +3,18 @@ use super::*;
 pub fn progress_on_farm_progress_event(
     elapsed_time: Res<ElapsedTime>,
     mut event_reader: EventReader<FarmProgressEvent>,
-    mut query: Query<(&mut Farm, &Transform)>,
+    mut query: Query<(&mut Farm, &mut Workable, &Transform)>,
     mut commands: Commands,
     assets: Res<FarmAssets>,
     mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmState>>,
 ) {
     for FarmProgressEvent(entity) in event_reader.read() {
         // println!("{:?}", FarmProgressEvent(entity));
-        let (mut farm, transform) = query.get_mut(*entity).unwrap();
+        let (mut farm, mut workable, transform) = query.get_mut(*entity).unwrap();
 
         farm.progress_state(
             *entity,
+            &mut workable,
             &mut commands,
             transform.world_pos_to_grid(),
             elapsed_time.total_days(),

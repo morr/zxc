@@ -12,14 +12,15 @@ pub struct Workable {
 }
 
 impl Workable {
-    pub fn new(work_kind: WorkKind, amount_total: f32) -> Self {
+    pub fn new(props: (WorkKind, f32)) -> Self {
         Self {
             state: WorkableState::Idle,
-            work_kind,
-            amount_total,
+            work_kind: props.0,
+            amount_total: props.1,
             amount_done: 0.0,
         }
     }
+
     pub fn perform_work(&mut self, elapsed_time: f32) {
         self.amount_done += elapsed_time * CONFIG.pawn.work_force;
     }
@@ -29,12 +30,19 @@ impl Workable {
     }
 
     pub fn reset_amount_done(&mut self) {
-        self.amount_done = 0.0;
+        self.amount_done = 0.;
+    }
+
+    pub fn reset(&mut self, props: (WorkKind, f32)) {
+        self.work_kind = props.0;
+        self.amount_total = props.1;
+        self.amount_done = 0.;
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Reflect)]
 pub enum WorkKind {
+    None,
     FarmPlanting,
     FarmTending,
     FarmHarvest,

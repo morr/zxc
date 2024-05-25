@@ -111,72 +111,13 @@ impl Default for Farm {
 }
 
 impl Farm {
-    pub fn progress_state(
-        &mut self,
-        entity: Entity,
-        commands: &mut Commands,
-        grid_tile: IVec2,
-        simulation_day: u32,
-        assets: &Res<FarmAssets>,
-        state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmState>>,
-    ) {
-        let new_state = match &self.state {
-            FarmState::NotPlanted => FarmState::Planted(PlantedState {
-                growth_timer: Timer::from_seconds(
-                    days_to_seconds(CONFIG.farming.growth_days),
-                    TimerMode::Once,
-                ),
-                tending_rest_timer: Self::new_tending_rest_timer(),
-                tending_rest_started_day: simulation_day,
-                is_tending_pending_for_next_day: false,
-            }),
-            FarmState::Planted(_) => FarmState::Grown,
-            FarmState::Grown => FarmState::Harvested(HarvestedState {
-                rest_timer: Timer::from_seconds(
-                    days_to_seconds(CONFIG.farming.harvested_rest_days),
-                    TimerMode::Once,
-                ),
-            }),
-            FarmState::Harvested(_) => FarmState::NotPlanted,
-        };
-        // println!("progress_state {:?} => {:?}", self.state, new_state);
-        self.change_state(new_state, entity, commands, state_change_event_writer);
-
-        if let FarmState::NotPlanted = self.state {
-            self.tendings_done = 0;
+    pub fn workable_props(farm_state: &FarmState) -> (WorkKind, f32) {
+        match farm_state {
+            FarmState::NotPlanted => (WorkKind::FarmPlanting, CONFIG.farming.planting_hours),
+            FarmState::Planted(_) => (WorkKind::FarmTending, CONFIG.farming.tending_hours),
+            FarmState::Grown => (WorkKind::FarmHarvest, CONFIG.farming.harvesting_hours),
+            FarmState::Harvested(_) => (WorkKind::None, 0.),
         }
-
-        Self::sync_sprite_bundle(grid_tile, &self.state, &mut commands.entity(entity), assets);
-        Self::sync_workable(&self.state, &mut commands.entity(entity));
-    }
-
-    pub fn yield_amount(&self) -> u32 {
-        if let FarmState::NotPlanted = self.state {
-            return 0;
-        }
-
-        let basic_yield = CONFIG.farming.basic_yield_percent * CONFIG.farming.max_yield;
-        let rest_yield = CONFIG.farming.max_yield - basic_yield;
-
-        let max_tendings = CONFIG.farming.growth_days; // 1 tending per day
-        let tendings_percent = if self.tendings_done == 0 {
-            0.0
-        } else {
-            (self.tendings_done as f32).min(max_tendings) / max_tendings
-        };
-
-        // println!(
-        //     "basic_yield:{} rest_yield:{} tendings_percent:{}",
-        //     basic_yield, rest_yield, tendings_percent
-        // );
-        (basic_yield + (rest_yield * tendings_percent)).round() as u32
-    }
-
-    pub fn new_tending_rest_timer() -> Timer {
-        Timer::from_seconds(
-            hours_to_seconds(CONFIG.farming.tending_rest_hours),
-            TimerMode::Once,
-        )
     }
 
     pub fn spawn(
@@ -188,10 +129,12 @@ impl Farm {
     ) {
         let farm = Self::default();
         let state = farm.state.clone();
+        let workable = Workable::new(Self::workable_props(&farm.state));
 
-        let mut entity_commands = commands.spawn((farm, farm_state::NotPlanted, Name::new("Farm")));
+        let mut entity_commands =
+            commands.spawn((farm, farm_state::NotPlanted, Name::new("Farm"), workable));
+
         Farm::sync_sprite_bundle(grid_tile, &state, &mut entity_commands, assets);
-        Farm::sync_workable(&state, &mut entity_commands);
 
         let entity = entity_commands.id();
 
@@ -233,28 +176,82 @@ impl Farm {
         });
     }
 
-    pub fn sync_workable(state: &FarmState, entity_commands: &mut EntityCommands) {
-        let (maybe_amount, maybe_work_kind) = match state {
-            FarmState::NotPlanted => (
-                Some(CONFIG.farming.planting_hours),
-                Some(WorkKind::FarmPlanting),
-            ),
-            FarmState::Planted(_) => (
-                Some(CONFIG.farming.tending_hours),
-                Some(WorkKind::FarmTending),
-            ),
-            FarmState::Grown => (
-                Some(CONFIG.farming.harvesting_hours),
-                Some(WorkKind::FarmHarvest),
-            ),
-            FarmState::Harvested(_) => (None, None),
+    // pub fn sync_workable(workable: &mut Workable, farm_state: &FarmState, entity_commands: &mut EntityCommands) {
+    //     let (work_amount, work_kind) = Self::workable_props(farm_state);
+    //
+    //     // let new_workable = Workable::new(work_kind, hours_to_seconds(work_amount));
+    //     // println!("new workable {:?}", new_workable);
+    //     // entity_commands.insert(new_workable);
+    // }
+
+    pub fn progress_state(
+        &mut self,
+        entity: Entity,
+        workable: &mut Workable,
+        commands: &mut Commands,
+        grid_tile: IVec2,
+        simulation_day: u32,
+        assets: &Res<FarmAssets>,
+        state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmState>>,
+    ) {
+        let new_state = match &self.state {
+            FarmState::NotPlanted => FarmState::Planted(PlantedState {
+                growth_timer: Timer::from_seconds(
+                    days_to_seconds(CONFIG.farming.growth_days),
+                    TimerMode::Once,
+                ),
+                tending_rest_timer: Self::new_tending_rest_timer(),
+                tending_rest_started_day: simulation_day,
+                is_tending_pending_for_next_day: false,
+            }),
+            FarmState::Planted(_) => FarmState::Grown,
+            FarmState::Grown => FarmState::Harvested(HarvestedState {
+                rest_timer: Timer::from_seconds(
+                    days_to_seconds(CONFIG.farming.harvested_rest_days),
+                    TimerMode::Once,
+                ),
+            }),
+            FarmState::Harvested(_) => FarmState::NotPlanted,
+        };
+        // println!("progress_state {:?} => {:?}", self.state, new_state);
+        self.change_state(new_state, entity, commands, state_change_event_writer);
+
+        if let FarmState::NotPlanted = self.state {
+            self.tendings_done = 0;
+        }
+
+        workable.reset(Self::workable_props(&self.state));
+
+        Self::sync_sprite_bundle(grid_tile, &self.state, &mut commands.entity(entity), assets);
+    }
+
+    pub fn yield_amount(&self) -> u32 {
+        if let FarmState::NotPlanted = self.state {
+            return 0;
+        }
+
+        let basic_yield = CONFIG.farming.basic_yield_percent * CONFIG.farming.max_yield;
+        let rest_yield = CONFIG.farming.max_yield - basic_yield;
+
+        let max_tendings = CONFIG.farming.growth_days; // 1 tending per day
+        let tendings_percent = if self.tendings_done == 0 {
+            0.0
+        } else {
+            (self.tendings_done as f32).min(max_tendings) / max_tendings
         };
 
-        if let (Some(amount), Some(work_kind)) = (maybe_amount, maybe_work_kind) {
-            let new_workable = Workable::new(work_kind, hours_to_seconds(amount));
-            println!("new workable {:?}", new_workable);
-            entity_commands.insert(new_workable);
-        }
+        // println!(
+        //     "basic_yield:{} rest_yield:{} tendings_percent:{}",
+        //     basic_yield, rest_yield, tendings_percent
+        // );
+        (basic_yield + (rest_yield * tendings_percent)).round() as u32
+    }
+
+    pub fn new_tending_rest_timer() -> Timer {
+        Timer::from_seconds(
+            hours_to_seconds(CONFIG.farming.tending_rest_hours),
+            TimerMode::Once,
+        )
     }
 }
 

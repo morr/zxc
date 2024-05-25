@@ -29,7 +29,8 @@ pub fn assign_tasks_to_pawns(
 pub fn progress_work(
     mut commands: Commands,
     mut workable_query: Query<
-        (Entity, &mut Workable, &Commandable),
+        // (Entity, &mut Workable, &Commandable),
+        (Entity, &mut Workable),
         With<workable_state::WorkableStateBeingWorkedTag>,
     >,
     time: Res<Time>,
@@ -38,23 +39,9 @@ pub fn progress_work(
 ) {
     let elapsed_time = time_scale.scale_to_seconds(time.delta_seconds());
 
-    for (workable_entity, mut workable, commandable) in workable_query.iter_mut() {
-        if let Some(CommandType::WorkOn(WorkOnCommand(
-            _,
-            Task {
-                workable_entity: _,
-                work_kind,
-                grid_tile: _,
-            },
-        ))) = &commandable.executing
-        {
-            println!(
-                "wokable.work_kind={:?}, commandable.work_kind={:?}",
-                workable.work_kind, work_kind
-            );
-        };
-
+    for (workable_entity, mut workable) in workable_query.iter_mut() {
         // --- problem here
+        // --- workable was replaced by sync_workable
         ensure_state!(WorkableState::BeingWorked(_, _), workable.state);
 
         workable.perform_work(elapsed_time);
@@ -102,7 +89,8 @@ pub fn complete_work(
             }
             WorkKind::FarmTending => {
                 farm_tending_event_writer.send(FarmTendedEvent(task.workable_entity));
-            }
+            },
+            WorkKind::None => {}
         }
         //
         // pawn.change_state(
