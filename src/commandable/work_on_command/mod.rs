@@ -26,7 +26,7 @@ fn execute_command(
     // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for WorkOnCommand(commandable_entity, task) in command_reader.read() {
-        // println!("{:?}", WorkOnCommand(*commandable_entity, task.clone()));
+        println!("{:?}", WorkOnCommand(*commandable_entity, task.clone()));
 
         match workable_query.get_mut(task.workable_entity) {
             Ok(mut workable) => {
