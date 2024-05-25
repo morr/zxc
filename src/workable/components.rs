@@ -1,3 +1,5 @@
+use bevy::ecs::entity;
+
 use super::*;
 
 #[derive(Component, Debug, InspectorOptions, Reflect)]
@@ -33,10 +35,11 @@ impl Workable {
         self.amount_done = 0.;
     }
 
-    pub fn reset(&mut self, props: (WorkKind, f32)) {
+    pub fn reset(&mut self, props: (WorkKind, f32), entity: Entity, commands: &mut Commands) {
         self.work_kind = props.0;
         self.amount_total = props.1;
         self.amount_done = 0.;
+        self.change_state(WorkableState::Idle, entity, commands);
     }
 }
 
@@ -82,7 +85,7 @@ macro_rules! workable_states {
             ) -> WorkableState {
                 use std::mem;
 
-                println!("WorkableState {:?}=>{:?}", self.state, new_state);
+                // println!("WorkableState {:?}=>{:?}", self.state, new_state);
 
                 // Remove the old state component
                 match &self.state {
@@ -116,5 +119,10 @@ macro_rules! workable_states {
 // Example usage
 workable_states!(
     (Idle, WorkableStateIdleTag),
-    (BeingWorked, WorkableStateBeingWorkedTag, (Entity, Task), (_a, _b)),
+    (
+        BeingWorked,
+        WorkableStateBeingWorkedTag,
+        (Entity, Task),
+        (_a, _b)
+    ),
 );

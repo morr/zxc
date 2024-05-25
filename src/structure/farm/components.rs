@@ -111,15 +111,6 @@ impl Default for Farm {
 }
 
 impl Farm {
-    pub fn workable_props(farm_state: &FarmState) -> (WorkKind, f32) {
-        match farm_state {
-            FarmState::NotPlanted => (WorkKind::FarmPlanting, CONFIG.farming.planting_hours),
-            FarmState::Planted(_) => (WorkKind::FarmTending, CONFIG.farming.tending_hours),
-            FarmState::Grown => (WorkKind::FarmHarvest, CONFIG.farming.harvesting_hours),
-            FarmState::Harvested(_) => (WorkKind::None, 0.),
-        }
-    }
-
     pub fn spawn(
         commands: &mut Commands,
         assets: &Res<FarmAssets>,
@@ -129,7 +120,7 @@ impl Farm {
     ) {
         let farm = Self::default();
         let state = farm.state.clone();
-        let workable = Workable::new(Self::workable_props(&farm.state));
+        let workable = Workable::new(workable_props(&farm.state));
 
         let mut entity_commands =
             commands.spawn((farm, farm_state::NotPlanted, Name::new("Farm"), workable));
@@ -176,14 +167,7 @@ impl Farm {
         });
     }
 
-    // pub fn sync_workable(workable: &mut Workable, farm_state: &FarmState, entity_commands: &mut EntityCommands) {
-    //     let (work_amount, work_kind) = Self::workable_props(farm_state);
-    //
-    //     // let new_workable = Workable::new(work_kind, hours_to_seconds(work_amount));
-    //     // println!("new workable {:?}", new_workable);
-    //     // entity_commands.insert(new_workable);
-    // }
-
+    #[allow(clippy::too_many_arguments)]
     pub fn progress_state(
         &mut self,
         entity: Entity,
@@ -220,7 +204,7 @@ impl Farm {
             self.tendings_done = 0;
         }
 
-        workable.reset(Self::workable_props(&self.state));
+        workable.reset(workable_props(&self.state), entity, commands);
 
         Self::sync_sprite_bundle(grid_tile, &self.state, &mut commands.entity(entity), assets);
     }
@@ -254,6 +238,16 @@ impl Farm {
         )
     }
 }
+
+fn workable_props(farm_state: &FarmState) -> (WorkKind, f32) {
+    match farm_state {
+        FarmState::NotPlanted => (WorkKind::FarmPlanting, CONFIG.farming.planting_hours),
+        FarmState::Planted(_) => (WorkKind::FarmTending, CONFIG.farming.tending_hours),
+        FarmState::Grown => (WorkKind::FarmHarvest, CONFIG.farming.harvesting_hours),
+        FarmState::Harvested(_) => (WorkKind::None, 0.),
+    }
+}
+
 
 #[derive(Event, Debug)]
 pub struct FarmProgressEvent(pub Entity);
