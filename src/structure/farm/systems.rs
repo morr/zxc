@@ -21,7 +21,7 @@ pub fn progress_on_farm_progress_event(
             elapsed_time.total_days(),
             &assets,
             &mut state_change_event_writer,
-            &mut commandable_event_writer
+            &mut commandable_event_writer,
         );
     }
 }
@@ -35,7 +35,9 @@ pub fn progress_on_farm_tended_event(
 ) {
     for FarmTendedEvent(entity) in event_reader.read() {
         // println!("{:?}", FarmTendedEvent(*entity));
-        let Ok(mut farm) = query.get_mut(*entity) else { continue };
+        let Ok(mut farm) = query.get_mut(*entity) else {
+            continue;
+        };
         ensure_state!(FarmState::Planted(_), farm.state);
 
         farm.tendings_done += 1;
