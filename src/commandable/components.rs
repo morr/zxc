@@ -86,22 +86,26 @@ impl Commandable {
         self.queue.extend(command_or_commands);
     }
 
+    pub fn cancel_executing(
+        &mut self,
+        entity: Entity,
+        commands: &mut Commands,
+        commandable_event_writer: &mut EventWriter<CommandCancelledEvent>,
+    ) {
+        self.clear_executing(entity, commands);
+        println!("cancel_executing Commandable.state={:?}", self.state);
+        if self.state == CommandableState::Idle {
+            commandable_event_writer.send(CommandCancelledEvent(entity));
+        }
+    }
+
     pub fn complete_executing(
         &mut self,
         entity: Entity,
         commands: &mut Commands,
         commandable_event_writer: &mut EventWriter<CommandExecutedEvent>,
     ) {
-        self.change_state(
-            if self.queue.is_empty() {
-                CommandableState::Idle
-            } else {
-                CommandableState::PendingExecution
-            },
-            entity,
-            commands,
-        );
-        self.executing = None;
+        self.clear_executing(entity, commands);
 
         println!("complete_executing Commandable.state={:?}", self.state);
         if self.state == CommandableState::Idle {
@@ -118,6 +122,23 @@ impl Commandable {
     //         self.change_state(CommandableState::PendingExecution, entity, commands);
     //     }
     // }
+
+    fn clear_executing(
+        &mut self,
+        entity: Entity,
+        commands: &mut Commands,
+    ) {
+        self.executing = None;
+        self.change_state(
+            if self.queue.is_empty() {
+                CommandableState::Idle
+            } else {
+                CommandableState::PendingExecution
+            },
+            entity,
+            commands,
+        );
+    }
 
     fn drain_queue(&mut self, tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>) {
         if let Some(command) = self.executing.take() {
