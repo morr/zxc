@@ -30,7 +30,7 @@ impl Plugin for CommandablePlugin {
                     .run_if(in_state(SimulationState::Running)),
             )
             .add_systems(
-                Update,
+                FixedUpdate,
                 finalize_commands_execution
                     .run_if(in_state(AppState::Playing))
                     .run_if(in_state(SimulationState::Running)),
