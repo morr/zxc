@@ -248,7 +248,6 @@ fn workable_props(farm_state: &FarmState) -> (WorkKind, f32) {
     }
 }
 
-
 #[derive(Event, Debug)]
 pub struct FarmProgressEvent(pub Entity);
 

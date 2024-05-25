@@ -12,7 +12,7 @@ pub fn assign_tasks_to_pawns(
         let Some(task) = work_queue.get_task() else {
             continue;
         };
-        println!("assign_tasks_to_pawns {:?}", task);
+        // println!("assign_tasks_to_pawns {:?}", task);
 
         commandable.set_queue(
             [
@@ -89,7 +89,7 @@ pub fn complete_work(
             }
             WorkKind::FarmTending => {
                 farm_tending_event_writer.send(FarmTendedEvent(task.workable_entity));
-            },
+            }
             WorkKind::None => {}
         }
         //
