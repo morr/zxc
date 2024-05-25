@@ -29,6 +29,8 @@ pub struct WorkableComponentUIMarker {}
 #[derive(Component, Default)]
 pub struct WorkableStateTextUIMarker {}
 #[derive(Component, Default)]
+pub struct WorkableWorkKindTextUIMarker {}
+#[derive(Component, Default)]
 pub struct WorkableWorkAmountDoneTextUIMarker {}
 #[derive(Component, Default)]
 pub struct WorkableWorkAmountTotalTextUIMarker {}
@@ -84,6 +86,10 @@ pub fn render_farm_ui(
                             workable_state_text(workable),
                             font_assets,
                         ));
+                        parent.spawn(property_text_bundle::<WorkableWorkKindTextUIMarker>(
+                            workable_work_kind_text(workable),
+                            font_assets,
+                        ));
                         parent.spawn(property_text_bundle::<WorkableWorkAmountDoneTextUIMarker>(
                             workable_amount_done_text(workable),
                             font_assets,
@@ -106,6 +112,7 @@ fn update_farm_ui(
             Option<&FarmTendingsTextUIMarker>,
             Option<&FarmYieldTextUIMarker>,
             Option<&WorkableStateTextUIMarker>,
+            Option<&WorkableWorkKindTextUIMarker>,
             Option<&WorkableWorkAmountDoneTextUIMarker>,
             Option<&WorkableWorkAmountTotalTextUIMarker>,
         ),
@@ -114,6 +121,7 @@ fn update_farm_ui(
             With<FarmTendingsTextUIMarker>,
             With<FarmYieldTextUIMarker>,
             With<WorkableStateTextUIMarker>,
+            With<WorkableWorkKindTextUIMarker>,
             With<WorkableWorkAmountDoneTextUIMarker>,
             With<WorkableWorkAmountTotalTextUIMarker>,
         )>,
@@ -149,6 +157,7 @@ fn update_text_markers_recursive(
             Option<&FarmTendingsTextUIMarker>,
             Option<&FarmYieldTextUIMarker>,
             Option<&WorkableStateTextUIMarker>,
+            Option<&WorkableWorkKindTextUIMarker>,
             Option<&WorkableWorkAmountDoneTextUIMarker>,
             Option<&WorkableWorkAmountTotalTextUIMarker>,
         ),
@@ -157,6 +166,7 @@ fn update_text_markers_recursive(
             With<FarmTendingsTextUIMarker>,
             With<FarmYieldTextUIMarker>,
             With<WorkableStateTextUIMarker>,
+            With<WorkableWorkKindTextUIMarker>,
             With<WorkableWorkAmountDoneTextUIMarker>,
             With<WorkableWorkAmountTotalTextUIMarker>,
         )>,
@@ -169,6 +179,7 @@ fn update_text_markers_recursive(
         farm_tendings_marker,
         farm_yield_marker,
         workable_state_marker,
+        workable_work_kind_marker,
         workable_amount_done_marker,
         workable_amount_total_marker,
     )) = texts.get_mut(entity)
@@ -184,6 +195,9 @@ fn update_text_markers_recursive(
         }
         if workable_state_marker.is_some() {
             text.sections[0].value = workable_state_text(workable);
+        }
+        if workable_work_kind_marker.is_some() {
+            text.sections[0].value = workable_work_kind_text(workable);
         }
         if workable_amount_done_marker.is_some() {
             text.sections[0].value = workable_amount_done_text(workable);
@@ -223,6 +237,9 @@ fn farm_yield_text(farm: &Farm) -> String {
 
 pub fn workable_state_text(workable: &Workable) -> String {
     format!("state: {:?}", workable.state)
+}
+pub fn workable_work_kind_text(workable: &Workable) -> String {
+    format!("work_kind: {:?}", workable.work_kind)
 }
 pub fn workable_amount_done_text(workable: &Workable) -> String {
     format!("amount_done: {:.2}", workable.amount_done)
