@@ -42,13 +42,6 @@ impl TasksQueue {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Reflect)]
-pub enum WorkKind {
-    FarmPlant,
-    FarmTending,
-    FarmHarvest,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Reflect)]
 pub struct Task {
     pub workable_entity: Entity,
     pub work_kind: WorkKind,

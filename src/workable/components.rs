@@ -31,6 +31,13 @@ impl Workable {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Reflect)]
+pub enum WorkKind {
+    FarmPlanting,
+    FarmTending,
+    FarmHarvest,
+}
+
 #[derive(Event, Debug)]
 pub struct WorkCompleteEvent {
     pub commandable_entity: Entity,
