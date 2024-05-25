@@ -37,7 +37,10 @@ impl Workable {
         self.work_kind = props.0;
         self.amount_total = props.1;
         self.amount_done = 0.;
-        self.change_state(WorkableState::Idle, entity, commands);
+        let prev_state = self.change_state(WorkableState::Idle, entity, commands);
+
+        if let WorkableState::BeingWorked(commandable_entity, _task) = prev_state {
+        }
     }
 }
 
