@@ -53,8 +53,10 @@ impl Commandable {
         commands: &mut Commands,
         tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
     ) {
+        println!(">>clear_queue state={:?} queue={:?} executing={:?}", self.state, self.queue, self.executing);
         self.drain_queue(tasks_scheduler);
         self.change_state(CommandableState::Idle, entity, commands);
+        println!("state={:?} queue={:?} executing={:?}", self.state, self.queue, self.executing);
     }
 
     pub fn set_queue<I>(
@@ -66,10 +68,12 @@ impl Commandable {
     ) where
         I: IntoIterator<Item = CommandType>,
     {
+        println!(">>set_queue state={:?}", self.state);
         self.drain_queue(tasks_scheduler);
 
         self.change_state(CommandableState::PendingExecution, entity, commands);
         self.queue = command_or_commands.into_iter().collect();
+        println!("state={:?} queue={:?} executing={:?}", self.state, self.queue, self.executing);
     }
 
     pub fn extend_queue<I>(
@@ -80,10 +84,12 @@ impl Commandable {
     ) where
         I: IntoIterator<Item = CommandType>,
     {
+        println!(">>extend_queue state={:?}", self.state);
         if self.state == CommandableState::Idle {
             self.change_state(CommandableState::PendingExecution, entity, commands);
         }
         self.queue.extend(command_or_commands);
+        println!("state={:?} queue={:?} executing={:?}", self.state, self.queue, self.executing);
     }
 
     // currently there is no difference betweeen complete and aborted command
@@ -93,7 +99,7 @@ impl Commandable {
         commands: &mut Commands,
         commandable_event_writer: &mut EventWriter<CommandCompleteEvent>,
     ) {
-        // println!("abort rxecuting");
+        // println!(">>abort_executing");
         self.complete_executing(entity, commands, commandable_event_writer);
     }
 
@@ -103,8 +109,9 @@ impl Commandable {
         commands: &mut Commands,
         commandable_event_writer: &mut EventWriter<CommandCompleteEvent>,
     ) {
+        println!(">>complete_executing state={:?} executing={:?}", self.state, self.executing);
         self.clear_executing(entity, commands);
-        // println!("complete_executing Commandable.state={:?}", self.state);
+        println!("state={:?} queue={:?} executing={:?}", self.state, self.queue, self.executing);
 
         if self.state == CommandableState::Idle {
             commandable_event_writer.send(CommandCompleteEvent(entity));
@@ -183,7 +190,7 @@ macro_rules! commandable_states {
             ) -> CommandableState {
                 use std::mem;
 
-                // println!("CommandableState {:?}=>{:?}", self.state, new_state);
+                println!("CommandableState {:?}=>{:?}", self.state, new_state);
 
                 // Remove the old state component
                 match &self.state {
