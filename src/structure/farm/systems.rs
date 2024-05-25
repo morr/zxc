@@ -120,7 +120,7 @@ pub fn progress_on_state_changed(
         let state = &event.1;
 
         let maybe_task_kind = match state {
-            FarmState::NotPlanted => Some(WorkKind::FarmPlant),
+            FarmState::NotPlanted => Some(WorkKind::FarmPlanting),
             FarmState::Grown => Some(WorkKind::FarmHarvest),
             _ => None,
         };

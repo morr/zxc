@@ -4,6 +4,7 @@ use super::*;
 #[reflect(InspectorOptions)]
 pub struct Workable {
     pub state: WorkableState,
+    pub work_kind: WorkKind,
     /// in seconds
     pub amount_done: f32,
     /// in seconds
@@ -11,9 +12,10 @@ pub struct Workable {
 }
 
 impl Workable {
-    pub fn new(amount_total: f32) -> Self {
+    pub fn new(work_kind: WorkKind, amount_total: f32) -> Self {
         Self {
             state: WorkableState::Idle,
+            work_kind,
             amount_total,
             amount_done: 0.0,
         }

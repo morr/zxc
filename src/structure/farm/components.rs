@@ -128,14 +128,14 @@ impl Farm {
                 ),
                 tending_rest_timer: Self::new_tending_rest_timer(),
                 tending_rest_started_day: simulation_day,
-                is_tending_pending_for_next_day: false
+                is_tending_pending_for_next_day: false,
             }),
             FarmState::Planted(_) => FarmState::Grown,
             FarmState::Grown => FarmState::Harvested(HarvestedState {
                 rest_timer: Timer::from_seconds(
                     days_to_seconds(CONFIG.farming.harvested_rest_days),
                     TimerMode::Once,
-                )
+                ),
             }),
             FarmState::Harvested(_) => FarmState::NotPlanted,
         };
@@ -189,11 +189,7 @@ impl Farm {
         let farm = Self::default();
         let state = farm.state.clone();
 
-        let mut entity_commands = commands.spawn((
-            farm,
-            farm_state::NotPlanted,
-            Name::new("Farm"),
-        ));
+        let mut entity_commands = commands.spawn((farm, farm_state::NotPlanted, Name::new("Farm")));
         Farm::sync_sprite_bundle(grid_tile, &state, &mut entity_commands, assets);
         Farm::sync_workable(&state, &mut entity_commands);
 
@@ -202,7 +198,7 @@ impl Farm {
         navmesh.update_cost(
             grid_tile.x..grid_tile.x + FARM_TILE_SIZE,
             grid_tile.y..grid_tile.y + FARM_TILE_SIZE,
-            Navtile::config_cost_to_pathfinding_cost(CONFIG.movement_cost.farm)
+            Navtile::config_cost_to_pathfinding_cost(CONFIG.movement_cost.farm),
         );
         navmesh.add_occupation::<Farm>(entity, grid_tile.x, grid_tile.y);
 
@@ -238,15 +234,24 @@ impl Farm {
     }
 
     pub fn sync_workable(state: &FarmState, entity_commands: &mut EntityCommands) {
-        let maybe_amount = match state {
-            FarmState::NotPlanted => Some(CONFIG.farming.planting_hours),
-            FarmState::Planted(_) => Some(CONFIG.farming.tending_hours),
-            FarmState::Grown => Some(CONFIG.farming.harvesting_hours),
-            FarmState::Harvested(_) => None,
+        let (maybe_amount, maybe_work_kind) = match state {
+            FarmState::NotPlanted => (
+                Some(CONFIG.farming.planting_hours),
+                Some(WorkKind::FarmPlanting),
+            ),
+            FarmState::Planted(_) => (
+                Some(CONFIG.farming.tending_hours),
+                Some(WorkKind::FarmTending),
+            ),
+            FarmState::Grown => (
+                Some(CONFIG.farming.harvesting_hours),
+                Some(WorkKind::FarmHarvest),
+            ),
+            FarmState::Harvested(_) => (None, None),
         };
 
-        if let Some(amount) = maybe_amount {
-            entity_commands.insert(Workable::new(hours_to_seconds(amount)));
+        if let (Some(amount), Some(work_kind)) = (maybe_amount, maybe_work_kind) {
+            entity_commands.insert(Workable::new(work_kind, hours_to_seconds(amount)));
         }
     }
 }

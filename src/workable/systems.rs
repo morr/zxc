@@ -12,7 +12,7 @@ pub fn assign_tasks_to_pawns(
         let Some(task) = work_queue.get_task() else {
             continue;
         };
-        // println!("assign_tasks_to_pawns {:?}", task);
+        println!("assign_tasks_to_pawns {:?}", task);
 
         commandable.set_queue(
             [
@@ -39,6 +39,7 @@ pub fn progress_work(
     let elapsed_time = time_scale.scale_to_seconds(time.delta_seconds());
 
     for (workable_entity, mut workable) in workable_query.iter_mut() {
+        // --- problem here
         ensure_state!(WorkableState::BeingWorked(_, _), workable.state);
 
         workable.perform_work(elapsed_time);
@@ -81,7 +82,7 @@ pub fn complete_work(
         //
         match task.work_kind {
             // event.workable_entity the same is task.entity
-            WorkKind::FarmPlant | WorkKind::FarmHarvest => {
+            WorkKind::FarmPlanting | WorkKind::FarmHarvest => {
                 farm_progress_event_writer.send(FarmProgressEvent(task.workable_entity));
             }
             WorkKind::FarmTending => {
