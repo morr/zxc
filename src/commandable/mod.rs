@@ -14,8 +14,7 @@ pub struct CommandablePlugin;
 
 impl Plugin for CommandablePlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<CommandExecutedEvent>()
-            .add_event::<CommandAbortedEvent>()
+        app.add_event::<CommandCompleteEvent>()
             .register_type::<Commandable>()
             .add_plugins((
                 MoveToCommandPlugin,
@@ -26,13 +25,7 @@ impl Plugin for CommandablePlugin {
             ))
             .add_systems(
                 Update,
-                process_pending_commands
-                    .run_if(in_state(AppState::Playing))
-                    .run_if(in_state(SimulationState::Running)),
-            )
-            .add_systems(
-                FixedUpdate,
-                (finalize_commands_execution, abort_commands_execution)
+                (process_pending_commands, process_complete_commands)
                     .chain()
                     .run_if(in_state(AppState::Playing))
                     .run_if(in_state(SimulationState::Running)),

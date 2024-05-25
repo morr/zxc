@@ -57,7 +57,7 @@ fn monitor_completion(
     mut commands: Commands,
     mut query: Query<&mut Commandable>,
     mut command_complete_event_reader: EventReader<MovableReachedDestinationEvent>,
-    mut commandable_event_writer: EventWriter<CommandExecutedEvent>,
+    mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
 ) {
     for MovableReachedDestinationEvent(entity, destination_tile) in command_complete_event_reader.read() {
         // println!("{:?}", MovableReachedDestinationEvent(*entity, *destination_tile));

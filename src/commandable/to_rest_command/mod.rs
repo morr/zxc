@@ -17,7 +17,7 @@ fn execute_command(
     bed_query: Query<&Transform, With<Bed>>,
     mut commandable_query: Query<&mut Commandable>,
     mut command_reader: EventReader<ToRestCommand>,
-    mut commandable_event_writer: EventWriter<CommandExecutedEvent>,
+    mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
 ) {
     for ToRestCommand(entity) in command_reader.read() {
         match commandable_query.get_mut(*entity) {

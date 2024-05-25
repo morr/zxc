@@ -41,10 +41,7 @@ impl Default for Commandable {
 }
 
 #[derive(Event, Debug)]
-pub struct CommandExecutedEvent(pub Entity);
-
-#[derive(Event, Debug)]
-pub struct CommandAbortedEvent(pub Entity);
+pub struct CommandCompleteEvent(pub Entity);
 
 impl Commandable {
     pub fn clear_queue(
@@ -86,31 +83,27 @@ impl Commandable {
         self.queue.extend(command_or_commands);
     }
 
+    // currently there is no difference betweeen complete and aborted command
     pub fn abort_executing(
         &mut self,
         entity: Entity,
         commands: &mut Commands,
-        commandable_event_writer: &mut EventWriter<CommandAbortedEvent>,
+        commandable_event_writer: &mut EventWriter<CommandCompleteEvent>,
     ) {
-        self.clear_executing(entity, commands);
-        // println!("abort_executing Commandable.state={:?}", self.state);
-
-        if self.state == CommandableState::Idle {
-            commandable_event_writer.send(CommandAbortedEvent(entity));
-        }
+        self.complete_executing(entity, commands, commandable_event_writer)
     }
 
     pub fn complete_executing(
         &mut self,
         entity: Entity,
         commands: &mut Commands,
-        commandable_event_writer: &mut EventWriter<CommandExecutedEvent>,
+        commandable_event_writer: &mut EventWriter<CommandCompleteEvent>,
     ) {
         self.clear_executing(entity, commands);
         // println!("complete_executing Commandable.state={:?}", self.state);
 
         if self.state == CommandableState::Idle {
-            commandable_event_writer.send(CommandExecutedEvent(entity));
+            commandable_event_writer.send(CommandCompleteEvent(entity));
         }
     }
 

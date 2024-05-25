@@ -49,7 +49,7 @@ fn monitor_completion(
     mut commands: Commands,
     mut query: Query<&mut Commandable>,
     mut command_complete_event_reader: EventReader<WorkCompleteEvent>,
-    mut commandable_event_writer: EventWriter<CommandExecutedEvent>,
+    mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
 ) {
     for WorkCompleteEvent {
         commandable_entity,

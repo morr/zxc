@@ -16,7 +16,7 @@ fn execute_command(
     mut commands: Commands,
     mut command_reader: EventReader<SleepCommand>,
     mut query: Query<(&mut Pawn, &mut Commandable)>,
-    mut commandable_event_writer: EventWriter<CommandExecutedEvent>,
+    mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
 ) {
     for SleepCommand(entity) in command_reader.read() {
         // println!("{:?}", SleepCommand(*entity));
