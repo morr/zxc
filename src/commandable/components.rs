@@ -93,7 +93,8 @@ impl Commandable {
         commands: &mut Commands,
         commandable_event_writer: &mut EventWriter<CommandCompleteEvent>,
     ) {
-        self.complete_executing(entity, commands, commandable_event_writer)
+        // println!("abort rxecuting");
+        self.complete_executing(entity, commands, commandable_event_writer);
     }
 
     pub fn complete_executing(
