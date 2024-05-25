@@ -29,17 +29,19 @@ pub fn progress_on_farm_progress_event(
 pub fn progress_on_farm_tended_event(
     elapsed_time: Res<ElapsedTime>,
     mut event_reader: EventReader<FarmTendedEvent>,
-    mut query: Query<&mut Farm, With<farm_state::Planted>>,
+    mut query: Query<&mut Farm>,
+    // component tags seems to be working unreliable
+    // mut query: Query<&mut Farm, With<farm_state::Planted>>,
 ) {
     for FarmTendedEvent(entity) in event_reader.read() {
-        // println!("{:?}", event);
+        // println!("{:?}", FarmTendedEvent(*entity));
+        let Ok(mut farm) = query.get_mut(*entity) else { continue };
+        ensure_state!(FarmState::Planted(_), farm.state);
 
-        if let Ok(mut farm) = query.get_mut(*entity) {
-            farm.tendings_done += 1;
-            if let FarmState::Planted(planted_state) = &mut farm.state {
-                planted_state.tending_rest_timer.reset();
-                planted_state.tending_rest_started_day = elapsed_time.total_days();
-            }
+        farm.tendings_done += 1;
+        if let FarmState::Planted(planted_state) = &mut farm.state {
+            planted_state.tending_rest_timer.reset();
+            planted_state.tending_rest_started_day = elapsed_time.total_days();
         }
     }
 }

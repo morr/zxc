@@ -52,13 +52,16 @@ pub fn process_pending_commands(
 pub fn process_complete_commands(
     mut commands: Commands,
     mut commandable_event_reader: EventReader<CommandCompleteEvent>,
-    mut pawn_query: Query<
-        (Option<&mut Pawn>, &Commandable),
-        (
-            With<commandable_state::CommandableStateIdleTag>,
-            With<pawn_state::PawnStateExecutingCommandTag>,
-        ),
-    >,
+    mut pawn_query: Query<(Option<&mut Pawn>, &Commandable)>,
+    // component tags seems to be working unreliable
+    // mut pawn_query: Query<
+    //     (Option<&mut Pawn>, &Commandable),
+    //     (
+    //         With<commandable_state::CommandableStateIdleTag>,
+    //         With<pawn_state::PawnStateExecutingCommandTag>,
+    //     ),
+    // >,
+
     // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for CommandCompleteEvent(entity) in commandable_event_reader.read() {
@@ -81,17 +84,20 @@ pub fn process_interrupt_commands(
     mut commands: Commands,
     mut commandable_event_reader: EventReader<InterruptCommandEvent>,
     mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
-    mut pawn_query: Query<
-        (Option<&Pawn>, &mut Commandable),
-        (
-            With<commandable_state::CommandableStateIdleTag>,
-            With<pawn_state::PawnStateExecutingCommandTag>,
-        ),
-    >,
+    mut pawn_query: Query<(Option<&Pawn>, &mut Commandable)>,
+    // component tags seems to be working unreliable
+    // mut pawn_query: Query<
+    //     (Option<&Pawn>, &mut Commandable),
+    //     (
+    //         With<commandable_state::CommandableStateIdleTag>,
+    //         With<pawn_state::PawnStateExecutingCommandTag>,
+    //     ),
+    // >,
     // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for InterruptCommandEvent(entity) in commandable_event_reader.read() {
         // println!("{:?}", InterruptCommandEvent(*entity));
+
         if let Ok((Some(pawn), mut commandable)) = pawn_query.get_mut(*entity) {
             ensure_state!(PawnState::ExecutingCommand, pawn.state);
             commandable.abort_executing(*entity, &mut commands, &mut commandable_event_writer);
