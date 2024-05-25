@@ -74,7 +74,7 @@ macro_rules! workable_states {
             ) -> WorkableState {
                 use std::mem;
 
-                // println!("WorkableState {:?}=>{:?}", self.state, new_state);
+                println!("WorkableState {:?}=>{:?}", self.state, new_state);
 
                 // Remove the old state component
                 match &self.state {

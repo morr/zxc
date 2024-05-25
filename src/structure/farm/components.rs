@@ -251,7 +251,9 @@ impl Farm {
         };
 
         if let (Some(amount), Some(work_kind)) = (maybe_amount, maybe_work_kind) {
-            entity_commands.insert(Workable::new(work_kind, hours_to_seconds(amount)));
+            let new_workable = Workable::new(work_kind, hours_to_seconds(amount));
+            println!("new workable {:?}", new_workable);
+            entity_commands.insert(new_workable);
         }
     }
 }
