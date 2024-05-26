@@ -29,6 +29,7 @@ RootConfig(
         spawn_age: (15, 25),
         //lifetime_span: (50, 90),
         lifetime_span: (99999, 999999),
+        wander_when_idle: true
     ),
     farming: FarmingConfig(
         basic_yield_percent: 0.25,

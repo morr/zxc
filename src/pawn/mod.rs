@@ -26,7 +26,7 @@ impl Plugin for PawnPlugin {
                     .run_if(in_state(AppState::Playing)),
             );
 
-        if CONFIG.starting_scene.allow_pawns_to_wander {
+        if CONFIG.pawn.wander_when_idle {
             app.add_systems(
                 FixedUpdate,
                 wander_idle_pawns.run_if(in_state(AppState::Playing)),

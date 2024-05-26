@@ -78,7 +78,6 @@ pub struct StartingSceneConfig {
     pub farm_height: i32,
     pub beds_num: i32,
     pub time_scale: f32,
-    pub allow_pawns_to_wander: bool
 }
 
 const SEASONS_IN_YEAR: u32 = 4;
@@ -125,6 +124,7 @@ pub struct PawnConfig {
     pub work_force: f32,
     pub spawn_age: (u32, u32),
     pub lifetime_span: (u32, u32),
+    pub wander_when_idle: bool,
 }
 
 #[derive(Deserialize, Serialize)]
