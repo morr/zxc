@@ -22,7 +22,6 @@ fn execute_command(
     mut query: Query<(
         &Transform,
         &mut Movable,
-        &mut Commandable,
         Option<&mut PathfindingTask>,
     )>,
     arc_navmesh: Res<ArcNavmesh>,
@@ -32,7 +31,7 @@ fn execute_command(
     for MoveToCommand(entity, grid_tile) in command_reader.read() {
         // println!("{:?}", MoveToCommand(entity, grid_tile));
         match query.get_mut(*entity) {
-            Ok((transform, mut movable, mut commandable, mut maybe_pathfinding_task)) => {
+            Ok((transform, mut movable, mut maybe_pathfinding_task)) => {
                 movable.to_pathfinding_async(
                     *entity,
                     transform.translation.truncate().world_pos_to_grid(),
