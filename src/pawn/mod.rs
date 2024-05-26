@@ -16,7 +16,6 @@ impl Plugin for PawnPlugin {
                 (
                     update_pawn_color,
                     update_pawn_state_text,
-                    wander_idle_pawns,
                     progress_pawn_daily,
                     progress_pawn_dying,
                     progress_pawn_death,
@@ -26,6 +25,13 @@ impl Plugin for PawnPlugin {
                     .chain()
                     .run_if(in_state(AppState::Playing)),
             );
+
+        if CONFIG.starting_scene.allow_pawns_to_wander {
+            app.add_systems(
+                FixedUpdate,
+                wander_idle_pawns.run_if(in_state(AppState::Playing)),
+            );
+        }
 
         // .add_systems(
         //     FixedUpdate,
