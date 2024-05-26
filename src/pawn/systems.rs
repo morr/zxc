@@ -29,19 +29,20 @@ pub fn spawn_pawns(
     let radius = CONFIG.tile.size * i32::max(BASE_WIDTH, BASE_HEIGHT) as f32;
 
     let warehouse_transform = warehouse_query.single();
-    let farm_transform = farm_query.iter().next().unwrap();
+    let maybe_farm_transform = farm_query.iter().next();
 
     let mut navmesh = arc_navmesh.write();
     for i in 0..CONFIG.starting_scene.pawns {
         let random_angle: f32 = rng.gen_range(0.0..360.0);
 
-        let position = if i >= 4 {
+        let position = if i >= 4 || maybe_farm_transform.is_none() {
             Vec3::new(
                 warehouse_transform.translation.x + random_angle.cos() * radius,
                 warehouse_transform.translation.y + random_angle.sin() * radius,
                 PAWN_Z_INDEX,
             )
         } else {
+            let farm_transform = maybe_farm_transform.unwrap();
             Vec3::new(
                 farm_transform.translation.x
                     + random_angle.cos() * 5.0 * FARM_TILE_SIZE as f32 * CONFIG.tile.size,
