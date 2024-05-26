@@ -62,16 +62,16 @@ pub fn render_farm_ui(
                     .spawn(render_entity_component_node_bunlde::<FarmComponentUIMarker>())
                     .with_children(|parent| {
                         parent.spawn(headline_text_bundle(format!("Farm {:?}", farm_id), font_assets));
+                        parent.spawn(property_text_bundle::<FarmStateTextUIMarker>(
+                            farm_state_text(farm),
+                            font_assets,
+                        ));
                         parent.spawn(property_text_bundle::<FarmYieldTextUIMarker>(
                             farm_yield_text(farm),
                             font_assets,
                         ));
                         parent.spawn(property_text_bundle::<FarmTendingsTextUIMarker>(
                             farm_tendings_text(farm),
-                            font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<FarmStateTextUIMarker>(
-                            farm_state_text(farm),
                             font_assets,
                         ));
                     });
