@@ -22,26 +22,30 @@ fn execute_command(
     for ToRestCommand(entity) in command_reader.read() {
         match commandable_query.get_mut(*entity) {
             Ok(mut commandable) => {
-                let sleep_command_type = CommandType::Sleep(SleepCommand(*entity));
+                commandable.complete_executing(
+                    *entity,
+                    &mut commands,
+                    &mut commandable_event_writer,
+                );
 
                 if let Some(transform) = bed_query.iter().next() {
                     // either go to bed and sleep there
                     commandable.extend_queue(
-                        [
-                            CommandType::MoveTo(MoveToCommand(
-                                *entity,
-                                transform.translation.truncate().world_pos_to_grid(),
-                            )),
-                            sleep_command_type,
-                        ],
+                        CommandType::MoveTo(MoveToCommand(
+                            *entity,
+                            transform.translation.truncate().world_pos_to_grid(),
+                        )),
                         *entity,
                         &mut commands,
                     );
-                } else {
-                    // or sleep at the current spot
-                    commandable.extend_queue(sleep_command_type, *entity, &mut commands);
                 }
-                commandable.complete_executing(*entity, &mut commands, &mut commandable_event_writer);
+
+                // or sleep at the current spot
+                commandable.extend_queue(
+                    CommandType::Sleep(SleepCommand(*entity)),
+                    *entity,
+                    &mut commands,
+                );
             }
             Err(err) => {
                 warn!("Failed to get query result: {:?}", err);
