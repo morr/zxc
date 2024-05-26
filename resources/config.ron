@@ -50,10 +50,11 @@ RootConfig(
         // 12 hours of work => 10% stamina left (90 / 12 = 7.5)
         //working: -7.5,
         // 7 hours of sleep => 100% stamina restored (100 / 7 = 14.2857142857)
-        sleeping: 14.2857142857,
+        //sleeping: 14.2857142857,
+        sleeping: 50.0,
         // 17 hours of living => 100% stamina drained (100 / 17 = 5.8823529412)
-        living: -5.8823529412
-        //living: -50.8823529412
-        //living: -0.0002
+        //living: -5.8823529412,
+        living: -50.0,
+        //living: -0.0002,
     )
 )
