@@ -16,9 +16,7 @@ pub fn process_pending_commands(
     for (entity, mut commandable, maybe_pawn) in &mut commandable_query {
         ensure_state!(CommandableState::PendingExecution, commandable.state);
 
-        if let Some(command_type) = commandable.queue.pop_front() {
-            commandable.executing = Some(command_type.clone());
-
+        if let Some(command_type) = commandable.start_executing(entity, &mut commands) {
             match command_type {
                 CommandType::MoveTo(command) => {
                     move_to_tile_command_writer.send(command);

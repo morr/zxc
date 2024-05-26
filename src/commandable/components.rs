@@ -53,10 +53,16 @@ impl Commandable {
         commands: &mut Commands,
         tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
     ) {
-        println!(">>clear_queue state={:?} queue={:?} executing={:?}", self.state, self.queue, self.executing);
+        println!(
+            ">>clear_queue state={:?} queue={:?} executing={:?}",
+            self.state, self.queue, self.executing
+        );
         self.drain_queue(tasks_scheduler);
         self.change_state(CommandableState::Idle, entity, commands);
-        println!("state={:?} queue={:?} executing={:?}", self.state, self.queue, self.executing);
+        println!(
+            "state={:?} queue={:?} executing={:?}",
+            self.state, self.queue, self.executing
+        );
     }
 
     pub fn set_queue<I>(
@@ -73,7 +79,10 @@ impl Commandable {
 
         self.change_state(CommandableState::PendingExecution, entity, commands);
         self.queue = command_or_commands.into_iter().collect();
-        println!("state={:?} queue={:?} executing={:?}", self.state, self.queue, self.executing);
+        println!(
+            "state={:?} queue={:?} executing={:?}",
+            self.state, self.queue, self.executing
+        );
     }
 
     pub fn extend_queue<I>(
@@ -89,7 +98,28 @@ impl Commandable {
             self.change_state(CommandableState::PendingExecution, entity, commands);
         }
         self.queue.extend(command_or_commands);
-        println!("state={:?} queue={:?} executing={:?}", self.state, self.queue, self.executing);
+        println!(
+            "state={:?} queue={:?} executing={:?}",
+            self.state, self.queue, self.executing
+        );
+    }
+
+    pub fn start_executing(
+        &mut self,
+        entity: Entity,
+        commands: &mut Commands,
+    ) -> Option<CommandType> {
+        let maybe_command_type = self.queue.pop_front();
+
+        if let Some(ref command_type) = maybe_command_type {
+            self.executing = Some(command_type.clone());
+            self.change_state(CommandableState::Executing, entity, commands);
+        } else {
+            warn!("Commandable.queue is empty {:?}", self);
+            self.change_state(CommandableState::Idle, entity, commands);
+        }
+
+        maybe_command_type
     }
 
     // currently there is no difference betweeen complete and aborted command
@@ -109,9 +139,15 @@ impl Commandable {
         commands: &mut Commands,
         commandable_event_writer: &mut EventWriter<CommandCompleteEvent>,
     ) {
-        println!(">>complete_executing state={:?} executing={:?}", self.state, self.executing);
+        println!(
+            ">>complete_executing state={:?} executing={:?}",
+            self.state, self.executing
+        );
         self.clear_executing(entity, commands);
-        println!("state={:?} queue={:?} executing={:?}", self.state, self.queue, self.executing);
+        println!(
+            "state={:?} queue={:?} executing={:?}",
+            self.state, self.queue, self.executing
+        );
 
         if self.state == CommandableState::Idle {
             commandable_event_writer.send(CommandCompleteEvent(entity));
@@ -128,11 +164,7 @@ impl Commandable {
     //     }
     // }
 
-    fn clear_executing(
-        &mut self,
-        entity: Entity,
-        commands: &mut Commands,
-    ) {
+    fn clear_executing(&mut self, entity: Entity, commands: &mut Commands) {
         self.executing = None;
         self.change_state(
             if self.queue.is_empty() {

@@ -43,7 +43,7 @@ fn execute_command(
                     &mut commands,
                     // &mut movable_state_change_event_writer,
                 );
-                commandable.change_state(CommandableState::Executing, *entity, &mut commands);
+                // commandable.change_state(CommandableState::Executing, *entity, &mut commands);
             }
             Err(err) => {
                 warn!("Failed to get query result: {:?}", err);
