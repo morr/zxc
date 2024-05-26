@@ -146,34 +146,39 @@ pub fn spawn_bed(
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     let size = IVec2::new(BED_SIZE, BED_SIZE);
-    let grid_tile = IVec2::new(-7, 3);
 
-    let id = commands.spawn((
-        Bed::default(),
-        Name::new("bed"),
-        SpriteBundle {
-            texture: assets.bed.clone(),
-            sprite: Sprite {
-                custom_size: Some(size.grid_tile_edge_to_world()),
-                ..default()
-            },
-            transform: Transform::from_translation(
-                (grid_tile.grid_tile_edge_to_world() + size.grid_tile_edge_to_world() / 2.0)
-                    .extend(STRUCTURE_Z_INDEX),
-            ),
-            ..default()
-        },
-    )).id();
-    // .insert(ShowAabbGizmo {
-    //     color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
-    // });
+    for x in 0..CONFIG.starting_scene.beds_num {
+        let grid_tile = IVec2::new(-7 + x * BED_SIZE, 3);
 
-    let mut navmesh = arc_navmesh.write();
-    navmesh.update_cost(
-        (grid_tile.x)..(grid_tile.x + size.x),
-        (grid_tile.y)..(grid_tile.y + size.y),
-        Navtile::config_cost_to_pathfinding_cost(CONFIG.movement_cost.furniture)
-    );
-    navmesh.add_occupation::<Bed>(id, grid_tile.x, grid_tile.y);
+        let id = commands
+            .spawn((
+                Bed::default(),
+                Name::new("bed"),
+                SpriteBundle {
+                    texture: assets.bed.clone(),
+                    sprite: Sprite {
+                        custom_size: Some(size.grid_tile_edge_to_world()),
+                        ..default()
+                    },
+                    transform: Transform::from_translation(
+                        (grid_tile.grid_tile_edge_to_world()
+                            + size.grid_tile_edge_to_world() / 2.0)
+                            .extend(STRUCTURE_Z_INDEX),
+                    ),
+                    ..default()
+                },
+            ))
+            // .insert(ShowAabbGizmo {
+            //     color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
+            // })
+            .id();
 
+        let mut navmesh = arc_navmesh.write();
+        navmesh.update_cost(
+            (grid_tile.x)..(grid_tile.x + size.x),
+            (grid_tile.y)..(grid_tile.y + size.y),
+            Navtile::config_cost_to_pathfinding_cost(CONFIG.movement_cost.furniture),
+        );
+        navmesh.add_occupation::<Bed>(id, grid_tile.x, grid_tile.y);
+    }
 }
