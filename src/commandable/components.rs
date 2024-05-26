@@ -143,11 +143,22 @@ impl Commandable {
         //     ">>complete_executing state={:?} executing={:?}",
         //     self.state, self.executing
         // );
-        self.clear_executing(entity, commands);
+        // self.clear_executing(entity, commands);
         // println!(
         //     "state={:?} queue={:?} executing={:?}",
         //     self.state, self.queue, self.executing
         // );
+
+        self.executing = None;
+        self.change_state(
+            if self.queue.is_empty() {
+                CommandableState::Idle
+            } else {
+                CommandableState::PendingExecution
+            },
+            entity,
+            commands,
+        );
 
         if self.state == CommandableState::Idle {
             commandable_event_writer.send(CommandCompleteEvent(entity));
@@ -164,18 +175,18 @@ impl Commandable {
     //     }
     // }
 
-    fn clear_executing(&mut self, entity: Entity, commands: &mut Commands) {
-        self.executing = None;
-        self.change_state(
-            if self.queue.is_empty() {
-                CommandableState::Idle
-            } else {
-                CommandableState::PendingExecution
-            },
-            entity,
-            commands,
-        );
-    }
+    // fn clear_executing(&mut self, entity: Entity, commands: &mut Commands) {
+    //     self.executing = None;
+    //     self.change_state(
+    //         if self.queue.is_empty() {
+    //             CommandableState::Idle
+    //         } else {
+    //             CommandableState::PendingExecution
+    //         },
+    //         entity,
+    //         commands,
+    //     );
+    // }
 
     fn drain_queue(&mut self, tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>) {
         if let Some(command) = self.executing.take() {
