@@ -96,25 +96,23 @@ fn handle_internal_interrupts(
     mut query: Query<&mut Movable>,
 ) {
     for InternalCommandInterruptEvent(interrupted_command) in interrupt_reader.read() {
-        if let CommandType::MoveTo(MoveToCommand {
+        let CommandType::MoveTo(MoveToCommand {
             commandable_entity,
             grid_tile: commanding_to_tile,
         }) = interrupted_command
-        {
-            if let Ok(mut movable) = query.get_mut(*commandable_entity) {
-                if let MovableState::Moving(moving_to_tile)
-                | MovableState::Pathfinding(moving_to_tile)
-                | MovableState::PathfindingError(moving_to_tile) = movable.state
-                {
-                    if moving_to_tile == *commanding_to_tile {
-                        movable.to_idle(*commandable_entity, &mut commands, None);
-                    } else {
-                        warn!(
-                            "Attempt to interrupt MoveTo({:?}) for Movable({:?})",
-                            commanding_to_tile, moving_to_tile
-                        );
-                    }
-                }
+        else {
+            continue;
+        };
+        let Ok(mut movable) = query.get_mut(*commandable_entity) else { continue };
+
+        if let MovableState::Moving(moving_to_tile) | MovableState::Pathfinding(moving_to_tile) | MovableState::PathfindingError(moving_to_tile) = movable.state {
+            if moving_to_tile == *commanding_to_tile {
+                movable.to_idle(*commandable_entity, &mut commands, None);
+            } else {
+                warn!(
+                    "Attempt to interrupt MoveTo({:?}) for Movable({:?})",
+                    commanding_to_tile, moving_to_tile
+                );
             }
         }
     }

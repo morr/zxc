@@ -58,3 +58,10 @@ fn execute_command(
         }
     }
 }
+
+// Since the ToRestCommand is immediately completed in the execute_command function, handling InternalCommandInterruptEvent for SleepCommand is unnecessary. The command is executed and completed within the same system, so there won't be any interruption to handle.
+// fn handle_internal_interrupts(
+//     mut commands: Commands,
+//     mut interrupt_reader: EventReader<InternalCommandInterruptEvent>,
+// ) {
+// }

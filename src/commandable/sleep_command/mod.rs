@@ -38,3 +38,18 @@ fn execute_command(
         }
     }
 }
+
+// Since the SleepCommand is immediately completed in the execute_command function, handling InternalCommandInterruptEvent for SleepCommand is unnecessary. The command is executed and completed within the same system, so there won't be any interruption to handle.
+// fn handle_internal_interrupts(
+//     mut commands: Commands,
+//     mut interrupt_reader: EventReader<InternalCommandInterruptEvent>,
+//     mut query: Query<&mut Pawn>,
+// ) {
+//     for InternalCommandInterruptEvent(interrupted_command) in interrupt_reader.read() {
+//         if let CommandType::Sleep(SleepCommand { commandable_entity }) = interrupted_command {
+//             if let Ok(mut pawn) = query.get_mut(*commandable_entity) {
+//                 pawn.change_state(PawnState::Idle, *commandable_entity, &mut commands);
+//             }
+//         }
+//     }
+// }
