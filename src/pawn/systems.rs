@@ -143,6 +143,7 @@ pub fn wander_idle_pawns(
             With<commandable_state::CommandableStateIdleTag>,
         ),
     >,
+    mut commandable_interrupt_writer: EventWriter<InterruptCommandEvent>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     let mut rng = rand::thread_rng();
@@ -158,9 +159,13 @@ pub fn wander_idle_pawns(
         let end_tile = find_valid_end_tile(world_pos, &arc_navmesh.read(), &mut rng, 0);
 
         commandable.set_queue(
-            CommandType::MoveTo(MoveToCommand { commandable_entity, grid_tile: end_tile}),
+            CommandType::MoveTo(MoveToCommand {
+                commandable_entity,
+                grid_tile: end_tile,
+            }),
             commandable_entity,
             &mut commands,
+            &mut commandable_interrupt_writer,
             &mut tasks_scheduler,
         );
     }
@@ -261,6 +266,7 @@ pub fn progress_pawn_death(
     mut commands: Commands,
     mut event_reader: EventReader<PawnDeathEvent>,
     mut query: Query<(&mut Pawn, &mut Commandable)>,
+    mut commandable_interrupt_writer: EventWriter<InterruptCommandEvent>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     for PawnDeathEvent(entity) in event_reader.read() {
@@ -275,7 +281,12 @@ pub fn progress_pawn_death(
                     // &mut state_change_event_writer,
                 );
 
-                commandable.clear_queue(*entity, &mut commands, &mut tasks_scheduler);
+                commandable.clear_queue(
+                    *entity,
+                    &mut commands,
+                    &mut commandable_interrupt_writer,
+                    &mut tasks_scheduler,
+                );
             }
             Err(err) => {
                 warn!("Failed to get query result: {:?}", err);

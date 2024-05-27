@@ -1,7 +1,6 @@
 use super::*;
 
 use std::collections::VecDeque;
-use std::process::Command;
 use std::vec;
 
 #[derive(Debug, Clone, Reflect)]
@@ -52,13 +51,14 @@ impl Commandable {
         &mut self,
         entity: Entity,
         commands: &mut Commands,
+        commandable_interrupt_writer: &mut EventWriter<InterruptCommandEvent>,
         tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
     ) {
         // println!(
         //     ">>clear_queue state={:?} queue={:?} executing={:?}",
         //     self.state, self.queue, self.executing
         // );
-        self.drain_queue(tasks_scheduler);
+        self.drain_queue(commandable_interrupt_writer, tasks_scheduler);
         self.change_state(CommandableState::Idle, entity, commands);
         // println!(
         //     "state={:?} queue={:?} executing={:?}",
@@ -71,12 +71,13 @@ impl Commandable {
         command_or_commands: I,
         entity: Entity,
         commands: &mut Commands,
+        commandable_interrupt_writer: &mut EventWriter<InterruptCommandEvent>,
         tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
     ) where
         I: IntoIterator<Item = CommandType>,
     {
         // println!(">>set_queue state={:?}", self.state);
-        self.drain_queue(tasks_scheduler);
+        self.drain_queue(commandable_interrupt_writer, tasks_scheduler);
 
         self.change_state(CommandableState::PendingExecution, entity, commands);
         self.queue = command_or_commands.into_iter().collect();
@@ -189,7 +190,11 @@ impl Commandable {
     //     );
     // }
 
-    fn drain_queue(&mut self, tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>) {
+    fn drain_queue(
+        &mut self,
+        commandable_interrupt_writer: &mut EventWriter<InterruptCommandEvent>,
+        tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
+    ) {
         if let Some(command) = self.executing.take() {
             // match command {
             //     CommandType::MoveTo(move_to_command) => {
@@ -239,7 +244,10 @@ impl Commandable {
         while let Some(command_type) = self.queue.pop_back() {
             #[allow(clippy::single_match)]
             match command_type {
-                CommandType::WorkOn(WorkOnCommand { commandable_entity: _, task}) => {
+                CommandType::WorkOn(WorkOnCommand {
+                    commandable_entity: _,
+                    task,
+                }) => {
                     tasks_scheduler.send(ScheduleTaskEvent::push_front(task));
                 }
                 _ => {}

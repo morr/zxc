@@ -49,6 +49,7 @@ fn progress_stamina(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Restable, &mut Commandable, &mut Pawn)>,
+    mut commandable_interrupt_writer: EventWriter<InterruptCommandEvent>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     let time_amount = time_scale.scale_to_seconds(time.delta_seconds());
@@ -75,6 +76,7 @@ fn progress_stamina(
                 }),
                 entity,
                 &mut commands,
+                &mut commandable_interrupt_writer,
                 &mut tasks_scheduler,
             );
         }
