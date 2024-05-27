@@ -14,7 +14,10 @@ impl Plugin for WorkOnCommandPlugin {
 }
 
 #[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
-pub struct WorkOnCommand(pub Entity, pub Task);
+pub struct WorkOnCommand {
+    pub commandable_entity: Entity,
+    pub task: Task,
+}
 
 fn execute_command(
     mut commands: Commands,
@@ -27,7 +30,7 @@ fn execute_command(
 ) {
     for command in command_reader.read() {
         // println!("{:?}", command);
-        let workable_entity = command.1.workable_entity;
+        let workable_entity = command.task.workable_entity;
 
         match workable_query.get_mut(workable_entity) {
             Ok(mut workable) => {

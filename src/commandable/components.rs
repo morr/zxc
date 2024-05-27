@@ -238,7 +238,7 @@ impl Commandable {
         while let Some(command_type) = self.queue.pop_back() {
             #[allow(clippy::single_match)]
             match command_type {
-                CommandType::WorkOn(WorkOnCommand(_entity, task)) => {
+                CommandType::WorkOn(WorkOnCommand { commandable_entity: _, task}) => {
                     tasks_scheduler.send(ScheduleTaskEvent::push_front(task));
                 }
                 _ => {}
