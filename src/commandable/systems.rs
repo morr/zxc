@@ -93,12 +93,20 @@ pub fn process_interrupt_commands(
     // >,
     // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
-    for InterruptCommandEvent(entity) in commandable_event_reader.read() {
+    for InterruptCommandEvent(CommandType::WorkOn(WorkOnCommand {
+        commandable_entity,
+        task,
+    })) in commandable_event_reader.read()
+    {
         // println!("{:?}", InterruptCommandEvent(*entity));
 
-        if let Ok((Some(pawn), mut commandable)) = pawn_query.get_mut(*entity) {
+        if let Ok((Some(pawn), mut commandable)) = pawn_query.get_mut(*commandable_entity) {
             ensure_state!(PawnState::ExecutingCommand, pawn.state);
-            commandable.abort_executing(*entity, &mut commands, &mut commandable_event_writer);
+            commandable.abort_executing(
+                *commandable_entity,
+                &mut commands,
+                &mut commandable_event_writer,
+            );
         }
     }
 }

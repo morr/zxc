@@ -1,6 +1,7 @@
 use super::*;
 
 use std::collections::VecDeque;
+use std::process::Command;
 use std::vec;
 
 #[derive(Debug, Clone, Reflect)]
@@ -44,7 +45,7 @@ impl Default for Commandable {
 pub struct CommandCompleteEvent(pub Entity);
 
 #[derive(Event, Debug)]
-pub struct InterruptCommandEvent(pub Entity);
+pub struct InterruptCommandEvent(pub CommandType);
 
 impl Commandable {
     pub fn clear_queue(
