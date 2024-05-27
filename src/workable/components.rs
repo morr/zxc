@@ -38,17 +38,21 @@ impl Workable {
         props: (WorkKind, f32),
         entity: Entity,
         commands: &mut Commands,
-        commandable_interrupt_writer: &mut EventWriter<InterruptCommandEvent>,
+        // commandable_interrupt_writer: &mut EventWriter<InterruptCommandEvent>,
+        commandable_interrupt_writer: &mut EventWriter<RemoteInterruptCommandEvent>,
     ) {
         self.work_kind = props.0;
         self.amount_total = props.1;
         self.amount_done = 0.;
         let prev_state = self.change_state(WorkableState::Idle, entity, commands);
 
-        if let WorkableState::BeingWorked(command) = prev_state
-        {
+        // if let WorkableState::BeingWorked(command) = prev_state {
+        //     // println!("reseting workable in WorkableState::BeingWorked state");
+        //     commandable_interrupt_writer.send(InterruptCommandEvent(CommandType::WorkOn(command)));
+        // }
+        if let WorkableState::BeingWorked(command) = prev_state {
             // println!("reseting workable in WorkableState::BeingWorked state");
-            commandable_interrupt_writer.send(InterruptCommandEvent(CommandType::WorkOn(command)));
+            commandable_interrupt_writer.send(RemoteInterruptCommandEvent(command.commandable_entity));
         }
     }
 }

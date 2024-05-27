@@ -44,6 +44,11 @@ impl Default for Commandable {
 pub struct CommandCompleteEvent(pub Entity);
 
 #[derive(Event, Debug)]
+/// event to interrupt command initiated by 3rd party entity
+pub struct RemoteInterruptCommandEvent(pub Entity);
+
+#[derive(Event, Debug)]
+/// event to interrupt command initiated by Commandable itself
 pub struct InterruptCommandEvent(pub CommandType);
 
 impl Commandable {
@@ -195,7 +200,8 @@ impl Commandable {
         commandable_interrupt_writer: &mut EventWriter<InterruptCommandEvent>,
         tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
     ) {
-        if let Some(command) = self.executing.take() {
+        if let Some(command_type) = self.executing.take() {
+            commandable_interrupt_writer.send(InterruptCommandEvent(command_type));
             // match command {
             //     CommandType::MoveTo(move_to_command) => {
             //         if let Ok(mut movable) = commands.get_mut::<Movable>(move_to_command.0) {
@@ -203,7 +209,6 @@ impl Commandable {
             //             movable.to_idle(move_to_command.0, commands, None);
             //         }
             //     },
-            //     _ => {}
             //     CommandType::Sleep(sleep_command) => {
             //         if let Ok(mut pawn) = commands.get_mut::<Pawn>(sleep_command.0) {
             //             // Safely stop SleepCommand execution
@@ -237,7 +242,7 @@ impl Commandable {
             //     }
             // }
 
-            self.queue.push_front(command);
+            // self.queue.push_front(command_type);
         }
 
         // cleanup queue and maybe do something with its content

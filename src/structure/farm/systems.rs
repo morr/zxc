@@ -7,7 +7,7 @@ pub fn progress_on_farm_progress_event(
     mut commands: Commands,
     assets: Res<FarmAssets>,
     mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmState>>,
-    mut commandable_interrupt_writer: EventWriter<InterruptCommandEvent>,
+    mut commandable_interrupt_writer: EventWriter<RemoteInterruptCommandEvent>,
 ) {
     for FarmProgressEvent(entity) in event_reader.read() {
         // println!("{:?}", FarmProgressEvent(entity));

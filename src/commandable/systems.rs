@@ -80,7 +80,7 @@ pub fn process_complete_commands(
 
 pub fn process_interrupt_commands(
     mut commands: Commands,
-    mut commandable_event_reader: EventReader<InterruptCommandEvent>,
+    mut commandable_event_reader: EventReader<RemoteInterruptCommandEvent>,
     mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
     mut pawn_query: Query<(Option<&Pawn>, &mut Commandable)>,
     // component tags seems to be working unreliable
@@ -93,11 +93,7 @@ pub fn process_interrupt_commands(
     // >,
     // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
-    for InterruptCommandEvent(CommandType::WorkOn(WorkOnCommand {
-        commandable_entity,
-        task,
-    })) in commandable_event_reader.read()
-    {
+    for RemoteInterruptCommandEvent(commandable_entity) in commandable_event_reader.read() {
         // println!("{:?}", InterruptCommandEvent(*entity));
 
         if let Ok((Some(pawn), mut commandable)) = pawn_query.get_mut(*commandable_entity) {
