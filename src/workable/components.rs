@@ -39,7 +39,7 @@ impl Workable {
         entity: Entity,
         commands: &mut Commands,
         // commandable_interrupt_writer: &mut EventWriter<InterruptCommandEvent>,
-        commandable_interrupt_writer: &mut EventWriter<RemoteInterruptCommandEvent>,
+        commandable_interrupt_writer: &mut EventWriter<ExternalCommandInterruptEvent>,
     ) {
         self.work_kind = props.0;
         self.amount_total = props.1;
@@ -52,7 +52,7 @@ impl Workable {
         // }
         if let WorkableState::BeingWorked(command) = prev_state {
             // println!("reseting workable in WorkableState::BeingWorked state");
-            commandable_interrupt_writer.send(RemoteInterruptCommandEvent(command.commandable_entity));
+            commandable_interrupt_writer.send(ExternalCommandInterruptEvent(command.commandable_entity));
         }
     }
 }

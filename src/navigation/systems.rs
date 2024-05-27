@@ -13,7 +13,7 @@ pub fn move_user_selected_pawn_on_click_stage_1(
             With<pawn_state::PawnStateExecutingCommandTag>,
         )>,
     >,
-    mut commandable_interrupt_writer: EventWriter<InterruptCommandEvent>,
+    mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     for ClickEventStage1(grid_tile) in click_event_reader.read() {

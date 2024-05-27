@@ -15,8 +15,8 @@ pub struct CommandablePlugin;
 impl Plugin for CommandablePlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<CommandCompleteEvent>()
-            .add_event::<RemoteInterruptCommandEvent>()
-            .add_event::<InterruptCommandEvent>()
+            .add_event::<ExternalCommandInterruptEvent>()
+            .add_event::<InternalCommandInterruptEvent>()
             .register_type::<Commandable>()
             .add_plugins((
                 MoveToCommandPlugin,

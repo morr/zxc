@@ -143,7 +143,7 @@ pub fn wander_idle_pawns(
             With<commandable_state::CommandableStateIdleTag>,
         ),
     >,
-    mut commandable_interrupt_writer: EventWriter<InterruptCommandEvent>,
+    mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     let mut rng = rand::thread_rng();
@@ -266,7 +266,7 @@ pub fn progress_pawn_death(
     mut commands: Commands,
     mut event_reader: EventReader<PawnDeathEvent>,
     mut query: Query<(&mut Pawn, &mut Commandable)>,
-    mut commandable_interrupt_writer: EventWriter<InterruptCommandEvent>,
+    mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     for PawnDeathEvent(entity) in event_reader.read() {

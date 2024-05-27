@@ -178,7 +178,7 @@ impl Farm {
         assets: &Res<FarmAssets>,
         state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmState>>,
         // commandable_interrupt_writer: &mut EventWriter<InterruptCommandEvent>,
-        commandable_interrupt_writer: &mut EventWriter<RemoteInterruptCommandEvent>,
+        commandable_interrupt_writer: &mut EventWriter<ExternalCommandInterruptEvent>,
     ) {
         let new_state = match &self.state {
             FarmState::NotPlanted => FarmState::Planted(PlantedState {

@@ -44,19 +44,19 @@ impl Default for Commandable {
 pub struct CommandCompleteEvent(pub Entity);
 
 #[derive(Event, Debug)]
-/// event to interrupt command initiated by 3rd party entity
-pub struct RemoteInterruptCommandEvent(pub Entity);
+/// Event to interrupt command initiated by an external entity
+pub struct ExternalCommandInterruptEvent(pub Entity);
 
 #[derive(Event, Debug)]
-/// event to interrupt command initiated by Commandable itself
-pub struct InterruptCommandEvent(pub CommandType);
+/// Event to interrupt command initiated by the Commandable itself
+pub struct InternalCommandInterruptEvent(pub CommandType);
 
 impl Commandable {
     pub fn clear_queue(
         &mut self,
         entity: Entity,
         commands: &mut Commands,
-        commandable_interrupt_writer: &mut EventWriter<InterruptCommandEvent>,
+        commandable_interrupt_writer: &mut EventWriter<InternalCommandInterruptEvent>,
         tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
     ) {
         // println!(
@@ -76,7 +76,7 @@ impl Commandable {
         command_or_commands: I,
         entity: Entity,
         commands: &mut Commands,
-        commandable_interrupt_writer: &mut EventWriter<InterruptCommandEvent>,
+        commandable_interrupt_writer: &mut EventWriter<InternalCommandInterruptEvent>,
         tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
     ) where
         I: IntoIterator<Item = CommandType>,
@@ -197,11 +197,11 @@ impl Commandable {
 
     fn drain_queue(
         &mut self,
-        commandable_interrupt_writer: &mut EventWriter<InterruptCommandEvent>,
+        commandable_interrupt_writer: &mut EventWriter<InternalCommandInterruptEvent>,
         tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
     ) {
         if let Some(command_type) = self.executing.take() {
-            commandable_interrupt_writer.send(InterruptCommandEvent(command_type));
+            commandable_interrupt_writer.send(InternalCommandInterruptEvent(command_type));
             // match command {
             //     CommandType::MoveTo(move_to_command) => {
             //         if let Ok(mut movable) = commands.get_mut::<Movable>(move_to_command.0) {
