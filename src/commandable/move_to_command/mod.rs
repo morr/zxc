@@ -6,7 +6,11 @@ impl Plugin for MoveToCommandPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<MoveToCommand>().add_systems(
             Update,
-            (execute_command, monitor_completion, handle_internal_interrupts)
+            (
+                execute_command,
+                monitor_completion,
+                handle_internal_interrupts,
+            )
                 .chain()
                 .run_if(in_state(AppState::Playing)),
         );
@@ -93,11 +97,24 @@ fn handle_internal_interrupts(
 ) {
     for InternalCommandInterruptEvent(interrupted_command) in interrupt_reader.read() {
         if let CommandType::MoveTo(MoveToCommand {
-            commandable_entity, ..
+            commandable_entity,
+            grid_tile: commanding_to_tile,
         }) = interrupted_command
         {
             if let Ok(mut movable) = query.get_mut(*commandable_entity) {
-                movable.to_idle(*commandable_entity, &mut commands, None);
+                if let MovableState::Moving(moving_to_tile)
+                | MovableState::Pathfinding(moving_to_tile)
+                | MovableState::PathfindingError(moving_to_tile) = movable.state
+                {
+                    if moving_to_tile == *commanding_to_tile {
+                        movable.to_idle(*commandable_entity, &mut commands, None);
+                    } else {
+                        warn!(
+                            "Attempt to interrupt MoveTo({:?}) for Movable({:?})",
+                            commanding_to_tile, moving_to_tile
+                        );
+                    }
+                }
             }
         }
     }
