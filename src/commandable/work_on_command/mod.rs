@@ -6,7 +6,11 @@ impl Plugin for WorkOnCommandPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<WorkOnCommand>().add_systems(
             Update,
-            (execute_command, monitor_completion)
+            (
+                execute_command,
+                monitor_completion,
+                handle_internal_interrupts,
+            )
                 .chain()
                 .run_if(in_state(AppState::Playing)),
         );
@@ -22,14 +26,9 @@ pub struct WorkOnCommand {
 fn execute_command(
     mut commands: Commands,
     mut command_reader: EventReader<WorkOnCommand>,
-    // mut pawn_query: Query<(&mut Pawn, &mut Commandable)>,
     mut workable_query: Query<&mut Workable>,
-    // mut event_writer: EventWriter<WorkStartEvent>,
-    // mut commandable_event_writer: EventWriter<CommandExecutedEvent>,
-    // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for command in command_reader.read() {
-        // println!("{:?}", command);
         let workable_entity = command.task.workable_entity;
 
         match workable_query.get_mut(workable_entity) {
@@ -40,7 +39,6 @@ fn execute_command(
                     &mut commands,
                 );
             }
-
             Err(err) => {
                 warn!("Failed to get query result: {:?}", err);
                 continue;
@@ -60,8 +58,6 @@ fn monitor_completion(
         task,
     } in command_complete_event_reader.read()
     {
-        // println!("{:?}", WorkCompleteEvent { commandable_entity, task });
-
         let Ok(mut commandable) = query.get_mut(*commandable_entity) else {
             continue;
         };
@@ -84,5 +80,39 @@ fn monitor_completion(
             &mut commands,
             &mut commandable_event_writer,
         );
+    }
+}
+
+fn handle_internal_interrupts(
+    mut commands: Commands,
+    mut interrupt_reader: EventReader<InternalCommandInterruptEvent>,
+    // mut commandable_query: Query<&mut Commandable>,
+    mut workable_query: Query<&mut Workable>,
+    // mut work_complete_event_writer: EventWriter<WorkCompleteEvent>,
+) {
+    for InternalCommandInterruptEvent(interrupted_command_type) in interrupt_reader.read() {
+        if let CommandType::WorkOn(interrupted_command) = interrupted_command_type {
+            // Handle the commandable entity
+            // if let Ok(mut commandable) = commandable_query.get_mut(*commandable_entity) {
+            //     if let Some(CommandType::WorkOn(WorkOnCommand { task: current_task, .. })) = &commandable.executing {
+            //         if *current_task == *task {
+            //             commandable.abort_executing(*commandable_entity, &mut commands, &mut work_complete_event_writer);
+            //         }
+            //     }
+            // }
+
+            // Handle the workable entity
+            if let Ok(mut workable) = workable_query.get_mut(interrupted_command.task.workable_entity) {
+                if let WorkableState::BeingWorked(ref worked_command) = workable.state {
+                    if interrupted_command == worked_command {
+                        workable.change_state(
+                            WorkableState::Idle,
+                            interrupted_command.task.workable_entity,
+                            &mut commands,
+                        );
+                    }
+                }
+            }
+        }
     }
 }

@@ -134,10 +134,17 @@ impl Commandable {
         &mut self,
         entity: Entity,
         commands: &mut Commands,
-        commandable_event_writer: &mut EventWriter<CommandCompleteEvent>,
+        commandable_interrupt_writer: &mut EventWriter<InternalCommandInterruptEvent>,
+        tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
     ) {
         // println!(">>abort_executing");
-        self.complete_executing(entity, commands, commandable_event_writer);
+        // self.complete_executing(entity, commands, commandable_event_writer);
+        if let Some(command_type) = self.executing.take() {
+            commandable_interrupt_writer.send(InternalCommandInterruptEvent(command_type));
+        }
+
+        self.drain_queue(commandable_interrupt_writer, tasks_scheduler);
+        self.change_state(CommandableState::Idle, entity, commands);
     }
 
     pub fn complete_executing(

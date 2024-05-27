@@ -81,8 +81,9 @@ pub fn process_complete_commands(
 pub fn process_interrupt_commands(
     mut commands: Commands,
     mut commandable_event_reader: EventReader<ExternalCommandInterruptEvent>,
-    mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
     mut pawn_query: Query<(Option<&Pawn>, &mut Commandable)>,
+    mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
+    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
     // component tags seems to be working unreliable
     // mut pawn_query: Query<
     //     (Option<&Pawn>, &mut Commandable),
@@ -98,10 +99,12 @@ pub fn process_interrupt_commands(
 
         if let Ok((Some(pawn), mut commandable)) = pawn_query.get_mut(*commandable_entity) {
             ensure_state!(PawnState::ExecutingCommand, pawn.state);
+
             commandable.abort_executing(
                 *commandable_entity,
                 &mut commands,
-                &mut commandable_event_writer,
+                &mut commandable_interrupt_writer,
+                &mut tasks_scheduler
             );
         }
     }
