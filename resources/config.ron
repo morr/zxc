@@ -11,8 +11,8 @@ RootConfig(
     starting_scene: StartingSceneConfig(
         pawns: 1,
         day_hour: 8,
-        farm_width: 0,
-        farm_height: 0,
+        farm_width: 1,
+        farm_height: 1,
         beds_num: 1,
         //time_scale: 1.0
         time_scale: 300.0,
@@ -50,11 +50,11 @@ RootConfig(
         // 12 hours of work => 10% stamina left (90 / 12 = 7.5)
         //working: -7.5,
         // 7 hours of sleep => 100% stamina restored (100 / 7 = 14.2857142857)
-        //sleeping: 14.2857142857,
-        sleeping: 50.0,
+        sleeping: 14.2857142857,
+        //sleeping: 50.0,
         // 17 hours of living => 100% stamina drained (100 / 17 = 5.8823529412)
-        //living: -5.8823529412,
-        living: -50.0,
+        living: -5.8823529412,
+        //living: -50.0,
         //living: -0.0002,
     )
 )
