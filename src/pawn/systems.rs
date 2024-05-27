@@ -147,7 +147,7 @@ pub fn wander_idle_pawns(
 ) {
     let mut rng = rand::thread_rng();
 
-    for (entity, pawn, movable, mut commandable, transform) in &mut query {
+    for (commandable_entity, pawn, movable, mut commandable, transform) in &mut query {
         ensure_state!(PawnState::Idle, pawn.state);
         ensure_state!(CommandableState::Idle, commandable.state);
         if movable.state != MovableState::Idle {
@@ -158,8 +158,8 @@ pub fn wander_idle_pawns(
         let end_tile = find_valid_end_tile(world_pos, &arc_navmesh.read(), &mut rng, 0);
 
         commandable.set_queue(
-            CommandType::MoveTo(MoveToCommand(entity, end_tile)),
-            entity,
+            CommandType::MoveTo(MoveToCommand { commandable_entity, grid_tile: end_tile}),
+            commandable_entity,
             &mut commands,
             &mut tasks_scheduler,
         );

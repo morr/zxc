@@ -28,10 +28,13 @@ pub fn move_user_selected_pawn_on_click_stage_1(
         };
 
         commandable.set_queue(
-            CommandType::MoveTo(MoveToCommand(*entity, *grid_tile)),
+            CommandType::MoveTo(MoveToCommand {
+                commandable_entity: *entity,
+                grid_tile: *grid_tile,
+            }),
             *entity,
             &mut commands,
-            &mut tasks_scheduler
+            &mut tasks_scheduler,
         );
     }
 }

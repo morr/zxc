@@ -68,8 +68,10 @@ fn monitor_completion(
         let Some(ref command_type) = commandable.executing else {
             continue;
         };
-        let CommandType::WorkOn(WorkOnCommand(command_commandable_entity, command_task)) =
-            command_type
+        let CommandType::WorkOn(WorkOnCommand {
+            commandable_entity: command_commandable_entity,
+            task: command_task,
+        }) = command_type
         else {
             continue;
         };

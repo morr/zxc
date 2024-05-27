@@ -6,7 +6,7 @@ pub fn assign_tasks_to_pawns(
     mut work_queue: ResMut<TasksQueue>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
-    for (entity, pawn, mut commandable) in query.iter_mut() {
+    for (commandable_entity, pawn, mut commandable) in query.iter_mut() {
         ensure_state!(PawnState::Idle, pawn.state);
 
         let Some(task) = work_queue.get_task() else {
@@ -16,10 +16,16 @@ pub fn assign_tasks_to_pawns(
 
         commandable.set_queue(
             [
-                CommandType::MoveTo(MoveToCommand(entity, task.grid_tile)),
-                CommandType::WorkOn(WorkOnCommand(entity, task)),
+                CommandType::MoveTo(MoveToCommand {
+                    commandable_entity,
+                    grid_tile: task.grid_tile,
+                }),
+                CommandType::WorkOn(WorkOnCommand {
+                    commandable_entity,
+                    task,
+                }),
             ],
-            entity,
+            commandable_entity,
             &mut commands,
             &mut tasks_scheduler,
         );
@@ -51,7 +57,11 @@ pub fn progress_work(
             let prev_state =
                 workable.change_state(WorkableState::Idle, workable_entity, &mut commands);
 
-            let WorkableState::BeingWorked(WorkOnCommand(commandable_entity, task)) = prev_state else {
+            let WorkableState::BeingWorked(WorkOnCommand {
+                commandable_entity,
+                task,
+            }) = prev_state
+            else {
                 panic!()
             };
 
