@@ -6,7 +6,7 @@ impl Plugin for MoveToCommandPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<MoveToCommand>().add_systems(
             Update,
-            (execute_command, monitor_completion)
+            (execute_command, monitor_completion, handle_internal_interrupts)
                 .chain()
                 .run_if(in_state(AppState::Playing)),
         );
@@ -83,5 +83,22 @@ fn monitor_completion(
         }
 
         commandable.complete_executing(*entity, &mut commands, &mut commandable_event_writer);
+    }
+}
+
+fn handle_internal_interrupts(
+    mut commands: Commands,
+    mut interrupt_reader: EventReader<InternalCommandInterruptEvent>,
+    mut query: Query<&mut Movable>,
+) {
+    for InternalCommandInterruptEvent(interrupted_command) in interrupt_reader.read() {
+        if let CommandType::MoveTo(MoveToCommand {
+            commandable_entity, ..
+        }) = interrupted_command
+        {
+            if let Ok(mut movable) = query.get_mut(*commandable_entity) {
+                movable.to_idle(*commandable_entity, &mut commands, None);
+            }
+        }
     }
 }
