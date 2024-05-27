@@ -70,7 +70,9 @@ fn progress_stamina(
 
         if wasnt_empty && restable.is_empty() {
             commandable.set_queue(
-                CommandType::ToRest(ToRestCommand(entity)),
+                CommandType::ToRest(ToRestCommand {
+                    commandable_entity: entity,
+                }),
                 entity,
                 &mut commands,
                 &mut tasks_scheduler,

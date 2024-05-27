@@ -10,7 +10,9 @@ impl Plugin for ToRestCommandPlugin {
 }
 
 #[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
-pub struct ToRestCommand(pub Entity);
+pub struct ToRestCommand {
+    pub commandable_entity: Entity,
+}
 
 fn execute_command(
     mut commands: Commands,
@@ -19,11 +21,11 @@ fn execute_command(
     mut command_reader: EventReader<ToRestCommand>,
     mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
 ) {
-    for ToRestCommand(entity) in command_reader.read() {
-        match commandable_query.get_mut(*entity) {
+    for ToRestCommand { commandable_entity } in command_reader.read() {
+        match commandable_query.get_mut(*commandable_entity) {
             Ok(mut commandable) => {
                 commandable.complete_executing(
-                    *entity,
+                    *commandable_entity,
                     &mut commands,
                     &mut commandable_event_writer,
                 );
@@ -32,18 +34,18 @@ fn execute_command(
                     // either go to bed and sleep there
                     commandable.extend_queue(
                         CommandType::MoveTo(MoveToCommand(
-                            *entity,
+                            *commandable_entity,
                             transform.translation.truncate().world_pos_to_grid(),
                         )),
-                        *entity,
+                        *commandable_entity,
                         &mut commands,
                     );
                 }
 
                 // or sleep at the current spot
                 commandable.extend_queue(
-                    CommandType::Sleep(SleepCommand(*entity)),
-                    *entity,
+                    CommandType::Sleep(SleepCommand(*commandable_entity)),
+                    *commandable_entity,
                     &mut commands,
                 );
             }
