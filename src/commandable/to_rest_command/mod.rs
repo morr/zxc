@@ -44,7 +44,9 @@ fn execute_command(
 
                 // or sleep at the current spot
                 commandable.extend_queue(
-                    CommandType::Sleep(SleepCommand(*commandable_entity)),
+                    CommandType::Sleep(SleepCommand {
+                        commandable_entity: *commandable_entity,
+                    }),
                     *commandable_entity,
                     &mut commands,
                 );

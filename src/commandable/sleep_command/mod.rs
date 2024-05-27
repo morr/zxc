@@ -10,7 +10,9 @@ impl Plugin for SleepCommandPlugin {
 }
 
 #[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
-pub struct SleepCommand(pub Entity);
+pub struct SleepCommand {
+    pub commandable_entity: Entity,
+}
 
 fn execute_command(
     mut commands: Commands,
@@ -18,15 +20,19 @@ fn execute_command(
     mut query: Query<(&mut Pawn, &mut Commandable)>,
     mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
 ) {
-    for SleepCommand(entity) in command_reader.read() {
-        // println!("{:?}", SleepCommand(*entity));
-        let Ok((mut pawn, mut commandable)) = query.get_mut(*entity) else {
+    for SleepCommand { commandable_entity } in command_reader.read() {
+        // println!("{:?}", SleepCommand { commandable_entity }));
+        let Ok((mut pawn, mut commandable)) = query.get_mut(*commandable_entity) else {
             continue;
         };
 
-        pawn.change_state(PawnState::Sleeping, *entity, &mut commands);
+        pawn.change_state(PawnState::Sleeping, *commandable_entity, &mut commands);
 
-        commandable.complete_executing(*entity, &mut commands, &mut commandable_event_writer);
+        commandable.complete_executing(
+            *commandable_entity,
+            &mut commands,
+            &mut commandable_event_writer,
+        );
         if commandable.state != CommandableState::Idle {
             panic!("Commandable must be in Idle state after SleepCommand")
         }
