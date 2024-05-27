@@ -33,10 +33,10 @@ fn execute_command(
                 if let Some(transform) = bed_query.iter().next() {
                     // either go to bed and sleep there
                     commandable.extend_queue(
-                        CommandType::MoveTo(MoveToCommand(
-                            *commandable_entity,
-                            transform.translation.truncate().world_pos_to_grid(),
-                        )),
+                        CommandType::MoveTo(MoveToCommand{
+                            commandable_entity: *commandable_entity,
+                            grid_tile: transform.translation.truncate().world_pos_to_grid(),
+                        }),
                         *commandable_entity,
                         &mut commands,
                     );

@@ -14,26 +14,29 @@ impl Plugin for MoveToCommandPlugin {
 }
 
 #[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
-pub struct MoveToCommand(pub Entity, pub IVec2);
+pub struct MoveToCommand {
+    pub commandable_entity: Entity,
+    pub grid_tile: IVec2,
+}
 
 fn execute_command(
     mut commands: Commands,
     mut command_reader: EventReader<MoveToCommand>,
-    mut query: Query<(
-        &Transform,
-        &mut Movable,
-        Option<&mut PathfindingTask>,
-    )>,
+    mut query: Query<(&Transform, &mut Movable, Option<&mut PathfindingTask>)>,
     arc_navmesh: Res<ArcNavmesh>,
     queue_counter: Res<AsyncQueueCounter>,
     // mut movable_state_change_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
 ) {
-    for MoveToCommand(entity, grid_tile) in command_reader.read() {
+    for MoveToCommand {
+        commandable_entity,
+        grid_tile,
+    } in command_reader.read()
+    {
         // println!("{:?}", MoveToCommand(entity, grid_tile));
-        match query.get_mut(*entity) {
+        match query.get_mut(*commandable_entity) {
             Ok((transform, mut movable, mut maybe_pathfinding_task)) => {
                 movable.to_pathfinding_async(
-                    *entity,
+                    *commandable_entity,
                     transform.translation.truncate().world_pos_to_grid(),
                     *grid_tile,
                     &arc_navmesh,
@@ -58,7 +61,9 @@ fn monitor_completion(
     mut command_complete_event_reader: EventReader<MovableReachedDestinationEvent>,
     mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
 ) {
-    for MovableReachedDestinationEvent(entity, destination_tile) in command_complete_event_reader.read() {
+    for MovableReachedDestinationEvent(entity, destination_tile) in
+        command_complete_event_reader.read()
+    {
         // println!("{:?}", MovableReachedDestinationEvent(*entity, *destination_tile));
         let Ok(mut commandable) = query.get_mut(*entity) else {
             continue;
@@ -66,7 +71,11 @@ fn monitor_completion(
         let Some(ref command_type) = commandable.executing else {
             continue;
         };
-        let CommandType::MoveTo(MoveToCommand(_entity, move_to_tile)) = command_type else {
+        let CommandType::MoveTo(MoveToCommand {
+            commandable_entity: _,
+            grid_tile: move_to_tile,
+        }) = command_type
+        else {
             continue;
         };
         if destination_tile != move_to_tile {
