@@ -42,7 +42,7 @@ pub fn progress_work(
     for (workable_entity, mut workable) in workable_query.iter_mut() {
         // --- problem here
         // --- workable was replaced by sync_workable
-        ensure_state!(WorkableState::BeingWorked(_, _), workable.state);
+        ensure_state!(WorkableState::BeingWorked(_), workable.state);
 
         workable.perform_work(elapsed_time);
 
@@ -51,7 +51,7 @@ pub fn progress_work(
             let prev_state =
                 workable.change_state(WorkableState::Idle, workable_entity, &mut commands);
 
-            let WorkableState::BeingWorked(commandable_entity, task) = prev_state else {
+            let WorkableState::BeingWorked(WorkOnCommand(commandable_entity, task)) = prev_state else {
                 panic!()
             };
 

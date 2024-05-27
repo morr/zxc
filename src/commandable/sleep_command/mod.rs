@@ -9,7 +9,7 @@ impl Plugin for SleepCommandPlugin {
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect)]
+#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct SleepCommand(pub Entity);
 
 fn execute_command(

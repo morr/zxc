@@ -45,7 +45,7 @@ impl Workable {
         self.amount_done = 0.;
         let prev_state = self.change_state(WorkableState::Idle, entity, commands);
 
-        if let WorkableState::BeingWorked(commandable_entity, _task) = prev_state {
+        if let WorkableState::BeingWorked(WorkOnCommand(commandable_entity, _task)) = prev_state {
             // println!("reseting workable in WorkableState::BeingWorked state");
             commandable_event_writer.send(InterruptCommandEvent(commandable_entity));
         }
@@ -131,7 +131,7 @@ workable_states!(
     (
         BeingWorked,
         WorkableStateBeingWorkedTag,
-        (Entity, Task),
-        (_a, _b)
+        (WorkOnCommand),
+        (_a)
     ),
 );

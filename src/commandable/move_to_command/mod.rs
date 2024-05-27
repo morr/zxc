@@ -13,7 +13,7 @@ impl Plugin for MoveToCommandPlugin {
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect)]
+#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct MoveToCommand(pub Entity, pub IVec2);
 
 fn execute_command(

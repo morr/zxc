@@ -13,7 +13,7 @@ impl Plugin for WorkOnCommandPlugin {
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect)]
+#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct WorkOnCommand(pub Entity, pub Task);
 
 fn execute_command(
@@ -25,14 +25,15 @@ fn execute_command(
     // mut commandable_event_writer: EventWriter<CommandExecutedEvent>,
     // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
-    for WorkOnCommand(commandable_entity, task) in command_reader.read() {
-        // println!("{:?}", WorkOnCommand(*commandable_entity, task.clone()));
+    for command in command_reader.read() {
+        // println!("{:?}", command);
+        let workable_entity = command.1.workable_entity;
 
-        match workable_query.get_mut(task.workable_entity) {
+        match workable_query.get_mut(workable_entity) {
             Ok(mut workable) => {
                 workable.change_state(
-                    WorkableState::BeingWorked(*commandable_entity, task.clone()),
-                    task.workable_entity,
+                    WorkableState::BeingWorked(command.clone()),
+                    workable_entity,
                     &mut commands,
                 );
             }
