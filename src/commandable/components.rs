@@ -208,6 +208,7 @@ impl Commandable {
         tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
     ) {
         if let Some(command_type) = self.executing.take() {
+            // println!("{:?}", InternalCommandInterruptEvent(command_type.clone()));
             commandable_interrupt_writer.send(InternalCommandInterruptEvent(command_type));
             // match command {
             //     CommandType::MoveTo(move_to_command) => {

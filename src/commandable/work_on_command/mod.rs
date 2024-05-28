@@ -88,10 +88,12 @@ fn handle_internal_interrupts(
     mut interrupt_reader: EventReader<InternalCommandInterruptEvent>,
     // mut commandable_query: Query<&mut Commandable>,
     mut workable_query: Query<&mut Workable>,
+    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
     // mut work_complete_event_writer: EventWriter<WorkCompleteEvent>,
 ) {
     for InternalCommandInterruptEvent(interrupted_command_type) in interrupt_reader.read() {
         if let CommandType::WorkOn(interrupted_command) = interrupted_command_type {
+            // suggested by AI
             // Handle the commandable entity
             // if let Ok(mut commandable) = commandable_query.get_mut(*commandable_entity) {
             //     if let Some(CommandType::WorkOn(WorkOnCommand { task: current_task, .. })) = &commandable.executing {
@@ -105,6 +107,7 @@ fn handle_internal_interrupts(
             if let Ok(mut workable) = workable_query.get_mut(interrupted_command.task.workable_entity) {
                 if let WorkableState::BeingWorked(ref worked_command) = workable.state {
                     if interrupted_command == worked_command {
+                        tasks_scheduler.send(ScheduleTaskEvent::push_front(worked_command.task.clone()));
                         workable.change_state(
                             WorkableState::Idle,
                             interrupted_command.task.workable_entity,
