@@ -50,7 +50,9 @@ impl Workable {
         //     // println!("reseting workable in WorkableState::BeingWorked state");
         //     commandable_interrupt_writer.send(InterruptCommandEvent(CommandType::WorkOn(command)));
         // }
+        println!("workable reset");
         if let WorkableState::BeingWorked(command) = prev_state {
+            println!("{:?}", ExternalCommandInterruptEvent(command.commandable_entity));
             // println!("reseting workable in WorkableState::BeingWorked state");
             commandable_interrupt_writer.send(ExternalCommandInterruptEvent(command.commandable_entity));
         }

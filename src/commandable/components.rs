@@ -175,6 +175,7 @@ impl Commandable {
         );
 
         if self.state == CommandableState::Idle {
+            // this sync pawn state
             commandable_event_writer.send(CommandCompleteEvent(entity));
         }
     }
@@ -208,7 +209,7 @@ impl Commandable {
         tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
     ) {
         if let Some(command_type) = self.executing.take() {
-            // println!("{:?}", InternalCommandInterruptEvent(command_type.clone()));
+            println!("{:?}", InternalCommandInterruptEvent(command_type.clone()));
             commandable_interrupt_writer.send(InternalCommandInterruptEvent(command_type));
         }
 
