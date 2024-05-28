@@ -85,7 +85,7 @@ macro_rules! pawn_states {
             ) -> PawnState {
                 use std::mem;
 
-                println!("PawnState {:?}=>{:?}", self.state, new_state);
+                // println!("PawnState {:?}=>{:?}", self.state, new_state);
 
                 // Remove the old state component
                 match &self.state {
