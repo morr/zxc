@@ -210,47 +210,6 @@ impl Commandable {
         if let Some(command_type) = self.executing.take() {
             // println!("{:?}", InternalCommandInterruptEvent(command_type.clone()));
             commandable_interrupt_writer.send(InternalCommandInterruptEvent(command_type));
-            // match command {
-            //     CommandType::MoveTo(move_to_command) => {
-            //         if let Ok(mut movable) = commands.get_mut::<Movable>(move_to_command.0) {
-            //             // Safely stop MoveToCommand execution
-            //             movable.to_idle(move_to_command.0, commands, None);
-            //         }
-            //     },
-            //     CommandType::Sleep(sleep_command) => {
-            //         if let Ok(mut pawn) = commands.get_mut::<Pawn>(sleep_command.0) {
-            //             // Safely stop SleepCommand execution
-            //             pawn.change_state(PawnState::Idle, sleep_command.0, commands);
-            //         }
-            //     }
-            //     CommandType::ToRest(to_rest_command) => {
-            //         // ToRestCommand extends the queue with MoveTo and Sleep commands
-            //         // No special state change, just ensure restable is reset
-            //         if let Ok(mut restable) = commands.get_mut::<Restable>(to_rest_command.0) {
-            //             restable.stamina = FULL_STAMINA; // Example of resetting Restable state
-            //         }
-            //     }
-            //     CommandType::UserSelection(_) => {
-            //         // Safely stop UserSelectionCommand execution
-            //         // Clear the current user selection
-            //         self.current_user_selection.0 = None;
-            //     }
-            //     CommandType::WorkOn(work_on_command) => {
-            //         if let Ok(mut workable) =
-            //             commands.get_mut::<Workable>(work_on_command.1.workable_entity)
-            //         {
-            //             // Safely stop WorkOnCommand execution
-            //             workable.reset_amount_done();
-            //             workable.change_state(
-            //                 WorkableState::Idle,
-            //                 work_on_command.1.workable_entity,
-            //                 commands,
-            //             );
-            //         }
-            //     }
-            // }
-
-            // self.queue.push_front(command_type);
         }
 
         // cleanup queue and maybe do something with its content
