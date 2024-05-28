@@ -88,6 +88,7 @@ pub fn process_interrupt_commands(
     mut pawn_query: Query<(Option<&Pawn>, &mut Commandable)>,
     mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
+    mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
     // component tags seems to be working unreliable
     // mut pawn_query: Query<
     //     (Option<&Pawn>, &mut Commandable),
@@ -108,7 +109,8 @@ pub fn process_interrupt_commands(
                 *commandable_entity,
                 &mut commands,
                 &mut commandable_interrupt_writer,
-                &mut tasks_scheduler
+                &mut tasks_scheduler,
+                &mut commandable_event_writer,
             );
         }
     }

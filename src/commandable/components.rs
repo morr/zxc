@@ -136,6 +136,7 @@ impl Commandable {
         commands: &mut Commands,
         commandable_interrupt_writer: &mut EventWriter<InternalCommandInterruptEvent>,
         tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
+        commandable_event_writer: &mut EventWriter<CommandCompleteEvent>,
     ) {
         // println!(">>abort_executing");
         // self.complete_executing(entity, commands, commandable_event_writer);
@@ -145,6 +146,8 @@ impl Commandable {
 
         self.drain_queue(commandable_interrupt_writer, tasks_scheduler);
         self.change_state(CommandableState::Idle, entity, commands);
+        // this sync pawn state
+        commandable_event_writer.send(CommandCompleteEvent(entity));
     }
 
     pub fn complete_executing(
