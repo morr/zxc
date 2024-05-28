@@ -1,6 +1,5 @@
-use bevy::ecs::system::EntityCommands;
-
 use super::*;
+use bevy::ecs::system::EntityCommands;
 
 macro_rules! farm_states {
     (
@@ -8,7 +7,7 @@ macro_rules! farm_states {
             (
                 $name:ident
                 $(,
-                    struct $turple_name: ident {
+                    struct $state_struct: ident {
                         $(
                             $field: ident: $ty: ty
                         ),* $(,)?
@@ -20,21 +19,20 @@ macro_rules! farm_states {
     ) => {
         #[derive(Debug, Clone, PartialEq, Reflect)]
         pub enum FarmState {
-            $($name $(($turple_name))? ),*
+            $($name $(($state_struct))? ),*
         }
 
         $($(
             #[derive(Clone, Eq, PartialEq, Reflect, Debug)]
-            pub struct $turple_name {
-            $(
-                pub $field: $ty
-            ),*
+            pub struct $state_struct {
+                $(
+                    pub $field: $ty
+                ),*
             }
         )?)*
 
-
         pub mod farm_state {
-            use bevy::{prelude::*};
+            use bevy::prelude::*;
 
             $(
                 #[derive(Component)]
@@ -50,23 +48,28 @@ macro_rules! farm_states {
                 commands: &mut Commands,
                 state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmState>>,
             ) {
-                // println!("FarmState {:?}=>{:?}", self.state, new_state);
+                self.remove_old_state_component(commands, entity);
+                self.state = new_state;
+                self.add_new_state_component(commands, entity);
+                state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+            }
+        }
 
+        impl Farm {
+            fn remove_old_state_component(&self, commands: &mut Commands, entity: Entity) {
                 match &self.state {
                     $(FarmState::$name $( ($match_field) )? => {
                         commands.entity(entity).remove::<farm_state::$name>();
                     },)*
                 }
+            }
 
-                self.state = new_state;
-
+            fn add_new_state_component(&self, commands: &mut Commands, entity: Entity) {
                 match &self.state {
                     $(FarmState::$name $( ($match_field) )? => {
                         commands.entity(entity).insert(farm_state::$name);
                     },)*
                 }
-
-                state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
             }
         }
     };
@@ -91,7 +94,6 @@ farm_states!(
             rest_timer: Timer
         },
         _h
-
     ),
 );
 
@@ -119,13 +121,13 @@ impl Farm {
         state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmState>>,
     ) {
         let farm = Self::default();
-        let state = farm.state.clone();
+        let farm_state = farm.state.clone(); // Clone the state here
         let workable = Workable::new(workable_props(&farm.state));
 
         let mut entity_commands =
             commands.spawn((farm, farm_state::NotPlanted, Name::new("Farm"), workable));
 
-        Farm::sync_sprite_bundle(grid_tile, &state, &mut entity_commands, assets);
+        Farm::sync_sprite_bundle(grid_tile, &farm_state, &mut entity_commands, assets); // Use the cloned state
 
         let entity = entity_commands.id();
 
@@ -136,7 +138,7 @@ impl Farm {
         );
         navmesh.add_occupation::<Farm>(entity, grid_tile.x, grid_tile.y);
 
-        state_change_event_writer.send(EntityStateChangeEvent(entity, state));
+        state_change_event_writer.send(EntityStateChangeEvent(entity, farm_state));
     }
 
     pub fn sync_sprite_bundle(
@@ -199,15 +201,19 @@ impl Farm {
             }),
             FarmState::Harvested(_) => FarmState::NotPlanted,
         };
-        // println!("progress_state {:?} => {:?}", self.state, new_state);
+
         self.change_state(new_state, entity, commands, state_change_event_writer);
 
         if let FarmState::NotPlanted = self.state {
             self.tendings_done = 0;
         }
 
-        workable.reset(workable_props(&self.state), entity, commands, commandable_interrupt_writer);
-
+        workable.reset(
+            workable_props(&self.state),
+            entity,
+            commands,
+            commandable_interrupt_writer,
+        );
         Self::sync_sprite_bundle(grid_tile, &self.state, &mut commands.entity(entity), assets);
     }
 
@@ -226,10 +232,6 @@ impl Farm {
             (self.tendings_done as f32).min(max_tendings) / max_tendings
         };
 
-        // println!(
-        //     "basic_yield:{} rest_yield:{} tendings_percent:{}",
-        //     basic_yield, rest_yield, tendings_percent
-        // );
         (basic_yield + (rest_yield * tendings_percent)).round() as u32
     }
 
@@ -246,7 +248,7 @@ fn workable_props(farm_state: &FarmState) -> (WorkKind, f32) {
         FarmState::NotPlanted => (WorkKind::FarmPlanting, CONFIG.farming.planting_hours),
         FarmState::Planted(_) => (WorkKind::FarmTending, CONFIG.farming.tending_hours),
         FarmState::Grown => (WorkKind::FarmHarvest, CONFIG.farming.harvesting_hours),
-        FarmState::Harvested(_) => (WorkKind::None, 0.),
+        FarmState::Harvested(_) => (WorkKind::None, 0.0),
     }
 }
 

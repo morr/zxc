@@ -258,28 +258,32 @@ macro_rules! commandable_states {
                 commands: &mut Commands
             ) -> CommandableState {
                 use std::mem;
-
                 // println!("CommandableState {:?}=>{:?}", self.state, new_state);
 
-                // Remove the old state component
+                self.remove_old_state_component(commands, entity);
+                let prev_state = mem::replace(&mut self.state, new_state);
+                self.add_new_state_component(commands, entity);
+                // state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+
+                prev_state
+            }
+
+            fn remove_old_state_component(&self, commands: &mut Commands, entity: Entity) {
                 match &self.state {
                     $(CommandableState::$name => {
                         commands.entity(entity).remove::<commandable_state::$state_component_name>();
                     },)*
                 }
+            }
 
-                // Set the new state and put old state into prev_state
-                let prev_state = mem::replace(&mut self.state, new_state);
-
-                // Add the new component
+            fn add_new_state_component(&self, commands: &mut Commands, entity: Entity) {
                 match &self.state {
                     $(CommandableState::$name => {
                         commands.entity(entity).insert(commandable_state::$state_component_name);
                     },)*
                 }
-
-                prev_state
             }
+
         }
     };
 }
