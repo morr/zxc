@@ -1,3 +1,4 @@
+use bevy::log::tracing_subscriber;
 pub use bevy::prelude::*;
 pub use bevy_asset_loader::prelude::*;
 pub use bevy_inspector_egui::prelude::*;
@@ -93,4 +94,21 @@ macro_rules! ensure_state {
             continue;
         }
     };
+}
+
+use bevy::log::BoxedSubscriber;
+use tracing_subscriber::{fmt, prelude::*, EnvFilter, Registry};
+
+pub fn configure_logging(log_level: &str) -> BoxedSubscriber {
+    let fmt_layer = fmt::Layer::default()
+        .without_time()
+        .with_writer(std::io::stderr);
+
+    let filter_layer = EnvFilter::try_new(log_level).unwrap();
+
+    let subscriber = Registry::default()
+        .with(filter_layer)
+        .with(fmt_layer);
+
+    Box::new(subscriber)
 }

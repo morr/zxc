@@ -258,7 +258,7 @@ macro_rules! commandable_states {
                 commands: &mut Commands
             ) -> CommandableState {
                 use std::mem;
-                // println!("CommandableState {:?}=>{:?}", self.state, new_state);
+                debug!("CommandableState {:?}=>{:?}", self.state, new_state);
 
                 self.remove_old_state_component(commands, entity);
                 let prev_state = mem::replace(&mut self.state, new_state);
