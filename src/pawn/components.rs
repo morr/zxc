@@ -84,7 +84,7 @@ macro_rules! pawn_states {
                 commands: &mut Commands
             ) -> PawnState {
                 use std::mem;
-                // println!("PawnState {:?}=>{:?}", self.state, new_state);
+                log_state_change!("PawnState {:?}=>{:?}", self.state, new_state);
 
                 self.remove_old_state_component(commands, entity);
                 let prev_state = mem::replace(&mut self.state, new_state);

@@ -65,37 +65,6 @@ pub enum AppState {
     Playing,
 }
 
-#[macro_export]
-macro_rules! ensure_state {
-    ($expected_pattern:pat, $current_state:expr) => {
-        match $current_state {
-            $expected_pattern => {}
-            _ => {
-                debug!(
-                    "In {}:{}>> got {:?} while expected pattern {:?} by Query<With<_>> param",
-                    module_path!(),
-                    line!(),
-                    $current_state,
-                    stringify!($expected_pattern),
-                );
-                continue;
-            }
-        }
-    };
-    ($expected_state:expr, $current_state:expr) => {
-        if $current_state != $expected_state {
-            debug!(
-                "In {}:{}>> got {:?} while expected {:?} by Query<With<_>> param",
-                module_path!(),
-                line!(),
-                $current_state,
-                $expected_state,
-            );
-            continue;
-        }
-    };
-}
-
 use bevy::log::BoxedSubscriber;
 use tracing_subscriber::{fmt, prelude::*, EnvFilter, Registry};
 
@@ -111,4 +80,39 @@ pub fn configure_logging(log_level: &str) -> BoxedSubscriber {
         .with(fmt_layer);
 
     Box::new(subscriber)
+}
+
+#[macro_export]
+macro_rules! ensure_state {
+    ($expected_pattern:pat, $current_state:expr) => {
+        match $current_state {
+            $expected_pattern => {}
+            _ => {
+                // trace!(
+                //     "Got {:?} while expected pattern {:?} by Query<With<_>> param",
+                //     $current_state,
+                //     stringify!($expected_pattern),
+                // );
+                continue;
+            }
+        }
+    };
+    ($expected_state:expr, $current_state:expr) => {
+        if $current_state != $expected_state {
+            // trace!(
+            //     "Got {:?} while expected {:?} by Query<With<_>> param",
+            //     $current_state,
+            //     $expected_state,
+            // );
+            continue;
+        }
+    };
+}
+
+
+#[macro_export]
+macro_rules! log_state_change {
+    ($($arg:tt)+) => {
+        trace!($($arg)+);
+    };
 }
