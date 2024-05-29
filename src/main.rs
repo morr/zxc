@@ -22,6 +22,7 @@ fn main() {
                 })
                 .set(bevy::log::LogPlugin {
                     update_subscriber: Some(|_| configure_logging("info,zxc=debug")),
+                    // update_subscriber: Some(|_| configure_logging("info,zxc=trace")),
                     ..default()
                 }),
         )
@@ -54,6 +55,3 @@ fn main() {
         .add_systems(FixedUpdate, bevy::window::close_on_esc)
         .run();
 }
-
-
-
