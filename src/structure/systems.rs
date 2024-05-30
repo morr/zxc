@@ -60,10 +60,10 @@ pub fn spawn_farm(
             );
 
             Farm::spawn(
+                grid_tile,
                 &mut commands,
                 &assets,
                 &mut navmesh,
-                grid_tile,
                 &mut state_change_event_writer,
             );
         }
@@ -144,6 +144,7 @@ pub fn spawn_bed(
     mut commands: Commands,
     assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
+    mut available_beds: ResMut<AvailableBeds>,
 ) {
     let mut navmesh = arc_navmesh.write();
 
@@ -151,38 +152,11 @@ pub fn spawn_bed(
         let grid_tile = IVec2::new(-7 + x * BED_SIZE, 3);
 
         Bed::spawn(
-            &mut commands,
-            &assets,
-            &mut navmesh,
             grid_tile,
+            &mut commands,
+            assets.bed.clone(),
+            &mut navmesh,
+            &mut available_beds,
         );
     }
 }
-
-// pub fn spawn_farm(
-//     mut commands: Commands,
-//     assets: Res<FarmAssets>,
-//     arc_navmesh: ResMut<ArcNavmesh>,
-//     mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmState>>,
-// ) {
-//     let grid_tile_start = IVec2::new(-13, 0);
-//     let mut navmesh = arc_navmesh.write();
-//
-//     for x in 0..CONFIG.starting_scene.farm_width {
-//         for y in 0..CONFIG.starting_scene.farm_height {
-//             let grid_tile = IVec2::new(
-//                 grid_tile_start.x + FARM_TILE_SIZE * x,
-//                 grid_tile_start.y + FARM_TILE_SIZE * y,
-//             );
-//
-//             Farm::spawn(
-//                 &mut commands,
-//                 &assets,
-//                 &mut navmesh,
-//                 grid_tile,
-//                 &mut state_change_event_writer,
-//            );
-//         }
-//     }
-// }
- 

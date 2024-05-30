@@ -114,10 +114,10 @@ impl Default for Farm {
 
 impl Farm {
     pub fn spawn(
+        grid_tile: IVec2,
         commands: &mut Commands,
         assets: &Res<FarmAssets>,
         navmesh: &mut Navmesh,
-        grid_tile: IVec2,
         state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmState>>,
     ) {
         let farm = Self::default();
