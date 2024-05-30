@@ -31,33 +31,35 @@ pub fn find_new_selection_on_click(
 
         // send next stage click event if not user selection action is to be performed
         if entities.is_empty() {
-            click_event_writer.send(ClickEventStage1(*grid_tile));
+            click_event_writer.send(log_event!(ClickEventStage1(*grid_tile)));
             return;
         }
 
-        let maybe_selection_index =
-            if let Some(UserSelectionData { entity: current_id, .. }) = &current_user_selection.0 {
-                let current_index = entities
-                    .iter()
-                    .position(|UserSelectionData { entity: id, .. }| id == current_id);
+        let maybe_selection_index = if let Some(UserSelectionData {
+            entity: current_id, ..
+        }) = &current_user_selection.0
+        {
+            let current_index = entities
+                .iter()
+                .position(|UserSelectionData { entity: id, .. }| id == current_id);
 
-                match current_index {
-                    Some(index) => {
-                        if entities.len() == 1 {
-                            None
-                        } else {
-                            Some((index + 1) % entities.len())
-                        }
+            match current_index {
+                Some(index) => {
+                    if entities.len() == 1 {
+                        None
+                    } else {
+                        Some((index + 1) % entities.len())
                     }
-                    None => Some(0),
                 }
-            } else {
-                Some(0)
-            };
+                None => Some(0),
+            }
+        } else {
+            Some(0)
+        };
 
         let maybe_new_selection =
             maybe_selection_index.map(|selection_index| entities[selection_index].clone());
 
-        user_selection_command_writer.send(UserSelectionCommand(maybe_new_selection));
+        user_selection_command_writer.send(log_event!(UserSelectionCommand(maybe_new_selection)));
     }
 }

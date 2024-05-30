@@ -66,7 +66,7 @@ pub fn progress_planted_and_tending_rest_timers(
         planted_state.growth_timer.tick(delta);
 
         if planted_state.growth_timer.finished() {
-            farm_progress_event_writer.send(FarmProgressEvent(entity));
+            farm_progress_event_writer.send(log_event!(FarmProgressEvent(entity)));
         }
 
         if !planted_state.tending_rest_timer.finished() {
@@ -109,7 +109,7 @@ pub fn progress_harvested_timer(
         state.rest_timer.tick(delta);
 
         if state.rest_timer.finished() {
-            farm_progress_event_writer.send(FarmProgressEvent(entity));
+            farm_progress_event_writer.send(log_event!(FarmProgressEvent(entity)));
         }
     }
 }
@@ -147,11 +147,11 @@ pub fn progress_on_state_changed(
                 if let FarmState::Harvested(_) = state {
                     // println!("tendings done: {}", farm.tendings_done);
 
-                    spawn_food_event_writer.send(SpawnItemEvent {
+                    spawn_food_event_writer.send(log_event!(SpawnItemEvent {
                         item_type: ItemType::Food,
                         amount: farm.yield_amount(),
                         grid_tile,
-                    });
+                    }));
                 };
             }
         }

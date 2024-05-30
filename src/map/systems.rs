@@ -31,7 +31,7 @@ pub fn spawn_map(
                 .id();
 
             navmesh.add_occupation::<Tile>(id, grid_tile.x, grid_tile.y);
-            occupation_change_event_writer.send(OccupationChangeEvent::new(grid_tile));
+            occupation_change_event_writer.send(log_event!(OccupationChangeEvent::new(grid_tile)));
         }
     }
 }

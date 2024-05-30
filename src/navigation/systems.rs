@@ -76,12 +76,12 @@ pub fn listen_for_pathfinding_requests(
             &event.end_tile,
         );
 
-        pathfind_event_writer.send(PathfindAnswerEvent {
+        pathfind_event_writer.send(log_event!(PathfindAnswerEvent {
             entity: event.entity,
             start_tile: event.start_tile,
             end_tile: event.end_tile,
             path,
-        });
+        }));
     }
 }
 

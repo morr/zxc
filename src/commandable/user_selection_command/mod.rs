@@ -4,10 +4,8 @@ pub struct UserSelectionCommandPlugin;
 
 impl Plugin for UserSelectionCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<UserSelectionCommand>().add_systems(
-            Update,
-            execute_command.run_if(in_state(AppState::Playing)),
-        );
+        app.add_event::<UserSelectionCommand>()
+            .add_systems(Update, execute_command.run_if(in_state(AppState::Playing)));
     }
 }
 
@@ -36,6 +34,6 @@ fn execute_command(
         }
 
         *current_user_selection = CurrentUserSelection(maybe_new_selection.clone());
-        user_selection_change_event_writer.send(UserSelectionChangeEvent);
+        user_selection_change_event_writer.send(log_event!(UserSelectionChangeEvent));
     }
 }

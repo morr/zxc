@@ -75,9 +75,7 @@ pub fn configure_logging(log_level: &str) -> BoxedSubscriber {
 
     let filter_layer = EnvFilter::try_new(log_level).unwrap();
 
-    let subscriber = Registry::default()
-        .with(filter_layer)
-        .with(fmt_layer);
+    let subscriber = Registry::default().with(filter_layer).with(fmt_layer);
 
     Box::new(subscriber)
 }
@@ -109,10 +107,18 @@ macro_rules! ensure_state {
     };
 }
 
-
 #[macro_export]
 macro_rules! log_state_change {
     ($($arg:tt)+) => {
         trace!($($arg)+);
     };
+}
+
+#[macro_export]
+macro_rules! log_event {
+    ($event:expr) => {{
+        let event = $event;
+        debug!("{:?}", &event);
+        event
+    }};
 }

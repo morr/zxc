@@ -131,7 +131,7 @@ pub fn handle_debug_info_keys(
             DebugNavmeshState::Hidden => DebugNavmeshState::Visible,
         };
         next_debug_navmesh_state.set(new_state.clone());
-        state_change_event_writer.send(StateChangeEvent(new_state));
+        state_change_event_writer.send(log_event!(StateChangeEvent(new_state)));
     }
 
     if keys.just_pressed(KeyCode::KeyM) {

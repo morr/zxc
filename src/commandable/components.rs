@@ -147,7 +147,7 @@ impl Commandable {
         self.drain_queue(commandable_interrupt_writer, tasks_scheduler);
         self.change_state(CommandableState::Idle, entity, commands);
         // this sync pawn state
-        commandable_event_writer.send(CommandCompleteEvent(entity));
+        commandable_event_writer.send(log_event!(CommandCompleteEvent(entity)));
     }
 
     pub fn complete_executing(
@@ -179,7 +179,7 @@ impl Commandable {
 
         if self.state == CommandableState::Idle {
             // this sync pawn state
-            commandable_event_writer.send(CommandCompleteEvent(entity));
+            commandable_event_writer.send(log_event!(CommandCompleteEvent(entity)));
         }
     }
 
@@ -213,7 +213,8 @@ impl Commandable {
     ) {
         if let Some(command_type) = self.executing.take() {
             // println!("{:?}", InternalCommandInterruptEvent(command_type.clone()));
-            commandable_interrupt_writer.send(InternalCommandInterruptEvent(command_type));
+            commandable_interrupt_writer
+                .send(log_event!(InternalCommandInterruptEvent(command_type)));
         }
 
         // cleanup queue and maybe do something with its content
@@ -263,7 +264,7 @@ macro_rules! commandable_states {
                 self.remove_old_state_component(commands, entity);
                 let prev_state = mem::replace(&mut self.state, new_state);
                 self.add_new_state_component(commands, entity);
-                // state_change_event_writer.send(EntityStateChangeEvent(entity, self.state.clone()));
+                // state_change_event_writer.send(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
 
                 prev_state
             }

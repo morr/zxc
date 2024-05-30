@@ -23,19 +23,19 @@ pub fn process_pending_commands(
             // );
             match command_type {
                 CommandType::MoveTo(command) => {
-                    move_to_tile_command_writer.send(command);
+                    move_to_tile_command_writer.send(log_event!(command));
                 }
                 CommandType::Sleep(command) => {
-                    sleep_command_writer.send(command);
+                    sleep_command_writer.send(log_event!(command));
                 }
                 CommandType::ToRest(command) => {
-                    to_rest_command_writer.send(command);
+                    to_rest_command_writer.send(log_event!(command));
                 }
                 CommandType::UserSelection(command) => {
-                    user_selection_command_writer.send(command);
+                    user_selection_command_writer.send(log_event!(command));
                 }
                 CommandType::WorkOn(command) => {
-                    work_on_command_writer.send(command);
+                    work_on_command_writer.send(log_event!(command));
                 }
             }
 
