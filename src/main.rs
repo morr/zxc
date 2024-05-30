@@ -21,7 +21,7 @@ fn main() {
                     ..default()
                 })
                 .set(bevy::log::LogPlugin {
-                    update_subscriber: Some(|_| configure_logging("info,zxc=debug")),
+                    update_subscriber: Some(|_| configure_logging("info,zxc=trace")),
                     // update_subscriber: Some(|_| configure_logging("info,zxc=trace")),
                     ..default()
                 }),

@@ -1,5 +1,4 @@
 mod farm {
-
     use zxc::{
         structure::{Farm, FarmState},
         CONFIG,

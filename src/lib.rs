@@ -118,7 +118,7 @@ macro_rules! log_state_change {
 macro_rules! log_event {
     ($event:expr) => {{
         let event = $event;
-        debug!("{:?}", &event);
+        debug!("Event {:?}", &event);
         event
     }};
 }
