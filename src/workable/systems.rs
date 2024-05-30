@@ -9,11 +9,11 @@ pub fn assign_tasks_to_pawns(
 ) {
     for (commandable_entity, pawn, mut commandable) in query.iter_mut() {
         ensure_state!(PawnState::Idle, pawn.state);
+        ensure_state!(CommandableState::Idle, commandable.state);
 
         let Some(task) = work_queue.get_task() else {
             continue;
         };
-        // println!("assign_tasks_to_pawns {:?}", task);
 
         commandable.set_queue(
             [
