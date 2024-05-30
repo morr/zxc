@@ -1,5 +1,5 @@
 mod story_time {
-    use zxc::{ElapsedTime, YearSeason, CONFIG};
+    use zxc::*;
 
     fn day_to_seconds(amount: f32) -> f32 {
         CONFIG.time.day_duration * amount

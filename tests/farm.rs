@@ -1,8 +1,5 @@
 mod farm {
-    use zxc::{
-        structure::{Farm, FarmState},
-        CONFIG,
-    };
+    use zxc::*;
 
     #[test]
     fn not_tended_yield() {

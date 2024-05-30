@@ -1,7 +1,5 @@
 mod utils {
-    use zxc::{
-        grid_tile_center_to_world, grid_tile_edge_to_world, hours_to_seconds, world_pos_to_grid, CONFIG,
-    };
+    use zxc::*;
 
     #[test]
     fn grid_tile_edge_to_world_tests() {
