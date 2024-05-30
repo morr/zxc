@@ -4,7 +4,7 @@ pub fn spawn_map(
     mut commands: Commands,
     assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
-    mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
+    // mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
 ) {
     // println!("spawn map");
     let mut navmesh = arc_navmesh.write();
@@ -31,7 +31,8 @@ pub fn spawn_map(
                 .id();
 
             navmesh.add_occupation::<Tile>(id, grid_tile.x, grid_tile.y);
-            occupation_change_event_writer.send(log_event!(OccupationChangeEvent::new(grid_tile)));
+            // no need to inform about occupation change for spawned empty map tiles
+            // occupation_change_event_writer.send(log_event!(OccupationChangeEvent::new(grid_tile)));
         }
     }
 }

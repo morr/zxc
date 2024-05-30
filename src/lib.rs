@@ -110,7 +110,7 @@ macro_rules! ensure_state {
 #[macro_export]
 macro_rules! log_state_change {
     ($($arg:tt)+) => {
-        trace!($($arg)+);
+        debug!($($arg)+);
     };
 }
 
