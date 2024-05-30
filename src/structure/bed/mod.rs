@@ -4,7 +4,7 @@ pub struct BedPlugin;
 
 impl Plugin for BedPlugin {
     fn build(&self, app: &mut App) {
-        app.register_type::<Bed>();
+        app.register_type::<Bed>().init_resource::<AvailableBeds>();
     }
 }
 
@@ -12,3 +12,6 @@ impl Plugin for BedPlugin {
 pub struct Bed {
     pub owner: Option<Entity>,
 }
+
+#[derive(Resource, Deref, DerefMut, Default)]
+pub struct AvailableBeds(pub u32);
