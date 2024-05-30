@@ -13,6 +13,8 @@ pub struct Pawn {
 
     /// in seconds
     pub lifetime: f32,
+
+    pub owned_bed: Option<Entity>,
 }
 
 #[derive(Component)]
@@ -37,6 +39,7 @@ impl Default for Pawn {
             age,
             birth_year_day: rng.gen_range(0..CONFIG.time.days_in_year),
             lifetime,
+            owned_bed: None,
         }
     }
 }

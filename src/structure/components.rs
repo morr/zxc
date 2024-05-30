@@ -10,4 +10,6 @@ pub struct House {}
 pub struct Well {}
 
 #[derive(Component, Reflect, Default)]
-pub struct Bed {}
+pub struct Bed {
+    pub owner: Option<Entity>,
+}
