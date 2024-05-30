@@ -102,7 +102,7 @@ macro_rules! workable_states {
                 // state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<WorkableState>>,
             ) -> WorkableState {
                 use std::mem;
-                log_state_change!("WorkableState {:?}=>{:?}", self.state, new_state);
+                log_state_change!("Workable({:?}).state {:?} => {:?}", entity, self.state, new_state);
 
                 self.remove_old_state_component(commands, entity);
                 let prev_state = mem::replace(&mut self.state, new_state);
