@@ -5,6 +5,7 @@ use std::{fs::File, io::Read, sync::Arc};
 
 pub static CONFIG: Lazy<Arc<RootConfig>> = Lazy::new(load_config);
 
+#[inline]
 pub fn config() -> &'static RootConfig {
     &CONFIG
 }
