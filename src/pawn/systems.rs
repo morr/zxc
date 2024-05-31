@@ -20,19 +20,19 @@ pub fn spawn_pawns(
 ) {
     // println!("Spawning pawns");
 
-    let mesh = Mesh::from(Circle::new(CONFIG.tile.size / 2.0 * 0.75));
+    let mesh = Mesh::from(Circle::new(get_config().tile.size / 2.0 * 0.75));
     // let material = ColorMaterial::from(Color::hex("E178C5").unwrap());
     let mesh_handle: Handle<Mesh> = meshes.add(mesh);
     // let material_handle = materials.add(material);
 
     let mut rng = rand::thread_rng();
-    let radius = CONFIG.tile.size * i32::max(BASE_WIDTH, BASE_HEIGHT) as f32;
+    let radius = get_config().tile.size * i32::max(BASE_WIDTH, BASE_HEIGHT) as f32;
 
     let warehouse_transform = warehouse_query.single();
     let maybe_farm_transform = farm_query.iter().next();
 
     let mut navmesh = arc_navmesh.write();
-    for i in 0..CONFIG.starting_scene.pawns {
+    for i in 0..get_config().starting_scene.pawns {
         let random_angle: f32 = rng.gen_range(0.0..360.0);
 
         let position = if i >= 4 || maybe_farm_transform.is_none() {
@@ -45,9 +45,9 @@ pub fn spawn_pawns(
             let farm_transform = maybe_farm_transform.unwrap();
             Vec3::new(
                 farm_transform.translation.x
-                    + random_angle.cos() * 5.0 * FARM_TILE_SIZE as f32 * CONFIG.tile.size,
+                    + random_angle.cos() * 5.0 * FARM_TILE_SIZE as f32 * get_config().tile.size,
                 farm_transform.translation.y
-                    + random_angle.sin() * 5.0 * FARM_TILE_SIZE as f32 * CONFIG.tile.size,
+                    + random_angle.sin() * 5.0 * FARM_TILE_SIZE as f32 * get_config().tile.size,
                 PAWN_Z_INDEX,
             )
         };
@@ -67,7 +67,7 @@ pub fn spawn_pawns(
                     transform: Transform::from_translation(position),
                     ..default()
                 },
-                Movable::new(CONFIG.pawn.speed * CONFIG.tile.size),
+                Movable::new(get_config().pawn.speed * get_config().tile.size),
                 Restable::default(),
             ))
             // .insert(ShowAabbGizmo {
@@ -180,7 +180,7 @@ fn find_valid_end_tile(
     recursion_depth: usize,
 ) -> IVec2 {
     let move_vector: Vec2 = UnitCircle.sample(rng).into();
-    let tiles_to_move = rng.gen_range(3.0..12.0) * CONFIG.tile.size;
+    let tiles_to_move = rng.gen_range(3.0..12.0) * get_config().tile.size;
     let end_tile = (start_pos + move_vector * tiles_to_move).world_pos_to_grid();
 
     if recursion_depth >= MAX_ATTEMPTS_TO_FIND_IDLE_WALK_PATH {
@@ -238,9 +238,9 @@ pub fn progress_pawn_daily(
                 pawn.age += 1;
                 // event_writer.send(log_event!(PawnBirthdayEvent(entity)));
             }
-            pawn.decrease_lifetime(CONFIG.time.day_duration);
+            pawn.decrease_lifetime(get_config().time.day_duration);
 
-            if pawn.lifetime <= CONFIG.time.day_duration {
+            if pawn.lifetime <= get_config().time.day_duration {
                 commands.entity(entity).insert(DyingMarker);
             }
         }
@@ -316,7 +316,7 @@ pub fn progress_pawn_death(
 //     for event in event_reader.read() {
 //         println!("{:?}", event);
 //         for mut pawn in query.iter_mut() {
-//             pawn.lifetime -= CONFIG.time.day_duration;
+//             pawn.lifetime -= get_config().time.day_duration;
 //         }
 //     }
 // }

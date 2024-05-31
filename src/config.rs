@@ -1,9 +1,36 @@
 use bevy::math::f32;
-pub use once_cell::sync::Lazy;
+pub use once_cell::sync::{Lazy, OnceCell};
 use serde::{Deserialize, Serialize};
 use std::{fs::File, io::Read};
 
+#[cfg(test)]
+pub static CONFIG: Lazy<std::sync::RwLock<RootConfig>> = Lazy::new(|| std::sync::RwLock::new(load_config()));
+
+#[cfg(not(test))]
 pub static CONFIG: Lazy<RootConfig> = Lazy::new(load_config);
+
+#[cfg(not(test))]
+#[inline]
+pub fn get_config() -> &'static RootConfig {
+    &CONFIG
+}
+
+#[cfg(test)]
+pub fn get_config() -> std::sync::RwLockReadGuard<'static, RootConfig> {
+    CONFIG.read().unwrap()
+}
+
+#[cfg(not(test))]
+pub fn with_config<T>(_f: impl FnOnce(&mut RootConfig) -> T) -> T {
+    panic!("with_config should not be used in non-test code");
+}
+
+#[cfg(test)]
+pub fn with_config<T>(f: impl FnOnce(&mut RootConfig) -> T) -> T {
+    let mut config = CONFIG.write().unwrap();
+    f(&mut config)
+}
+
 
 pub const TILE_Z_INDEX: f32 = 0.0;
 pub const STRUCTURE_Z_INDEX: f32 = 10.0;

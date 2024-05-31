@@ -134,7 +134,7 @@ impl Farm {
         navmesh.update_cost(
             grid_tile.x..grid_tile.x + FARM_TILE_SIZE,
             grid_tile.y..grid_tile.y + FARM_TILE_SIZE,
-            Navtile::config_cost_to_pathfinding_cost(CONFIG.movement_cost.farm),
+            Navtile::config_cost_to_pathfinding_cost(get_config().movement_cost.farm),
         );
         navmesh.add_occupation::<Farm>(entity, grid_tile.x, grid_tile.y);
 
@@ -185,7 +185,7 @@ impl Farm {
         let new_state = match &self.state {
             FarmState::NotPlanted => FarmState::Planted(PlantedState {
                 growth_timer: Timer::from_seconds(
-                    days_to_seconds(CONFIG.farming.growth_days),
+                    days_to_seconds(get_config().farming.growth_days),
                     TimerMode::Once,
                 ),
                 tending_rest_timer: Self::new_tending_rest_timer(),
@@ -195,7 +195,7 @@ impl Farm {
             FarmState::Planted(_) => FarmState::Grown,
             FarmState::Grown => FarmState::Harvested(HarvestedState {
                 rest_timer: Timer::from_seconds(
-                    days_to_seconds(CONFIG.farming.harvested_rest_days),
+                    days_to_seconds(get_config().farming.harvested_rest_days),
                     TimerMode::Once,
                 ),
             }),
@@ -222,10 +222,10 @@ impl Farm {
             return 0;
         }
 
-        let basic_yield = CONFIG.farming.basic_yield_percent * CONFIG.farming.max_yield;
-        let rest_yield = CONFIG.farming.max_yield - basic_yield;
+        let basic_yield = get_config().farming.basic_yield_percent * get_config().farming.max_yield;
+        let rest_yield = get_config().farming.max_yield - basic_yield;
 
-        let max_tendings = CONFIG.farming.growth_days; // 1 tending per day
+        let max_tendings = get_config().farming.growth_days; // 1 tending per day
         let tendings_percent = if self.tendings_done == 0 {
             0.0
         } else {
@@ -237,7 +237,7 @@ impl Farm {
 
     pub fn new_tending_rest_timer() -> Timer {
         Timer::from_seconds(
-            hours_to_seconds(CONFIG.farming.tending_rest_hours),
+            hours_to_seconds(get_config().farming.tending_rest_hours),
             TimerMode::Once,
         )
     }
@@ -245,9 +245,9 @@ impl Farm {
 
 fn workable_props(farm_state: &FarmState) -> (WorkKind, f32) {
     match farm_state {
-        FarmState::NotPlanted => (WorkKind::FarmPlanting, CONFIG.farming.planting_hours),
-        FarmState::Planted(_) => (WorkKind::FarmTending, CONFIG.farming.tending_hours),
-        FarmState::Grown => (WorkKind::FarmHarvest, CONFIG.farming.harvesting_hours),
+        FarmState::NotPlanted => (WorkKind::FarmPlanting, get_config().farming.planting_hours),
+        FarmState::Planted(_) => (WorkKind::FarmTending, get_config().farming.tending_hours),
+        FarmState::Grown => (WorkKind::FarmHarvest, get_config().farming.harvesting_hours),
         FarmState::Harvested(_) => (WorkKind::None, 0.0),
     }
 }

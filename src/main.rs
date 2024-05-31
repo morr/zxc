@@ -12,8 +12,8 @@ fn main() {
                         mode: bevy::window::WindowMode::Windowed,
                         present_mode: bevy::window::PresentMode::AutoNoVsync,
                         resolution: (
-                            CONFIG.app.resolution.0 as f32,
-                            CONFIG.app.resolution.1 as f32,
+                            get_config().app.resolution.0 as f32,
+                            get_config().app.resolution.1 as f32,
                         )
                             .into(),
                         ..default()

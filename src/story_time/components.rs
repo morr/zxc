@@ -15,7 +15,7 @@ pub struct TimeScale(pub f32);
 
 impl Default for TimeScale {
     fn default() -> Self {
-        Self(CONFIG.starting_scene.time_scale)
+        Self(get_config().starting_scene.time_scale)
     }
 }
 
@@ -89,22 +89,22 @@ pub enum YearSeason {
 
 impl Default for ElapsedTime {
     fn default() -> Self {
-        Self(CONFIG.time.hour_duration * CONFIG.starting_scene.day_hour as f32)
+        Self(get_config().time.hour_duration * get_config().starting_scene.day_hour as f32)
     }
 }
 
 impl ElapsedTime {
     pub fn total_day_to_year_day(total_day: u32) -> u32 {
-        total_day % CONFIG.time.days_in_year + 1
+        total_day % get_config().time.days_in_year + 1
     }
 
     pub fn year_day_to_season_day(year_day: u32) -> u32 {
-        (year_day - 1) % CONFIG.time.days_in_season + 1
+        (year_day - 1) % get_config().time.days_in_season + 1
     }
 
     pub fn year_day_to_season(year_day: u32) -> YearSeason {
         let season_index =
-            ((year_day - 1) / CONFIG.time.days_in_season) % CONFIG.time.seasons_in_year;
+            ((year_day - 1) / get_config().time.days_in_season) % get_config().time.seasons_in_year;
 
         match season_index {
             0 => YearSeason::Spring,
@@ -133,11 +133,11 @@ impl ElapsedTime {
     }
 
     pub fn day_time(&self) -> f32 {
-        (self.0 % CONFIG.time.day_duration) / CONFIG.time.day_duration
+        (self.0 % get_config().time.day_duration) / get_config().time.day_duration
     }
 
     pub fn total_days(&self) -> u32 {
-        (self.0 / CONFIG.time.day_duration).floor() as u32
+        (self.0 / get_config().time.day_duration).floor() as u32
     }
 
     pub fn year_day(&self) -> u32 {
@@ -145,7 +145,7 @@ impl ElapsedTime {
     }
 
     // pub fn season_index(&self) -> u32 {
-    //     (self.total_days() / CONFIG.time.days_in_season) % CONFIG.time.seasons_in_year
+    //     (self.total_days() / get_config().time.days_in_season) % get_config().time.seasons_in_year
     // }
 
     pub fn season_day(&self) -> u32 {
@@ -153,7 +153,7 @@ impl ElapsedTime {
     }
 
     pub fn year(&self) -> u32 {
-        1 + self.total_days() / CONFIG.time.days_in_year
+        1 + self.total_days() / get_config().time.days_in_year
     }
 
     pub fn year_season(&self) -> YearSeason {
@@ -161,12 +161,12 @@ impl ElapsedTime {
     }
 
     pub fn day_hour(&self) -> u32 {
-        ((self.0 % CONFIG.time.day_duration) / CONFIG.time.hour_duration).floor() as u32
+        ((self.0 % get_config().time.day_duration) / get_config().time.hour_duration).floor() as u32
     }
 
     pub fn hour_minute(&self) -> u32 {
-        (((self.0 % CONFIG.time.day_duration) % CONFIG.time.hour_duration)
-            / CONFIG.time.minute_duration)
+        (((self.0 % get_config().time.day_duration) % get_config().time.hour_duration)
+            / get_config().time.minute_duration)
             .floor() as u32
     }
 }
