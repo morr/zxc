@@ -20,6 +20,18 @@ pub fn get_config() -> std::sync::RwLockReadGuard<'static, RootConfig> {
     CONFIG.read().unwrap()
 }
 
+#[cfg(not(test))]
+pub fn with_config<T>(_f: impl FnOnce(&mut RootConfig) -> T) -> T {
+    panic!("with_config should not be used in non-test code");
+}
+
+#[cfg(test)]
+pub fn with_config<T>(f: impl FnOnce(&mut RootConfig) -> T) -> T {
+    let mut config = CONFIG.write().unwrap();
+    f(&mut config)
+}
+
+
 pub const TILE_Z_INDEX: f32 = 0.0;
 pub const STRUCTURE_Z_INDEX: f32 = 10.0;
 pub const PAWN_Z_INDEX: f32 = 20.0;
