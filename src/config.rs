@@ -1,9 +1,11 @@
 use bevy::math::f32;
 pub use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
-use std::{fs::File, io::Read, sync::Arc};
+use std::{fs::File, io::Read};
+// use std::{fs::File, io::Read, sync::Arc};
 
-pub static CONFIG: Lazy<Arc<RootConfig>> = Lazy::new(load_config);
+// pub static CONFIG: Lazy<Arc<RootConfig>> = Lazy::new(load_config);
+pub static CONFIG: Lazy<RootConfig> = Lazy::new(load_config);
 
 #[inline]
 pub fn config() -> &'static RootConfig {
@@ -16,7 +18,8 @@ pub const PAWN_Z_INDEX: f32 = 20.0;
 pub const ITEM_Z_INDEX: f32 = 40.0;
 pub const NIGHT_Z_INDEX: f32 = 100.0;
 
-pub fn load_config() -> Arc<RootConfig>  {
+// pub fn load_config() -> Arc<RootConfig> {
+pub fn load_config() -> RootConfig {
     let mut contents = String::new();
 
     File::open("resources/config.ron")
@@ -26,10 +29,11 @@ pub fn load_config() -> Arc<RootConfig>  {
 
     let mut config = ron::from_str::<RootConfig>(&contents).unwrap();
     config.calculate_derived_fields();
-    Arc::new(config)
+    // Arc::new(config)
+    config
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct RootConfig {
     pub app: AppConfig,
     pub grid: GridConfig,
@@ -50,12 +54,12 @@ impl RootConfig {
     }
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct AppConfig {
     pub resolution: (u32, u32),
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct GridConfig {
     pub size: i32,
 
@@ -69,13 +73,13 @@ impl GridConfig {
     }
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct TileConfig {
     /// size in pixels
     pub size: f32,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct StartingSceneConfig {
     pub pawns: i32,
     pub day_hour: u32,
@@ -87,7 +91,7 @@ pub struct StartingSceneConfig {
 
 const SEASONS_IN_YEAR: u32 = 4;
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct TimeConfig {
     /// in game seconds
     pub day_duration: f32,
@@ -123,7 +127,7 @@ impl TimeConfig {
     }
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct PawnConfig {
     pub speed: f32,
     pub work_force: f32,
@@ -132,7 +136,7 @@ pub struct PawnConfig {
     pub wander_when_idle: bool,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct FarmingConfig {
     /// percent of `max_yield` for 0 tended tile
     pub basic_yield_percent: f32,
@@ -152,7 +156,7 @@ pub struct FarmingConfig {
     pub tending_rest_hours: f32,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct MovementCostConfig {
     /// percentage of speed reduction in number between 0.0..=1.0
     /// where 0.0 - impassable, 0.5 - half of normal speed, 1.0 0 normal speed
@@ -162,7 +166,7 @@ pub struct MovementCostConfig {
     pub furniture: f32,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct StaminaCostConfig {
     // /// amount of stamina change per in-game hour of idling
     // pub idle: f32,
