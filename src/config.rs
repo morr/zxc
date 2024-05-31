@@ -3,19 +3,6 @@ pub use once_cell::sync::Lazy;
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 use std::{fs::File, io::Read};
-// use std::{fs::File, io::Read, sync::Arc};
-
-// pub static CONFIG: Lazy<Arc<RootConfig>> = Lazy::new(load_config);
-// pub static CONFIG: Lazy<RootConfig> = Lazy::new(load_config);
-pub static CONFIG: OnceCell<RootConfig> = OnceCell::new();
-
-// #[inline]
-// pub fn config() -> &'static RootConfig {
-//     &CONFIG
-// }
-pub fn config() -> &'static RootConfig {
-    CONFIG.get().expect("Config not initialized")
-}
 
 pub const TILE_Z_INDEX: f32 = 0.0;
 pub const STRUCTURE_Z_INDEX: f32 = 10.0;
@@ -23,7 +10,6 @@ pub const PAWN_Z_INDEX: f32 = 20.0;
 pub const ITEM_Z_INDEX: f32 = 40.0;
 pub const NIGHT_Z_INDEX: f32 = 100.0;
 
-// pub fn load_config() -> Arc<RootConfig> {
 pub fn load_config() -> RootConfig {
     let mut contents = String::new();
 
@@ -34,8 +20,17 @@ pub fn load_config() -> RootConfig {
 
     let mut config = ron::from_str::<RootConfig>(&contents).unwrap();
     config.calculate_derived_fields();
-    // Arc::new(config)
     config
+}
+
+pub static CONFIG: OnceCell<RootConfig> = OnceCell::new();
+
+pub fn apply_global_config(config: RootConfig) {
+    CONFIG.set(config).expect("Failed to set global config");
+}
+
+pub fn config() -> &'static RootConfig {
+    CONFIG.get().expect("Config not initialized")
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]

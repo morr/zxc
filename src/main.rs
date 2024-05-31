@@ -1,8 +1,7 @@
 use zxc::*;
 
 fn main() {
-    let config = load_config();
-    CONFIG.set(config).expect("Failed to set global config");
+    apply_global_config(load_config());
 
     App::new()
         // .insert_resource(CONFIG.get().unwrap().clone())
@@ -16,8 +15,8 @@ fn main() {
                         mode: bevy::window::WindowMode::Windowed,
                         present_mode: bevy::window::PresentMode::AutoNoVsync,
                         resolution: (
-                            config::config().app.resolution.0 as f32,
-                            config::config().app.resolution.1 as f32,
+                            config().app.resolution.0 as f32,
+                            config().app.resolution.1 as f32,
                         )
                             .into(),
                         ..default()
