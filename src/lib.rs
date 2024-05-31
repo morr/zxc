@@ -122,3 +122,19 @@ macro_rules! log_event {
         event
     }};
 }
+
+#[cfg(test)]
+#[macro_export]
+macro_rules! test_mode {
+  ($code:block) => {
+    $code
+  };
+}
+
+#[cfg(not(test))]
+#[macro_export]
+macro_rules! test_mode {
+  ($code:block) => {
+    panic!("with_config should not be used in non-test code");
+  };
+}

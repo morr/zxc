@@ -14,8 +14,8 @@ RootConfig(
         farm_width: 1,
         farm_height: 2,
         beds_num: 1,
-        //time_scale: 1.0
-        time_scale: 50.0,
+        time_scale: 1.0
+        //time_scale: 50.0,
         //time_scale: 300.0,
         //time_scale: 500.0
         //time_scale: 30000.0
