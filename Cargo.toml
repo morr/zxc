@@ -18,6 +18,9 @@ serde = "1.0.198"
 lazy_static = "1.4.0"
 once_cell = "1.19.0"
 
+[dev-dependencies]
+ctor = "0.2.8"
+
 # Enable a small amount of optimization in debug mode
 [profile.dev]
 opt-level = 1

@@ -2,6 +2,9 @@ use bevy::time::TimePlugin;
 
 use super::*;
 
+#[allow(unused_imports)]
+use crate::apply_global_config;
+
 #[test]
 fn lifetime_loss_to_zero_leads_to_death_event() {
     let mut app = App::new();

@@ -1,3 +1,5 @@
+mod apply_global_config;
+
 mod farm {
     use zxc::*;
 
