@@ -9,20 +9,20 @@ pub fn spawn_map(
     // println!("spawn map");
     let mut navmesh = arc_navmesh.write();
 
-    for x in -get_config().grid.half_size..get_config().grid.half_size {
-        for y in -get_config().grid.half_size..get_config().grid.half_size {
+    for x in -CONFIG.grid.half_size..CONFIG.grid.half_size {
+        for y in -CONFIG.grid.half_size..CONFIG.grid.half_size {
             let grid_tile = IVec2::new(x, y);
 
             let id = commands
                 .spawn(SpriteBundle {
                     texture: assets.grass.clone(),
                     sprite: Sprite {
-                        custom_size: Some(Vec2::new(get_config().tile.size, get_config().tile.size)),
+                        custom_size: Some(Vec2::new(CONFIG.tile.size, CONFIG.tile.size)),
                         ..default()
                     },
                     transform: Transform::from_xyz(
-                        grid_tile_edge_to_world(x) + get_config().tile.size / 2.,
-                        grid_tile_edge_to_world(y) + get_config().tile.size / 2.,
+                        grid_tile_edge_to_world(x) + CONFIG.tile.size / 2.,
+                        grid_tile_edge_to_world(y) + CONFIG.tile.size / 2.,
                         TILE_Z_INDEX,
                     ),
                     ..default()

@@ -11,14 +11,8 @@ mod bed {
 
     #[test]
     fn beds_spawned() {
-        with_config(|config| {
-            config.grid.size = 2;
-            config.grid.half_size = 1;
-        });
-
         let mut app = App::new();
-        app.add_plugins((BedPlugin, MapPlugin))
-            .add_systems(Startup, setup);
+        app.add_plugins(BedPlugin).add_systems(Startup, setup);
 
         app.update();
 

@@ -18,8 +18,8 @@ pub fn spawn_item_on_event(mut food: ResMut<FoodStock>, mut event_reader: EventR
 // ) {
 //     for event in event_reader.read() {
 //         let mesh = Mesh::from(Rectangle::new(
-//             get_config().tile.size / 4.0,
-//             get_config().tile.size / 4.0,
+//             CONFIG.tile.size / 4.0,
+//             CONFIG.tile.size / 4.0,
 //         ));
 //         let mesh_handle: Handle<Mesh> = meshes.add(mesh);
 //

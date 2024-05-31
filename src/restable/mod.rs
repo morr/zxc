@@ -59,14 +59,14 @@ fn progress_stamina(
         let wasnt_full = !restable.is_full();
 
         restable.change_stamina(match pawn.state {
-            // PawnState::Idle => time_amount * get_config().stamina_cost.idle,
-            // PawnState::Sleeping => time_amount * get_config().stamina_cost.sleeping,
-            // PawnState::Moving => time_amount * get_config().stamina_cost.moving,
-            // PawnState::Working(_) => time_amount * get_config().stamina_cost.working,
+            // PawnState::Idle => time_amount * CONFIG.stamina_cost.idle,
+            // PawnState::Sleeping => time_amount * CONFIG.stamina_cost.sleeping,
+            // PawnState::Moving => time_amount * CONFIG.stamina_cost.moving,
+            // PawnState::Working(_) => time_amount * CONFIG.stamina_cost.working,
             // PawnState::Dead | PawnState::TaskAssigned(_) => 0.0,
-            PawnState::Sleeping => time_amount * get_config().stamina_cost.sleeping,
+            PawnState::Sleeping => time_amount * CONFIG.stamina_cost.sleeping,
             PawnState::Dead => 0.0,
-            _ => time_amount * get_config().stamina_cost.living,
+            _ => time_amount * CONFIG.stamina_cost.living,
         });
 
         if wasnt_empty && restable.is_empty() {
