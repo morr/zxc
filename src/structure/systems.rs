@@ -52,8 +52,8 @@ pub fn spawn_farm(
     let grid_tile_start = IVec2::new(-13, 0);
     let mut navmesh = arc_navmesh.write();
 
-    for x in 0..CONFIG.starting_scene.farm_width {
-        for y in 0..CONFIG.starting_scene.farm_height {
+    for x in 0..config().starting_scene.farm_width {
+        for y in 0..config().starting_scene.farm_height {
             let grid_tile = IVec2::new(
                 grid_tile_start.x + FARM_TILE_SIZE * x,
                 grid_tile_start.y + FARM_TILE_SIZE * y,
@@ -148,7 +148,7 @@ pub fn spawn_bed(
 ) {
     let mut navmesh = arc_navmesh.write();
 
-    for x in 0..CONFIG.starting_scene.beds_num {
+    for x in 0..config().starting_scene.beds_num {
         let grid_tile = IVec2::new(-7 + x * BED_SIZE, 3);
 
         Bed::spawn(

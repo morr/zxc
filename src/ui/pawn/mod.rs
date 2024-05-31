@@ -317,19 +317,19 @@ fn pawn_age_text(pawn: &Pawn) -> String {
     format!("age: {}", pawn.age)
 }
 fn pawn_lifetime_text(pawn: &Pawn) -> String {
-    if pawn.lifetime > CONFIG.time.day_duration {
+    if pawn.lifetime > config().time.day_duration {
         format!(
             "lifetime: {}y {}d",
-            (pawn.lifetime / CONFIG.time.year_duration).floor(),
-            ((pawn.lifetime % CONFIG.time.year_duration) / CONFIG.time.day_duration).floor()
+            (pawn.lifetime / config().time.year_duration).floor(),
+            ((pawn.lifetime % config().time.year_duration) / config().time.day_duration).floor()
         )
     } else {
         // hours displayed in this case only because only in the last day we track lifetime by
         // miniMal chunk of time
         format!(
             "lifetime: 0y 0d {}h {}m",
-            (pawn.lifetime / CONFIG.time.hour_duration).floor(),
-            ((pawn.lifetime % CONFIG.time.hour_duration) / CONFIG.time.minute_duration).floor()
+            (pawn.lifetime / config().time.hour_duration).floor(),
+            ((pawn.lifetime % config().time.hour_duration) / config().time.minute_duration).floor()
         )
     }
 }

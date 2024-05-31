@@ -18,7 +18,7 @@ struct NightOverlay;
 const MAXIMUM_TIME_SCALE_FOR_DAY_NIGHT_CYCLE: f32 = 50.;
 
 fn setup(mut commands: Commands) {
-    let grid_size = IVec2::new(CONFIG.grid.size, CONFIG.grid.size);
+    let grid_size = IVec2::new(config().grid.size, config().grid.size);
 
     // Add an overlay sprite
     commands

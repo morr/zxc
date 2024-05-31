@@ -18,29 +18,29 @@ pub enum DebugGridState {
 }
 
 pub fn render_grid(mut gizmos: Gizmos) {
-    for i in -CONFIG.grid.half_size..CONFIG.grid.half_size {
+    for i in -config().grid.half_size..config().grid.half_size {
         gizmos.line_2d(
             Vec2::new(
-                grid_tile_edge_to_world(-CONFIG.grid.half_size),
+                grid_tile_edge_to_world(-config().grid.half_size),
                 grid_tile_edge_to_world(i),
             ),
             Vec2::new(
-                grid_tile_edge_to_world(CONFIG.grid.half_size),
+                grid_tile_edge_to_world(config().grid.half_size),
                 grid_tile_edge_to_world(i),
             ),
             Color::rgba(0.2, 0.2, 0.2, 0.5),
         );
     }
 
-    for i in -CONFIG.grid.half_size..CONFIG.grid.half_size {
+    for i in -config().grid.half_size..config().grid.half_size {
         gizmos.line_2d(
             Vec2::new(
                 grid_tile_edge_to_world(i),
-                grid_tile_edge_to_world(-CONFIG.grid.half_size),
+                grid_tile_edge_to_world(-config().grid.half_size),
             ),
             Vec2::new(
                 grid_tile_edge_to_world(i),
-                grid_tile_edge_to_world(CONFIG.grid.half_size),
+                grid_tile_edge_to_world(config().grid.half_size),
             ),
             Color::rgba(0.2, 0.2, 0.2, 0.5),
         );
@@ -48,13 +48,13 @@ pub fn render_grid(mut gizmos: Gizmos) {
 
     gizmos.line_2d(
         Vec2::new(0.0, 0.0),
-        Vec2::new(CONFIG.grid.size as f32 * CONFIG.tile.size, 0.0),
+        Vec2::new(config().grid.size as f32 * config().tile.size, 0.0),
         Color::rgb(1.0, 0.0, 0.0),
     );
 
     gizmos.line_2d(
         Vec2::new(0.0, 0.0),
-        Vec2::new(0.0, CONFIG.grid.size as f32 * CONFIG.tile.size),
+        Vec2::new(0.0, config().grid.size as f32 * config().tile.size),
         Color::rgb(0.0, 1.0, 0.0),
     );
 }

@@ -24,20 +24,20 @@ impl Default for Pawn {
     fn default() -> Self {
         let mut rng = rand::thread_rng();
         let age = rng.gen_range(RangeInclusive::new(
-            CONFIG.pawn.spawn_age.0,
-            CONFIG.pawn.spawn_age.1,
+            config().pawn.spawn_age.0,
+            config().pawn.spawn_age.1,
         ));
         let lifetime = rng.gen_range(RangeInclusive::new(
-            CONFIG.pawn.lifetime_span.0 as f32,
-            CONFIG.pawn.lifetime_span.1 as f32,
+            config().pawn.lifetime_span.0 as f32,
+            config().pawn.lifetime_span.1 as f32,
         )) as f32
-            * CONFIG.time.year_duration
-            - (age as f32 * CONFIG.time.year_duration);
+            * config().time.year_duration
+            - (age as f32 * config().time.year_duration);
 
         Self {
             state: PawnState::Idle,
             age,
-            birth_year_day: rng.gen_range(0..CONFIG.time.days_in_year),
+            birth_year_day: rng.gen_range(0..config().time.days_in_year),
             lifetime,
             owned_bed: None,
         }

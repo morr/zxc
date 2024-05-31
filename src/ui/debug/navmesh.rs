@@ -36,7 +36,7 @@ fn handle_state_changes(
     for event in event_reader.read() {
         // println!("{:?}", event);
 
-        let mesh = Mesh::from(Rectangle::new(CONFIG.tile.size, CONFIG.tile.size));
+        let mesh = Mesh::from(Rectangle::new(config().tile.size, config().tile.size));
         let mesh_handle = meshes.add(mesh);
 
         match event.0 {

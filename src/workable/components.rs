@@ -22,7 +22,7 @@ impl Workable {
     }
 
     pub fn perform_work(&mut self, elapsed_time: f32) {
-        self.amount_done += elapsed_time * CONFIG.pawn.work_force;
+        self.amount_done += elapsed_time * config().pawn.work_force;
     }
 
     pub fn is_work_complete(&self) -> bool {
