@@ -180,7 +180,7 @@ fn find_valid_end_tile(
     recursion_depth: usize,
 ) -> IVec2 {
     let move_vector: Vec2 = UnitCircle.sample(rng).into();
-    let tiles_to_move = rng.gen_range(3.0..12.0) * config().tile.size;
+    let tiles_to_move = rng.gen_range(2.0..6.0) * config().tile.size;
     let end_tile = (start_pos + move_vector * tiles_to_move).world_pos_to_grid();
 
     if recursion_depth >= MAX_ATTEMPTS_TO_FIND_IDLE_WALK_PATH {
