@@ -2,7 +2,13 @@ use super::*;
 
 pub fn assign_tasks_to_pawns(
     mut commands: Commands,
-    mut query: Query<(Entity, &Pawn, &mut Commandable), With<pawn_state::PawnStateIdleTag>>,
+    mut query: Query<
+        (Entity, &Pawn, &mut Commandable),
+        (
+            With<pawn_state::PawnStateIdleTag>,
+            With<commandable_state::CommandableStateIdleTag>,
+        ),
+    >,
     mut work_queue: ResMut<TasksQueue>,
     mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
