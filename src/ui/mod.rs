@@ -1,14 +1,14 @@
 use crate::*;
 
 expose_submodules!(
-    simulation_state,
-    items_stock,
-    user_select,
-    hovered,
-    pawn,
-    farm,
-    tile,
     bed,
+    farm,
+    hovered,
+    items_stock,
+    pawn,
+    simulation_state,
+    tile,
+    user_select,
     debug
 );
 

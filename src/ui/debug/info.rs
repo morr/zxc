@@ -2,70 +2,91 @@ use self::ui::UiOpacity;
 
 use super::*;
 
-pub fn render_debug_info(
-    mut commands: Commands,
-    assets: Res<FontAssets>,
-    tasks_queue: Res<TasksQueue>,
-    async_queue_counter: Res<AsyncQueueCounter>,
-) {
-    commands
-        .spawn(NodeBundle {
+pub fn render_debug_ui_container(mut commands: Commands) {
+    commands.spawn((
+        NodeBundle {
             style: Style {
                 position_type: PositionType::Absolute,
                 display: Display::Flex,
                 flex_direction: FlexDirection::Column,
+                row_gap: Val::Px(10.),
                 bottom: Val::Px(0.0),
                 right: Val::Px(0.0),
-                padding: UiRect {
-                    top: Val::Px(10.0),
-                    right: Val::Px(10.0),
-                    bottom: Val::Px(10.0),
-                    left: Val::Px(10.0),
-                },
                 ..default()
             },
-            background_color: bg_color(UiOpacity::Light),
             ..default()
-        })
-        .with_children(|container_parent| {
-            container_parent.spawn((
-                TextBundle::from_section(
-                    format_debug_line(&tasks_queue, &async_queue_counter),
-                    TextStyle {
-                        font: assets.fira.clone(),
-                        font_size: 18.,
-                        color: Color::WHITE,
-                    },
-                ),
-                DebugStatusTextUIMarker::default(),
-            ));
+        },
+        DebugUiContainerarker::default(),
+    ));
+}
 
-            container_parent.spawn((
-                TextBundle::from_section(
-                    "\"space\" - pause
+pub fn render_debug_info(
+    mut commands: Commands,
+    assets: Res<FontAssets>,
+    root_ui_query: Query<Entity, With<DebugUiContainerarker>>,
+    tasks_queue: Res<TasksQueue>,
+    async_queue_counter: Res<AsyncQueueCounter>,
+) {
+    let root_ui_id = root_ui_query.get_single().unwrap();
+    let mut root_ui_commands = commands.entity(root_ui_id);
+
+    root_ui_commands.with_children(|parent| {
+        parent
+            .spawn(NodeBundle {
+                style: Style {
+                    display: Display::Flex,
+                    flex_direction: FlexDirection::Column,
+                    padding: UiRect {
+                        top: Val::Px(10.0),
+                        right: Val::Px(10.0),
+                        bottom: Val::Px(10.0),
+                        left: Val::Px(10.0),
+                    },
+                    ..default()
+                },
+                background_color: bg_color(UiOpacity::Light),
+                ..default()
+            })
+            .with_children(|container_parent| {
+                container_parent.spawn((
+                    TextBundle::from_section(
+                        format_debug_line(&tasks_queue, &async_queue_counter),
+                        TextStyle {
+                            font: assets.fira.clone(),
+                            font_size: 18.,
+                            color: Color::WHITE,
+                        },
+                    ),
+                    DebugStatusTextUIMarker::default(),
+                ));
+
+                container_parent.spawn((
+                    TextBundle::from_section(
+                        "\"space\" - pause
 \"=\"/\"-\" - change game speed
 \"h\" - toggle help
 \"g\" - toggle grid
 \"n\" - toggle navmesh
 \"m\" - toggle movepath",
-                    TextStyle {
-                        font: assets.fira.clone(),
-                        font_size: 12.,
-                        color: Color::WHITE,
-                    },
-                )
-                .with_style(Style {
-                    margin: UiRect {
-                        top: Val::Px(8.0),
-                        right: Val::Px(0.0),
-                        bottom: Val::Px(0.0),
-                        left: Val::Px(0.0),
-                    },
-                    ..default()
-                }),
-                DebugHelpBlockUIMarker::default(),
-            ));
-        });
+                        TextStyle {
+                            font: assets.fira.clone(),
+                            font_size: 12.,
+                            color: Color::WHITE,
+                        },
+                    )
+                    .with_style(Style {
+                        margin: UiRect {
+                            top: Val::Px(8.0),
+                            right: Val::Px(0.0),
+                            bottom: Val::Px(0.0),
+                            left: Val::Px(0.0),
+                        },
+                        ..default()
+                    }),
+                    DebugHelpBlockUIMarker::default(),
+                ));
+            });
+    });
 }
 
 pub fn update_debug_info(

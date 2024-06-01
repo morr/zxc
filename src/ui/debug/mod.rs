@@ -1,6 +1,9 @@
 use crate::*;
 
-expose_submodules!(grid, movepath, navmesh, info);
+expose_submodules!(grid, movepath, navmesh, info, tasks_queue);
+
+#[derive(Component, Default)]
+pub struct DebugUiContainerarker {}
 
 #[derive(Component, Default)]
 pub struct DebugStatusTextUIMarker {}
@@ -15,7 +18,13 @@ impl Plugin for UiDebugPlugin {
         app.add_plugins(DebugGridPlugin)
             .add_plugins(DebugNavmeshPlugin)
             .add_plugins(DebugMovepathPlugin)
-            .add_systems(OnExit(AppState::Loading), render_debug_info)
+            .add_systems(OnExit(AppState::Loading), render_debug_ui_container)
+            .add_systems(
+                OnExit(AppState::Loading),
+                (render_debug_info, render_tasks_ui)
+                    .chain()
+                    .after(render_debug_ui_container),
+            )
             .add_systems(
                 FixedUpdate,
                 update_debug_info.run_if(in_state(AppState::Playing)),
