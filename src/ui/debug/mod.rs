@@ -6,7 +6,7 @@ expose_submodules!(grid, movepath, navmesh, info, tasks_queue);
 pub struct DebugUiContainerarker {}
 
 #[derive(Component, Default)]
-pub struct DebugStatusTextUIMarker {}
+pub struct DebugUiHeadlineUIMarker {}
 
 #[derive(Component, Default)]
 pub struct DebugHelpBlockUIMarker {}
@@ -27,7 +27,9 @@ impl Plugin for UiDebugPlugin {
             )
             .add_systems(
                 FixedUpdate,
-                update_debug_info.run_if(in_state(AppState::Playing)),
+                (update_debug_tasks_queue, update_debug_ui_headline)
+                    .chain()
+                    .run_if(in_state(AppState::Playing)),
             )
             .add_systems(
                 Update,

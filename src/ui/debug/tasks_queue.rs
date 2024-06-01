@@ -2,6 +2,9 @@ use self::ui::headline_text_bundle;
 
 use super::*;
 
+#[derive(Component, Default)]
+pub struct DebugTasksQueueHeadlineUIMarker {}
+
 pub fn render_tasks_ui(
     mut commands: Commands,
     font_assets: Res<FontAssets>,
@@ -20,13 +23,22 @@ pub fn render_tasks_ui(
                         format_headline(&tasks_queue),
                         &font_assets,
                     ),
-                    DebugStatusTextUIMarker::default(),
+                    DebugTasksQueueHeadlineUIMarker::default(),
                 ));
 
             });
     });
 }
 
+pub fn update_debug_tasks_queue(
+    tasks_queue: Res<TasksQueue>,
+    mut query: Query<&mut Text, With<DebugTasksQueueHeadlineUIMarker>>,
+) {
+    let mut text = query.single_mut();
+    text.sections[0].value = format_headline(&tasks_queue);
+}
+
 fn format_headline(tasks_queue: &Res<TasksQueue>) -> String {
     format!("TasksQueue: {}", tasks_queue.len())
 }
+

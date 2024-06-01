@@ -35,7 +35,7 @@ pub fn render_debug_ui_info(
             .with_children(|container_parent| {
                 container_parent.spawn((
                     headline_text_bundle(format_headline(&async_queue_counter), &font_assets),
-                    DebugStatusTextUIMarker::default(),
+                    DebugUiHeadlineUIMarker::default(),
                 ));
 
                 container_parent.spawn((
@@ -67,9 +67,9 @@ pub fn render_debug_ui_info(
     });
 }
 
-pub fn update_debug_info(
+pub fn update_debug_ui_headline(
     async_queue_counter: Res<AsyncQueueCounter>,
-    mut query: Query<&mut Text, With<DebugStatusTextUIMarker>>,
+    mut query: Query<&mut Text, With<DebugUiHeadlineUIMarker>>,
 ) {
     let mut text = query.single_mut();
     text.sections[0].value = format_headline(&async_queue_counter);
