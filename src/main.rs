@@ -67,6 +67,7 @@ pub fn close_on_esc(
     input: Res<ButtonInput<KeyCode>>,
     pawns_query: Query<(Entity, &Pawn, &Movable, &Commandable)>,
     farms_query: Query<(Entity, &Farm, &Workable)>,
+    mut next_state: ResMut<NextState<AppState>>,
 ) {
     for (window, focus) in focused_windows.iter() {
         if !focus.focused {
@@ -74,8 +75,6 @@ pub fn close_on_esc(
         }
 
         if input.just_pressed(KeyCode::Escape) {
-
-
             for (entity, pawn, movable, commandable) in pawns_query.iter() {
                 info!("========== Pawn {:?} ==========", entity);
                 info!("{:?}", pawn);
@@ -88,8 +87,10 @@ pub fn close_on_esc(
                 info!("{:?}", workable);
             }
 
+
+            next_state.set(AppState::Quiting);
             commands.entity(window).despawn();
-       }
+         }
     }
 }
 

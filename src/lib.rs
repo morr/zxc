@@ -65,6 +65,7 @@ pub enum AppState {
     #[default]
     Loading,
     Playing,
+    Quiting,
 }
 
 use bevy::log::BoxedSubscriber;
@@ -88,22 +89,22 @@ macro_rules! ensure_state {
         match $current_state {
             $expected_pattern => {}
             _ => {
-                // trace!(
-                //     "Got {:?} while expected pattern {:?} by Query<With<_>> param",
-                //     $current_state,
-                //     stringify!($expected_pattern),
-                // );
+                trace!(
+                    "Got {:?} while expected pattern {:?} by Query<With<_>> param",
+                    $current_state,
+                    stringify!($expected_pattern),
+                );
                 continue;
             }
         }
     };
     ($expected_state:expr, $current_state:expr) => {
         if $current_state != $expected_state {
-            // trace!(
-            //     "Got {:?} while expected {:?} by Query<With<_>> param",
-            //     $current_state,
-            //     $expected_state,
-            // );
+            trace!(
+                "Got {:?} while expected {:?} by Query<With<_>> param",
+                $current_state,
+                $expected_state,
+            );
             continue;
         }
     };
