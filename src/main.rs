@@ -49,6 +49,7 @@ fn main() {
             input::InputPlugin,
         ))
         .add_plugins((
+            ai::AiPlugin,
             pawn::PawnPlugin,
             restable::RestablePlugin,
             workable::WorkablePlugin,

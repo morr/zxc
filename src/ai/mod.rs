@@ -1,0 +1,42 @@
+use crate::*;
+
+// expose_submodules!(components, systems); // , debug_components
+
+pub struct AiPlugin;
+
+impl Plugin for AiPlugin {
+    fn build(&self, _app: &mut App) {
+        // app.register_type::<Pawn>()
+        //     // .add_event::<EntityStateChangeEvent<PawnState>>()
+        //     // .add_event::<PawnBirthdayEvent>()
+        //     .add_event::<PawnDeathEvent>()
+        //     .add_systems(OnExit(AppState::Loading), spawn_pawns.after(spawn_base))
+        //     .add_systems(
+        //         FixedUpdate,
+        //         (
+        //             update_pawn_color,
+        //             update_pawn_state_text,
+        //             progress_pawn_daily,
+        //             progress_pawn_dying,
+        //             progress_pawn_death,
+        //             // progress_pawn_age,
+        //             // progress_pawn_lifetime,
+        //         )
+        //             .chain()
+        //             .run_if(in_state(AppState::Playing)),
+        //     );
+        //
+        // if config().pawn.wander_when_idle {
+        //     app.add_systems(
+        //         FixedUpdate,
+        //         wander_idle_pawns.run_if(in_state(AppState::Playing)),
+        //     );
+        // }
+        //
+        // // .add_systems(
+        // //     FixedUpdate,
+        // //     wander_pawns.run_if(in_state(TimeState::Running)),
+        // );
+    }
+}
+

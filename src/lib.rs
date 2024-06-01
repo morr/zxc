@@ -14,6 +14,7 @@ macro_rules! expose_submodules {
     };
 }
 
+pub mod ai;
 pub mod assets;
 pub mod async_queue;
 pub mod camera;
@@ -33,6 +34,7 @@ pub mod ui;
 pub mod user_selection;
 pub mod workable;
 
+pub use crate::ai::*;
 pub use crate::assets::*;
 pub use crate::async_queue::*;
 pub use crate::camera::*;
