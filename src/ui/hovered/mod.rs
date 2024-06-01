@@ -23,7 +23,7 @@ fn render_hovered_ui(mut commands: Commands) {
                 display: Display::Flex,
                 flex_direction: FlexDirection::Row,
                 align_items: AlignItems::FlexEnd,
-                column_gap: Val::Px(25.),
+                column_gap: UI_WINDOWS_GAP,
                 bottom: UI_SCREEN_EDGE_PX_OFFSET,
                 left: UI_SCREEN_EDGE_PX_OFFSET,
                 ..default()

@@ -21,7 +21,7 @@ impl Plugin for UiDebugPlugin {
             .add_systems(OnExit(AppState::Loading), render_debug_ui_container)
             .add_systems(
                 OnExit(AppState::Loading),
-                (render_debug_info, render_tasks_ui)
+                (render_tasks_ui, render_debug_ui_info)
                     .chain()
                     .after(render_debug_ui_container),
             )
@@ -33,5 +33,23 @@ impl Plugin for UiDebugPlugin {
                 Update,
                 handle_debug_info_keys.run_if(in_state(AppState::Playing)),
             );
+    }
+}
+
+pub fn render_debug_ui_window_node_bundle() -> NodeBundle {
+    NodeBundle {
+        style: Style {
+            display: Display::Flex,
+            flex_direction: FlexDirection::Column,
+            padding: UiRect {
+                top: Val::Px(10.0),
+                right: Val::Px(10.0),
+                bottom: Val::Px(10.0),
+                left: Val::Px(10.0),
+            },
+            ..default()
+        },
+        background_color: bg_color(UiOpacity::Light),
+        ..default()
     }
 }

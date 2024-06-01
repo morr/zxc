@@ -1,4 +1,4 @@
-use self::ui::UiOpacity;
+use self::ui::headline_text_bundle;
 
 use super::*;
 
@@ -9,7 +9,7 @@ pub fn render_debug_ui_container(mut commands: Commands) {
                 position_type: PositionType::Absolute,
                 display: Display::Flex,
                 flex_direction: FlexDirection::Column,
-                row_gap: Val::Px(10.),
+                row_gap: UI_WINDOWS_GAP,
                 bottom: Val::Px(0.0),
                 right: Val::Px(0.0),
                 ..default()
@@ -20,11 +20,10 @@ pub fn render_debug_ui_container(mut commands: Commands) {
     ));
 }
 
-pub fn render_debug_info(
+pub fn render_debug_ui_info(
     mut commands: Commands,
-    assets: Res<FontAssets>,
+    font_assets: Res<FontAssets>,
     root_ui_query: Query<Entity, With<DebugUiContainerarker>>,
-    tasks_queue: Res<TasksQueue>,
     async_queue_counter: Res<AsyncQueueCounter>,
 ) {
     let root_ui_id = root_ui_query.get_single().unwrap();
@@ -32,31 +31,10 @@ pub fn render_debug_info(
 
     root_ui_commands.with_children(|parent| {
         parent
-            .spawn(NodeBundle {
-                style: Style {
-                    display: Display::Flex,
-                    flex_direction: FlexDirection::Column,
-                    padding: UiRect {
-                        top: Val::Px(10.0),
-                        right: Val::Px(10.0),
-                        bottom: Val::Px(10.0),
-                        left: Val::Px(10.0),
-                    },
-                    ..default()
-                },
-                background_color: bg_color(UiOpacity::Light),
-                ..default()
-            })
+            .spawn(render_debug_ui_window_node_bundle())
             .with_children(|container_parent| {
                 container_parent.spawn((
-                    TextBundle::from_section(
-                        format_debug_line(&tasks_queue, &async_queue_counter),
-                        TextStyle {
-                            font: assets.fira.clone(),
-                            font_size: 18.,
-                            color: Color::WHITE,
-                        },
-                    ),
+                    headline_text_bundle(format_headline(&async_queue_counter), &font_assets),
                     DebugStatusTextUIMarker::default(),
                 ));
 
@@ -69,7 +47,7 @@ pub fn render_debug_info(
 \"n\" - toggle navmesh
 \"m\" - toggle movepath",
                         TextStyle {
-                            font: assets.fira.clone(),
+                            font: font_assets.fira.clone(),
                             font_size: 12.,
                             color: Color::WHITE,
                         },
@@ -90,23 +68,15 @@ pub fn render_debug_info(
 }
 
 pub fn update_debug_info(
-    tasks_queue: Res<TasksQueue>,
     async_queue_counter: Res<AsyncQueueCounter>,
     mut query: Query<&mut Text, With<DebugStatusTextUIMarker>>,
 ) {
     let mut text = query.single_mut();
-    text.sections[0].value = format_debug_line(&tasks_queue, &async_queue_counter);
+    text.sections[0].value = format_headline(&async_queue_counter);
 }
 
-fn format_debug_line(
-    tasks_queue: &Res<TasksQueue>,
-    async_queue_counter: &Res<AsyncQueueCounter>,
-) -> String {
-    format!(
-        "TasksQueue: {} AsyncQueue: {}",
-        tasks_queue.len(),
-        async_queue_counter.get()
-    )
+fn format_headline(async_queue_counter: &Res<AsyncQueueCounter>) -> String {
+    format!("AsyncQueue: {}", async_queue_counter.get())
 }
 
 #[allow(clippy::too_many_arguments)]

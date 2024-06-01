@@ -14,6 +14,7 @@ expose_submodules!(
 
 pub static UI_COLOR: Lazy<Color> = Lazy::new(|| Color::hex("181a1c").unwrap());
 pub static UI_SCREEN_EDGE_PX_OFFSET: Val = Val::Px(8.);
+pub static UI_WINDOWS_GAP: Val = Val::Px(25.);
 
 pub struct UiPlugin;
 
