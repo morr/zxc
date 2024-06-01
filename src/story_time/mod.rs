@@ -12,7 +12,9 @@ impl Plugin for StoryTimePlugin {
             .add_event::<NewDayEvent>()
             .add_systems(
                 FixedUpdate,
-                track_time.run_if(in_state(SimulationState::Running)),
+                track_time
+                    .run_if(in_state(AppState::Playing))
+                    .run_if(in_state(SimulationState::Running)),
             )
             .add_systems(Update, modify_time.run_if(in_state(AppState::Playing)));
     }

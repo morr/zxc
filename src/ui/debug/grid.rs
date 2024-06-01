@@ -5,7 +5,9 @@ impl Plugin for DebugGridPlugin {
     fn build(&self, app: &mut App) {
         app.init_state::<DebugGridState>().add_systems(
             Update,
-            render_grid.run_if(in_state(DebugGridState::Visible)),
+            render_grid
+                .run_if(in_state(AppState::Playing))
+                .run_if(in_state(DebugGridState::Visible)),
         );
     }
 }
