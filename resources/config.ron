@@ -9,12 +9,13 @@ RootConfig(
         size: 32.0,
     ),
     starting_scene: StartingSceneConfig(
-        pawns: 2,
+        pawns: 1,
         day_hour: 8,
-        farm_width: 1,
-        farm_height: 2,
+        farm_width: 3,
+        farm_height: 3,
         beds_num: 1,
         //time_scale: 1.0
+        //time_scale: 15.0
         time_scale: 50.0,
         //time_scale: 300.0,
         //time_scale: 500.0
