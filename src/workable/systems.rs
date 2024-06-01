@@ -1,45 +1,5 @@
 use super::*;
 
-pub fn assign_tasks_to_pawns(
-    mut commands: Commands,
-    mut query: Query<
-        (Entity, &Pawn, &mut Commandable),
-        (
-            With<pawn_state::PawnStateIdleTag>,
-            With<commandable_state::CommandableStateIdleTag>,
-        ),
-    >,
-    mut work_queue: ResMut<TasksQueue>,
-    mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
-    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
-) {
-    for (commandable_entity, pawn, mut commandable) in query.iter_mut() {
-        ensure_state!(PawnState::Idle, pawn.state);
-        ensure_state!(CommandableState::Idle, commandable.state);
-
-        let Some(task) = work_queue.get_task() else {
-            continue;
-        };
-
-        commandable.set_queue(
-            [
-                CommandType::MoveTo(MoveToCommand {
-                    commandable_entity,
-                    grid_tile: task.grid_tile,
-                }),
-                CommandType::WorkOn(WorkOnCommand {
-                    commandable_entity,
-                    task,
-                }),
-            ],
-            commandable_entity,
-            &mut commands,
-            &mut commandable_interrupt_writer,
-            &mut tasks_scheduler,
-        );
-    }
-}
-
 pub fn progress_work(
     mut commands: Commands,
     mut workable_query: Query<

@@ -12,13 +12,13 @@ impl Plugin for WorkablePlugin {
             // .add_event::<WorkStartEvent>()
             .add_systems(
                 FixedUpdate,
-                progress_work.run_if(in_state(SimulationState::Running)),
+                progress_work
+                    .run_if(in_state(AppState::Playing))
+                    .run_if(in_state(SimulationState::Running)),
             )
             .add_systems(
                 FixedUpdate,
-                (assign_tasks_to_pawns, complete_work)
-                    .chain()
-                    .run_if(in_state(AppState::Playing)),
+                complete_work.run_if(in_state(AppState::Playing)),
             );
     }
 }

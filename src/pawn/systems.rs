@@ -1,10 +1,8 @@
 use bevy::sprite::MaterialMesh2dBundle;
 use rand::Rng;
-use rand_distr::{num_traits::Zero, Distribution, UnitCircle};
+use rand_distr::num_traits::Zero;
 
 use super::*;
-
-const MAX_ATTEMPTS_TO_FIND_IDLE_WALK_PATH: usize = 10;
 
 #[allow(clippy::too_many_arguments)]
 pub fn spawn_pawns(
@@ -133,80 +131,6 @@ pub fn update_pawn_color(// assets_collection: Res<AssetsCollection>,
     //         };
     //     }
     // }
-}
-
-pub fn wander_idle_pawns(
-    mut commands: Commands,
-    arc_navmesh: Res<ArcNavmesh>,
-    mut query: Query<
-        (Entity, &Pawn, &Movable, &mut Commandable, &Transform),
-        (
-            With<pawn_state::PawnStateIdleTag>,
-            With<commandable_state::CommandableStateIdleTag>,
-        ),
-    >,
-    mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
-    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
-) {
-    let mut rng = rand::thread_rng();
-
-    for (commandable_entity, pawn, movable, mut commandable, transform) in &mut query {
-        ensure_state!(PawnState::Idle, pawn.state);
-        ensure_state!(CommandableState::Idle, commandable.state);
-        if movable.state != MovableState::Idle {
-            continue;
-        }
-
-        let world_pos = transform.translation.truncate();
-        let end_tile = find_valid_end_tile(world_pos, &arc_navmesh.read(), &mut rng, 0);
-
-        commandable.set_queue(
-            CommandType::MoveTo(MoveToCommand {
-                commandable_entity,
-                grid_tile: end_tile,
-            }),
-            commandable_entity,
-            &mut commands,
-            &mut commandable_interrupt_writer,
-            &mut tasks_scheduler,
-        );
-    }
-}
-
-fn find_valid_end_tile(
-    start_pos: Vec2,
-    navmesh: &Navmesh,
-    rng: &mut impl Rng,
-    recursion_depth: usize,
-) -> IVec2 {
-    let move_vector: Vec2 = UnitCircle.sample(rng).into();
-    let tiles_to_move = rng.gen_range(2.0..6.0) * config().tile.size;
-    let end_tile = (start_pos + move_vector * tiles_to_move).world_pos_to_grid();
-
-    if recursion_depth >= MAX_ATTEMPTS_TO_FIND_IDLE_WALK_PATH {
-        return end_tile;
-    }
-
-    if navmesh.is_passable(end_tile.x, end_tile.y) {
-        end_tile
-    } else {
-        let offsets = [
-            IVec2::new(-1, -1), // left-top
-            IVec2::new(0, -1),  // top
-            IVec2::new(1, -1),  // right-top
-            IVec2::new(-1, 0),  // left
-            IVec2::new(1, 0),   // right
-            IVec2::new(-1, 1),  // left-bottom
-            IVec2::new(0, 1),   // bottom
-            IVec2::new(1, 1),   // right-bottom
-        ];
-
-        offsets
-            .iter()
-            .map(|offset| end_tile + *offset)
-            .find(|&tile| navmesh.is_passable(tile.x, tile.y))
-            .unwrap_or_else(|| find_valid_end_tile(start_pos, navmesh, rng, recursion_depth + 1))
-    }
 }
 
 pub fn update_pawn_state_text(// mut event_reader: EventReader<EntityStateChangeEvent<PawnState>>,

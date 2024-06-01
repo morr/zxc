@@ -25,17 +25,5 @@ impl Plugin for PawnPlugin {
                     .chain()
                     .run_if(in_state(AppState::Playing)),
             );
-
-        if config().pawn.wander_when_idle {
-            app.add_systems(
-                FixedUpdate,
-                wander_idle_pawns.run_if(in_state(AppState::Playing)),
-            );
-        }
-
-        // .add_systems(
-        //     FixedUpdate,
-        //     wander_pawns.run_if(in_state(TimeState::Running)),
-        // );
     }
 }
