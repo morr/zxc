@@ -27,7 +27,11 @@ impl Plugin for CommandablePlugin {
             ))
             .add_systems(
                 Update,
-                (process_pending_commands, process_complete_commands, process_interrupt_commands)
+                (
+                    process_pending_commands,
+                    process_complete_commands,
+                    process_interrupt_commands,
+                )
                     .chain()
                     .run_if(in_state(AppState::Playing))
                     .run_if(in_state(SimulationState::Running)),

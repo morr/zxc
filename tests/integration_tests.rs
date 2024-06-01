@@ -1,4 +1,4 @@
 use zxc::*;
 
-mod pawn;
 mod bed;
+mod pawn;

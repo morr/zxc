@@ -54,7 +54,10 @@ pub fn bg_color(opacity: UiOpacity) -> BackgroundColor {
     ui_color(opacity).into()
 }
 
-fn render_entity_node_bunlde<T: TargetEntityUiMarker>(target_id: Entity, opacity: UiOpacity) -> (NodeBundle, T) {
+fn render_entity_node_bunlde<T: TargetEntityUiMarker>(
+    target_id: Entity,
+    opacity: UiOpacity,
+) -> (NodeBundle, T) {
     (
         NodeBundle {
             style: Style {
