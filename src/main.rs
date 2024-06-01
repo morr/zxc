@@ -13,7 +13,8 @@ fn main() {
                     primary_window: Some(Window {
                         position: WindowPosition::Automatic,
                         mode: bevy::window::WindowMode::Windowed,
-                        present_mode: bevy::window::PresentMode::AutoNoVsync,
+                        // present_mode: bevy::window::PresentMode::AutoNoVsync,
+                        present_mode: bevy::window::PresentMode::AutoVsync,
                         resolution: (
                             config().app.resolution.0 as f32,
                             config().app.resolution.1 as f32,
@@ -56,6 +57,39 @@ fn main() {
             movable::MovablePlugin,
             commandable::CommandablePlugin,
         ))
-        .add_systems(FixedUpdate, bevy::window::close_on_esc)
+        .add_systems(FixedUpdate, close_on_esc)
         .run();
 }
+
+pub fn close_on_esc(
+    mut commands: Commands,
+    focused_windows: Query<(Entity, &Window)>,
+    input: Res<ButtonInput<KeyCode>>,
+    pawns_query: Query<(Entity, &Pawn, &Movable, &Commandable)>,
+    farms_query: Query<(Entity, &Farm, &Workable)>,
+) {
+    for (window, focus) in focused_windows.iter() {
+        if !focus.focused {
+            continue;
+        }
+
+        if input.just_pressed(KeyCode::Escape) {
+
+
+            for (entity, pawn, movable, commandable) in pawns_query.iter() {
+                info!("========== Pawn {:?} ==========", entity);
+                info!("{:?}", pawn);
+                info!("{:?}", commandable);
+                info!("{:?}", movable);
+            }
+            for (entity, farm, workable) in farms_query.iter() {
+                info!("========== Farm {:?} ==========", entity);
+                info!("{:?}", farm);
+                info!("{:?}", workable);
+            }
+
+            commands.entity(window).despawn();
+       }
+    }
+}
+
