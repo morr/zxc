@@ -2,6 +2,19 @@ use self::ui::headline_text_bundle;
 
 use super::*;
 
+#[derive(Component, Default)]
+pub struct DebugInfoUIMarker {}
+
+#[derive(Component, Default)]
+pub struct DebugUiContainerarker {}
+
+#[derive(Component, Default)]
+pub struct DebugUiHeadlineUIMarker {}
+
+#[derive(Component, Default)]
+pub struct DebugHelpBlockUIMarker {}
+
+
 pub fn render_debug_ui_container(mut commands: Commands) {
     commands.spawn((
         NodeBundle {
@@ -31,7 +44,7 @@ pub fn render_debug_ui_info(
 
     root_ui_commands.with_children(|parent| {
         parent
-            .spawn(render_debug_ui_window_node_bundle())
+            .spawn(render_debug_ui_window_node_bundle::<DebugInfoUIMarker>())
             .with_children(|container_parent| {
                 container_parent.spawn((
                     headline_text_bundle(format_headline(&async_queue_counter), &font_assets),

@@ -2,15 +2,6 @@ use crate::*;
 
 expose_submodules!(grid, movepath, navmesh, info, tasks_queue);
 
-#[derive(Component, Default)]
-pub struct DebugUiContainerarker {}
-
-#[derive(Component, Default)]
-pub struct DebugUiHeadlineUIMarker {}
-
-#[derive(Component, Default)]
-pub struct DebugHelpBlockUIMarker {}
-
 pub struct UiDebugPlugin;
 
 impl Plugin for UiDebugPlugin {
@@ -38,20 +29,23 @@ impl Plugin for UiDebugPlugin {
     }
 }
 
-pub fn render_debug_ui_window_node_bundle() -> NodeBundle {
-    NodeBundle {
-        style: Style {
-            display: Display::Flex,
-            flex_direction: FlexDirection::Column,
-            padding: UiRect {
-                top: Val::Px(10.0),
-                right: Val::Px(10.0),
-                bottom: Val::Px(10.0),
-                left: Val::Px(10.0),
+pub fn render_debug_ui_window_node_bundle<T: Default>() -> (NodeBundle, T) {
+    (
+        NodeBundle {
+            style: Style {
+                display: Display::Flex,
+                flex_direction: FlexDirection::Column,
+                padding: UiRect {
+                    top: Val::Px(10.0),
+                    right: Val::Px(10.0),
+                    bottom: Val::Px(10.0),
+                    left: Val::Px(10.0),
+                },
+                ..default()
             },
+            background_color: bg_color(UiOpacity::Light),
             ..default()
         },
-        background_color: bg_color(UiOpacity::Light),
-        ..default()
-    }
+        T::default(),
+    )
 }

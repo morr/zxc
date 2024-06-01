@@ -16,7 +16,7 @@ impl Plugin for TasksQueuePlugin {
 
 #[derive(Default, Resource)]
 pub struct TasksQueue {
-    tasks: VecDeque<Task>,
+    pub tasks: VecDeque<Task>,
 }
 
 impl TasksQueue {
