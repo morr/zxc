@@ -26,8 +26,8 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-test-${{ hashFiles('**/Cargo.toml') }}
-      - name: Install stable toolchain
-        uses: dtolnay/rust-toolchain@stable
+      - name: Install nightly toolchain
+        uses: dtolnay/rust-toolchain@nightly
       - name: Install Dependencies
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libx11-dev libxcursor-dev libxi-dev libxrandr-dev libxinerama-dev libx11-xcb-dev libxss-dev libvulkan-dev
       - name: Build
