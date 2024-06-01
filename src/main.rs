@@ -1,3 +1,4 @@
+use bevy::app::AppExit;
 use zxc::*;
 
 fn main() {
@@ -62,14 +63,14 @@ fn main() {
 }
 
 pub fn close_on_esc(
-    mut commands: Commands,
     focused_windows: Query<(Entity, &Window)>,
     input: Res<ButtonInput<KeyCode>>,
     pawns_query: Query<(Entity, &Pawn, &Movable, &Commandable)>,
     farms_query: Query<(Entity, &Farm, &Workable)>,
     mut next_state: ResMut<NextState<AppState>>,
+    mut event_writer: EventWriter<AppExit>,
 ) {
-    for (window, focus) in focused_windows.iter() {
+    for (_window, focus) in focused_windows.iter() {
         if !focus.focused {
             continue;
         }
@@ -87,9 +88,8 @@ pub fn close_on_esc(
                 info!("{:?}", workable);
             }
 
-
             next_state.set(AppState::Quiting);
-            commands.entity(window).despawn();
+            event_writer.send(AppExit);
          }
     }
 }
