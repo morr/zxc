@@ -29,7 +29,7 @@ fn ai_idle_pawns(
 ) {
     for (commandable_entity, pawn, movable, mut commandable, transform) in &mut query {
         ensure_state!(PawnState::Idle, pawn.state);
-        ensure_state!(CommandableState::Idle, commandable.state);
+        continue_unless!(CommandableState::Idle, commandable.state);
 
         if let Some(task) = work_queue.get_task() {
             commandable.set_queue(

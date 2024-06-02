@@ -107,6 +107,23 @@ macro_rules! ensure_state {
             );
             continue;
         }
+   # };
+}
+
+#[macro_export]
+macro_rules! continue_unless {
+    ($expected_pattern:pat, $current_state:expr) => {
+        match $current_state {
+            $expected_pattern => {}
+            _ => {
+                continue;
+            }
+        }
+    };
+    ($expected_state:expr, $current_state:expr) => {
+        if $current_state != $expected_state {
+            continue;
+        }
     };
 }
 

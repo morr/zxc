@@ -15,7 +15,7 @@ pub fn process_pending_commands(
     // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for (entity, mut commandable, maybe_pawn) in &mut commandable_query {
-        ensure_state!(CommandableState::PendingExecution, commandable.state);
+        continue_unless!(CommandableState::PendingExecution, commandable.state);
 
         if let Some(command_type) = commandable.start_executing(entity, &mut commands) {
             // println!(
@@ -71,7 +71,7 @@ pub fn process_complete_commands(
         // println!("{:?}", CommandCompleteEvent(*entity));
         if let Ok((Some(mut pawn), commandable)) = pawn_query.get_mut(*entity) {
             ensure_state!(PawnState::ExecutingCommand, pawn.state);
-            ensure_state!(CommandableState::Idle, commandable.state);
+            continue_unless!(CommandableState::Idle, commandable.state);
 
             pawn.change_state(
                 PawnState::Idle,
