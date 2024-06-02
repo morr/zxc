@@ -19,7 +19,7 @@ fn ai_idle_pawns(
         (Entity, &Pawn, &Movable, &mut Commandable, &Transform),
         (
             With<pawn_state::PawnStateIdleTag>,
-            With<commandable_state::CommandableStateIdleTag>,
+            // With<commandable_state::CommandableStateIdleTag>,
         ),
     >,
     mut work_queue: ResMut<TasksQueue>,

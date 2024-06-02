@@ -234,48 +234,51 @@ macro_rules! commandable_states {
             $($name),*
         }
 
-        pub mod commandable_state {
-            use bevy::prelude::*;
-
-            $(
-                #[derive(Component, Debug, Reflect)]
-                pub struct $state_component_name;
-            )*
-        }
+        // pub mod commandable_state {
+        //     use bevy::prelude::*;
+        //
+        //     $(
+        //         #[derive(Component, Debug, Reflect)]
+        //         pub struct $state_component_name;
+        //     )*
+        // }
 
         impl Commandable {
             pub fn change_state(
                 &mut self,
                 new_state: CommandableState,
                 entity: Entity,
-                commands: &mut Commands
+                _commands: &mut Commands
             ) -> CommandableState {
                 use std::mem;
                 log_state_change!("Commandable({:?}).state {:?} => {:?} executing={:?} queue={:?}", entity, self.state, new_state, self.executing, self.queue);
 
-                self.remove_old_state_component(commands, entity);
+                // self.remove_old_state_component(commands, entity);
                 let prev_state = mem::replace(&mut self.state, new_state);
-                self.add_new_state_component(commands, entity);
+                // self.add_new_state_component(commands, entity);
                 // state_change_event_writer.send(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
 
                 prev_state
             }
 
-            fn remove_old_state_component(&self, commands: &mut Commands, entity: Entity) {
-                match &self.state {
-                    $(CommandableState::$name => {
-                        commands.entity(entity).remove::<commandable_state::$state_component_name>();
-                    },)*
-                }
-            }
-
-            fn add_new_state_component(&self, commands: &mut Commands, entity: Entity) {
-                match &self.state {
-                    $(CommandableState::$name => {
-                        commands.entity(entity).insert(commandable_state::$state_component_name);
-                    },)*
-                }
-            }
+            // fn remove_old_state_component(&self, commands: &mut Commands, entity: Entity) {
+            //     // $(
+            //     //     commands.entity(entity).remove::<commandable_state::$state_component_name>();
+            //     // )*
+            //     match &self.state {
+            //         $(CommandableState::$name => {
+            //             commands.entity(entity).remove::<commandable_state::$state_component_name>();
+            //         },)*
+            //     }
+            // }
+            //
+            // fn add_new_state_component(&self, commands: &mut Commands, entity: Entity) {
+            //     match &self.state {
+            //         $(CommandableState::$name => {
+            //             commands.entity(entity).insert(commandable_state::$state_component_name);
+            //         },)*
+            //     }
+            // }
 
         }
     };

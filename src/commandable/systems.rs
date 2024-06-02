@@ -9,7 +9,8 @@ pub fn process_pending_commands(
     mut work_on_command_writer: EventWriter<WorkOnCommand>,
     mut commandable_query: Query<
         (Entity, &mut Commandable, Option<&mut Pawn>),
-        With<commandable_state::CommandableStatePendingExecutionTag>,
+        // component tags seems to be working unreliable
+        // With<commandable_state::CommandableStatePendingExecutionTag>,
     >,
     // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {

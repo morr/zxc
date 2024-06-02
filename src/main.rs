@@ -70,9 +70,9 @@ pub fn close_on_esc(
         &Pawn,
         &Movable,
         &Commandable,
-        Option<&commandable_state::CommandableStateIdleTag>,
-        Option<&commandable_state::CommandableStatePendingExecutionTag>,
-        Option<&commandable_state::CommandableStateExecutingTag>,
+        // Option<&commandable_state::CommandableStateIdleTag>,
+        // Option<&commandable_state::CommandableStatePendingExecutionTag>,
+        // Option<&commandable_state::CommandableStateExecutingTag>,
     )>,
     farms_query: Query<(Entity, &Farm, &Workable)>,
     mut next_state: ResMut<NextState<AppState>>,
@@ -96,19 +96,20 @@ pub fn close_on_esc(
             pawn,
             movable,
             commandable,
-            commandable_idle_tag,
-            commandable_pending_execution_tag,
-            commandable_executing_tag,
+            // commandable_idle_tag,
+            // commandable_pending_execution_tag,
+            // commandable_executing_tag,
         ) in pawns_query.iter()
         {
             info!("========== Pawn {:?} ==========", entity);
             info!("{:?}", pawn);
             info!(
-                "{:?} {:?} {:?} {:?}",
+                "{:?}",
+                // "{:?} {:?} {:?} {:?}",
                 commandable,
-                commandable_idle_tag,
-                commandable_pending_execution_tag,
-                commandable_executing_tag
+                // commandable_idle_tag,
+                // commandable_pending_execution_tag,
+                // commandable_executing_tag
             );
             info!("{:?}", movable);
         }
