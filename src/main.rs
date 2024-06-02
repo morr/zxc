@@ -65,7 +65,15 @@ fn main() {
 pub fn close_on_esc(
     focused_windows: Query<(Entity, &Window)>,
     input: Res<ButtonInput<KeyCode>>,
-    pawns_query: Query<(Entity, &Pawn, &Movable, &Commandable)>,
+    pawns_query: Query<(
+        Entity,
+        &Pawn,
+        &Movable,
+        &Commandable,
+        Option<&commandable_state::CommandableStateIdleTag>,
+        Option<&commandable_state::CommandableStatePendingExecutionTag>,
+        Option<&commandable_state::CommandableStateExecutingTag>,
+    )>,
     farms_query: Query<(Entity, &Farm, &Workable)>,
     mut next_state: ResMut<NextState<AppState>>,
     mut event_writer: EventWriter<AppExit>,
@@ -83,10 +91,25 @@ pub fn close_on_esc(
     }
 
     if is_quiting {
-        for (entity, pawn, movable, commandable) in pawns_query.iter() {
+        for (
+            entity,
+            pawn,
+            movable,
+            commandable,
+            commandable_idle_tag,
+            commandable_pending_execution_tag,
+            commandable_executing_tag,
+        ) in pawns_query.iter()
+        {
             info!("========== Pawn {:?} ==========", entity);
             info!("{:?}", pawn);
-            info!("{:?}", commandable);
+            info!(
+                "{:?} {:?} {:?} {:?}",
+                commandable,
+                commandable_idle_tag,
+                commandable_pending_execution_tag,
+                commandable_executing_tag
+            );
             info!("{:?}", movable);
         }
         for (entity, farm, workable) in farms_query.iter() {
