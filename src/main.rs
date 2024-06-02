@@ -70,26 +70,32 @@ pub fn close_on_esc(
     mut next_state: ResMut<NextState<AppState>>,
     mut event_writer: EventWriter<AppExit>,
 ) {
+    let mut is_quiting = false;
+
     for (_window, focus) in focused_windows.iter() {
         if !focus.focused {
             continue;
         }
 
         if input.just_pressed(KeyCode::Escape) {
-            for (entity, pawn, movable, commandable) in pawns_query.iter() {
-                info!("========== Pawn {:?} ==========", entity);
-                info!("{:?}", pawn);
-                info!("{:?}", commandable);
-                info!("{:?}", movable);
-            }
-            for (entity, farm, workable) in farms_query.iter() {
-                info!("========== Farm {:?} ==========", entity);
-                info!("{:?}", farm);
-                info!("{:?}", workable);
-            }
-
-            next_state.set(AppState::Quiting);
-            event_writer.send(AppExit);
+            is_quiting = true;
         }
+    }
+
+    if is_quiting {
+        for (entity, pawn, movable, commandable) in pawns_query.iter() {
+            info!("========== Pawn {:?} ==========", entity);
+            info!("{:?}", pawn);
+            info!("{:?}", commandable);
+            info!("{:?}", movable);
+        }
+        for (entity, farm, workable) in farms_query.iter() {
+            info!("========== Farm {:?} ==========", entity);
+            info!("{:?}", farm);
+            info!("{:?}", workable);
+        }
+
+        next_state.set(AppState::Quiting);
+        event_writer.send(AppExit);
     }
 }
