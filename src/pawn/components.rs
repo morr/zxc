@@ -84,7 +84,8 @@ macro_rules! pawn_states {
                 &mut self,
                 new_state: PawnState,
                 entity: Entity,
-                commands: &mut Commands
+                commands: &mut Commands,
+                state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<PawnState>>,
             ) -> PawnState {
                 use std::mem;
                 log_state_change!("Pawn({:?}).state {:?} => {:?}", entity, self.state, new_state);
@@ -92,7 +93,7 @@ macro_rules! pawn_states {
                 self.remove_old_state_component(commands, entity);
                 let prev_state = mem::replace(&mut self.state, new_state);
                 self.add_new_state_component(commands, entity);
-                // state_change_event_writer.send(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
+                state_change_event_writer.send(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
 
                 prev_state
             }

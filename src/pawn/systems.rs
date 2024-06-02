@@ -188,6 +188,7 @@ pub fn progress_pawn_dying(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn progress_pawn_death(
     mut commands: Commands,
     mut event_reader: EventReader<PawnDeathEvent>,
@@ -196,6 +197,7 @@ pub fn progress_pawn_death(
     mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
     mut available_beds: ResMut<AvailableBeds>,
+    mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for PawnDeathEvent(entity) in event_reader.read() {
         // println!("{:?}", PawnDeathEvent(pawn_entity));
@@ -206,7 +208,7 @@ pub fn progress_pawn_death(
                     PawnState::Dead,
                     *entity,
                     &mut commands,
-                    // &mut state_change_event_writer,
+                    &mut pawn_state_change_event_writer,
                 );
 
                 commandable.clear_queue(

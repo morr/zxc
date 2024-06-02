@@ -19,6 +19,7 @@ fn execute_command(
     mut command_reader: EventReader<SleepCommand>,
     mut query: Query<(&mut Pawn, &mut Commandable)>,
     mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
+    mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for SleepCommand { commandable_entity } in command_reader.read() {
         // println!("{:?}", SleepCommand { commandable_entity }));
@@ -26,7 +27,12 @@ fn execute_command(
             continue;
         };
 
-        pawn.change_state(PawnState::Sleeping, *commandable_entity, &mut commands);
+        pawn.change_state(
+            PawnState::Sleeping,
+            *commandable_entity,
+            &mut commands,
+            &mut pawn_state_change_event_writer,
+        );
 
         commandable.complete_executing(
             *commandable_entity,

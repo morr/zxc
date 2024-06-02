@@ -51,6 +51,7 @@ fn progress_stamina(
     mut query: Query<(Entity, &mut Restable, &mut Commandable, &mut Pawn)>,
     mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
+    mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     let time_amount = time_scale.scale_to_seconds(time.delta_seconds());
 
@@ -82,7 +83,12 @@ fn progress_stamina(
         }
 
         if wasnt_full && restable.is_full() {
-            pawn.change_state(PawnState::Idle, entity, &mut commands);
+            pawn.change_state(
+                PawnState::Idle,
+                entity,
+                &mut commands,
+                &mut pawn_state_change_event_writer,
+            );
         }
     }
 }

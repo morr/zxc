@@ -1,5 +1,6 @@
 use super::*;
 
+#[allow(clippy::too_many_arguments)]
 pub fn process_pending_commands(
     mut commands: Commands,
     mut move_to_tile_command_writer: EventWriter<MoveToCommand>,
@@ -12,7 +13,7 @@ pub fn process_pending_commands(
         // component tags seems to be working unreliable
         // With<commandable_state::CommandableStatePendingExecutionTag>,
     >,
-    // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for (entity, mut commandable, maybe_pawn) in &mut commandable_query {
         continue_unless!(CommandableState::PendingExecution, commandable.state);
@@ -45,7 +46,7 @@ pub fn process_pending_commands(
                     PawnState::ExecutingCommand,
                     entity,
                     &mut commands,
-                    // &mut pawn_state_change_event_writer,
+                    &mut pawn_state_change_event_writer,
                 );
             }
         }
@@ -64,8 +65,7 @@ pub fn process_complete_commands(
     //         With<pawn_state::PawnStateExecutingCommandTag>,
     //     ),
     // >,
-
-    // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for CommandCompleteEvent(entity) in commandable_event_reader.read() {
         // println!("{:?}", CommandCompleteEvent(*entity));
@@ -77,7 +77,7 @@ pub fn process_complete_commands(
                 PawnState::Idle,
                 *entity,
                 &mut commands,
-                // &mut pawn_state_change_event_writer,
+                &mut pawn_state_change_event_writer,
             );
         }
     }
