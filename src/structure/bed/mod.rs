@@ -32,7 +32,7 @@ impl Bed {
         commands: &mut Commands,
         texture: Handle<Image>,
         navmesh: &mut Navmesh,
-        available_beds: &mut ResMut<AvailableBeds>, 
+        available_beds: &mut ResMut<AvailableBeds>,
     ) {
         let size = IVec2::new(BED_SIZE, BED_SIZE);
 
@@ -67,5 +67,17 @@ impl Bed {
         navmesh.add_occupation::<Bed>(id, grid_tile.x, grid_tile.y);
 
         available_beds.increment();
+    }
+
+    pub fn claim_by(
+        &mut self,
+        bed_entity: Entity,
+        pawn_entity: Entity,
+        pawn: &mut Pawn,
+        available_beds: &mut ResMut<AvailableBeds>,
+    ) {
+        self.owner = Some(pawn_entity);
+        pawn.owned_bed = Some(bed_entity);
+        available_beds.decrement();
     }
 }
