@@ -19,7 +19,7 @@ pub struct ToRestCommand {
 #[allow(clippy::too_many_arguments)]
 fn execute_command(
     mut commands: Commands,
-    bed_query: Query<(&Transform, &mut Bed)>,
+    mut bed_query: Query<(Entity, &Transform, &mut Bed)>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable)>,
     mut command_reader: EventReader<ToRestCommand>,
     mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
@@ -41,26 +41,32 @@ fn execute_command(
                 let mut commands_queue = VecDeque::from([sleep_command]);
 
                 if let Some(bed_entity) = pawn.owned_bed {
-                    let (transform, _bed) = bed_query.get(bed_entity).unwrap();
+                    // move to claimed bed
+                    let (_entity, transform, _bed) = bed_query.get(bed_entity).unwrap();
 
-                    // move to bed
                     commands_queue.push_front(CommandType::MoveTo(MoveToCommand {
                         commandable_entity: *commandable_entity,
                         grid_tile: transform.translation.truncate().world_pos_to_grid(),
                     }))
                 } else if available_beds.0 > 0 {
+                    // or claim fee bed
+                    for (bed_entity, transform, mut bed) in bed_query.iter_mut() {
+                        if bed.owner.is_none() {
+                            bed.claim_by(
+                                bed_entity,
+                                *commandable_entity,
+                                &mut pawn,
+                                &mut available_beds,
+                            );
+                            commands_queue.push_front(CommandType::MoveTo(MoveToCommand {
+                                commandable_entity: *commandable_entity,
+                                grid_tile: transform.translation.truncate().world_pos_to_grid(),
+                            }));
+
+                            break;
+                        }
+                    }
                 }
-                // if let Some(transform) = bed_query.iter().next() {
-                //     // either go to bed and sleep there
-                //     commandable.extend_queue(
-                //         CommandType::MoveTo(MoveToCommand {
-                //             commandable_entity: *commandable_entity,
-                //             grid_tile: transform.translation.truncate().world_pos_to_grid(),
-                //         }),
-                //         *commandable_entity,
-                //         &mut commands,
-                //     );
-                // }
 
                 commandable.set_queue(
                     commands_queue,
