@@ -13,15 +13,15 @@ pub fn grid_tile_to_navmesh_index(value: i32) -> usize {
 
 const MAX_ATTEMPTS_TO_FIND_IDLE_WALK_PATH: usize = 30;
 
-pub fn find_valid_end_tile(
-    start_pos: Vec2,
+pub fn find_empty_grid_tile(
+    start_world_pos: Vec2,
     navmesh: &Navmesh,
     rng: &mut impl Rng,
     recursion_depth: usize,
 ) -> IVec2 {
     let move_vector: Vec2 = UnitCircle.sample(rng).into();
     let tiles_to_move = rng.gen_range(2.0..(5.0 + recursion_depth as f32)) * config().tile.size;
-    let end_tile = (start_pos + move_vector * tiles_to_move).world_pos_to_grid();
+    let end_tile = (start_world_pos + move_vector * tiles_to_move).world_pos_to_grid();
 
     if recursion_depth >= MAX_ATTEMPTS_TO_FIND_IDLE_WALK_PATH {
         return end_tile;
@@ -52,6 +52,6 @@ pub fn find_valid_end_tile(
             .iter()
             .map(|offset| end_tile + *offset)
             .find(|&tile| navmesh.is_passable(tile.x, tile.y))
-            .unwrap_or_else(|| find_valid_end_tile(start_pos, navmesh, rng, recursion_depth + 1))
+            .unwrap_or_else(|| find_empty_grid_tile(start_world_pos, navmesh, rng, recursion_depth + 1))
     }
 }

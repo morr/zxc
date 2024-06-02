@@ -73,7 +73,7 @@ fn ai_idle_pawns(
             let mut rng = rand::thread_rng();
 
             let world_pos = transform.translation.truncate();
-            let end_tile = find_valid_end_tile(world_pos, &arc_navmesh.read(), &mut rng, 0);
+            let end_tile = find_empty_grid_tile(world_pos, &arc_navmesh.read(), &mut rng, 0);
 
             commandable.set_queue(
                 CommandType::MoveTo(MoveToCommand {

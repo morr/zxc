@@ -60,7 +60,7 @@ fn execute_command(
                     found_bed_tile.unwrap()
                 } else {
                     // go to random nearest empty place
-                    find_valid_end_tile(
+                    find_empty_grid_tile(
                         pawn_transform.translation.truncate(),
                         &arc_navmesh.read(),
                         &mut rand::thread_rng(),
