@@ -240,26 +240,3 @@ pub fn progress_pawn_death(
         }
     }
 }
-
-// pub fn progress_pawn_age(
-//     mut event_reader: EventReader<PawnBirthdayEvent>,
-//     mut query: Query<&mut Pawn>,
-// ) {
-//     for event in event_reader.read() {
-//         if let Ok(mut pawn) = query.get_mut(event.0) {
-//             pawn.age += 1;
-//         }
-//     }
-// }
-//
-// pub fn progress_pawn_lifetime(
-//     mut event_reader: EventReader<NewDayEvent>,
-//     mut query: Query<&mut Pawn>,
-// ) {
-//     for event in event_reader.read() {
-//         println!("{:?}", event);
-//         for mut pawn in query.iter_mut() {
-//             pawn.lifetime -= config().time.day_duration;
-//         }
-//     }
-// }
