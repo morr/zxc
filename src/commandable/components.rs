@@ -75,11 +75,12 @@ impl Commandable {
     ) where
         I: IntoIterator<Item = CommandType>,
     {
-        self.drain_queue(commandable_interrupt_writer, tasks_scheduler);
+        let new_queue = command_or_commands.into_iter().collect();
+        trace!("Commandable({:?}) set_queue {:?}", entity, new_queue);
 
+        self.drain_queue(commandable_interrupt_writer, tasks_scheduler);
+        self.queue = new_queue;
         self.change_state(CommandableState::PendingExecution, entity, commands);
-        self.queue = command_or_commands.into_iter().collect();
-        trace!("Commandable({:?}) set_queue {:?}", entity, self.queue);
     }
 
     pub fn extend_queue<I>(
@@ -90,11 +91,13 @@ impl Commandable {
     ) where
         I: IntoIterator<Item = CommandType>,
     {
+        let additional_queue = command_or_commands.into_iter().collect::<Vec<_>>();
+        trace!("Commandable({:?}) extend_queue {:?}", entity, additional_queue);
+
+        self.queue.extend(additional_queue);
         if self.state == CommandableState::Idle {
             self.change_state(CommandableState::PendingExecution, entity, commands);
         }
-        self.queue.extend(command_or_commands);
-        trace!("Commandable({:?}) extend_queue {:?}", entity, self.queue);
     }
 
     pub fn start_executing(
@@ -103,7 +106,11 @@ impl Commandable {
         commands: &mut Commands,
     ) -> Option<CommandType> {
         let maybe_command_type = self.queue.pop_front();
-        trace!("Commandable({:?}) start_executing {:?}", entity, maybe_command_type);
+        trace!(
+            "Commandable({:?}) start_executing {:?}",
+            entity,
+            maybe_command_type
+        );
 
         if let Some(ref command_type) = maybe_command_type {
             self.executing = Some(command_type.clone());
@@ -124,10 +131,14 @@ impl Commandable {
         tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
         commandable_event_writer: &mut EventWriter<CommandCompleteEvent>,
     ) {
-        trace!("Commandable({:?}) abort_executing {:?}", entity, self.executing);
+        trace!(
+            "Commandable({:?}) abort_executing {:?}",
+            entity,
+            self.executing
+        );
 
         if let Some(command_type) = self.executing.take() {
-            commandable_interrupt_writer.send(InternalCommandInterruptEvent(command_type));
+            commandable_interrupt_writer.send(log_event!(InternalCommandInterruptEvent(command_type)));
         }
 
         self.drain_queue(commandable_interrupt_writer, tasks_scheduler);
@@ -142,7 +153,11 @@ impl Commandable {
         commands: &mut Commands,
         commandable_event_writer: &mut EventWriter<CommandCompleteEvent>,
     ) {
-        trace!("Commandable({:?}) complete_executing {:?}", entity, self.executing);
+        trace!(
+            "Commandable({:?}) complete_executing {:?}",
+            entity,
+            self.executing
+        );
 
         self.executing = None;
         self.change_state(
@@ -236,7 +251,7 @@ macro_rules! commandable_states {
                 commands: &mut Commands
             ) -> CommandableState {
                 use std::mem;
-                log_state_change!("Commandable({:?}).state {:?} => {:?}", entity, self.state, new_state);
+                log_state_change!("Commandable({:?}).state {:?} => {:?} executing={:?} queue={:?}", entity, self.state, new_state, self.executing, self.queue);
 
                 self.remove_old_state_component(commands, entity);
                 let prev_state = mem::replace(&mut self.state, new_state);
