@@ -82,7 +82,7 @@ pub fn spawn_pawns(
                                 color: Color::WHITE,
                             },
                         ),
-                        visibility: Visibility::Hidden,
+                        // visibility: Visibility::Hidden,
                         transform: Transform::from_xyz(0.0, 21.0, PAWN_Z_INDEX),
                         ..default()
                     },
@@ -137,25 +137,39 @@ pub fn spawn_pawns(
 pub fn update_pawn_state_text(
     mut event_reader: EventReader<EntityStateChangeEvent<PawnState>>,
     children_query: Query<&Children>,
-    mut state_text_query: Query<(&mut Text, &mut Visibility), With<PawnStateText>>,
+    // mut state_text_query: Query<(&mut Text, &mut Visibility), With<PawnStateText>>,
+    mut state_text_query: Query<&mut Text, With<PawnStateText>>,
+    commandable_query: Query<&Commandable>,
 ) {
-    for EntityStateChangeEvent(id, state) in event_reader.read() {
+    for EntityStateChangeEvent(pawn_entity, state) in event_reader.read() {
         // println!("{:?}", event);
-        for text_entity in children_query.iter_descendants(*id) {
-            let (mut text, mut visibility) = state_text_query.get_mut(text_entity).unwrap();
+        for text_entity in children_query.iter_descendants(*pawn_entity) {
+            // let (mut text, mut visibility) = state_text_query.get_mut(text_entity).unwrap();
+            let mut text = state_text_query.get_mut(text_entity).unwrap();
 
-            *visibility = match state {
-                PawnState::ExecutingCommand => Visibility::Hidden,
-                _ => Visibility::Visible,
-            };
+            // *visibility = Visibility::Visible;
 
             text.sections[0].value = match state {
-                PawnState::Idle => "Idle",
-                PawnState::Dead => "DEAD",
-                PawnState::Sleeping => "Zzz",
-                _ => "",
-            }
-            .into();
+                PawnState::Idle => "Idle".into(),
+                PawnState::Dead => "DEAD".into(),
+                PawnState::Sleeping => "Zzz".into(),
+                PawnState::ExecutingCommand => {
+                    let commandable = commandable_query.get(*pawn_entity).unwrap();
+                    if let Some(command_type) = &commandable.executing {
+                        (match command_type {
+                            // CommandType::MoveTo(_) => "",
+                            // CommandType::Sleep(_) => "",
+                            // CommandType::ToRest(_) => "",
+                            // CommandType::UserSelection(_) => "",
+                            CommandType::WorkOn(_) => "Working",
+                            _ => ""
+                        }).into()
+                    } else {
+                        // *visibility = Visibility::Hidden;
+                        String::new()
+                    }
+                }
+            };
         }
     }
 }
