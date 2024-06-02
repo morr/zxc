@@ -43,6 +43,7 @@ fn update_ui_on_hover_event(
     hovered_root_ui_query: Query<Entity, With<HoveredUIRootMarker>>,
     pawn_query: Query<(&Pawn, &Movable, &Restable, &Commandable)>,
     farm_query: Query<(&Farm, &Workable)>,
+    bed_query: Query<&Bed>,
     arc_navmesh: ResMut<ArcNavmesh>,
     font_assets: Res<FontAssets>,
 ) {
@@ -80,14 +81,17 @@ fn update_ui_on_hover_event(
         }
 
         // hover over Bed
-        for tile_id in navmesh.get_occupation::<Bed>(grid_tile.x, grid_tile.y) {
-            render_bed_ui(
-                *tile_id,
-                &mut hovered_root_ui_commands,
-                *grid_tile,
-                &font_assets,
-                UiOpacity::Medium,
-            );
+        for bed_id in navmesh.get_occupation::<Bed>(grid_tile.x, grid_tile.y) {
+            if let Ok(bed) = bed_query.get(*bed_id) {
+                render_bed_ui(
+                    *bed_id,
+                    &mut hovered_root_ui_commands,
+                    bed,
+                    *grid_tile,
+                    &font_assets,
+                    UiOpacity::Medium,
+                );
+            }
         }
 
         // hover over Pawn

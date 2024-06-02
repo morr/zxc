@@ -26,6 +26,7 @@ impl Plugin for UiPlugin {
             UiUserSelectedPlugin,
             UiPawnPlugin,
             UiFarmPlugin,
+            UiBedPlugin,
             UiHoveredPlugin,
             UiDebugPlugin,
         ));
