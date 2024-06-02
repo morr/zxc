@@ -80,4 +80,10 @@ impl Bed {
         pawn.owned_bed = Some(bed_entity);
         available_beds.decrement();
     }
+
+    pub fn unclaim_by(&mut self, pawn: &mut Pawn, available_beds: &mut ResMut<AvailableBeds>) {
+        self.owner = None;
+        pawn.owned_bed = None;
+        available_beds.increment();
+    }
 }

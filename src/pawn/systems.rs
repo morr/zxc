@@ -191,14 +191,16 @@ pub fn progress_pawn_dying(
 pub fn progress_pawn_death(
     mut commands: Commands,
     mut event_reader: EventReader<PawnDeathEvent>,
-    mut query: Query<(&mut Pawn, &mut Commandable)>,
+    mut pawn_query: Query<(&mut Pawn, &mut Commandable)>,
+    mut bed_query: Query<&mut Bed>,
     mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
+    mut available_beds: ResMut<AvailableBeds>,
 ) {
     for PawnDeathEvent(entity) in event_reader.read() {
         // println!("{:?}", PawnDeathEvent(pawn_entity));
 
-        match query.get_mut(*entity) {
+        match pawn_query.get_mut(*entity) {
             Ok((mut pawn, mut commandable)) => {
                 pawn.change_state(
                     PawnState::Dead,
@@ -213,6 +215,11 @@ pub fn progress_pawn_death(
                     &mut commandable_interrupt_writer,
                     &mut tasks_scheduler,
                 );
+
+                if let Some(bed_entity) = pawn.owned_bed {
+                    let mut bed = bed_query.get_mut(bed_entity).unwrap();
+                    bed.unclaim_by(&mut pawn, &mut available_beds);
+                }
             }
             Err(err) => {
                 warn!("Failed to get query result: {:?}", err);
