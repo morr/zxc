@@ -16,7 +16,14 @@ impl Plugin for AiPlugin {
 fn ai_idle_pawns(
     mut commands: Commands,
     mut query: Query<
-        (Entity, &Pawn, &Movable, &mut Commandable, &Transform),
+        (
+            Entity,
+            &Pawn,
+            &Movable,
+            &Restable,
+            &mut Commandable,
+            &Transform,
+        ),
         (
             With<pawn_state::PawnStateIdleTag>,
             // With<commandable_state::CommandableStateIdleTag>,
@@ -27,11 +34,19 @@ fn ai_idle_pawns(
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
     arc_navmesh: Res<ArcNavmesh>,
 ) {
-    for (commandable_entity, pawn, movable, mut commandable, transform) in &mut query {
+    for (commandable_entity, pawn, movable, restable, mut commandable, transform) in &mut query {
         ensure_state!(PawnState::Idle, pawn.state);
         continue_unless!(CommandableState::Idle, commandable.state);
 
-        if let Some(task) = work_queue.get_task() {
+        if restable.is_empty() {
+            commandable.set_queue(
+                CommandType::ToRest(ToRestCommand { commandable_entity }),
+                commandable_entity,
+                &mut commands,
+                &mut commandable_interrupt_writer,
+                &mut tasks_scheduler,
+            );
+        } else if let Some(task) = work_queue.get_task() {
             commandable.set_queue(
                 [
                     CommandType::MoveTo(MoveToCommand {
