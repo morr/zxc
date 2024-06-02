@@ -37,7 +37,7 @@ impl Default for Pawn {
         Self {
             state: PawnState::Idle,
             age,
-            birth_year_day: rng.gen_range(0..config().time.days_in_year),
+            birth_year_day: rng.gen_range(1..=config().time.days_in_year),
             lifetime,
             owned_bed: None,
         }
