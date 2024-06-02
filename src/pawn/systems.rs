@@ -9,7 +9,7 @@ pub fn spawn_pawns(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     assets_collection: Res<AssetsCollection>,
-    // font_assets: Res<FontAssets>,
+    font_assets: Res<FontAssets>,
     warehouse_query: Query<&Transform, With<Warehouse>>,
     farm_query: Query<&Transform, With<Farm>>,
     arc_navmesh: ResMut<ArcNavmesh>,
@@ -71,23 +71,24 @@ pub fn spawn_pawns(
             // .insert(ShowAabbGizmo {
             //     color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
             // })
-            // .with_children(|parent| {
-            //     parent.spawn((
-            //         Text2dBundle {
-            //             text: Text::from_section(
-            //                 pawn_state_string,
-            //                 TextStyle {
-            //                     font: font_assets.fira.clone(),
-            //                     font_size: 13.0,
-            //                     color: Color::WHITE,
-            //                 },
-            //             ),
-            //             transform: Transform::from_xyz(0.0, 21.0, PAWN_Z_INDEX),
-            //             ..default()
-            //         },
-            //         PawnStateText,
-            //     ));
-            // })
+            .with_children(|parent| {
+                parent.spawn((
+                    Text2dBundle {
+                        text: Text::from_section(
+                            "",
+                            TextStyle {
+                                font: font_assets.fira.clone(),
+                                font_size: 13.0,
+                                color: Color::WHITE,
+                            },
+                        ),
+                        visibility: Visibility::Hidden,
+                        transform: Transform::from_xyz(0.0, 21.0, PAWN_Z_INDEX),
+                        ..default()
+                    },
+                    PawnStateText,
+                ));
+            })
             .id();
 
         let grid_tile = position.truncate().world_pos_to_grid();
@@ -106,48 +107,57 @@ pub fn spawn_pawns(
     }
 }
 
-pub fn update_pawn_color(// assets_collection: Res<AssetsCollection>,
-    // mut movable_event_reader: EventReader<EntityStateChangeEvent<MovableState>>,
-    // mut pawn_event_reader: EventReader<EntityStateChangeEvent<PawnState>>,
-    // mut query: Query<&mut Handle<ColorMaterial>>,
-) {
-    // for event in movable_event_reader.read() {
-    //     if let Ok(mut material_handle) = query.get_mut(event.0) {
-    //         *material_handle = match event.1 {
-    //             MovableState::Idle => assets_collection.pawn_idle.clone(),
-    //             MovableState::Moving => assets_collection.pawn_moving.clone(),
-    //             MovableState::Pathfinding(_end_tile) => assets_collection.pawn_pathfinding.clone(),
-    //             MovableState::PathfindingError => assets_collection.pawn_pathfinding_error.clone(),
-    //         };
-    //     }
-    // }
-    //
-    // for event in pawn_event_reader.read() {
-    //     if let Ok(mut material_handle) = query.get_mut(event.0) {
-    //         match event.1 {
-    //             PawnState::Working(_) => *material_handle = assets_collection.pawn_working.clone(),
-    //             PawnState::Dead => *material_handle = assets_collection.pawn_dead.clone(),
-    //             _ => {}
-    //         };
-    //     }
-    // }
-}
+// pub fn update_pawn_color(// assets_collection: Res<AssetsCollection>,
+//     // mut movable_event_reader: EventReader<EntityStateChangeEvent<MovableState>>,
+//     // mut pawn_event_reader: EventReader<EntityStateChangeEvent<PawnState>>,
+//     // mut query: Query<&mut Handle<ColorMaterial>>,
+// ) {
+//     // for event in movable_event_reader.read() {
+//     //     if let Ok(mut material_handle) = query.get_mut(event.0) {
+//     //         *material_handle = match event.1 {
+//     //             MovableState::Idle => assets_collection.pawn_idle.clone(),
+//     //             MovableState::Moving => assets_collection.pawn_moving.clone(),
+//     //             MovableState::Pathfinding(_end_tile) => assets_collection.pawn_pathfinding.clone(),
+//     //             MovableState::PathfindingError => assets_collection.pawn_pathfinding_error.clone(),
+//     //         };
+//     //     }
+//     // }
+//     //
+//     // for event in pawn_event_reader.read() {
+//     //     if let Ok(mut material_handle) = query.get_mut(event.0) {
+//     //         match event.1 {
+//     //             PawnState::Working(_) => *material_handle = assets_collection.pawn_working.clone(),
+//     //             PawnState::Dead => *material_handle = assets_collection.pawn_dead.clone(),
+//     //             _ => {}
+//     //         };
+//     //     }
+//     // }
+// }
 
-pub fn update_pawn_state_text(// mut event_reader: EventReader<EntityStateChangeEvent<PawnState>>,
-    // children_query: Query<&Children>,
-    // mut state_text_query: Query<&mut Text, With<PawnStateText>>,
+pub fn update_pawn_state_text(
+    mut event_reader: EventReader<EntityStateChangeEvent<PawnState>>,
+    children_query: Query<&Children>,
+    mut state_text_query: Query<(&mut Text, &mut Visibility), With<PawnStateText>>,
 ) {
-    // for EntityStateChangeEvent(id, state) in event_reader.read() {
-    //     // println!("{:?}", event);
-    //     for text_entity in children_query.iter_descendants(*id) {
-    //         let mut text = state_text_query.get_mut(text_entity).unwrap();
-    //         text.sections[0].value = match state {
-    //             PawnState::Working(_) => "Working".into(),
-    //             // PawnState::TaskAsigned() => format!("state: {:?}", StateDebug(state)),
-    //             _ => format!("{:?}", state),
-    //         };
-    //     }
-    // }
+    for EntityStateChangeEvent(id, state) in event_reader.read() {
+        // println!("{:?}", event);
+        for text_entity in children_query.iter_descendants(*id) {
+            let (mut text, mut visibility) = state_text_query.get_mut(text_entity).unwrap();
+
+            *visibility = match state {
+                PawnState::ExecutingCommand => Visibility::Hidden,
+                _ => Visibility::Visible,
+            };
+
+            text.sections[0].value = match state {
+                PawnState::Idle => "Idle",
+                PawnState::Dead => "DEAD",
+                PawnState::Sleeping => "Zzz",
+                _ => "",
+            }
+            .into();
+        }
+    }
 }
 
 pub fn progress_pawn_daily(

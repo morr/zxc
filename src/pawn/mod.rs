@@ -14,7 +14,7 @@ impl Plugin for PawnPlugin {
             .add_systems(
                 FixedUpdate,
                 (
-                    update_pawn_color,
+                    // update_pawn_color,
                     update_pawn_state_text,
                     progress_pawn_daily,
                     progress_pawn_dying,
