@@ -17,6 +17,13 @@ impl Plugin for RestablePlugin {
 #[reflect(InspectorOptions)]
 pub struct Restable {
     pub stamina: f32,
+    pub state: RestableState
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Reflect)]
+pub enum RestableState {
+    Active,
+    Sleeping
 }
 
 const FULL_STAMINA: f32 = 100.;
@@ -26,6 +33,7 @@ impl Default for Restable {
     fn default() -> Self {
         Self {
             stamina: FULL_STAMINA,
+            state: RestableState::Active
         }
     }
 }
