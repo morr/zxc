@@ -11,6 +11,12 @@ pub struct Workable {
     pub amount_total: f32,
 }
 
+#[derive(Event, Debug)]
+pub struct WorkCompleteEvent {
+    pub commandable_entity: Entity,
+    pub task: Task,
+}
+
 impl Workable {
     pub fn new(props: (WorkKind, f32)) -> Self {
         Self {
@@ -67,12 +73,6 @@ pub enum WorkKind {
     FarmPlanting,
     FarmTending,
     FarmHarvest,
-}
-
-#[derive(Event, Debug)]
-pub struct WorkCompleteEvent {
-    pub commandable_entity: Entity,
-    pub task: Task,
 }
 
 macro_rules! workable_states {

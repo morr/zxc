@@ -162,8 +162,9 @@ pub fn update_pawn_state_text(
                             // CommandType::ToRest(_) => "",
                             // CommandType::UserSelection(_) => "",
                             CommandType::WorkOn(_) => "Working",
-                            _ => ""
-                        }).into()
+                            _ => "",
+                        })
+                        .into()
                     } else {
                         // *visibility = Visibility::Hidden;
                         String::new()
@@ -216,7 +217,7 @@ pub fn progress_pawn_dying(
 pub fn progress_pawn_death(
     mut commands: Commands,
     mut event_reader: EventReader<PawnDeathEvent>,
-    mut pawn_query: Query<(&mut Pawn, &mut Commandable)>,
+    mut pawn_query: Query<(&mut Pawn, &mut Restable, &mut Commandable)>,
     mut bed_query: Query<&mut Bed>,
     mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
@@ -227,13 +228,15 @@ pub fn progress_pawn_death(
         // println!("{:?}", PawnDeathEvent(pawn_entity));
 
         match pawn_query.get_mut(*entity) {
-            Ok((mut pawn, mut commandable)) => {
+            Ok((mut pawn, mut restable, mut commandable)) => {
                 pawn.change_state(
                     PawnState::Dead,
                     *entity,
                     &mut commands,
                     &mut pawn_state_change_event_writer,
                 );
+
+                restable.change_state(RestableState::Dead, *entity);
 
                 commandable.clear_queue(
                     *entity,

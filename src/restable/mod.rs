@@ -1,15 +1,18 @@
 use crate::*;
+use std::mem;
 
 pub struct RestablePlugin;
 
 impl Plugin for RestablePlugin {
     fn build(&self, app: &mut App) {
-        app.register_type::<Restable>().add_systems(
-            Update,
-            progress_stamina
-                .run_if(in_state(AppState::Playing))
-                .run_if(in_state(SimulationState::Running)),
-        );
+        app.register_type::<Restable>()
+            .add_event::<RestCompleteEvent>()
+            .add_systems(
+                Update,
+                progress_stamina
+                    .run_if(in_state(AppState::Playing))
+                    .run_if(in_state(SimulationState::Running)),
+            );
     }
 }
 
@@ -17,13 +20,19 @@ impl Plugin for RestablePlugin {
 #[reflect(InspectorOptions)]
 pub struct Restable {
     pub stamina: f32,
-    pub state: RestableState
+    pub state: RestableState,
+}
+
+#[derive(Event, Debug)]
+pub struct RestCompleteEvent {
+    pub commandable_entity: Entity,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Reflect)]
 pub enum RestableState {
     Active,
-    Sleeping
+    Resting,
+    Dead,
 }
 
 const FULL_STAMINA: f32 = 100.;
@@ -33,7 +42,7 @@ impl Default for Restable {
     fn default() -> Self {
         Self {
             stamina: FULL_STAMINA,
-            state: RestableState::Active
+            state: RestableState::Active,
         }
     }
 }
@@ -47,8 +56,24 @@ impl Restable {
         self.stamina == FULL_STAMINA
     }
 
-    pub fn change_stamina(&mut self, amount: f32) {
+    pub fn progress_stamina(&mut self, time_amount: f32) {
+        let amount = match self.state {
+            RestableState::Active => time_amount * config().stamina_cost.living,
+            RestableState::Resting => time_amount * config().stamina_cost.sleeping,
+            RestableState::Dead => 0.0,
+        };
+
         self.stamina = (self.stamina + amount).clamp(EMPTY_STAMINA, FULL_STAMINA);
+    }
+
+    pub fn change_state(&mut self, new_state: RestableState, entity: Entity) -> RestableState {
+        log_state_change!(
+            "RestableState({:?}).state {:?} => {:?}",
+            entity,
+            self.state,
+            new_state
+        );
+        mem::replace(&mut self.state, new_state)
     }
 }
 
@@ -56,34 +81,24 @@ fn progress_stamina(
     mut commands: Commands,
     time: Res<Time>,
     time_scale: Res<TimeScale>,
-    mut query: Query<(Entity, &mut Restable, &mut Commandable, &mut Pawn)>,
+    mut query: Query<(Entity, &mut Restable, &mut Commandable)>,
     mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
-    mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    mut event_writer: EventWriter<RestCompleteEvent>,
 ) {
     let time_amount = time_scale.scale_to_seconds(time.delta_seconds());
 
-    for (entity, mut restable, mut commandable, mut pawn) in query.iter_mut() {
+    for (commandable_entity, mut restable, mut commandable) in query.iter_mut() {
         let wasnt_empty = !restable.is_empty();
         let wasnt_full = !restable.is_full();
 
-        restable.change_stamina(match pawn.state {
-            // PawnState::Idle => time_amount * config().stamina_cost.idle,
-            // PawnState::Sleeping => time_amount * config().stamina_cost.sleeping,
-            // PawnState::Moving => time_amount * config().stamina_cost.moving,
-            // PawnState::Working(_) => time_amount * config().stamina_cost.working,
-            // PawnState::Dead | PawnState::TaskAssigned(_) => 0.0,
-            PawnState::Sleeping => time_amount * config().stamina_cost.sleeping,
-            PawnState::Dead => 0.0,
-            _ => time_amount * config().stamina_cost.living,
-        });
+        restable.progress_stamina(time_amount);
 
         if wasnt_empty && restable.is_empty() {
             commandable.set_queue(
-                CommandType::ToRest(ToRestCommand {
-                    commandable_entity: entity,
-                }),
-                entity,
+                CommandType::ToRest(ToRestCommand { commandable_entity }),
+                commandable_entity,
                 &mut commands,
                 &mut commandable_interrupt_writer,
                 &mut tasks_scheduler,
@@ -91,12 +106,7 @@ fn progress_stamina(
         }
 
         if wasnt_full && restable.is_full() {
-            pawn.change_state(
-                PawnState::Idle,
-                entity,
-                &mut commands,
-                &mut pawn_state_change_event_writer,
-            );
+            event_writer.send(log_event!(RestCompleteEvent { commandable_entity }));
         }
     }
 }
