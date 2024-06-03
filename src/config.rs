@@ -43,14 +43,14 @@ pub struct RootConfig {
     pub pawn: PawnConfig,
     pub farming: FarmingConfig,
     pub movement_cost: MovementCostConfig,
-    pub stamina_cost: StaminaCostConfig,
+    pub restable: RestableConfig,
 }
 
 impl RootConfig {
     pub fn calculate_derived_fields(&mut self) {
         self.grid.calculate_derived_fields();
         self.time.calculate_derived_fields();
-        self.stamina_cost.calculate_derived_fields(&self.time);
+        self.restable.calculate_derived_fields(&self.time);
     }
 }
 
@@ -167,26 +167,22 @@ pub struct MovementCostConfig {
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
-pub struct StaminaCostConfig {
-    // /// amount of stamina change per in-game hour of idling
-    // pub idle: f32,
-    // /// amount of stamina change per in-game hour of moving
-    // pub moving: f32,
-    // /// amount of stamina change per in-game hour of working
-    // pub working: f32,
+pub struct RestableConfig {
+    pub resting_on_ground_multiplier: f32,
+    pub resting_on_bed_multiplier: f32,
     /// amount of stamina change per in-game hour of sleeping
-    pub sleeping: f32,
+    pub resting_cost: f32,
     /// amount of stamina change per in-game hour of living
-    pub living: f32,
+    pub activity_cost: f32,
 }
 
-impl StaminaCostConfig {
+impl RestableConfig {
     pub fn calculate_derived_fields(&mut self, time: &TimeConfig) {
         // convert desired numbers to proper values according to ingame hour duration
         // self.idle /= time.hour_duration;
         // self.moving /= time.hour_duration;
         // self.working /= time.hour_duration;
-        self.sleeping /= time.hour_duration;
-        self.living /= time.hour_duration;
+        self.resting_cost /= time.hour_duration;
+        self.activity_cost /= time.hour_duration;
     }
 }

@@ -30,8 +30,8 @@ pub struct RestCompleteEvent {
 
 #[derive(Debug, Clone, PartialEq, Eq, Reflect)]
 pub enum RestableState {
-    Active,
-    Resting,
+    Activity,
+    Resting(bool),
     Dead,
 }
 
@@ -42,7 +42,7 @@ impl Default for Restable {
     fn default() -> Self {
         Self {
             stamina: FULL_STAMINA,
-            state: RestableState::Active,
+            state: RestableState::Activity,
         }
     }
 }
@@ -58,8 +58,15 @@ impl Restable {
 
     pub fn progress_stamina(&mut self, time_amount: f32) {
         let amount = match self.state {
-            RestableState::Active => time_amount * config().stamina_cost.living,
-            RestableState::Resting => time_amount * config().stamina_cost.sleeping,
+            RestableState::Activity => time_amount * config().restable.activity_cost,
+            RestableState::Resting(is_sleep_in_bed) => {
+                let sleep_quality_multiplier = match is_sleep_in_bed {
+                    true => config().restable.resting_on_bed_multiplier,
+                    false => config().restable.resting_on_ground_multiplier,
+                };
+
+                config().restable.resting_cost * time_amount * sleep_quality_multiplier
+            }
             RestableState::Dead => 0.0,
         };
 

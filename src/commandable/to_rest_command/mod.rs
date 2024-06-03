@@ -35,11 +35,14 @@ fn execute_command(
                     &mut commandable_event_writer,
                 );
 
-                let grid_tile = if let Some(bed_entity) = pawn.owned_bed {
+                let (grid_tile, is_sleep_in_bed) = if let Some(bed_entity) = pawn.owned_bed {
                     // move to claimed bed
                     let (_entity, bed_transform, _bed) = bed_query.get(bed_entity).unwrap();
 
-                    bed_transform.translation.truncate().world_pos_to_grid()
+                    (
+                        bed_transform.translation.truncate().world_pos_to_grid(),
+                        true,
+                    )
                 } else if available_beds.0 > 0 {
                     // or claim fee bed
                     let mut found_bed_tile = None;
@@ -57,14 +60,17 @@ fn execute_command(
                             Some(bed_transform.translation.truncate().world_pos_to_grid());
                         break;
                     }
-                    found_bed_tile.unwrap()
+                    (found_bed_tile.unwrap(), true)
                 } else {
                     // go to random nearest empty place
-                    find_empty_grid_tile(
-                        pawn_transform.translation.truncate(),
-                        &arc_navmesh.read(),
-                        &mut rand::thread_rng(),
-                        0,
+                    (
+                        find_empty_grid_tile(
+                            pawn_transform.translation.truncate(),
+                            &arc_navmesh.read(),
+                            &mut rand::thread_rng(),
+                            0,
+                        ),
+                        false,
                     )
                 };
 
@@ -76,6 +82,7 @@ fn execute_command(
                         }),
                         CommandType::Sleep(SleepCommand {
                             commandable_entity: *commandable_entity,
+                            is_sleep_in_bed,
                         }),
                     ],
                     *commandable_entity,

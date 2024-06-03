@@ -20,16 +20,24 @@ impl Plugin for SleepCommandPlugin {
 #[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct SleepCommand {
     pub commandable_entity: Entity,
+    pub is_sleep_in_bed: bool,
 }
 
 fn execute_command(mut command_reader: EventReader<SleepCommand>, mut query: Query<&mut Restable>) {
-    for SleepCommand { commandable_entity } in command_reader.read() {
+    for SleepCommand {
+        commandable_entity,
+        is_sleep_in_bed,
+    } in command_reader.read()
+    {
         // println!("{:?}", SleepCommand { commandable_entity }));
         let Ok(mut restable) = query.get_mut(*commandable_entity) else {
             continue;
         };
 
-        restable.change_state(RestableState::Resting, *commandable_entity);
+        restable.change_state(
+            RestableState::Resting(*is_sleep_in_bed),
+            *commandable_entity,
+        );
     }
 }
 
@@ -48,6 +56,7 @@ fn monitor_completion(
         };
         let CommandType::Sleep(SleepCommand {
             commandable_entity: command_commandable_entity,
+            ..
         }) = command_type
         else {
             continue;
@@ -61,7 +70,7 @@ fn monitor_completion(
             &mut commands,
             &mut commandable_event_writer,
         );
-        restable.change_state(RestableState::Active, *commandable_entity);
+        restable.change_state(RestableState::Activity, *commandable_entity);
     }
 }
 
@@ -70,9 +79,12 @@ fn handle_internal_interrupts(
     mut query: Query<&mut Restable>,
 ) {
     for InternalCommandInterruptEvent(interrupted_command) in interrupt_reader.read() {
-        if let CommandType::Sleep(SleepCommand { commandable_entity }) = interrupted_command {
+        if let CommandType::Sleep(SleepCommand {
+            commandable_entity, ..
+        }) = interrupted_command
+        {
             if let Ok(mut restable) = query.get_mut(*commandable_entity) {
-                restable.change_state(RestableState::Active, *commandable_entity);
+                restable.change_state(RestableState::Activity, *commandable_entity);
             }
         }
     }
