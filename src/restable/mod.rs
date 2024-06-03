@@ -28,10 +28,10 @@ pub struct RestCompleteEvent {
     pub commandable_entity: Entity,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Reflect)]
+#[derive(Debug, Clone, PartialEq, Reflect)]
 pub enum RestableState {
     Activity,
-    Resting(bool),
+    Resting(f32),
     Dead,
 }
 
@@ -59,12 +59,7 @@ impl Restable {
     pub fn progress_stamina(&mut self, time_amount: f32) {
         let amount = match self.state {
             RestableState::Activity => time_amount * config().restable.activity_cost,
-            RestableState::Resting(is_sleep_in_bed) => {
-                let sleep_quality_multiplier = match is_sleep_in_bed {
-                    true => config().restable.resting_on_bed_multiplier,
-                    false => config().restable.resting_on_ground_multiplier,
-                };
-
+            RestableState::Resting(sleep_quality_multiplier) => {
                 config().restable.resting_cost * time_amount * sleep_quality_multiplier
             }
             RestableState::Dead => 0.0,
@@ -81,6 +76,13 @@ impl Restable {
             new_state
         );
         mem::replace(&mut self.state, new_state)
+    }
+
+    pub fn sleep_quality_multiplier(is_sleep_in_bed: bool) -> f32 {
+        match is_sleep_in_bed {
+            true => config().restable.resting_on_bed_multiplier,
+            false => config().restable.resting_on_ground_multiplier,
+        }
     }
 }
 

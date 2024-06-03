@@ -35,7 +35,7 @@ fn execute_command(mut command_reader: EventReader<SleepCommand>, mut query: Que
         };
 
         restable.change_state(
-            RestableState::Resting(*is_sleep_in_bed),
+            RestableState::Resting(Restable::sleep_quality_multiplier(*is_sleep_in_bed)),
             *commandable_entity,
         );
     }

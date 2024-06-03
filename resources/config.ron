@@ -9,7 +9,7 @@ RootConfig(
         size: 32.0,
     ),
     starting_scene: StartingSceneConfig(
-        pawns: 1,
+        pawns: 2,
         day_hour: 8,
         farm_width: 2,
         farm_height: 2,
