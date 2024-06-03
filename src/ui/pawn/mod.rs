@@ -39,6 +39,8 @@ struct MovableStateTextUIMarker {}
 pub struct RestableComponentUIMarker {}
 
 #[derive(Component, Default)]
+struct RestableStateTextUIMarker {}
+#[derive(Component, Default)]
 struct RestableStaminaTextUIMarker {}
 
 #[derive(Component, Default)]
@@ -74,6 +76,7 @@ fn update_pawn_ui(
             Option<&MovableSpeedTextUIMarker>,
             Option<&MovablePathTextUIMarker>,
             Option<&MovableStateTextUIMarker>,
+            Option<&RestableStateTextUIMarker>,
             Option<&RestableStaminaTextUIMarker>,
             Option<&CommandableStateTextUIMarker>,
             Option<&CommandableExecutingTextUIMarker>,
@@ -87,6 +90,7 @@ fn update_pawn_ui(
             With<MovableSpeedTextUIMarker>,
             With<MovablePathTextUIMarker>,
             With<MovableStateTextUIMarker>,
+            With<RestableStateTextUIMarker>,
             With<RestableStaminaTextUIMarker>,
             With<CommandableStateTextUIMarker>,
             With<CommandableExecutingTextUIMarker>,
@@ -132,6 +136,7 @@ fn update_text_markers_recursive(
             Option<&MovableSpeedTextUIMarker>,
             Option<&MovablePathTextUIMarker>,
             Option<&MovableStateTextUIMarker>,
+            Option<&RestableStateTextUIMarker>,
             Option<&RestableStaminaTextUIMarker>,
             Option<&CommandableStateTextUIMarker>,
             Option<&CommandableExecutingTextUIMarker>,
@@ -145,6 +150,7 @@ fn update_text_markers_recursive(
             With<MovableSpeedTextUIMarker>,
             With<MovablePathTextUIMarker>,
             With<MovableStateTextUIMarker>,
+            With<RestableStateTextUIMarker>,
             With<RestableStaminaTextUIMarker>,
             With<CommandableStateTextUIMarker>,
             With<CommandableExecutingTextUIMarker>,
@@ -162,6 +168,7 @@ fn update_text_markers_recursive(
         movable_speed_marker,
         movable_path_marker,
         movable_state_marker,
+        restable_state_marker,
         restable_stamina_marker,
         commandable_state_marker,
         commandable_executing_command_marker,
@@ -188,6 +195,9 @@ fn update_text_markers_recursive(
         }
         if movable_state_marker.is_some() {
             text.sections[0].value = movable_state_text(movable);
+        }
+        if restable_state_marker.is_some() {
+            text.sections[0].value = restable_state_text(restable);
         }
         if restable_stamina_marker.is_some() {
             text.sections[0].value = restable_stamina_text(restable);
@@ -284,6 +294,10 @@ pub fn render_pawn_ui(
                     >())
                     .with_children(|parent| {
                         parent.spawn(headline_text_bundle("Restable".into(), font_assets));
+                        parent.spawn(property_text_bundle::<RestableStateTextUIMarker>(
+                            restable_state_text(restable),
+                            font_assets,
+                        ));
                         parent.spawn(property_text_bundle::<RestableStaminaTextUIMarker>(
                             restable_stamina_text(restable),
                             font_assets,
@@ -359,6 +373,9 @@ fn movable_state_text(movable: &Movable) -> String {
     format!("state: {:?}", movable.state)
 }
 
+fn restable_state_text(restable: &Restable) -> String {
+    format!("state: {:?}", restable.state)
+}
 fn restable_stamina_text(restable: &Restable) -> String {
     format!("stamina: {:.2}", restable.stamina)
 }
