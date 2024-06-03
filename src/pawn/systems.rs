@@ -152,13 +152,12 @@ pub fn update_pawn_state_text(
             text.sections[0].value = match state {
                 PawnState::Idle => "Idle".into(),
                 PawnState::Dead => "DEAD".into(),
-                PawnState::Sleeping => "Zzz".into(),
                 PawnState::ExecutingCommand => {
                     let commandable = commandable_query.get(*pawn_entity).unwrap();
                     if let Some(command_type) = &commandable.executing {
                         (match command_type {
                             // CommandType::MoveTo(_) => "",
-                            // CommandType::Sleep(_) => "",
+                            CommandType::Sleep(_) => "Zzz",
                             // CommandType::ToRest(_) => "",
                             // CommandType::UserSelection(_) => "",
                             CommandType::WorkOn(_) => "Working",

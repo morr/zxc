@@ -121,7 +121,6 @@ macro_rules! pawn_states {
 pawn_states!(
     (Idle, PawnStateIdleTag),
     (ExecutingCommand, PawnStateExecutingCommandTag),
-    (Sleeping, PawnStateSleepingTag),
     (Dead, PawnStateDeadTag),
 );
 
