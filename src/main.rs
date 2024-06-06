@@ -54,6 +54,7 @@ fn main() {
             ai::AiPlugin,
             pawn::PawnPlugin,
             restable::RestablePlugin,
+            hungerable::HungerablePlugin,
             workable::WorkablePlugin,
             movable::MovablePlugin,
             commandable::CommandablePlugin,
