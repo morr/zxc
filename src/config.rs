@@ -44,6 +44,7 @@ pub struct RootConfig {
     pub farming: FarmingConfig,
     pub movement_cost: MovementCostConfig,
     pub restable: RestableConfig,
+    pub feedable: FeedableConfig,
 }
 
 impl RootConfig {
@@ -51,6 +52,7 @@ impl RootConfig {
         self.grid.calculate_derived_fields();
         self.time.calculate_derived_fields();
         self.restable.calculate_derived_fields(&self.time);
+        self.feedable.calculate_derived_fields(&self.time);
     }
 }
 
@@ -184,5 +186,17 @@ impl RestableConfig {
         // self.working /= time.hour_duration;
         self.resting_cost /= time.hour_duration;
         self.activity_cost /= time.hour_duration;
+    }
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct FeedableConfig {
+    /// amount of saturation change per in-game hour
+    pub hunger_cost: f32
+}
+
+impl FeedableConfig {
+    pub fn calculate_derived_fields(&mut self, time: &TimeConfig) {
+        self.hunger_cost /= time.hour_duration;
     }
 }
