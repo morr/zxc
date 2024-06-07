@@ -40,12 +40,13 @@ impl Feedable {
     }
 
     pub fn progress_saturation(&mut self, time_amount: f32) {
-        self.saturation = (self.saturation - time_amount * config().feedable.hunger_cost)
-            .clamp(EMPTY_SATURATION, FULL_SATURATION);
+        let amount = time_amount * config().feedable.hunger_cost;
+        self.saturation = (self.saturation + amount).clamp(EMPTY_SATURATION, FULL_SATURATION);
     }
 }
 
-fn progress_saturation(// mut commands: Commands,
+fn progress_saturation(
+    // mut commands: Commands,
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Feedable)>,
@@ -73,7 +74,7 @@ fn progress_saturation(// mut commands: Commands,
         //         &mut tasks_scheduler,
         //     );
         // }
-        //    
+        //
         // if wasnt_full && feedable.is_full() {
         //     event_writer.send(log_event!(RestCompleteEvent { commandable_entity }));
         // }
