@@ -41,7 +41,7 @@ fn update_ui_on_hover_event(
     hovered_grid_tile: Res<HoveredGridTile>,
     mut occupation_change_event_reader: EventReader<OccupationChangeEvent>,
     hovered_root_ui_query: Query<Entity, With<HoveredUIRootMarker>>,
-    pawn_query: Query<(&Pawn, &Movable, &Restable, &Commandable)>,
+    pawn_query: Query<(&Pawn, &Movable, &Restable, &Feedable, &Commandable)>,
     farm_query: Query<(&Farm, &Workable)>,
     bed_query: Query<&Bed>,
     arc_navmesh: ResMut<ArcNavmesh>,
@@ -96,13 +96,14 @@ fn update_ui_on_hover_event(
 
         // hover over Pawn
         for movable_id in navmesh.get_occupation::<Movable>(grid_tile.x, grid_tile.y) {
-            if let Ok((pawn, movable, restable, commandable)) = pawn_query.get(*movable_id) {
+            if let Ok((pawn, movable, restable, feedable, commandable)) = pawn_query.get(*movable_id) {
                 render_pawn_ui(
                     *movable_id,
                     &mut hovered_root_ui_commands,
                     pawn,
                     movable,
                     restable,
+                    feedable,
                     commandable,
                     &font_assets,
                     UiOpacity::Medium,

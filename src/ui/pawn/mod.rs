@@ -44,6 +44,12 @@ struct RestableStateTextUIMarker {}
 struct RestableStaminaTextUIMarker {}
 
 #[derive(Component, Default)]
+pub struct FeedableComponentUIMarker {}
+
+#[derive(Component, Default)]
+struct FeedableSaturationTextUIMarker {}
+
+#[derive(Component, Default)]
 pub struct CommandableComponentUIMarker {}
 
 #[derive(Component, Default)]
@@ -78,6 +84,7 @@ fn update_pawn_ui(
             Option<&MovableStateTextUIMarker>,
             Option<&RestableStateTextUIMarker>,
             Option<&RestableStaminaTextUIMarker>,
+            Option<&FeedableSaturationTextUIMarker>,
             Option<&CommandableStateTextUIMarker>,
             Option<&CommandableExecutingTextUIMarker>,
             Option<&CommandableQueueTextUIMarker>,
@@ -92,16 +99,17 @@ fn update_pawn_ui(
             With<MovableStateTextUIMarker>,
             With<RestableStateTextUIMarker>,
             With<RestableStaminaTextUIMarker>,
+            With<FeedableSaturationTextUIMarker>,
             With<CommandableStateTextUIMarker>,
             With<CommandableExecutingTextUIMarker>,
             With<CommandableQueueTextUIMarker>,
         )>,
     >,
-    components_query: Query<(&Pawn, &Movable, &Restable, &Commandable)>,
+    components_query: Query<(&Pawn, &Movable, &Restable, &Feedable, &Commandable)>,
     children_query: Query<&Children>,
 ) {
     for (ui_id, ui_marker) in ui_query.iter() {
-        if let Ok((pawn, movable, restable, commandable)) = components_query.get(ui_marker.pawn_id)
+        if let Ok((pawn, movable, restable, feedable, commandable)) = components_query.get(ui_marker.pawn_id)
         {
             if let Ok(children) = children_query.get(ui_id) {
                 for &child in children.iter() {
@@ -110,6 +118,7 @@ fn update_pawn_ui(
                         pawn,
                         movable,
                         restable,
+                        feedable,
                         commandable,
                         &mut texts,
                         &children_query,
@@ -125,6 +134,7 @@ fn update_text_markers_recursive(
     pawn: &Pawn,
     movable: &Movable,
     restable: &Restable,
+    feedable: &Feedable,
     commandable: &Commandable,
     texts: &mut Query<
         (
@@ -138,6 +148,7 @@ fn update_text_markers_recursive(
             Option<&MovableStateTextUIMarker>,
             Option<&RestableStateTextUIMarker>,
             Option<&RestableStaminaTextUIMarker>,
+            Option<&FeedableSaturationTextUIMarker>,
             Option<&CommandableStateTextUIMarker>,
             Option<&CommandableExecutingTextUIMarker>,
             Option<&CommandableQueueTextUIMarker>,
@@ -152,6 +163,7 @@ fn update_text_markers_recursive(
             With<MovableStateTextUIMarker>,
             With<RestableStateTextUIMarker>,
             With<RestableStaminaTextUIMarker>,
+            With<FeedableSaturationTextUIMarker>,
             With<CommandableStateTextUIMarker>,
             With<CommandableExecutingTextUIMarker>,
             With<CommandableQueueTextUIMarker>,
@@ -170,6 +182,7 @@ fn update_text_markers_recursive(
         movable_state_marker,
         restable_state_marker,
         restable_stamina_marker,
+        feedable_saturation_marker,
         commandable_state_marker,
         commandable_executing_command_marker,
         commandable_pending_commands_marker,
@@ -202,6 +215,9 @@ fn update_text_markers_recursive(
         if restable_stamina_marker.is_some() {
             text.sections[0].value = restable_stamina_text(restable);
         }
+        if feedable_saturation_marker.is_some() {
+            text.sections[0].value = feedable_saturation_text(feedable);
+        }
         if commandable_state_marker.is_some() {
             text.sections[0].value = commandable_state_text(commandable);
         }
@@ -220,6 +236,7 @@ fn update_text_markers_recursive(
                 pawn,
                 movable,
                 restable,
+                feedable,
                 commandable,
                 texts,
                 children_query,
@@ -235,6 +252,7 @@ pub fn render_pawn_ui(
     pawn: &Pawn,
     movable: &Movable,
     restable: &Restable,
+    feedable: &Feedable,
     commandable: &Commandable,
     font_assets: &Res<FontAssets>,
     opacity: UiOpacity,
@@ -300,6 +318,18 @@ pub fn render_pawn_ui(
                         ));
                         parent.spawn(property_text_bundle::<RestableStaminaTextUIMarker>(
                             restable_stamina_text(restable),
+                            font_assets,
+                        ));
+                    });
+
+                parent
+                    .spawn(render_entity_component_node_bunlde::<
+                        FeedableComponentUIMarker,
+                    >())
+                    .with_children(|parent| {
+                        parent.spawn(headline_text_bundle("Feedable".into(), font_assets));
+                        parent.spawn(property_text_bundle::<FeedableSaturationTextUIMarker>(
+                            feedable_saturation_text(feedable),
                             font_assets,
                         ));
                     });
@@ -378,6 +408,10 @@ fn restable_state_text(restable: &Restable) -> String {
 }
 fn restable_stamina_text(restable: &Restable) -> String {
     format!("stamina: {:.2}", restable.stamina)
+}
+
+fn feedable_saturation_text(feedable: &Feedable) -> String {
+    format!("saturation: {:.2}", feedable.saturation)
 }
 
 fn commandable_state_text(commandable: &Commandable) -> String {
