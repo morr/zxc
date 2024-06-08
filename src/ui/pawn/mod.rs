@@ -41,13 +41,13 @@ pub struct RestableComponentUIMarker {}
 #[derive(Component, Default)]
 struct RestableStateTextUIMarker {}
 #[derive(Component, Default)]
-struct RestableStaminaTextUIMarker {}
+struct RestableFatigueTextUIMarker {}
 
 #[derive(Component, Default)]
 pub struct FeedableComponentUIMarker {}
 
 #[derive(Component, Default)]
-struct FeedableSaturationTextUIMarker {}
+struct FeedableHungerTextUIMarker {}
 
 #[derive(Component, Default)]
 pub struct CommandableComponentUIMarker {}
@@ -83,8 +83,8 @@ fn update_pawn_ui(
             Option<&MovablePathTextUIMarker>,
             Option<&MovableStateTextUIMarker>,
             Option<&RestableStateTextUIMarker>,
-            Option<&RestableStaminaTextUIMarker>,
-            Option<&FeedableSaturationTextUIMarker>,
+            Option<&RestableFatigueTextUIMarker>,
+            Option<&FeedableHungerTextUIMarker>,
             Option<&CommandableStateTextUIMarker>,
             Option<&CommandableExecutingTextUIMarker>,
             Option<&CommandableQueueTextUIMarker>,
@@ -98,8 +98,8 @@ fn update_pawn_ui(
             With<MovablePathTextUIMarker>,
             With<MovableStateTextUIMarker>,
             With<RestableStateTextUIMarker>,
-            With<RestableStaminaTextUIMarker>,
-            With<FeedableSaturationTextUIMarker>,
+            With<RestableFatigueTextUIMarker>,
+            With<FeedableHungerTextUIMarker>,
             With<CommandableStateTextUIMarker>,
             With<CommandableExecutingTextUIMarker>,
             With<CommandableQueueTextUIMarker>,
@@ -147,8 +147,8 @@ fn update_text_markers_recursive(
             Option<&MovablePathTextUIMarker>,
             Option<&MovableStateTextUIMarker>,
             Option<&RestableStateTextUIMarker>,
-            Option<&RestableStaminaTextUIMarker>,
-            Option<&FeedableSaturationTextUIMarker>,
+            Option<&RestableFatigueTextUIMarker>,
+            Option<&FeedableHungerTextUIMarker>,
             Option<&CommandableStateTextUIMarker>,
             Option<&CommandableExecutingTextUIMarker>,
             Option<&CommandableQueueTextUIMarker>,
@@ -162,8 +162,8 @@ fn update_text_markers_recursive(
             With<MovablePathTextUIMarker>,
             With<MovableStateTextUIMarker>,
             With<RestableStateTextUIMarker>,
-            With<RestableStaminaTextUIMarker>,
-            With<FeedableSaturationTextUIMarker>,
+            With<RestableFatigueTextUIMarker>,
+            With<FeedableHungerTextUIMarker>,
             With<CommandableStateTextUIMarker>,
             With<CommandableExecutingTextUIMarker>,
             With<CommandableQueueTextUIMarker>,
@@ -181,8 +181,8 @@ fn update_text_markers_recursive(
         movable_path_marker,
         movable_state_marker,
         restable_state_marker,
-        restable_stamina_marker,
-        feedable_saturation_marker,
+        restable_fatigue_marker,
+        feedable_hunger_marker,
         commandable_state_marker,
         commandable_executing_command_marker,
         commandable_pending_commands_marker,
@@ -212,11 +212,11 @@ fn update_text_markers_recursive(
         if restable_state_marker.is_some() {
             text.sections[0].value = restable_state_text(restable);
         }
-        if restable_stamina_marker.is_some() {
-            text.sections[0].value = restable_stamina_text(restable);
+        if restable_fatigue_marker.is_some() {
+            text.sections[0].value = restable_fatigue_text(restable);
         }
-        if feedable_saturation_marker.is_some() {
-            text.sections[0].value = feedable_saturation_text(feedable);
+        if feedable_hunger_marker.is_some() {
+            text.sections[0].value = feedable_hunger_text(feedable);
         }
         if commandable_state_marker.is_some() {
             text.sections[0].value = commandable_state_text(commandable);
@@ -316,8 +316,8 @@ pub fn render_pawn_ui(
                             restable_state_text(restable),
                             font_assets,
                         ));
-                        parent.spawn(property_text_bundle::<RestableStaminaTextUIMarker>(
-                            restable_stamina_text(restable),
+                        parent.spawn(property_text_bundle::<RestableFatigueTextUIMarker>(
+                            restable_fatigue_text(restable),
                             font_assets,
                         ));
                     });
@@ -328,8 +328,8 @@ pub fn render_pawn_ui(
                     >())
                     .with_children(|parent| {
                         parent.spawn(headline_text_bundle("Feedable".into(), font_assets));
-                        parent.spawn(property_text_bundle::<FeedableSaturationTextUIMarker>(
-                            feedable_saturation_text(feedable),
+                        parent.spawn(property_text_bundle::<FeedableHungerTextUIMarker>(
+                            feedable_hunger_text(feedable),
                             font_assets,
                         ));
                     });
@@ -406,12 +406,12 @@ fn movable_state_text(movable: &Movable) -> String {
 fn restable_state_text(restable: &Restable) -> String {
     format!("state: {:?}", restable.state)
 }
-fn restable_stamina_text(restable: &Restable) -> String {
-    format!("stamina: {:.2}", restable.stamina)
+fn restable_fatigue_text(restable: &Restable) -> String {
+    format!("fatigue: {:.2}", restable.fatigue)
 }
 
-fn feedable_saturation_text(feedable: &Feedable) -> String {
-    format!("saturation: {:.2}", feedable.saturation)
+fn feedable_hunger_text(feedable: &Feedable) -> String {
+    format!("hunger: {:.2}", feedable.hunger)
 }
 
 fn commandable_state_text(commandable: &Commandable) -> String {

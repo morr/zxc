@@ -9,7 +9,7 @@ impl Plugin for RestablePlugin {
             .add_event::<RestCompleteEvent>()
             .add_systems(
                 Update,
-                progress_stamina
+                progress_fatigue
                     .run_if(in_state(AppState::Playing))
                     .run_if(in_state(SimulationState::Running)),
             );
@@ -19,7 +19,7 @@ impl Plugin for RestablePlugin {
 #[derive(Component, Debug, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
 pub struct Restable {
-    pub stamina: f32,
+    pub fatigue: f32,
     pub state: RestableState,
 }
 
@@ -35,13 +35,13 @@ pub enum RestableState {
     Dead,
 }
 
-const FULL_STAMINA: f32 = 100.;
-const EMPTY_STAMINA: f32 = 0.;
+const FULL_FATIGUE: f32 = 100.;
+const EMPTY_FATIGUE: f32 = 0.;
 
 impl Default for Restable {
     fn default() -> Self {
         Self {
-            stamina: FULL_STAMINA,
+            fatigue: FULL_FATIGUE,
             state: RestableState::Activity,
         }
     }
@@ -49,14 +49,14 @@ impl Default for Restable {
 
 impl Restable {
     pub fn is_empty(&self) -> bool {
-        self.stamina == EMPTY_STAMINA
+        self.fatigue == EMPTY_FATIGUE
     }
 
     pub fn is_full(&self) -> bool {
-        self.stamina == FULL_STAMINA
+        self.fatigue == FULL_FATIGUE
     }
 
-    pub fn progress_stamina(&mut self, time_amount: f32) {
+    pub fn progress_fatigue(&mut self, time_amount: f32) {
         let amount = match self.state {
             RestableState::Activity => time_amount * config().restable.activity_cost,
             RestableState::Resting(sleep_quality_multiplier) => {
@@ -65,7 +65,7 @@ impl Restable {
             RestableState::Dead => 0.0,
         };
 
-        self.stamina = (self.stamina + amount).clamp(EMPTY_STAMINA, FULL_STAMINA);
+        self.fatigue = (self.fatigue + amount).clamp(EMPTY_FATIGUE, FULL_FATIGUE);
     }
 
     pub fn change_state(&mut self, new_state: RestableState, entity: Entity) -> RestableState {
@@ -86,7 +86,7 @@ impl Restable {
     }
 }
 
-fn progress_stamina(
+fn progress_fatigue(
     mut commands: Commands,
     time: Res<Time>,
     time_scale: Res<TimeScale>,
@@ -102,7 +102,7 @@ fn progress_stamina(
         let wasnt_empty = !restable.is_empty();
         let wasnt_full = !restable.is_full();
 
-        restable.progress_stamina(time_amount);
+        restable.progress_fatigue(time_amount);
 
         if wasnt_empty && restable.is_empty() {
             commandable.set_queue(
