@@ -6,46 +6,46 @@ impl Plugin for FeedablePlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Feedable>().add_systems(
             Update,
-            progress_hunger
+            progress_saturation
                 .run_if(in_state(AppState::Playing))
                 .run_if(in_state(SimulationState::Running)),
         );
     }
 }
 
-const FULL_HUNGER: f32 = 100.;
-const NO_HUNGER: f32 = 0.;
+const FULL_SATURATION: f32 = 100.;
+const EMPTY_SATURATION: f32 = 0.;
 
 #[derive(Component, Debug, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
 pub struct Feedable {
-    pub hunger: f32,
+    pub saturation: f32,
 }
 
 impl Default for Feedable {
     fn default() -> Self {
         Self {
-            hunger: NO_HUNGER,
+            saturation: FULL_SATURATION,
         }
     }
 }
 
 impl Feedable {
     pub fn is_empty(&self) -> bool {
-        self.hunger == NO_HUNGER
+        self.saturation == EMPTY_SATURATION
     }
 
     pub fn is_full(&self) -> bool {
-        self.hunger == FULL_HUNGER
+        self.saturation == FULL_SATURATION
     }
 
-    pub fn progress_hunger(&mut self, time_amount: f32) {
+    pub fn progress_saturation(&mut self, time_amount: f32) {
         let amount = time_amount * config().feedable.hunger_cost;
-        self.hunger = (self.hunger + amount).clamp(NO_HUNGER, FULL_HUNGER);
+        self.saturation = (self.saturation + amount).clamp(EMPTY_SATURATION, FULL_SATURATION);
     }
 }
 
-fn progress_hunger(
+fn progress_saturation(
     // mut commands: Commands,
     time: Res<Time>,
     time_scale: Res<TimeScale>,
@@ -63,7 +63,7 @@ fn progress_hunger(
         // let wasnt_empty = !feedable.is_empty();
         // let wasnt_full = !feedable.is_full();
 
-        feedable.progress_hunger(time_amount);
+        feedable.progress_saturation(time_amount);
 
         // if wasnt_empty && feedable.is_empty() {
         //     commandable.set_queue(
