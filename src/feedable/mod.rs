@@ -6,7 +6,7 @@ impl Plugin for FeedablePlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Feedable>().add_systems(
             Update,
-            progress_saturation
+            progress_hunger
                 .run_if(in_state(AppState::Playing))
                 .run_if(in_state(SimulationState::Running)),
         );
@@ -45,7 +45,7 @@ impl Feedable {
     }
 }
 
-fn progress_saturation(
+fn progress_hunger(
     // mut commands: Commands,
     time: Res<Time>,
     time_scale: Res<TimeScale>,
