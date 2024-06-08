@@ -35,25 +35,25 @@ pub enum RestableState {
     Dead,
 }
 
-const FULL_FATIGUE: f32 = 100.;
-const EMPTY_FATIGUE: f32 = 0.;
+const FATIGUE_FRESH: f32 = 0.;
+const FATIGUE_OVERFLOW: f32 = 100.;
 
 impl Default for Restable {
     fn default() -> Self {
         Self {
-            fatigue: FULL_FATIGUE,
+            fatigue: FATIGUE_FRESH,
             state: RestableState::Activity,
         }
     }
 }
 
 impl Restable {
-    pub fn is_empty(&self) -> bool {
-        self.fatigue == EMPTY_FATIGUE
+    pub fn is_fresh(&self) -> bool {
+        self.fatigue == FATIGUE_FRESH
     }
 
-    pub fn is_full(&self) -> bool {
-        self.fatigue == FULL_FATIGUE
+    pub fn is_overflowed(&self) -> bool {
+        self.fatigue == FATIGUE_OVERFLOW
     }
 
     pub fn progress_fatigue(&mut self, time_amount: f32) {
@@ -65,7 +65,7 @@ impl Restable {
             RestableState::Dead => 0.0,
         };
 
-        self.fatigue = (self.fatigue + amount).clamp(EMPTY_FATIGUE, FULL_FATIGUE);
+        self.fatigue = (self.fatigue + amount).clamp(FATIGUE_FRESH, FATIGUE_OVERFLOW);
     }
 
     pub fn change_state(&mut self, new_state: RestableState, entity: Entity) -> RestableState {
@@ -99,12 +99,12 @@ fn progress_fatigue(
     let time_amount = time_scale.scale_to_seconds(time.delta_seconds());
 
     for (commandable_entity, mut restable, mut commandable) in query.iter_mut() {
-        let wasnt_empty = !restable.is_empty();
-        let wasnt_full = !restable.is_full();
+        let wasnt_fresh = !restable.is_fresh();
+        let wasnt_overflowed = !restable.is_overflowed();
 
         restable.progress_fatigue(time_amount);
 
-        if wasnt_empty && restable.is_empty() {
+        if wasnt_overflowed && restable.is_overflowed() {
             commandable.set_queue(
                 CommandType::ToRest(ToRestCommand { commandable_entity }),
                 commandable_entity,
@@ -114,7 +114,7 @@ fn progress_fatigue(
             );
         }
 
-        if wasnt_full && restable.is_full() {
+        if wasnt_fresh && restable.is_fresh() {
             event_writer.send(log_event!(RestCompleteEvent { commandable_entity }));
         }
     }

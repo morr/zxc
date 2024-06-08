@@ -51,9 +51,9 @@ RootConfig(
         resting_on_ground_multiplier: 0.75,
         resting_on_bed_multiplier: 1.0,
         // 7 hours of sleep => 100% stamina restored (100 / 7 = 14.2857142857)
-        resting_cost: 14.2857142857,
+        resting_cost: -14.2857142857,
         // 17 hours of living => 100% stamina drained (100 / 17 = 5.8823529412)
-        activity_cost: -5.8823529412,
+        activity_cost: 5.8823529412,
         //activity_cost: -50.0,
         //activity_cost: -0.0002,
     ),

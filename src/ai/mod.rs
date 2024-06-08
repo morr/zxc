@@ -38,7 +38,7 @@ fn ai_idle_pawns(
         ensure_state!(PawnState::Idle, pawn.state);
         continue_unless!(CommandableState::Idle, commandable.state);
 
-        if restable.is_empty() {
+        if restable.is_overflowed() {
             commandable.set_queue(
                 CommandType::ToRest(ToRestCommand { commandable_entity }),
                 commandable_entity,
