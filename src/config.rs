@@ -191,7 +191,7 @@ impl RestableConfig {
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct FeedableConfig {
-    /// amount of saturation change per in-game hour
+    /// amount of hunger change per in-game hour
     pub hunger_cost: f32
 }
 

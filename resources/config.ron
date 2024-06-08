@@ -58,7 +58,7 @@ RootConfig(
         //activity_cost: -0.0002,
     ),
     feedable: FeedableConfig(
-        // 24 hours of living => 100% saturation drained (100 / 24 = 4.1666666667)
-        hunger_cost: -4.1666666667,
+        // 24 hours of living => 100% hunger drained (100 / 24 = 4.1666666667)
+        hunger_cost: 4.1666666667,
     ),
 )
