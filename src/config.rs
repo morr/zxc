@@ -192,11 +192,11 @@ impl RestableConfig {
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct FeedableConfig {
     /// amount of saturation change per in-game hour
-    pub hunger_cost: f32
+    pub living_cost: f32
 }
 
 impl FeedableConfig {
     pub fn calculate_derived_fields(&mut self, time: &TimeConfig) {
-        self.hunger_cost /= time.hour_duration;
+        self.living_cost /= time.hour_duration;
     }
 }

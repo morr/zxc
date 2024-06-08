@@ -13,8 +13,8 @@ impl Plugin for FeedablePlugin {
     }
 }
 
-const FULL_HUNGER: f32 = 100.;
-const NO_HUNGER: f32 = 0.;
+const HUNGER_FRESH: f32 = 0.;
+const HUNGER_OVERFLOW: f32 = 100.;
 
 #[derive(Component, Debug, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
@@ -25,23 +25,23 @@ pub struct Feedable {
 impl Default for Feedable {
     fn default() -> Self {
         Self {
-            hunger: FULL_HUNGER,
+            hunger: HUNGER_FRESH,
         }
     }
 }
 
 impl Feedable {
-    pub fn is_empty(&self) -> bool {
-        self.hunger == NO_HUNGER
+    pub fn is_fresh(&self) -> bool {
+        self.hunger == HUNGER_FRESH
     }
 
-    pub fn is_full(&self) -> bool {
-        self.hunger == FULL_HUNGER
+    pub fn is_overflowed(&self) -> bool {
+        self.hunger == HUNGER_OVERFLOW
     }
 
-    pub fn progress_saturation(&mut self, time_amount: f32) {
-        let amount = time_amount * config().feedable.hunger_cost;
-        self.hunger = (self.hunger + amount).clamp(NO_HUNGER, FULL_HUNGER);
+    pub fn progress_hunger(&mut self, time_amount: f32) {
+        let amount = time_amount * config().feedable.living_cost;
+        self.hunger = (self.hunger + amount).clamp(HUNGER_FRESH, HUNGER_OVERFLOW);
     }
 }
 
@@ -60,12 +60,12 @@ fn progress_saturation(
 
     // for (commandable_entity, mut feedable, mut commandable) in query.iter_mut() {
     for (_commandable_entity, mut feedable) in query.iter_mut() {
-        // let wasnt_empty = !feedable.is_empty();
-        // let wasnt_full = !feedable.is_full();
+        // let wasnt_fresh = !feedable.is_fresh();
+        // let wasnt_full = !feedable.is_overflowed();
 
-        feedable.progress_saturation(time_amount);
+        feedable.progress_hunger(time_amount);
 
-        // if wasnt_empty && feedable.is_empty() {
+        // if wasnt_fresh && feedable.is_fresh() {
         //     commandable.set_queue(
         //         CommandType::ToRest(ToRestCommand { commandable_entity }),
         //         commandable_entity,
@@ -75,7 +75,7 @@ fn progress_saturation(
         //     );
         // }
         //
-        // if wasnt_full && feedable.is_full() {
+        // if wasnt_full && feedable.is_overflowed() {
         //     event_writer.send(log_event!(RestCompleteEvent { commandable_entity }));
         // }
     }
