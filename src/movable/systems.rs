@@ -27,8 +27,8 @@ pub fn move_moving_entities(
                 if current_tile != final_tile {
                     let mut navmesh = arc_navmesh.write();
 
-                    navmesh.remove_occupation::<Movable>(&entity, current_tile.x, current_tile.y);
-                    navmesh.add_occupation::<Movable>(entity, final_tile.x, final_tile.y);
+                    navmesh.remove_occupant::<Movable>(&entity, current_tile.x, current_tile.y);
+                    navmesh.add_occupant::<Movable>(entity, final_tile.x, final_tile.y);
 
                     occupation_change_event_writer
                         .send(OccupationChangeEvent(vec![current_tile, final_tile]));

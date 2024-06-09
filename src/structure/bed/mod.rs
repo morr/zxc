@@ -64,7 +64,7 @@ impl Bed {
             (grid_tile.y)..(grid_tile.y + size.y),
             Navtile::config_cost_to_pathfinding_cost(config().movement_cost.furniture),
         );
-        navmesh.add_occupation::<Bed>(id, grid_tile.x, grid_tile.y);
+        navmesh.add_occupant::<Bed>(id, grid_tile.x, grid_tile.y);
 
         available_beds.increment();
     }

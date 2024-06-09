@@ -62,26 +62,26 @@ impl Navmesh {
             .map_or(false, |navtile| navtile.is_passable())
     }
 
-    pub fn add_occupation<T: 'static>(&mut self, id: Entity, grid_tile_x: i32, grid_tile_y: i32) {
+    pub fn add_occupant<T: 'static>(&mut self, id: Entity, grid_tile_x: i32, grid_tile_y: i32) {
         self.navtiles
             .get_mut(grid_tile_x, grid_tile_y)
-            .add_occupation::<T>(id);
+            .add_occupant::<T>(id);
     }
 
-    pub fn remove_occupation<T: 'static>(&mut self, id: &Entity, grid_tile_x: i32, grid_tile_y: i32) {
+    pub fn remove_occupant<T: 'static>(&mut self, id: &Entity, grid_tile_x: i32, grid_tile_y: i32) {
         self.navtiles
             .get_mut(grid_tile_x, grid_tile_y)
-            .remove_occupation::<T>(id);
+            .remove_occupant::<T>(id);
     }
 
-    pub fn get_type_occupants<T: 'static>(
+    pub fn get_occupants<T: 'static>(
         &self,
         grid_tile_x: i32,
         grid_tile_y: i32,
     ) -> impl Iterator<Item = &Entity> {
         self.navtiles
             .get(grid_tile_x, grid_tile_y)
-            .get_type_occupants::<T>()
+            .get_occupants::<T>()
     }
 
     pub fn get_all_occupants(

@@ -136,7 +136,7 @@ impl Farm {
             grid_tile.y..grid_tile.y + FARM_TILE_SIZE,
             Navtile::config_cost_to_pathfinding_cost(config().movement_cost.farm),
         );
-        navmesh.add_occupation::<Farm>(entity, grid_tile.x, grid_tile.y);
+        navmesh.add_occupant::<Farm>(entity, grid_tile.x, grid_tile.y);
 
         state_change_event_writer.send(log_event!(EntityStateChangeEvent(entity, farm_state)));
     }

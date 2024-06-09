@@ -30,7 +30,7 @@ pub fn spawn_map(
                 .insert(Tile(grid_tile))
                 .id();
 
-            navmesh.add_occupation::<Tile>(id, grid_tile.x, grid_tile.y);
+            navmesh.add_occupant::<Tile>(id, grid_tile.x, grid_tile.y);
             // no need to inform about occupation change for spawned empty map tiles
             // occupation_change_event_writer.send(log_event!(OccupationChangeEvent::new(grid_tile)));
         }
@@ -53,7 +53,7 @@ pub fn track_hover(
 
         let navmesh = arc_navmesh.read();
 
-        for id in navmesh.get_type_occupants::<Tile>(event.0.x, event.0.y) {
+        for id in navmesh.get_occupants::<Tile>(event.0.x, event.0.y) {
             commands.entity(*id).insert(HoverMarker);
             // .insert(ShowAabbGizmo {
             //     color: Some(*Color::WHITE.clone().set_a(0.25)),

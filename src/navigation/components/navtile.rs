@@ -27,13 +27,13 @@ impl Navtile {
         self.cost.is_some()
     }
 
-    pub fn add_occupation<T: 'static>(&mut self, entity: Entity) {
+    pub fn add_occupant<T: 'static>(&mut self, entity: Entity) {
         let type_id = TypeId::of::<T>();
 
         self.occupied_by.entry(type_id).or_default().insert(entity);
     }
 
-    pub fn remove_occupation<T: 'static>(&mut self, entity: &Entity) {
+    pub fn remove_occupant<T: 'static>(&mut self, entity: &Entity) {
         if let Some(entities) = self.occupied_by.get_mut(&TypeId::of::<T>()) {
             entities.remove(entity);
 
@@ -44,7 +44,7 @@ impl Navtile {
         }
     }
 
-    pub fn get_type_occupants<T: 'static>(&self) -> impl Iterator<Item = &Entity> {
+    pub fn get_occupants<T: 'static>(&self) -> impl Iterator<Item = &Entity> {
         self.occupied_by
             .get(&TypeId::of::<T>())
             .into_iter()
