@@ -96,7 +96,9 @@ fn update_ui_on_hover_event(
 
         // hover over Pawn
         for movable_id in navmesh.get_occupants::<Movable>(grid_tile.x, grid_tile.y) {
-            if let Ok((pawn, movable, restable, feedable, commandable)) = pawn_query.get(*movable_id) {
+            if let Ok((pawn, movable, restable, feedable, commandable)) =
+                pawn_query.get(*movable_id)
+            {
                 render_pawn_ui(
                     *movable_id,
                     &mut hovered_root_ui_commands,

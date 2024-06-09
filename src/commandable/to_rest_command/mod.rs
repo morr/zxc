@@ -67,10 +67,8 @@ fn execute_command(
 
                     if arc_navmesh
                         .read()
-                        .is_passable(current_tile.x, current_tile.y)
+                        .has_occupants_except_of::<Movable>(current_tile.x, current_tile.y)
                     {
-                        (current_tile, false)
-                    } else {
                         // go to random nearest empty place
                         (
                             find_empty_grid_tile(
@@ -81,6 +79,8 @@ fn execute_command(
                             ),
                             false,
                         )
+                    } else {
+                        (current_tile, false)
                     }
                 };
 
