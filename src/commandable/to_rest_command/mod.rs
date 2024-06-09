@@ -62,16 +62,26 @@ fn execute_command(
                     }
                     (found_bed_tile.unwrap(), true)
                 } else {
-                    // go to random nearest empty place
-                    (
-                        find_empty_grid_tile(
-                            pawn_transform.translation.truncate(),
-                            &arc_navmesh.read(),
-                            &mut rand::thread_rng(),
-                            0,
-                        ),
-                        false,
-                    )
+                    // Check if the current pawn location is empty
+                    let current_tile = pawn_transform.translation.truncate().world_pos_to_grid();
+
+                    if arc_navmesh
+                        .read()
+                        .is_passable(current_tile.x, current_tile.y)
+                    {
+                        (current_tile, false)
+                    } else {
+                        // go to random nearest empty place
+                        (
+                            find_empty_grid_tile(
+                                pawn_transform.translation.truncate(),
+                                &arc_navmesh.read(),
+                                &mut rand::thread_rng(),
+                                0,
+                            ),
+                            false,
+                        )
+                    }
                 };
 
                 commandable.set_queue(
