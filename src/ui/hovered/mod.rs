@@ -70,7 +70,7 @@ fn update_ui_on_hover_event(
         let navmesh = arc_navmesh.read();
 
         // hover over Tile
-        for tile_id in navmesh.get_occupants::<Tile>(grid_tile.x, grid_tile.y) {
+        for tile_id in navmesh.get_type_occupants::<Tile>(grid_tile.x, grid_tile.y) {
             render_tile_ui(
                 *tile_id,
                 &mut hovered_root_ui_commands,
@@ -81,7 +81,7 @@ fn update_ui_on_hover_event(
         }
 
         // hover over Bed
-        for bed_id in navmesh.get_occupants::<Bed>(grid_tile.x, grid_tile.y) {
+        for bed_id in navmesh.get_type_occupants::<Bed>(grid_tile.x, grid_tile.y) {
             if let Ok(bed) = bed_query.get(*bed_id) {
                 render_bed_ui(
                     *bed_id,
@@ -95,7 +95,7 @@ fn update_ui_on_hover_event(
         }
 
         // hover over Pawn
-        for movable_id in navmesh.get_occupants::<Movable>(grid_tile.x, grid_tile.y) {
+        for movable_id in navmesh.get_type_occupants::<Movable>(grid_tile.x, grid_tile.y) {
             if let Ok((pawn, movable, restable, feedable, commandable)) = pawn_query.get(*movable_id) {
                 render_pawn_ui(
                     *movable_id,
@@ -112,7 +112,7 @@ fn update_ui_on_hover_event(
         }
 
         // hover over Farm
-        for farm_id in navmesh.get_occupants::<Farm>(grid_tile.x, grid_tile.y) {
+        for farm_id in navmesh.get_type_occupants::<Farm>(grid_tile.x, grid_tile.y) {
             if let Ok((farm, workable)) = farm_query.get(*farm_id) {
                 render_farm_ui(
                     *farm_id,

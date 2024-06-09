@@ -74,14 +74,34 @@ impl Navmesh {
             .remove_occupation::<T>(id);
     }
 
-    pub fn get_occupants<T: 'static>(
+    pub fn get_type_occupants<T: 'static>(
         &self,
         grid_tile_x: i32,
         grid_tile_y: i32,
     ) -> impl Iterator<Item = &Entity> {
         self.navtiles
             .get(grid_tile_x, grid_tile_y)
-            .get_occupants::<T>()
+            .get_type_occupants::<T>()
+    }
+
+    pub fn get_all_occupants(
+        &self,
+        grid_tile_x: i32,
+        grid_tile_y: i32,
+    ) -> impl Iterator<Item = &Entity> {
+        self.navtiles
+            .get(grid_tile_x, grid_tile_y)
+            .get_all_occupants()
+    }
+
+    pub fn has_occupants_except_of<T: 'static>(
+        &self,
+        grid_tile_x: i32,
+        grid_tile_y: i32,
+    ) -> bool {
+        self.navtiles
+            .get(grid_tile_x, grid_tile_y)
+            .has_occupants_except_of::<T>()
     }
 }
 

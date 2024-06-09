@@ -44,11 +44,21 @@ impl Navtile {
         }
     }
 
-    pub fn get_occupants<T: 'static>(&self) -> impl Iterator<Item = &Entity> {
+    pub fn get_type_occupants<T: 'static>(&self) -> impl Iterator<Item = &Entity> {
         self.occupied_by
             .get(&TypeId::of::<T>())
             .into_iter()
             .flat_map(|set| set.iter())
+    }
+
+    pub fn get_all_occupants(&self) -> impl Iterator<Item = &Entity> {
+        self.occupied_by.values().flat_map(|set| set.iter())
+    }
+
+    pub fn has_occupants_except_of<T: 'static>(&self) -> bool {
+        self.occupied_by.iter().any(|(&type_id, entities)| {
+            type_id != TypeId::of::<T>() && !entities.is_empty()
+        })
     }
 
     pub fn config_cost_to_pathfinding_cost(config_cost: f32) -> Option<i32> {
