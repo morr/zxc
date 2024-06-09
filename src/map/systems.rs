@@ -53,7 +53,7 @@ pub fn track_hover(
 
         let navmesh = arc_navmesh.read();
 
-        for id in navmesh.get_occupation::<Tile>(event.0.x, event.0.y) {
+        for id in navmesh.get_occupants::<Tile>(event.0.x, event.0.y) {
             commands.entity(*id).insert(HoverMarker);
             // .insert(ShowAabbGizmo {
             //     color: Some(*Color::WHITE.clone().set_a(0.25)),

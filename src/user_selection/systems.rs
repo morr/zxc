@@ -14,7 +14,7 @@ pub fn find_new_selection_on_click(
 
         entities.extend(
             navmesh
-                .get_occupation::<Movable>(grid_tile.x, grid_tile.y)
+                .get_occupants::<Movable>(grid_tile.x, grid_tile.y)
                 .map(|&id| UserSelectionData {
                     entity: id,
                     kind: UserSelectionKind::Pawn,
@@ -22,7 +22,7 @@ pub fn find_new_selection_on_click(
         );
         entities.extend(
             navmesh
-                .get_occupation::<Farm>(grid_tile.x, grid_tile.y)
+                .get_occupants::<Farm>(grid_tile.x, grid_tile.y)
                 .map(|&id| UserSelectionData {
                     entity: id,
                     kind: UserSelectionKind::Farm,

@@ -74,14 +74,14 @@ impl Navmesh {
             .remove_occupation::<T>(id);
     }
 
-    pub fn get_occupation<T: 'static>(
+    pub fn get_occupants<T: 'static>(
         &self,
         grid_tile_x: i32,
         grid_tile_y: i32,
     ) -> impl Iterator<Item = &Entity> {
         self.navtiles
             .get(grid_tile_x, grid_tile_y)
-            .get_occupation::<T>()
+            .get_occupants::<T>()
     }
 }
 
