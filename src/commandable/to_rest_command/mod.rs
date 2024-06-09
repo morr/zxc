@@ -67,7 +67,7 @@ fn execute_command(
 
                     if arc_navmesh
                         .read()
-                        .has_occupants_except_of::<Movable>(current_tile.x, current_tile.y)
+                        .has_occupants_except_of::<Pawn>(current_tile.x, current_tile.y)
                     {
                         // go to random nearest empty place
                         (

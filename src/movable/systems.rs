@@ -2,7 +2,7 @@ use super::*;
 
 pub fn move_moving_entities(
     mut commands: Commands,
-    mut query_movable: Query<(Entity, &mut Movable, &mut Transform), With<MovableStateMovinTag>>,
+    mut query_movable: Query<(Entity, &mut Movable, &mut Transform, Option<&Pawn>), With<MovableStateMovinTag>>,
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     arc_navmesh: Res<ArcNavmesh>,
@@ -10,7 +10,7 @@ pub fn move_moving_entities(
     mut destination_reached_event_writer: EventWriter<MovableReachedDestinationEvent>,
     mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
 ) {
-    for (entity, mut movable, mut transform) in &mut query_movable {
+    for (entity, mut movable, mut transform, maybe_pawn) in &mut query_movable {
         match movable.state {
             MovableState::Moving(_) => {
                 let current_tile = transform.translation.truncate().world_pos_to_grid();
@@ -27,8 +27,10 @@ pub fn move_moving_entities(
                 if current_tile != final_tile {
                     let mut navmesh = arc_navmesh.write();
 
-                    navmesh.remove_occupant::<Movable>(&entity, current_tile.x, current_tile.y);
-                    navmesh.add_occupant::<Movable>(entity, final_tile.x, final_tile.y);
+                    if maybe_pawn.is_some() {
+                        navmesh.remove_occupant::<Pawn>(&entity, current_tile.x, current_tile.y);
+                        navmesh.add_occupant::<Pawn>(entity, final_tile.x, final_tile.y);
+                    }
 
                     occupation_change_event_writer
                         .send(OccupationChangeEvent(vec![current_tile, final_tile]));
