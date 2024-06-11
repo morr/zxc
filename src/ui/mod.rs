@@ -2,6 +2,7 @@ use crate::*;
 
 expose_submodules!(
     bed,
+    storage,
     farm,
     hovered,
     items_stock,
@@ -27,6 +28,7 @@ impl Plugin for UiPlugin {
             UiPawnPlugin,
             UiFarmPlugin,
             UiBedPlugin,
+            UiStoragePlugin,
             UiHoveredPlugin,
             UiDebugPlugin,
         ));

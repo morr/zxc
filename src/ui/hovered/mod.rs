@@ -44,6 +44,7 @@ fn update_ui_on_hover_event(
     pawn_query: Query<(&Pawn, &Movable, &Restable, &Feedable, &Commandable)>,
     farm_query: Query<(&Farm, &Workable)>,
     bed_query: Query<&Bed>,
+    storage_query: Query<&Storage>,
     arc_navmesh: ResMut<ArcNavmesh>,
     font_assets: Res<FontAssets>,
 ) {
@@ -87,6 +88,20 @@ fn update_ui_on_hover_event(
                     *bed_id,
                     &mut hovered_root_ui_commands,
                     bed,
+                    *grid_tile,
+                    &font_assets,
+                    UiOpacity::Medium,
+                );
+            }
+        }
+
+        // hover over Storage
+        for storage_id in navmesh.get_occupants::<Storage>(grid_tile.x, grid_tile.y) {
+            if let Ok(storage) = storage_query.get(*storage_id) {
+                render_storage_ui(
+                    *storage_id,
+                    &mut hovered_root_ui_commands,
+                    storage,
                     *grid_tile,
                     &font_assets,
                     UiOpacity::Medium,
