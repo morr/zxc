@@ -76,6 +76,14 @@ pub struct TextureAssets {
     // seed: 1406256067, steps: 60, cfgscale: 7, aspectratio: 1:1, width: 1024, height: 1024, sampler: euler, scheduler: karras, model: pixelArtDiffusionXL_spriteShaper.safetensors, swarm_version: 0.6.2.0, date: 2024-05-17, generation_time: 0.02 (prep) and 16.70 (gen) seconds,
     #[asset(path = "sprites/bed.png")]
     pub bed: Handle<Image>,
+
+    // prompt: primitive empty storage place made of wood, top down view, pixel art, white background, low details
+    //
+    // negativeprompt: blurry, shadows, disfigured, extra details, grass, tree, extra furniture, extra details
+    //
+    // images: 25, seed: 2128735519, steps: 20, cfgscale: 7, aspectratio: 1:1, width: 1024, height: 1024, sampler: ddim, scheduler: karras, model: pixelArtDiffusionXL_spriteShaper.safetensors, swarm_version: 0.6.2.0, date: 2024-06-09, generation_time: 12.61 (prep) and 5.67 (gen) seconds,
+    #[asset(path = "sprites/storage.png")]
+    pub storage: Handle<Image>,
 }
 
 #[derive(AssetCollection, Resource)]

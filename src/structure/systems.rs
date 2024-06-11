@@ -173,7 +173,7 @@ pub fn spawn_storage(
     Storage::spawn(
         grid_tile,
         &mut commands,
-        assets.bed.clone(),
+        assets.storage.clone(),
         &mut navmesh
     );
 }
