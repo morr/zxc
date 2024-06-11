@@ -7,6 +7,7 @@ pub const HOUSE_HEIGHT: i32 = 4;
 pub const WELL_SIZE: i32 = 2;
 pub const FARM_TILE_SIZE: i32 = 1;
 pub const BED_SIZE: i32 = 1;
+pub const STORAGE_SIZE: i32 = 1;
 
 pub fn spawn_base(
     mut commands: Commands,
@@ -159,4 +160,20 @@ pub fn spawn_bed(
             &mut available_beds,
         );
     }
+}
+
+pub fn spawn_storage(
+    mut commands: Commands,
+    assets: Res<TextureAssets>,
+    arc_navmesh: ResMut<ArcNavmesh>,
+) {
+    let mut navmesh = arc_navmesh.write();
+    let grid_tile = IVec2::new(-15, 6);
+
+    Storage::spawn(
+        grid_tile,
+        &mut commands,
+        assets.bed.clone(),
+        &mut navmesh
+    );
 }

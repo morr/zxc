@@ -11,7 +11,7 @@ impl Plugin for StructurePlugin {
             .register_type::<Well>()
             .add_systems(
                 OnExit(AppState::Loading),
-                (spawn_base, spawn_farm, spawn_house, spawn_well, spawn_bed),
+                (spawn_base, spawn_farm, spawn_house, spawn_well, spawn_bed, spawn_storage),
             );
     }
 }
