@@ -17,5 +17,5 @@ pub struct SpawnItemEvent {
     pub grid_tile: IVec2
 }
 
-#[derive(Resource, Default)]
+#[derive(Resource, Default, Deref, DerefMut)]
 pub struct FoodStock(pub u32);
