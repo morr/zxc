@@ -148,7 +148,7 @@ pub fn progress_on_state_changed(
                     // println!("tendings done: {}", farm.tendings_done);
 
                     spawn_food_event_writer.send(log_event!(SpawnItemEvent {
-                        item_type: ItemType::Food,
+                        item_type: CarryableKind::Food,
                         amount: farm.yield_amount(),
                         grid_tile,
                     }));

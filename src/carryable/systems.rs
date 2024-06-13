@@ -17,7 +17,7 @@ pub fn spawn_item_on_event(
         let mesh_handle: Handle<Mesh> = meshes.add(mesh);
 
         let component = match event.item_type {
-            ItemType::Food => Carryable {
+            CarryableKind::Food => Carryable {
                 amount: event.amount,
             },
         };
@@ -39,7 +39,7 @@ pub fn spawn_item_on_event(
 
         // increment food stock
         match event.item_type {
-            ItemType::Food => {
+            CarryableKind::Food => {
                 **food += event.amount;
             }
         };

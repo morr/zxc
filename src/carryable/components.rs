@@ -6,13 +6,13 @@ pub struct Carryable {
 }
 
 #[derive(Debug, Clone, Copy, Reflect)]
-pub enum ItemType {
+pub enum CarryableKind {
     Food,
 }
 
 #[derive(Event, Debug)]
 pub struct SpawnItemEvent {
-    pub item_type: ItemType,
+    pub item_type: CarryableKind,
     pub amount: u32,
     pub grid_tile: IVec2
 }
