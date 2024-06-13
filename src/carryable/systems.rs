@@ -8,6 +8,7 @@ pub fn spawn_on_event(
     mut meshes: ResMut<Assets<Mesh>>,
     assets_collection: Res<AssetsCollection>,
     mut food: ResMut<FoodStock>,
+    arc_navmesh: &ArcNavmesh,
 ) {
     for event in event_reader.read() {
         let mesh = Mesh::from(Rectangle::new(
@@ -23,20 +24,22 @@ pub fn spawn_on_event(
             },
         };
 
-        commands.spawn((
-            component,
-            MaterialMesh2dBundle {
-                mesh: mesh_handle.clone().into(),
-                material: assets_collection.food.clone(),
-                transform: Transform::from_translation(
-                    event
-                        .grid_tile
-                        .grid_tile_center_to_world()
-                        .extend(ITEM_Z_INDEX),
-                ),
-                ..default()
-            },
-        ));
+        let carryable_id = commands
+            .spawn((
+                component,
+                MaterialMesh2dBundle {
+                    mesh: mesh_handle.clone().into(),
+                    material: assets_collection.food.clone(),
+                    transform: Transform::from_translation(
+                        event
+                            .grid_tile
+                            .grid_tile_center_to_world()
+                            .extend(ITEM_Z_INDEX),
+                    ),
+                    ..default()
+                },
+            ))
+            .id();
 
         // increment food stock
         match event.kind {
@@ -44,6 +47,12 @@ pub fn spawn_on_event(
                 **food += event.amount;
             }
         };
+
+        arc_navmesh.write().add_occupant::<Carryable>(
+            carryable_id,
+            event.grid_tile.x,
+            event.grid_tile.y,
+        );
     }
 }
 
