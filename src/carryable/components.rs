@@ -2,8 +2,8 @@ use super::*;
 
 #[derive(Component, Reflect)]
 pub struct Carryable {
-    pub amount: u32,
     pub kind: CarryableKind,
+    pub amount: u32,
 }
 
 #[derive(Debug, Clone, Copy, Reflect)]

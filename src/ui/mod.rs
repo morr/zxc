@@ -2,13 +2,14 @@ use crate::*;
 
 expose_submodules!(
     bed,
-    storage,
+    carryable,
     farm,
+    pawn,
+    storage,
+    tile,
     hovered,
     items_stock,
-    pawn,
     simulation_state,
-    tile,
     user_select,
     debug
 );
@@ -28,6 +29,7 @@ impl Plugin for UiPlugin {
             UiPawnPlugin,
             UiFarmPlugin,
             UiBedPlugin,
+            UiCarryablePlugin,
             UiStoragePlugin,
             UiHoveredPlugin,
             UiDebugPlugin,

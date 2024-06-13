@@ -8,7 +8,7 @@ pub fn spawn_on_event(
     mut meshes: ResMut<Assets<Mesh>>,
     assets_collection: Res<AssetsCollection>,
     mut food: ResMut<FoodStock>,
-    arc_navmesh: &ArcNavmesh,
+    arc_navmesh: Res<ArcNavmesh>,
 ) {
     for event in event_reader.read() {
         let mesh = Mesh::from(Rectangle::new(
@@ -19,8 +19,8 @@ pub fn spawn_on_event(
 
         let component = match event.kind {
             CarryableKind::Food => Carryable {
-                amount: event.amount,
                 kind: CarryableKind::Food,
+                amount: event.amount,
             },
         };
 

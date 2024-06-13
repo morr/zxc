@@ -44,6 +44,7 @@ fn update_ui_on_hover_event(
     pawn_query: Query<(&Pawn, &Movable, &Restable, &Feedable, &Commandable)>,
     farm_query: Query<(&Farm, &Workable)>,
     bed_query: Query<&Bed>,
+    carryable_query: Query<&Carryable>,
     storage_query: Query<&Storage>,
     arc_navmesh: ResMut<ArcNavmesh>,
     font_assets: Res<FontAssets>,
@@ -136,6 +137,19 @@ fn update_ui_on_hover_event(
                     &mut hovered_root_ui_commands,
                     farm,
                     workable,
+                    &font_assets,
+                    UiOpacity::Medium,
+                );
+            }
+        }
+
+        // hover over Carryable
+        for carryable_id in navmesh.get_occupants::<Carryable>(grid_tile.x, grid_tile.y) {
+            if let Ok(carryable) = carryable_query.get(*carryable_id) {
+                render_carryable_ui(
+                    *carryable_id,
+                    &mut hovered_root_ui_commands,
+                    carryable,
                     &font_assets,
                     UiOpacity::Medium,
                 );
