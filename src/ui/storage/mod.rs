@@ -17,9 +17,6 @@ impl TargetEntityUiMarker for StorageUIMarker {
 #[derive(Component, Default)]
 pub struct StorageComponentUIMarker {}
 
-#[derive(Component, Default)]
-pub struct StorageGridTileUIMarker {}
-
 // #[derive(Component, Default)]
 // pub struct StorageOwnerUIMarker {}
 
@@ -38,7 +35,6 @@ pub fn render_storage_ui(
     storage_id: Entity,
     container_ui_commands: &mut EntityCommands,
     _storage: &Storage,
-    grid_tile: IVec2,
     font_assets: &Res<FontAssets>,
     opacity: UiOpacity,
 ) {
@@ -51,10 +47,6 @@ pub fn render_storage_ui(
                     .with_children(|parent| {
                         parent.spawn(headline_text_bundle(
                             format!("Storage {:?}", storage_id),
-                            font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<StorageGridTileUIMarker>(
-                            format!("{:?}", grid_tile),
                             font_assets,
                         ));
                         // parent.spawn(property_text_bundle::<StorageOwnerUIMarker>(

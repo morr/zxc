@@ -89,7 +89,6 @@ fn update_ui_on_hover_event(
                     *bed_id,
                     &mut hovered_root_ui_commands,
                     bed,
-                    *grid_tile,
                     &font_assets,
                     UiOpacity::Medium,
                 );
@@ -103,7 +102,6 @@ fn update_ui_on_hover_event(
                     *storage_id,
                     &mut hovered_root_ui_commands,
                     storage,
-                    *grid_tile,
                     &font_assets,
                     UiOpacity::Medium,
                 );

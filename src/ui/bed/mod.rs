@@ -18,9 +18,6 @@ impl TargetEntityUiMarker for BedUIMarker {
 pub struct BedComponentUIMarker {}
 
 #[derive(Component, Default)]
-pub struct BedGridTileUIMarker {}
-
-#[derive(Component, Default)]
 pub struct BedOwnerUIMarker {}
 
 pub struct UiBedPlugin;
@@ -38,7 +35,6 @@ pub fn render_bed_ui(
     bed_id: Entity,
     container_ui_commands: &mut EntityCommands,
     bed: &Bed,
-    grid_tile: IVec2,
     font_assets: &Res<FontAssets>,
     opacity: UiOpacity,
 ) {
@@ -51,10 +47,6 @@ pub fn render_bed_ui(
                     .with_children(|parent| {
                         parent.spawn(headline_text_bundle(
                             format!("Bed {:?}", bed_id),
-                            font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<BedGridTileUIMarker>(
-                            format!("{:?}", grid_tile),
                             font_assets,
                         ));
                         parent.spawn(property_text_bundle::<BedOwnerUIMarker>(

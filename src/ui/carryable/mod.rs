@@ -18,9 +18,6 @@ impl TargetEntityUiMarker for CarryableUIMarker {
 pub struct CarryableComponentUIMarker {}
 
 #[derive(Component, Default)]
-pub struct CarryableGridTileUIMarker {}
-
-#[derive(Component, Default)]
 pub struct CarryableKindUIMarker {}
 
 #[derive(Component, Default)]
