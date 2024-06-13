@@ -9,6 +9,7 @@ impl Plugin for CarryablePlugin {
         app.register_type::<Carryable>()
             .init_resource::<FoodStock>()
             .add_event::<SpawnCarryableEvent>()
+            .add_systems(OnExit(AppState::Loading), spawn_initial_items)
             .add_systems(
                 FixedUpdate,
                 spawn_on_event.run_if(in_state(AppState::Playing)),

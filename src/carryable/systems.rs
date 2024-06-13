@@ -7,7 +7,7 @@ pub fn spawn_on_event(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     assets_collection: Res<AssetsCollection>,
-    mut food: ResMut<FoodStock>
+    mut food: ResMut<FoodStock>,
 ) {
     for event in event_reader.read() {
         let mesh = Mesh::from(Rectangle::new(
@@ -19,7 +19,7 @@ pub fn spawn_on_event(
         let component = match event.kind {
             CarryableKind::Food => Carryable {
                 amount: event.amount,
-                kind: CarryableKind::Food
+                kind: CarryableKind::Food,
             },
         };
 
@@ -45,4 +45,12 @@ pub fn spawn_on_event(
             }
         };
     }
+}
+
+pub fn spawn_initial_items(mut event_writer: EventWriter<SpawnCarryableEvent>) {
+    event_writer.send(SpawnCarryableEvent {
+        kind: CarryableKind::Food,
+        amount: config().starting_scene.food,
+        grid_tile: IVec2 { x: -8, y: 0 },
+    });
 }

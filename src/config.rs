@@ -89,6 +89,7 @@ pub struct StartingSceneConfig {
     pub farm_height: i32,
     pub beds_num: i32,
     pub time_scale: f32,
+    pub food: u32,
 }
 
 const SEASONS_IN_YEAR: u32 = 4;
