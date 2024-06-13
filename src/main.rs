@@ -41,7 +41,6 @@ fn main() {
             camera::CameraPlugin,
             story_time::StoryTimePlugin,
             async_queue::AsyncQueuePlugin,
-            item::ItemPlugin,
             assets::AssetsPlugin,
             map::MapPlugin,
             navigation::NavigationPlugin,
@@ -55,9 +54,10 @@ fn main() {
             pawn::PawnPlugin,
             restable::RestablePlugin,
             feedable::FeedablePlugin,
-            workable::WorkablePlugin,
             movable::MovablePlugin,
             commandable::CommandablePlugin,
+            workable::WorkablePlugin,
+            carryable::CarryablePlugin,
         ))
         .add_systems(FixedUpdate, close_on_esc)
         .run();

@@ -1,11 +1,11 @@
 use super::*;
 
 #[derive(Component, Reflect)]
-pub struct Item {
+pub struct Carryable {
     pub amount: u32,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Reflect)]
 pub enum ItemType {
     Food,
 }
