@@ -1,7 +1,7 @@
 use super::*;
 
 #[derive(Component, Reflect)]
-pub struct FoodItem {
+pub struct Item {
     pub amount: u32,
 }
 
