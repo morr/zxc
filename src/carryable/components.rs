@@ -12,8 +12,8 @@ pub enum CarryableKind {
 }
 
 #[derive(Event, Debug)]
-pub struct SpawnItemEvent {
-    pub item_type: CarryableKind,
+pub struct SpawnCarryableEvent {
+    pub kind: CarryableKind,
     pub amount: u32,
     pub grid_tile: IVec2
 }

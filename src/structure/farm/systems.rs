@@ -117,7 +117,7 @@ pub fn progress_harvested_timer(
 pub fn progress_on_state_changed(
     mut event_reader: EventReader<EntityStateChangeEvent<FarmState>>,
     query: Query<(&Farm, &Transform)>,
-    mut spawn_food_event_writer: EventWriter<SpawnItemEvent>,
+    mut spawn_food_event_writer: EventWriter<SpawnCarryableEvent>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     for event in event_reader.read() {
@@ -147,8 +147,8 @@ pub fn progress_on_state_changed(
                 if let FarmState::Harvested(_) = state {
                     // println!("tendings done: {}", farm.tendings_done);
 
-                    spawn_food_event_writer.send(log_event!(SpawnItemEvent {
-                        item_type: CarryableKind::Food,
+                    spawn_food_event_writer.send(log_event!(SpawnCarryableEvent {
+                        kind: CarryableKind::Food,
                         amount: farm.yield_amount(),
                         grid_tile,
                     }));

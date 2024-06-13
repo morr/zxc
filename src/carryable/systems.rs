@@ -2,8 +2,8 @@ use bevy::sprite::MaterialMesh2dBundle;
 
 use super::*;
 
-pub fn spawn_item_on_event(
-    mut event_reader: EventReader<SpawnItemEvent>,
+pub fn spawn_on_event(
+    mut event_reader: EventReader<SpawnCarryableEvent>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     assets_collection: Res<AssetsCollection>,
@@ -16,7 +16,7 @@ pub fn spawn_item_on_event(
         ));
         let mesh_handle: Handle<Mesh> = meshes.add(mesh);
 
-        let component = match event.item_type {
+        let component = match event.kind {
             CarryableKind::Food => Carryable {
                 amount: event.amount,
                 kind: CarryableKind::Food
@@ -39,7 +39,7 @@ pub fn spawn_item_on_event(
         ));
 
         // increment food stock
-        match event.item_type {
+        match event.kind {
             CarryableKind::Food => {
                 **food += event.amount;
             }
