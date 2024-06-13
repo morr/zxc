@@ -3,6 +3,7 @@ use super::*;
 #[derive(Component, Reflect)]
 pub struct Carryable {
     pub amount: u32,
+    pub kind: CarryableKind,
 }
 
 #[derive(Debug, Clone, Copy, Reflect)]

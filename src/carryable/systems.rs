@@ -19,6 +19,7 @@ pub fn spawn_item_on_event(
         let component = match event.item_type {
             CarryableKind::Food => Carryable {
                 amount: event.amount,
+                kind: CarryableKind::Food
             },
         };
 
