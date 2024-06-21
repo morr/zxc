@@ -1,12 +1,12 @@
 use crate::*;
 
-expose_submodules!(components, systems, tasks_queue);
+expose_submodules!(components, systems);
 
 pub struct WorkablePlugin;
 
 impl Plugin for WorkablePlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(TasksQueuePlugin)
+        app
             .register_type::<Workable>()
             .add_event::<WorkCompleteEvent>()
             // .add_event::<WorkStartEvent>()

@@ -31,7 +31,9 @@ fn execute_command(
     for command in command_reader.read() {
         let TaskKind::Work {
             workable_entity, ..
-        } = command.task.kind;
+        } = command.task.kind else {
+            panic!("Task kind must be TaskKind::Work");
+        };
 
         match workable_query.get_mut(workable_entity) {
             Ok(mut workable) => {
@@ -97,7 +99,10 @@ fn handle_internal_interrupts(
         if let CommandType::WorkOn(interrupted_command) = interrupted_command_type {
             let TaskKind::Work {
                 workable_entity, ..
-            } = interrupted_command.task.kind;
+            } = interrupted_command.task.kind
+            else {
+                panic!("Task kind must be TaskKind::Work");
+            };
 
             // Handle the workable entity
             if let Ok(mut workable) = workable_query.get_mut(workable_entity) {

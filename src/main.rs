@@ -48,6 +48,7 @@ fn main() {
             structure::StructurePlugin,
             ui::UiPlugin,
             input::InputPlugin,
+            tasks_queue::TasksQueuePlugin
         ))
         .add_plugins((
             ai::AiPlugin,

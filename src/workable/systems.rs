@@ -50,7 +50,10 @@ pub fn complete_work(
         let TaskKind::Work {
             workable_entity,
             ref work_kind,
-        } = task.kind;
+        } = task.kind
+        else {
+            panic!("Task kind must be TaskKind::Work");
+        };
 
         match work_kind {
             // event.workable_entity the same is task.entity
