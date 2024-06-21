@@ -129,6 +129,7 @@ fn update_pawn_ui(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn update_text_markers_recursive(
     entity: Entity,
     pawn: &Pawn,
