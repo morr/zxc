@@ -243,12 +243,12 @@ impl Farm {
     }
 }
 
-fn workable_props(farm_state: &FarmState) -> (WorkKind, f32) {
+fn workable_props(farm_state: &FarmState) -> (Option<WorkKind>, f32) {
     match farm_state {
-        FarmState::NotPlanted => (WorkKind::FarmPlanting, config().farming.planting_hours),
-        FarmState::Planted(_) => (WorkKind::FarmTending, config().farming.tending_hours),
-        FarmState::Grown => (WorkKind::FarmHarvest, config().farming.harvesting_hours),
-        FarmState::Harvested(_) => (WorkKind::None, 0.0),
+        FarmState::NotPlanted => (Some(WorkKind::FarmPlanting), config().farming.planting_hours),
+        FarmState::Planted(_) => (Some(WorkKind::FarmTending), config().farming.tending_hours),
+        FarmState::Grown => (Some(WorkKind::FarmHarvest), config().farming.harvesting_hours),
+        FarmState::Harvested(_) => (None, 0.0),
     }
 }
 

@@ -69,7 +69,6 @@ pub fn complete_work(
             WorkKind::FarmTending => {
                 farm_tending_event_writer.send(log_event!(FarmTendedEvent(task.workable_entity)));
             }
-            WorkKind::None => {}
         }
         //
         // pawn.change_state(

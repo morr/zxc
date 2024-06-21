@@ -4,7 +4,7 @@ use super::*;
 #[reflect(InspectorOptions)]
 pub struct Workable {
     pub state: WorkableState,
-    pub work_kind: WorkKind,
+    pub work_kind: Option<WorkKind>,
     /// in seconds
     pub amount_done: f32,
     /// in seconds
@@ -18,7 +18,7 @@ pub struct WorkCompleteEvent {
 }
 
 impl Workable {
-    pub fn new(props: (WorkKind, f32)) -> Self {
+    pub fn new(props: (Option<WorkKind>, f32)) -> Self {
         Self {
             state: WorkableState::Idle,
             work_kind: props.0,
@@ -41,7 +41,7 @@ impl Workable {
 
     pub fn reset(
         &mut self,
-        props: (WorkKind, f32),
+        props: (Option<WorkKind>, f32),
         entity: Entity,
         commands: &mut Commands,
         // commandable_interrupt_writer: &mut EventWriter<InterruptCommandEvent>,
@@ -69,7 +69,6 @@ impl Workable {
 
 #[derive(Debug, Clone, PartialEq, Eq, Reflect)]
 pub enum WorkKind {
-    None,
     FarmPlanting,
     FarmTending,
     FarmHarvest,
