@@ -29,7 +29,9 @@ fn execute_command(
     mut workable_query: Query<&mut Workable>,
 ) {
     for command in command_reader.read() {
-        let workable_entity = command.task.workable_entity;
+        let TaskKind::Work {
+            workable_entity, ..
+        } = command.task.kind;
 
         match workable_query.get_mut(workable_entity) {
             Ok(mut workable) => {
@@ -93,26 +95,17 @@ fn handle_internal_interrupts(
 ) {
     for InternalCommandInterruptEvent(interrupted_command_type) in interrupt_reader.read() {
         if let CommandType::WorkOn(interrupted_command) = interrupted_command_type {
-            // suggested by AI
-            // Handle the commandable entity
-            // if let Ok(mut commandable) = commandable_query.get_mut(*commandable_entity) {
-            //     if let Some(CommandType::WorkOn(WorkOnCommand { task: current_task, .. })) = &commandable.executing {
-            //         if *current_task == *task {
-            //             commandable.abort_executing(*commandable_entity, &mut commands, &mut work_complete_event_writer);
-            //         }
-            //     }
-            // }
+            let TaskKind::Work {
+                workable_entity, ..
+            } = interrupted_command.task.kind;
 
             // Handle the workable entity
-            if let Ok(mut workable) = workable_query.get_mut(interrupted_command.task.workable_entity) {
+            if let Ok(mut workable) = workable_query.get_mut(workable_entity) {
                 if let WorkableState::BeingWorked(ref worked_command) = workable.state {
                     if interrupted_command == worked_command {
-                        tasks_scheduler.send(ScheduleTaskEvent::push_front(worked_command.task.clone()));
-                        workable.change_state(
-                            WorkableState::Idle,
-                            interrupted_command.task.workable_entity,
-                            &mut commands,
-                        );
+                        tasks_scheduler
+                            .send(ScheduleTaskEvent::push_front(worked_command.task.clone()));
+                        workable.change_state(WorkableState::Idle, workable_entity, &mut commands);
                     }
                 }
             }

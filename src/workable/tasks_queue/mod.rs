@@ -43,9 +43,14 @@ impl TasksQueue {
 
 #[derive(Debug, Clone, PartialEq, Eq, Reflect)]
 pub struct Task {
-    pub workable_entity: Entity,
-    pub work_kind: WorkKind,
+    pub kind: TaskKind,
     pub grid_tile: IVec2,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Reflect)]
+pub enum TaskKind {
+    Work { workable_entity: Entity, work_kind: WorkKind },
+    // CarryItem { item: Entity, destination: IVec2 },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Reflect)]

@@ -42,41 +42,25 @@ pub fn progress_work(
 }
 
 pub fn complete_work(
-    // mut commands: Commands,
     mut event_reader: EventReader<WorkCompleteEvent>,
-    // mut query: Query<&mut Pawn>,
-    // mut state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
     mut farm_progress_event_writer: EventWriter<FarmProgressEvent>,
     mut farm_tending_event_writer: EventWriter<FarmTendedEvent>,
 ) {
-    for WorkCompleteEvent {
-        commandable_entity: _,
-        task,
-    } in event_reader.read()
-    {
-        // println!("{:?}", WorkCompleteEvent { commandable_entity, task });
-        //
-        // let mut pawn = query.get_mut(event.pawn_entity).unwrap();
-        // let task = pawn.get_task();
-        //
-        //
-        match task.work_kind {
+    for WorkCompleteEvent { task, .. } in event_reader.read() {
+        let TaskKind::Work {
+            workable_entity,
+            ref work_kind,
+        } = task.kind;
+
+        match work_kind {
             // event.workable_entity the same is task.entity
             WorkKind::FarmPlanting | WorkKind::FarmHarvest => {
-                farm_progress_event_writer
-                    .send(log_event!(FarmProgressEvent(task.workable_entity)));
+                farm_progress_event_writer.send(log_event!(FarmProgressEvent(workable_entity)));
             }
             WorkKind::FarmTending => {
-                farm_tending_event_writer.send(log_event!(FarmTendedEvent(task.workable_entity)));
+                farm_tending_event_writer.send(log_event!(FarmTendedEvent(workable_entity)));
             }
         }
-        //
-        // pawn.change_state(
-        //     PawnState::Idle,
-        //     event.pawn_entity,
-        //     &mut commands,
-        //     // &mut state_change_event_writer,
-        // );
     }
 }
 
