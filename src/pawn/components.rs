@@ -15,6 +15,7 @@ pub struct Pawn {
     pub lifetime: f32,
 
     pub owned_bed: Option<Entity>,
+    pub carried_item: Option<Entity>,
 }
 
 #[derive(Component)]
@@ -40,6 +41,7 @@ impl Default for Pawn {
             birth_year_day: rng.gen_range(1..=config().time.days_in_year),
             lifetime,
             owned_bed: None,
+            carried_item: None,
         }
     }
 }
@@ -58,6 +60,11 @@ impl Pawn {
 
     pub fn decrease_lifetime(&mut self, amount: f32) {
         self.lifetime = f32::max(self.lifetime - amount, 0.0);
+    }
+
+    pub fn pick_up(&mut self, carryable_entity: Entity) {
+        assert!(self.carried_item.is_none(), "Pawn is already carrying an item!");
+        self.carried_item = Some(carryable_entity);
     }
 }
 

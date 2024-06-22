@@ -1,3 +1,5 @@
+use bevy::sprite::MaterialMesh2dBundle;
+
 use super::*;
 
 pub struct PickUpCommandPlugin;
@@ -26,8 +28,8 @@ pub struct PickUpCommand {
 fn execute_command(
     mut commands: Commands,
     mut command_reader: EventReader<PickUpCommand>,
-    mut commandable_query: Query<(&mut Commandable, &Transform)>,
-    mut carryable_query: Query<&Transform>,
+    mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
+    mut carryable_query: Query<(&mut Carryable, &Transform)>,
     mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
     mut commandable_interrupt_writer: EventWriter<ExternalCommandInterruptEvent>,
 ) {
@@ -36,9 +38,9 @@ fn execute_command(
         carryable_entity,
     } in command_reader.read()
     {
-        let (mut commandable, commandable_transform) =
+        let (mut pawn, mut commandable, commandable_transform) =
             match commandable_query.get_mut(*commandable_entity) {
-                Ok((commandable, transform)) => (commandable, transform),
+                Ok((pawn, commandable, transform)) => (pawn, commandable, transform),
                 Err(err) => {
                     warn!(
                         "Failed to get query result for commandable_entity {:?}: {:?}",
@@ -48,14 +50,18 @@ fn execute_command(
                 }
             };
 
-        let carryable_transform = match carryable_query.get_mut(*carryable_entity) {
-            Ok(transform) => transform,
+        let (mut carryable, carryable_transform) = match carryable_query.get_mut(*carryable_entity)
+        {
+            Ok((carryable, transform)) => (carryable, transform),
             Err(err) => {
                 warn!(
                     "Failed to get query result for carryable_entity {:?}: {:?}",
                     carryable_entity, err
                 );
-                interrupt_commandable_commands_queue!(commandable_interrupt_writer, *commandable_entity);
+                interrupt_commandable_commands_queue!(
+                    commandable_interrupt_writer,
+                    *commandable_entity
+                );
                 continue;
             }
         };
@@ -65,9 +71,14 @@ fn execute_command(
 
         if commandable_grid_tile != carryable_grid_tile {
             warn!("commandable_grid_tile != carryable_grid_tile");
-            interrupt_commandable_commands_queue!(commandable_interrupt_writer, *commandable_entity);
+            interrupt_commandable_commands_queue!(
+                commandable_interrupt_writer,
+                *commandable_entity
+            );
             continue;
         }
+
+        carryable.pick_up_by(&mut pawn, *carryable_entity, &commands);
 
         commandable.complete_executing(
             *commandable_entity,
