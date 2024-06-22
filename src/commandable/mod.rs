@@ -21,6 +21,7 @@ impl Plugin for CommandablePlugin {
             .register_type::<Commandable>()
             .add_plugins((
                 MoveToCommandPlugin,
+                PickUpCommandPlugin,
                 SleepCommandPlugin,
                 ToRestCommandPlugin,
                 UserSelectionCommandPlugin,

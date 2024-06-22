@@ -3,7 +3,8 @@ use super::*;
 #[allow(clippy::too_many_arguments)]
 pub fn process_pending_commands(
     mut commands: Commands,
-    mut move_to_tile_command_writer: EventWriter<MoveToCommand>,
+    mut move_to_command_writer: EventWriter<MoveToCommand>,
+    mut pick_up_command_writer: EventWriter<PickUpCommand>,
     mut sleep_command_writer: EventWriter<SleepCommand>,
     mut to_rest_command_writer: EventWriter<ToRestCommand>,
     mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
@@ -25,7 +26,10 @@ pub fn process_pending_commands(
             // );
             match command_type {
                 CommandType::MoveTo(command) => {
-                    move_to_tile_command_writer.send(log_event!(command));
+                    move_to_command_writer.send(log_event!(command));
+                }
+                CommandType::PickUp(command) => {
+                    pick_up_command_writer.send(log_event!(command));
                 }
                 CommandType::Sleep(command) => {
                     sleep_command_writer.send(log_event!(command));
