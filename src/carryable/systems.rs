@@ -71,17 +71,33 @@ pub fn spawn_initial_items(mut event_writer: EventWriter<SpawnCarryableEvent>) {
 
 pub fn store_on_event(
     mut event_reader: EventReader<StoreCarryableEvent>,
-    query: Query<(&Carryable, &Transform)>,
+    carryable_query: Query<&Transform>,
+    storages_query: Query<(Entity, &Storage, &Transform)>,
+    mut tasks_queue: ResMut<TasksQueue>,
 ) {
-    for StoreCarryableEvent { entity } in event_reader.read() {
-        if let Ok((carryable, transform)) = query.get(*entity) {
-            let grid_tile = transform.translation.truncate().world_pos_to_grid();
-            println!(
-                "StoreCarryableEvent {:?} carryable={:?} grid_tile={:?}",
-                entity, carryable, grid_tile
-            );
+    for StoreCarryableEvent {
+        entity: carryable_entity,
+    } in event_reader.read()
+    {
+        if let Ok(carryable_transform) = carryable_query.get(*carryable_entity) {
+            let carryable_grid_tile: IVec2 = carryable_transform
+                .translation
+                .truncate()
+                .world_pos_to_grid();
+
+            if let Some((_storage_entity, storage_grid_tile)) =
+                find_nearest_storage(carryable_grid_tile, &storages_query)
+            {
+                tasks_queue.push_task_back(Task {
+                    kind: TaskKind::CarryItem {
+                        item_entity: *carryable_entity,
+                        destination: storage_grid_tile,
+                    },
+                    grid_tile: carryable_grid_tile,
+                });
+            }
         } else {
-            warn!("Failed to get Carryable: {:?}", entity);
+            warn!("Failed to get Carryable: {:?}", carryable_entity);
             continue;
         }
     }

@@ -51,3 +51,22 @@ impl Storage {
         navmesh.add_occupant::<Storage>(id, grid_tile.x, grid_tile.y);
     }
 }
+
+pub fn find_nearest_storage(
+    carryable_grid_tile: IVec2,
+    storages_query: &Query<(Entity, &Storage, &Transform)>,
+) -> Option<(Entity, IVec2)> {
+    storages_query
+        .iter()
+        .map(|(entity, _storage, transform)| {
+            let storage_grid_tile = transform.translation.truncate().world_pos_to_grid();
+            let distance = carryable_grid_tile.distance_squared(storage_grid_tile);
+            (entity, storage_grid_tile, distance)
+        })
+        .min_by(|(_, _, dist_a), (_, _, dist_b)| {
+            dist_a
+                .partial_cmp(dist_b)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        })
+        .map(|(entity, storage_grid_tile, _)| (entity, storage_grid_tile))
+}
