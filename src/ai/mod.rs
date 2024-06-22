@@ -29,7 +29,7 @@ fn ai_idle_pawns(
             // With<commandable_state::CommandableStateIdleTag>,
         ),
     >,
-    mut work_queue: ResMut<TasksQueue>,
+    mut tasks_queue: ResMut<TasksQueue>,
     mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
     arc_navmesh: Res<ArcNavmesh>,
@@ -46,7 +46,7 @@ fn ai_idle_pawns(
                 &mut commandable_interrupt_writer,
                 &mut tasks_scheduler,
             );
-        } else if let Some(task) = work_queue.get_task() {
+        } else if let Some(task) = tasks_queue.get_task() {
             commandable.set_queue(
                 [
                     CommandType::MoveTo(MoveToCommand {

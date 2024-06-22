@@ -74,12 +74,12 @@ impl ScheduleTaskEvent {
 
 fn schedule_task(
     mut event_reader: EventReader<ScheduleTaskEvent>,
-    mut work_queue: ResMut<TasksQueue>,
+    mut tasks_queue: ResMut<TasksQueue>,
 ) {
     for ScheduleTaskEvent(task, queuing_type) in event_reader.read() {
         match queuing_type {
-            QueuingType::PushBack => work_queue.push_task_back(task.clone()),
-            QueuingType::PushFront => work_queue.push_task_front(task.clone()),
+            QueuingType::PushBack => tasks_queue.push_task_back(task.clone()),
+            QueuingType::PushFront => tasks_queue.push_task_front(task.clone()),
         };
     }
 }
