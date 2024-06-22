@@ -3,7 +3,8 @@ use bevy::sprite::MaterialMesh2dBundle;
 use super::*;
 
 pub fn spawn_on_event(
-    mut event_reader: EventReader<SpawnCarryableEvent>,
+    mut spawn_event_reader: EventReader<SpawnCarryableEvent>,
+    mut store_event_writer: EventWriter<StoreCarryableEvent>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     assets_collection: Res<AssetsCollection>,
@@ -14,7 +15,7 @@ pub fn spawn_on_event(
         kind,
         amount,
         grid_tile,
-    } in event_reader.read()
+    } in spawn_event_reader.read()
     {
         let mesh = Mesh::from(Rectangle::new(
             config().tile.size / 4.0,
@@ -53,6 +54,8 @@ pub fn spawn_on_event(
         arc_navmesh
             .write()
             .add_occupant::<Carryable>(carryable_id, grid_tile.x, grid_tile.y);
+
+        store_event_writer.send(log_event!(StoreCarryableEvent { entity: carryable_id }));
     }
 }
 

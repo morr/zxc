@@ -9,6 +9,7 @@ impl Plugin for CarryablePlugin {
         app.register_type::<Carryable>()
             .init_resource::<FoodStock>()
             .add_event::<SpawnCarryableEvent>()
+            .add_event::<StoreCarryableEvent>()
             .add_systems(OnExit(AppState::Loading), spawn_initial_items)
             .add_systems(
                 FixedUpdate,
@@ -33,6 +34,11 @@ pub struct SpawnCarryableEvent {
     pub kind: CarryableKind,
     pub amount: u32,
     pub grid_tile: IVec2
+}
+
+#[derive(Event, Debug)]
+pub struct StoreCarryableEvent {
+    pub entity: Entity,
 }
 
 #[derive(Resource, Default, Deref, DerefMut)]
