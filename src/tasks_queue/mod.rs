@@ -50,7 +50,7 @@ pub struct Task {
 #[derive(Debug, Clone, PartialEq, Eq, Reflect)]
 pub enum TaskKind {
     Work { workable_entity: Entity, work_kind: WorkKind },
-    CarryItem { item_entity: Entity, destination: IVec2 },
+    CarryItem { carryable_entity: Entity, grid_tile: IVec2 },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Reflect)]

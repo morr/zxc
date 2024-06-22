@@ -90,8 +90,8 @@ pub fn store_on_event(
             {
                 tasks_queue.push_task_back(Task {
                     kind: TaskKind::CarryItem {
-                        item_entity: *carryable_entity,
-                        destination: storage_grid_tile,
+                        carryable_entity: *carryable_entity,
+                        grid_tile: storage_grid_tile,
                     },
                     grid_tile: carryable_grid_tile,
                 });
