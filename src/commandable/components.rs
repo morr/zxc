@@ -6,6 +6,7 @@ use std::vec;
 #[derive(Debug, Clone, Reflect)]
 pub enum CommandType {
     MoveTo(MoveToCommand),
+    PickUp(PickUpCommand),
     Sleep(SleepCommand),
     ToRest(ToRestCommand),
     UserSelection(UserSelectionCommand),
@@ -46,6 +47,9 @@ pub struct CommandCompleteEvent(pub Entity);
 #[derive(Event, Debug)]
 /// Event to interrupt command initiated by an external entity
 pub struct ExternalCommandInterruptEvent(pub Entity);
+
+
+
 
 #[derive(Event, Debug)]
 /// Event to interrupt command initiated by the Commandable itself

@@ -4,6 +4,7 @@ expose_submodules!(
     components,
     systems,
     move_to_command,
+    pick_up_command,
     sleep_command,
     to_rest_command,
     user_selection_command,

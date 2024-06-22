@@ -69,15 +69,16 @@ fn ai_idle_pawns(
                             commandable_entity,
                             grid_tile: task.grid_tile,
                         }),
-                        panic!(),
+                        CommandType::PickUp(PickUpCommand {
+                            commandable_entity,
+                            carryable_entity,
+                        }),
                         CommandType::MoveTo(MoveToCommand {
                             commandable_entity,
                             grid_tile,
                         }),
-
                     ]
-
-                },
+                }
             };
 
             commandable.set_queue(
@@ -87,7 +88,6 @@ fn ai_idle_pawns(
                 &mut commandable_interrupt_writer,
                 &mut tasks_scheduler,
             );
-
         } else {
             if !config().pawn.wander_when_idle {
                 continue;
