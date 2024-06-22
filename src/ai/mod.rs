@@ -47,22 +47,30 @@ fn ai_idle_pawns(
                 &mut tasks_scheduler,
             );
         } else if let Some(task) = tasks_queue.get_task() {
-            commandable.set_queue(
-                [
-                    CommandType::MoveTo(MoveToCommand {
+            match task.kind {
+                TaskKind::Work { .. } => {
+                    commandable.set_queue(
+                        [
+                            CommandType::MoveTo(MoveToCommand {
+                                commandable_entity,
+                                grid_tile: task.grid_tile,
+                            }),
+                            CommandType::WorkOn(WorkOnCommand {
+                                commandable_entity,
+                                task,
+                            }),
+                        ],
                         commandable_entity,
-                        grid_tile: task.grid_tile,
-                    }),
-                    CommandType::WorkOn(WorkOnCommand {
-                        commandable_entity,
-                        task,
-                    }),
-                ],
-                commandable_entity,
-                &mut commands,
-                &mut commandable_interrupt_writer,
-                &mut tasks_scheduler,
-            );
+                        &mut commands,
+                        &mut commandable_interrupt_writer,
+                        &mut tasks_scheduler,
+                    );
+                }
+                TaskKind::CarryItem {
+                    carryable_entity,
+                    grid_tile,
+                } => todo!(),
+            }
         } else {
             if !config().pawn.wander_when_idle {
                 continue;
