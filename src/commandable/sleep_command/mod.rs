@@ -29,7 +29,6 @@ fn execute_command(mut command_reader: EventReader<SleepCommand>, mut query: Que
         is_sleep_in_bed,
     } in command_reader.read()
     {
-        // println!("{:?}", SleepCommand { commandable_entity }));
         let Ok(mut restable) = query.get_mut(*commandable_entity) else {
             continue;
         };
