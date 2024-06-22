@@ -1,6 +1,6 @@
 use crate::*;
 
-expose_submodules!(systems);
+expose_submodules!(components, systems);
 
 pub struct CarryablePlugin;
 
@@ -20,29 +20,3 @@ impl Plugin for CarryablePlugin {
             );
     }
 }
-
-#[derive(Component, Reflect, Debug)]
-pub struct Carryable {
-    pub kind: CarryableKind,
-    pub amount: u32,
-}
-
-#[derive(Debug, Clone, Copy, Reflect)]
-pub enum CarryableKind {
-    Food,
-}
-
-#[derive(Event, Debug)]
-pub struct SpawnCarryableEvent {
-    pub kind: CarryableKind,
-    pub amount: u32,
-    pub grid_tile: IVec2,
-}
-
-#[derive(Event, Debug)]
-pub struct StoreCarryableEvent {
-    pub entity: Entity,
-}
-
-#[derive(Resource, Default, Deref, DerefMut)]
-pub struct FoodStock(pub u32);

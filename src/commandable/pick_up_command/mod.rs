@@ -1,5 +1,3 @@
-use bevy::sprite::MaterialMesh2dBundle;
-
 use super::*;
 
 pub struct PickUpCommandPlugin;
@@ -78,7 +76,7 @@ fn execute_command(
             continue;
         }
 
-        carryable.pick_up_by(&mut pawn, *carryable_entity, &commands);
+        carryable.pick_up_by(&mut pawn, *carryable_entity, &mut commands);
 
         commandable.complete_executing(
             *commandable_entity,

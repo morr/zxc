@@ -61,11 +61,6 @@ impl Pawn {
     pub fn decrease_lifetime(&mut self, amount: f32) {
         self.lifetime = f32::max(self.lifetime - amount, 0.0);
     }
-
-    pub fn pick_up(&mut self, carryable_entity: Entity) {
-        assert!(self.carried_item.is_none(), "Pawn is already carrying an item!");
-        self.carried_item = Some(carryable_entity);
-    }
 }
 
 macro_rules! pawn_states {

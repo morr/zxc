@@ -1,5 +1,7 @@
 use super::*;
 
+use bevy::sprite::MaterialMesh2dBundle;
+
 #[derive(Debug, Clone, Copy, Reflect)]
 pub enum CarryableKind {
     Food,
@@ -18,7 +20,9 @@ impl Carryable {
         carryable_entity: Entity,
         commands: &mut Commands,
     ) {
-        pawn.pick_up(carryable_entity);
+        assert!(pawn.carried_item.is_none(), "Pawn is already carrying an item!");
+        pawn.carried_item = Some(carryable_entity);
+
         commands
             .entity(carryable_entity)
             .remove::<MaterialMesh2dBundle<ColorMaterial>>();
@@ -30,6 +34,11 @@ pub struct SpawnCarryableEvent {
     pub kind: CarryableKind,
     pub amount: u32,
     pub grid_tile: IVec2,
+}
+
+#[derive(Event, Debug)]
+pub struct StoreCarryableEvent {
+    pub entity: Entity,
 }
 
 #[derive(Resource, Default, Deref, DerefMut)]
