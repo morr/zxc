@@ -55,7 +55,9 @@ pub fn spawn_on_event(
             .write()
             .add_occupant::<Carryable>(carryable_id, grid_tile.x, grid_tile.y);
 
-        store_event_writer.send(log_event!(StoreCarryableEvent { entity: carryable_id }));
+        store_event_writer.send(log_event!(StoreCarryableEvent {
+            entity: carryable_id
+        }));
     }
 }
 
@@ -65,4 +67,22 @@ pub fn spawn_initial_items(mut event_writer: EventWriter<SpawnCarryableEvent>) {
         amount: config().starting_scene.food,
         grid_tile: IVec2 { x: -8, y: 0 },
     });
+}
+
+pub fn store_on_event(
+    mut event_reader: EventReader<StoreCarryableEvent>,
+    query: Query<(&Carryable, &Transform)>,
+) {
+    for StoreCarryableEvent { entity } in event_reader.read() {
+        if let Ok((carryable, transform)) = query.get(*entity) {
+            let grid_tile = transform.translation.truncate().world_pos_to_grid();
+            println!(
+                "StoreCarryableEvent {:?} carryable={:?} grid_tile={:?}",
+                entity, carryable, grid_tile
+            );
+        } else {
+            warn!("Failed to get Carryable: {:?}", entity);
+            continue;
+        }
+    }
 }

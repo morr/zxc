@@ -1,6 +1,6 @@
 use crate::*;
 
-expose_submodules!( systems);
+expose_submodules!(systems);
 
 pub struct CarryablePlugin;
 
@@ -13,12 +13,15 @@ impl Plugin for CarryablePlugin {
             .add_systems(OnExit(AppState::Loading), spawn_initial_items)
             .add_systems(
                 FixedUpdate,
-                spawn_on_event.run_if(in_state(AppState::Playing)),
+                (spawn_on_event, store_on_event)
+                    .chain()
+                    .run_if(in_state(AppState::Playing))
+                    .run_if(in_state(SimulationState::Running)),
             );
     }
 }
 
-#[derive(Component, Reflect)]
+#[derive(Component, Reflect, Debug)]
 pub struct Carryable {
     pub kind: CarryableKind,
     pub amount: u32,
@@ -33,7 +36,7 @@ pub enum CarryableKind {
 pub struct SpawnCarryableEvent {
     pub kind: CarryableKind,
     pub amount: u32,
-    pub grid_tile: IVec2
+    pub grid_tile: IVec2,
 }
 
 #[derive(Event, Debug)]
@@ -43,4 +46,3 @@ pub struct StoreCarryableEvent {
 
 #[derive(Resource, Default, Deref, DerefMut)]
 pub struct FoodStock(pub u32);
-
