@@ -106,7 +106,7 @@ fn ai_idle_pawns(
                             commandable_entity,
                             carryable_entity,
                         }),
-                        CommandType::TaskLock(TaskLockCommand {
+                        CommandType::CompleteTask(CompleteTaskCommand {
                             commandable_entity,
                             task,
                         }),

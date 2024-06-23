@@ -2,12 +2,12 @@ use crate::*;
 
 expose_submodules!(
     components,
+    complete_task_command,
     drop_carried_item_command,
     move_to_command,
     sleep_command,
     systems,
     take_item_command,
-    task_lock_command,
     to_rest_command,
     user_selection_command,
     work_on_command
@@ -27,7 +27,7 @@ impl Plugin for CommandablePlugin {
                 MoveToCommandPlugin,
                 SleepCommandPlugin,
                 TakeItemCommandPlugin,
-                TaskLockCommandPlugin,
+                CompleteTaskCommandPlugin,
                 ToRestCommandPlugin,
                 UserSelectionCommandPlugin,
                 WorkOnCommandPlugin,

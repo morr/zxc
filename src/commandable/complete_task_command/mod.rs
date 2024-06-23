@@ -1,10 +1,10 @@
 use super::*;
 
-pub struct TaskLockCommandPlugin;
+pub struct CompleteTaskCommandPlugin;
 
-impl Plugin for TaskLockCommandPlugin {
+impl Plugin for CompleteTaskCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<TaskLockCommand>().add_systems(
+        app.add_event::<CompleteTaskCommand>().add_systems(
             Update,
             (execute_command, handle_release_resources)
                 .chain()
@@ -14,18 +14,18 @@ impl Plugin for TaskLockCommandPlugin {
 }
 
 #[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
-pub struct TaskLockCommand {
+pub struct CompleteTaskCommand {
     pub commandable_entity: Entity,
     pub task: Task,
 }
 
 fn execute_command(
     mut commands: Commands,
-    mut command_reader: EventReader<TaskLockCommand>,
+    mut command_reader: EventReader<CompleteTaskCommand>,
     mut commandable_query: Query<&mut Commandable>,
     mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
 ) {
-    for TaskLockCommand {
+    for CompleteTaskCommand {
         commandable_entity, ..
     } in command_reader.read()
     {
@@ -53,7 +53,7 @@ fn handle_release_resources(
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     for ReleaseCommandResourcesEvent(interrupted_command_type) in event_reader.read() {
-        if let CommandType::TaskLock(TaskLockCommand { task, .. }) = interrupted_command_type {
+        if let CommandType::CompleteTask(CompleteTaskCommand { task, .. }) = interrupted_command_type {
             tasks_scheduler.send(ScheduleTaskEvent::push_front(task.clone()));
         }
     }
