@@ -74,10 +74,10 @@ fn monitor_completion(
 }
 
 fn handle_internal_interrupts(
-    mut interrupt_reader: EventReader<InternalCommandInterruptEvent>,
+    mut event_reader: EventReader<InternalCommandInterruptEvent>,
     mut query: Query<&mut Restable>,
 ) {
-    for InternalCommandInterruptEvent(interrupted_command) in interrupt_reader.read() {
+    for InternalCommandInterruptEvent(interrupted_command) in event_reader.read() {
         if let CommandType::Sleep(SleepCommand {
             commandable_entity, ..
         }) = interrupted_command

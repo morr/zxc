@@ -32,7 +32,8 @@ fn execute_command(
     for command in command_reader.read() {
         let TaskKind::Work {
             workable_entity, ..
-        } = command.task.kind else {
+        } = command.task.kind
+        else {
             panic!("Task kind must be TaskKind::Work");
         };
 
@@ -90,13 +91,13 @@ fn monitor_completion(
 
 fn handle_internal_interrupts(
     mut commands: Commands,
-    mut interrupt_reader: EventReader<InternalCommandInterruptEvent>,
+    mut event_reader: EventReader<InternalCommandInterruptEvent>,
     // mut commandable_query: Query<&mut Commandable>,
     mut workable_query: Query<&mut Workable>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
     // mut work_complete_event_writer: EventWriter<WorkCompleteEvent>,
 ) {
-    for InternalCommandInterruptEvent(interrupted_command_type) in interrupt_reader.read() {
+    for InternalCommandInterruptEvent(interrupted_command_type) in event_reader.read() {
         if let CommandType::WorkOn(interrupted_command) = interrupted_command_type {
             let TaskKind::Work {
                 workable_entity, ..
@@ -120,10 +121,10 @@ fn handle_internal_interrupts(
 }
 
 fn handle_release_resources(
-    mut interrupt_reader: EventReader<ReleaseCommandResourcesEvent>,
+    mut event_reader: EventReader<ReleaseCommandResourcesEvent>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
-    for ReleaseCommandResourcesEvent(interrupted_command_type) in interrupt_reader.read() {
+    for ReleaseCommandResourcesEvent(interrupted_command_type) in event_reader.read() {
         if let CommandType::WorkOn(WorkOnCommand { task, .. }) = interrupted_command_type {
             tasks_scheduler.send(ScheduleTaskEvent::push_front(task.clone()));
         }

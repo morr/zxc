@@ -92,10 +92,10 @@ fn monitor_completion(
 
 fn handle_internal_interrupts(
     mut commands: Commands,
-    mut interrupt_reader: EventReader<InternalCommandInterruptEvent>,
+    mut event_reader: EventReader<InternalCommandInterruptEvent>,
     mut query: Query<&mut Movable>,
 ) {
-    for InternalCommandInterruptEvent(interrupted_command) in interrupt_reader.read() {
+    for InternalCommandInterruptEvent(interrupted_command) in event_reader.read() {
         let CommandType::MoveTo(MoveToCommand {
             commandable_entity,
             grid_tile: commanding_to_tile,
