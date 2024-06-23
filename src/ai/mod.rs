@@ -13,6 +13,7 @@ impl Plugin for AiPlugin {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn ai_idle_pawns(
     mut commands: Commands,
     mut commandable_query: Query<

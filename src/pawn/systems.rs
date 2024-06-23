@@ -86,7 +86,7 @@ pub fn spawn_pawns(
             .id();
 
         let grid_tile = position.truncate().world_pos_to_grid();
-        navmesh.add_occupant::<Pawn>(pawn_id, grid_tile.x, grid_tile.y);
+        navmesh.add_occupant::<Pawn>(&pawn_id, grid_tile.x, grid_tile.y);
         occupation_change_event_writer.send(log_event!(OccupationChangeEvent::new(grid_tile)));
 
         // auto-select first pawn

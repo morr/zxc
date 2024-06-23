@@ -29,7 +29,7 @@ pub fn move_moving_entities(
 
                     if maybe_pawn.is_some() {
                         navmesh.remove_occupant::<Pawn>(&entity, current_tile.x, current_tile.y);
-                        navmesh.add_occupant::<Pawn>(entity, final_tile.x, final_tile.y);
+                        navmesh.add_occupant::<Pawn>(&entity, final_tile.x, final_tile.y);
                     }
 
                     occupation_change_event_writer

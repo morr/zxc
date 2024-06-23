@@ -53,7 +53,7 @@ impl Carryable {
                     meshes_collection,
                 ));
 
-            navmesh.add_occupant::<Carryable>(carryable_entity, grid_tile.x, grid_tile.y);
+            navmesh.add_occupant::<Carryable>(&carryable_entity, grid_tile.x, grid_tile.y);
         }
     }
 

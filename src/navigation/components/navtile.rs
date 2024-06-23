@@ -27,10 +27,10 @@ impl Navtile {
         self.cost.is_some()
     }
 
-    pub fn add_occupant<T: 'static>(&mut self, entity: Entity) {
+    pub fn add_occupant<T: 'static>(&mut self, entity: &Entity) {
         let type_id = TypeId::of::<T>();
 
-        self.occupied_by.entry(type_id).or_default().insert(entity);
+        self.occupied_by.entry(type_id).or_default().insert(*entity);
     }
 
     pub fn remove_occupant<T: 'static>(&mut self, entity: &Entity) {

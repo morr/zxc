@@ -38,7 +38,7 @@ pub fn spawn_on_event(
 
         arc_navmesh
             .write()
-            .add_occupant::<Carryable>(carryable_id, grid_tile.x, grid_tile.y);
+            .add_occupant::<Carryable>(&carryable_id, grid_tile.x, grid_tile.y);
 
         store_event_writer.send(log_event!(StoreCarryableEvent {
             entity: carryable_id

@@ -62,7 +62,7 @@ impl Navmesh {
             .map_or(false, |navtile| navtile.is_passable())
     }
 
-    pub fn add_occupant<T: 'static>(&mut self, id: Entity, grid_tile_x: i32, grid_tile_y: i32) {
+    pub fn add_occupant<T: 'static>(&mut self, id: &Entity, grid_tile_x: i32, grid_tile_y: i32) {
         self.navtiles
             .get_mut(grid_tile_x, grid_tile_y)
             .add_occupant::<T>(id);
