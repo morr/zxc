@@ -1,4 +1,4 @@
-use bevy::sprite::{MaterialMesh2dBundle, Mesh2dHandle};
+use bevy::sprite::MaterialMesh2dBundle;
 
 use super::*;
 
@@ -28,7 +28,7 @@ pub fn spawn_on_event(
             .spawn((
                 component,
                 MaterialMesh2dBundle {
-                    mesh: Mesh2dHandle::from(meshes_collection.food.clone()),
+                    mesh: meshes_collection.food.clone().into(),
                     material: assets_collection.food.clone(),
                     transform: Transform::from_translation(
                         grid_tile.grid_tile_center_to_world().extend(ITEM_Z_INDEX),

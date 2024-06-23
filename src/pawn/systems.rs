@@ -7,8 +7,8 @@ use super::*;
 #[allow(clippy::too_many_arguments)]
 pub fn spawn_pawns(
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
     assets_collection: Res<AssetsCollection>,
+    meshes_collection: Res<MeshesCollection>,
     font_assets: Res<FontAssets>,
     warehouse_query: Query<&Transform, With<Warehouse>>,
     farm_query: Query<&Transform, With<Farm>>,
@@ -16,13 +16,6 @@ pub fn spawn_pawns(
     mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
     mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
 ) {
-    // println!("Spawning pawns");
-
-    let mesh = Mesh::from(Circle::new(config().tile.size / 2.0 * 0.75));
-    // let material = ColorMaterial::from(Color::hex("E178C5").unwrap());
-    let mesh_handle: Handle<Mesh> = meshes.add(mesh);
-    // let material_handle = materials.add(material);
-
     let mut rng = rand::thread_rng();
     let radius = config().tile.size * i32::max(BASE_WIDTH, BASE_HEIGHT) as f32;
 
@@ -60,7 +53,7 @@ pub fn spawn_pawns(
                 Name::new("Pawn"),
                 // state: PawnState::Idle,
                 MaterialMesh2dBundle {
-                    mesh: mesh_handle.clone().into(),
+                    mesh: meshes_collection.pawn.clone().into(),
                     material: assets_collection.pawn_idle.clone(),
                     transform: Transform::from_translation(position),
                     ..default()

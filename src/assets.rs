@@ -142,6 +142,7 @@ impl FromWorld for AssetsCollection {
 
 #[derive(Resource)]
 pub struct MeshesCollection {
+    pub pawn: Handle<Mesh>,
     pub food: Handle<Mesh>,
 }
 
@@ -150,6 +151,7 @@ impl FromWorld for MeshesCollection {
         let mut meshes = world.get_resource_mut::<Assets<Mesh>>().unwrap();
 
         Self {
+            pawn: meshes.add(Mesh::from(Circle::new(config().tile.size / 2.0 * 0.75))),
             food: meshes.add(Mesh::from(Rectangle::new(
                 config().tile.size / 4.0,
                 config().tile.size / 4.0,
