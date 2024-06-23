@@ -14,7 +14,8 @@ pub struct Workable {
 #[derive(Event, Debug)]
 pub struct WorkCompleteEvent {
     pub commandable_entity: Entity,
-    pub task: Task,
+    pub workable_entity: Entity,
+    pub work_kind: WorkKind,
 }
 
 impl Workable {

@@ -10,7 +10,7 @@ impl Plugin for WorkOnCommandPlugin {
                 execute_command,
                 monitor_completion,
                 handle_internal_interrupts,
-                handle_release_resources,
+                // handle_release_resources,
             )
                 .chain()
                 .run_if(in_state(AppState::Playing)),
@@ -21,7 +21,8 @@ impl Plugin for WorkOnCommandPlugin {
 #[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct WorkOnCommand {
     pub commandable_entity: Entity,
-    pub task: Task,
+    pub workable_entity: Entity,
+    pub work_kind: WorkKind,
 }
 
 fn execute_command(
@@ -30,18 +31,11 @@ fn execute_command(
     mut workable_query: Query<&mut Workable>,
 ) {
     for command in command_reader.read() {
-        let TaskKind::Work {
-            workable_entity, ..
-        } = *command.task
-        else {
-            panic!("Task kind must be TaskKind::Work");
-        };
-
-        match workable_query.get_mut(workable_entity) {
+        match workable_query.get_mut(command.workable_entity) {
             Ok(mut workable) => {
                 workable.change_state(
                     WorkableState::BeingWorked(command.clone()),
-                    workable_entity,
+                    command.workable_entity,
                     &mut commands,
                 );
             }
@@ -61,7 +55,8 @@ fn monitor_completion(
 ) {
     for WorkCompleteEvent {
         commandable_entity,
-        task,
+        workable_entity,
+        work_kind,
     } in command_complete_event_reader.read()
     {
         let Ok(mut commandable) = query.get_mut(*commandable_entity) else {
@@ -70,14 +65,13 @@ fn monitor_completion(
         let Some(ref command_type) = commandable.executing else {
             continue;
         };
-        let CommandType::WorkOn(WorkOnCommand {
-            commandable_entity: command_commandable_entity,
-            task: command_task,
-        }) = command_type
-        else {
+        let CommandType::WorkOn(command) = command_type else {
             continue;
         };
-        if commandable_entity != command_commandable_entity || task != command_task {
+        if *commandable_entity != command.commandable_entity
+            || *workable_entity != command.workable_entity
+            || *work_kind != command.work_kind
+        {
             continue;
         }
 
@@ -94,25 +88,29 @@ fn handle_internal_interrupts(
     mut event_reader: EventReader<InternalCommandInterruptEvent>,
     // mut commandable_query: Query<&mut Commandable>,
     mut workable_query: Query<&mut Workable>,
-    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
+    // mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
     // mut work_complete_event_writer: EventWriter<WorkCompleteEvent>,
 ) {
     for InternalCommandInterruptEvent(interrupted_command_type) in event_reader.read() {
         if let CommandType::WorkOn(interrupted_command) = interrupted_command_type {
-            let Task(TaskKind::Work {
-                workable_entity, ..
-            }) = interrupted_command.task
-            else {
-                panic!("Task kind must be TaskKind::Work");
-            };
+            // let Task(TaskKind::Work {
+            //     workable_entity, ..
+            // }) = interrupted_command.task
+            // else {
+            //     panic!("Task kind must be TaskKind::Work");
+            // };
 
             // Handle the workable entity
-            if let Ok(mut workable) = workable_query.get_mut(workable_entity) {
+            if let Ok(mut workable) = workable_query.get_mut(interrupted_command.workable_entity) {
                 if let WorkableState::BeingWorked(ref worked_command) = workable.state {
                     if interrupted_command == worked_command {
-                        tasks_scheduler
-                            .send(ScheduleTaskEvent::push_front(worked_command.task.clone()));
-                        workable.change_state(WorkableState::Idle, workable_entity, &mut commands);
+                        // tasks_scheduler
+                        //     .send(ScheduleTaskEvent::push_front(worked_command.task.clone()));
+                        workable.change_state(
+                            WorkableState::Idle,
+                            interrupted_command.workable_entity,
+                            &mut commands,
+                        );
                     }
                 }
             }
@@ -120,13 +118,13 @@ fn handle_internal_interrupts(
     }
 }
 
-fn handle_release_resources(
-    mut event_reader: EventReader<ReleaseCommandResourcesEvent>,
-    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
-) {
-    for ReleaseCommandResourcesEvent(interrupted_command_type) in event_reader.read() {
-        if let CommandType::WorkOn(WorkOnCommand { task, .. }) = interrupted_command_type {
-            tasks_scheduler.send(ScheduleTaskEvent::push_front(task.clone()));
-        }
-    }
-}
+// fn handle_release_resources(
+//     mut event_reader: EventReader<ReleaseCommandResourcesEvent>,
+//     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
+// ) {
+//     for ReleaseCommandResourcesEvent(interrupted_command_type) in event_reader.read() {
+//         if let CommandType::WorkOn(WorkOnCommand { task, .. }) = interrupted_command_type {
+//             tasks_scheduler.send(ScheduleTaskEvent::push_front(task.clone()));
+//         }
+//     }
+// }

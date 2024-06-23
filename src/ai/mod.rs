@@ -52,9 +52,10 @@ fn ai_idle_pawns(
                 &mut commandable_release_resources_writer,
             );
         } else if let Some(task) = tasks_queue.get_task() {
-            let commands_sequence = match *task {
+            let commands_sequence = match task.0 {
                 TaskKind::Work {
-                    workable_entity, ..
+                    workable_entity,
+                    ref work_kind,
                 } => {
                     let transform = workable_query
                         .get_mut(workable_entity)
@@ -72,6 +73,11 @@ fn ai_idle_pawns(
                         }),
                         CommandType::WorkOn(WorkOnCommand {
                             commandable_entity,
+                            workable_entity,
+                            work_kind: work_kind.clone(),
+                        }),
+                        CommandType::CompleteTask(CompleteTaskCommand {
+                            commandable_entity,
                             task,
                         }),
                     ]
@@ -80,14 +86,15 @@ fn ai_idle_pawns(
                     carryable_entity,
                     destination_grid_tile: grid_tile,
                 } => {
-                    let transform = carryable_query
-                        .get_mut(carryable_entity)
-                        .unwrap_or_else(|err| {
-                            panic!(
-                                "Failed to get query result for carryable_entity {:?} {:?}",
-                                carryable_entity, err
-                            )
-                        });
+                    let transform =
+                        carryable_query
+                            .get_mut(carryable_entity)
+                            .unwrap_or_else(|err| {
+                                panic!(
+                                    "Failed to get query result for carryable_entity {:?} {:?}",
+                                    carryable_entity, err
+                                )
+                            });
 
                     vec![
                         CommandType::MoveTo(MoveToCommand {

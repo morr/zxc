@@ -14,8 +14,6 @@ pub fn progress_work(
     let elapsed_time = time_scale.scale_to_seconds(time.delta_seconds());
 
     for (workable_entity, mut workable) in workable_query.iter_mut() {
-        // --- problem here
-        // --- workable was replaced by sync_workable
         ensure_state!(WorkableState::BeingWorked(_), workable.state);
 
         workable.perform_work(elapsed_time);
@@ -27,7 +25,8 @@ pub fn progress_work(
 
             let WorkableState::BeingWorked(WorkOnCommand {
                 commandable_entity,
-                task,
+                workable_entity,
+                work_kind,
             }) = prev_state
             else {
                 panic!()
@@ -35,7 +34,8 @@ pub fn progress_work(
 
             event_writer.send(log_event!(WorkCompleteEvent {
                 commandable_entity,
-                task,
+                workable_entity,
+                work_kind
             }));
         }
     }
@@ -46,15 +46,12 @@ pub fn complete_work(
     mut farm_progress_event_writer: EventWriter<FarmProgressEvent>,
     mut farm_tending_event_writer: EventWriter<FarmTendedEvent>,
 ) {
-    for WorkCompleteEvent { task, .. } in event_reader.read() {
-        let Task(TaskKind::Work {
-            workable_entity,
-            work_kind,
-        }) = task
-        else {
-            panic!("Task kind must be TaskKind::Work");
-        };
-
+    for WorkCompleteEvent {
+        workable_entity,
+        work_kind,
+        ..
+    } in event_reader.read()
+    {
         match work_kind {
             // event.workable_entity the same is task.entity
             WorkKind::FarmPlanting | WorkKind::FarmHarvest => {
