@@ -1,5 +1,3 @@
-use bevy::sprite::MaterialMesh2dBundle;
-
 use super::*;
 
 pub fn spawn_on_event(
@@ -27,14 +25,7 @@ pub fn spawn_on_event(
         let carryable_id = commands
             .spawn((
                 component,
-                MaterialMesh2dBundle {
-                    mesh: meshes_collection.food.clone().into(),
-                    material: assets_collection.food.clone(),
-                    transform: Transform::from_translation(
-                        grid_tile.grid_tile_center_to_world().extend(ITEM_Z_INDEX),
-                    ),
-                    ..default()
-                },
+                Carryable::spawn_mesh_bundle(*grid_tile, &assets_collection, &meshes_collection)
             ))
             .id();
 
