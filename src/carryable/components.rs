@@ -7,7 +7,7 @@ pub enum CarryableKind {
     Food,
 }
 
-#[derive(Component, Reflect)]
+#[derive(Component, Reflect, Debug, Clone)]
 pub struct Carryable {
     pub kind: CarryableKind,
     pub amount: u32,
@@ -20,8 +20,7 @@ impl Carryable {
         carryable_entity: Entity,
         commands: &mut Commands,
     ) {
-        assert!(pawn.carried_item.is_none(), "Pawn is already carrying an item!");
-        pawn.carried_item = Some(carryable_entity);
+        pawn.inventory.insert(carryable_entity, self.clone());
 
         commands
             .entity(carryable_entity)

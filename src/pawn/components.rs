@@ -1,4 +1,5 @@
 use std::ops::RangeInclusive;
+use bevy::utils::HashMap;
 
 use super::*;
 use rand::Rng;
@@ -15,7 +16,7 @@ pub struct Pawn {
     pub lifetime: f32,
 
     pub owned_bed: Option<Entity>,
-    pub carried_item: Option<Entity>,
+    pub inventory: HashMap<Entity, Carryable>,
 }
 
 #[derive(Component)]
@@ -41,7 +42,7 @@ impl Default for Pawn {
             birth_year_day: rng.gen_range(1..=config().time.days_in_year),
             lifetime,
             owned_bed: None,
-            carried_item: None,
+            inventory: HashMap::new(),
         }
     }
 }

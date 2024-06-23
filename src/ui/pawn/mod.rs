@@ -25,7 +25,7 @@ struct PawnBirthdayTextUIMarker {}
 #[derive(Component, Default)]
 struct PawnStateTextUIMarker {}
 #[derive(Component, Default)]
-struct PawnCarriedItemTextUIMarker {}
+struct PawnInventoryTextUIMarker {}
 
 #[derive(Component, Default)]
 pub struct MovableComponentUIMarker {}
@@ -81,7 +81,7 @@ fn update_pawn_ui(
             Option<&PawnLifetimeTextUIMarker>,
             Option<&PawnBirthdayTextUIMarker>,
             Option<&PawnStateTextUIMarker>,
-            Option<&PawnCarriedItemTextUIMarker>,
+            Option<&PawnInventoryTextUIMarker>,
             Option<&MovableSpeedTextUIMarker>,
             Option<&MovablePathTextUIMarker>,
             Option<&MovableStateTextUIMarker>,
@@ -97,7 +97,7 @@ fn update_pawn_ui(
             With<PawnLifetimeTextUIMarker>,
             With<PawnBirthdayTextUIMarker>,
             With<PawnStateTextUIMarker>,
-            With<PawnCarriedItemTextUIMarker>,
+            With<PawnInventoryTextUIMarker>,
             With<MovableSpeedTextUIMarker>,
             With<MovablePathTextUIMarker>,
             With<MovableStateTextUIMarker>,
@@ -148,7 +148,7 @@ fn update_text_markers_recursive(
             Option<&PawnLifetimeTextUIMarker>,
             Option<&PawnBirthdayTextUIMarker>,
             Option<&PawnStateTextUIMarker>,
-            Option<&PawnCarriedItemTextUIMarker>,
+            Option<&PawnInventoryTextUIMarker>,
             Option<&MovableSpeedTextUIMarker>,
             Option<&MovablePathTextUIMarker>,
             Option<&MovableStateTextUIMarker>,
@@ -164,7 +164,7 @@ fn update_text_markers_recursive(
             With<PawnLifetimeTextUIMarker>,
             With<PawnBirthdayTextUIMarker>,
             With<PawnStateTextUIMarker>,
-            With<PawnCarriedItemTextUIMarker>,
+            With<PawnInventoryTextUIMarker>,
             With<MovableSpeedTextUIMarker>,
             With<MovablePathTextUIMarker>,
             With<MovableStateTextUIMarker>,
@@ -209,7 +209,7 @@ fn update_text_markers_recursive(
             text.sections[0].value = pawn_state_text(pawn);
         }
         if pwan_carried_marker.is_some() {
-            text.sections[0].value = pawn_carried_item_text(pawn);
+            text.sections[0].value = pawn_inventory_text(pawn);
         }
         if movable_speed_marker.is_some() {
             text.sections[0].value = movable_speed_text(movable);
@@ -295,8 +295,8 @@ pub fn render_pawn_ui(
                             pawn_birthday_text(pawn),
                             font_assets,
                         ));
-                        parent.spawn(property_text_bundle::<PawnCarriedItemTextUIMarker>(
-                            pawn_carried_item_text(pawn),
+                        parent.spawn(property_text_bundle::<PawnInventoryTextUIMarker>(
+                            pawn_inventory_text(pawn),
                             font_assets,
                         ));
                     });
@@ -407,8 +407,8 @@ fn pawn_state_text(pawn: &Pawn) -> String {
     // }
     format!("state: {:?}", pawn.state)
 }
-fn pawn_carried_item_text(pawn: &Pawn) -> String {
-    format!("carried item: {:?}", pawn.carried_item)
+fn pawn_inventory_text(pawn: &Pawn) -> String {
+    format!("inventory: {:?}", pawn.inventory)
 }
 
 fn movable_speed_text(movable: &Movable) -> String {
