@@ -7,25 +7,13 @@ impl Plugin for AssetsPlugin {
         app.configure_loading_state(
             LoadingStateConfig::new(AppState::Loading)
                 .init_resource::<AssetsCollection>()
+                .init_resource::<MeshesCollection>()
                 .load_collection::<FontAssets>()
                 .load_collection::<TextureAssets>()
                 .load_collection::<IconAssets>()
                 .load_collection::<FarmAssets>(),
         );
     }
-}
-
-#[derive(Resource)]
-pub struct AssetsCollection {
-    pub pawn_idle: Handle<ColorMaterial>,
-    pub pawn_moving: Handle<ColorMaterial>,
-    pub pawn_pathfinding: Handle<ColorMaterial>,
-    pub pawn_pathfinding_error: Handle<ColorMaterial>,
-    pub pawn_working: Handle<ColorMaterial>,
-    pub pawn_dead: Handle<ColorMaterial>,
-    pub navmesh_passable: Handle<ColorMaterial>,
-    pub navmesh_impassable: Handle<ColorMaterial>,
-    pub food: Handle<ColorMaterial>,
 }
 
 #[derive(AssetCollection, Resource)]
@@ -119,6 +107,19 @@ pub struct FarmAssets {
     pub harvested: Handle<Image>,
 }
 
+#[derive(Resource)]
+pub struct AssetsCollection {
+    pub pawn_idle: Handle<ColorMaterial>,
+    pub pawn_moving: Handle<ColorMaterial>,
+    pub pawn_pathfinding: Handle<ColorMaterial>,
+    pub pawn_pathfinding_error: Handle<ColorMaterial>,
+    pub pawn_working: Handle<ColorMaterial>,
+    pub pawn_dead: Handle<ColorMaterial>,
+    pub navmesh_passable: Handle<ColorMaterial>,
+    pub navmesh_impassable: Handle<ColorMaterial>,
+    pub food: Handle<ColorMaterial>,
+}
+
 impl FromWorld for AssetsCollection {
     fn from_world(world: &mut World) -> Self {
         let mut materials = world.get_resource_mut::<Assets<ColorMaterial>>().unwrap();
@@ -135,6 +136,24 @@ impl FromWorld for AssetsCollection {
             navmesh_impassable: materials
                 .add(ColorMaterial::from(Color::rgba(1.0, 0.0, 0.0, 0.75))),
             food: materials.add(ColorMaterial::from(Color::hex("fe9516").unwrap())),
+        }
+    }
+}
+
+#[derive(Resource)]
+pub struct MeshesCollection {
+    pub food: Handle<Mesh>,
+}
+
+impl FromWorld for MeshesCollection {
+    fn from_world(world: &mut World) -> Self {
+        let mut meshes = world.get_resource_mut::<Assets<Mesh>>().unwrap();
+
+        Self {
+            food: meshes.add(Mesh::from(Rectangle::new(
+                config().tile.size / 4.0,
+                config().tile.size / 4.0,
+            ))),
         }
     }
 }

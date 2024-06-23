@@ -1,4 +1,4 @@
-use bevy::sprite::MaterialMesh2dBundle;
+use bevy::sprite::{MaterialMesh2dBundle, Mesh2dHandle};
 
 use super::*;
 
@@ -6,8 +6,8 @@ pub fn spawn_on_event(
     mut spawn_event_reader: EventReader<SpawnCarryableEvent>,
     mut store_event_writer: EventWriter<StoreCarryableEvent>,
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
     assets_collection: Res<AssetsCollection>,
+    meshes_collection: Res<MeshesCollection>,
     mut food: ResMut<FoodStock>,
     arc_navmesh: Res<ArcNavmesh>,
 ) {
@@ -17,12 +17,6 @@ pub fn spawn_on_event(
         grid_tile,
     } in spawn_event_reader.read()
     {
-        let mesh = Mesh::from(Rectangle::new(
-            config().tile.size / 4.0,
-            config().tile.size / 4.0,
-        ));
-        let mesh_handle: Handle<Mesh> = meshes.add(mesh);
-
         let component = match *kind {
             CarryableKind::Food => Carryable {
                 kind: CarryableKind::Food,
@@ -34,7 +28,7 @@ pub fn spawn_on_event(
             .spawn((
                 component,
                 MaterialMesh2dBundle {
-                    mesh: mesh_handle.clone().into(),
+                    mesh: Mesh2dHandle::from(meshes_collection.food.clone()),
                     material: assets_collection.food.clone(),
                     transform: Transform::from_translation(
                         grid_tile.grid_tile_center_to_world().extend(ITEM_Z_INDEX),
