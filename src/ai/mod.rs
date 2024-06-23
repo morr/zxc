@@ -51,7 +51,7 @@ fn ai_idle_pawns(
                 &mut commandable_release_resources_writer,
             );
         } else if let Some(task) = tasks_queue.get_task() {
-            let commands_sequence = match task.kind {
+            let commands_sequence = match *task {
                 TaskKind::Work {
                     workable_entity, ..
                 } => {

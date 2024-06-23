@@ -47,10 +47,10 @@ pub fn complete_work(
     mut farm_tending_event_writer: EventWriter<FarmTendedEvent>,
 ) {
     for WorkCompleteEvent { task, .. } in event_reader.read() {
-        let TaskKind::Work {
+        let Task(TaskKind::Work {
             workable_entity,
-            ref work_kind,
-        } = task.kind
+            work_kind,
+        }) = task
         else {
             panic!("Task kind must be TaskKind::Work");
         };
@@ -58,10 +58,10 @@ pub fn complete_work(
         match work_kind {
             // event.workable_entity the same is task.entity
             WorkKind::FarmPlanting | WorkKind::FarmHarvest => {
-                farm_progress_event_writer.send(log_event!(FarmProgressEvent(workable_entity)));
+                farm_progress_event_writer.send(log_event!(FarmProgressEvent(*workable_entity)));
             }
             WorkKind::FarmTending => {
-                farm_tending_event_writer.send(log_event!(FarmTendedEvent(workable_entity)));
+                farm_tending_event_writer.send(log_event!(FarmTendedEvent(*workable_entity)));
             }
         }
     }

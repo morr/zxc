@@ -32,7 +32,7 @@ fn execute_command(
     for command in command_reader.read() {
         let TaskKind::Work {
             workable_entity, ..
-        } = command.task.kind
+        } = *command.task
         else {
             panic!("Task kind must be TaskKind::Work");
         };
@@ -99,9 +99,9 @@ fn handle_internal_interrupts(
 ) {
     for InternalCommandInterruptEvent(interrupted_command_type) in event_reader.read() {
         if let CommandType::WorkOn(interrupted_command) = interrupted_command_type {
-            let TaskKind::Work {
+            let Task(TaskKind::Work {
                 workable_entity, ..
-            } = interrupted_command.task.kind
+            }) = interrupted_command.task
             else {
                 panic!("Task kind must be TaskKind::Work");
             };

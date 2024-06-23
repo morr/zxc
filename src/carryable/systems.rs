@@ -77,12 +77,10 @@ pub fn store_on_event(
             if let Some((_storage_entity, storage_grid_tile)) =
                 find_nearest_storage(carryable_grid_tile, &storages_query)
             {
-                tasks_queue.push_task_back(Task {
-                    kind: TaskKind::CarryItem {
-                        carryable_entity: *carryable_entity,
-                        destination_grid_tile: storage_grid_tile,
-                    },
-                });
+                tasks_queue.push_task_back(Task(TaskKind::CarryItem {
+                    carryable_entity: *carryable_entity,
+                    destination_grid_tile: storage_grid_tile,
+                }));
             }
         } else {
             warn!("Failed to get Carryable: {:?}", carryable_entity);

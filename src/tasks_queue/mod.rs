@@ -41,10 +41,8 @@ impl TasksQueue {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Reflect)]
-pub struct Task {
-    pub kind: TaskKind,
-}
+#[derive(Debug, Clone, PartialEq, Eq, Reflect, Deref, DerefMut)]
+pub struct Task(pub TaskKind);
 
 #[derive(Debug, Clone, PartialEq, Eq, Reflect)]
 pub enum TaskKind {
