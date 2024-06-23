@@ -185,7 +185,7 @@ fn update_text_markers_recursive(
         pwan_lifetime_marker,
         pawn_birthday_marker,
         pwan_state_marker,
-        pwan_carried_marker,
+        pwan_inventory_marker,
         movable_speed_marker,
         movable_path_marker,
         movable_state_marker,
@@ -209,7 +209,7 @@ fn update_text_markers_recursive(
         if pwan_state_marker.is_some() {
             text.sections[0].value = pawn_state_text(pawn);
         }
-        if pwan_carried_marker.is_some() {
+        if pwan_inventory_marker.is_some() {
             text.sections[0].value = pawn_inventory_text(pawn);
         }
         if movable_speed_marker.is_some() {

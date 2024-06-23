@@ -14,7 +14,7 @@ pub struct Carryable {
 }
 
 impl Carryable {
-    pub fn pick_up_by(
+    pub fn take_into_inventory(
         &mut self,
         pawn: &mut Pawn,
         carryable_entity: Entity,
@@ -25,6 +25,25 @@ impl Carryable {
         commands
             .entity(carryable_entity)
             .remove::<MaterialMesh2dBundle<ColorMaterial>>();
+    }
+
+    pub fn drop_from_inventory(
+        &mut self,
+        pawn: &mut Pawn,
+        carryable_entity: Entity,
+        grid_tile: IVec2,
+        commands: &mut Commands,
+        assets_collection: &Res<AssetsCollection>,
+        meshes_collection: &Res<MeshesCollection>,
+    ) {
+        pawn.inventory.remove(&carryable_entity).unwrap();
+        commands
+            .entity(carryable_entity)
+            .insert(Carryable::spawn_mesh_bundle(
+                grid_tile,
+                assets_collection,
+                meshes_collection,
+            ));
     }
 
     pub fn spawn_mesh_bundle(

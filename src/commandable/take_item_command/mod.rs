@@ -68,7 +68,7 @@ fn execute_command(
             continue;
         }
 
-        carryable.pick_up_by(&mut pawn, *carryable_entity, &mut commands);
+        carryable.take_into_inventory(&mut pawn, *carryable_entity, &mut commands);
 
         commandable.complete_executing(
             *commandable_entity,

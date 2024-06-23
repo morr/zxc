@@ -21,10 +21,6 @@ pub fn process_pending_commands(
         continue_unless!(CommandableState::PendingExecution, commandable.state);
 
         if let Some(command_type) = commandable.start_executing(entity, &mut commands) {
-            // println!(
-            //     "process_pending_commands {:?} pawn.change_state => PawnState::ExecutingCommand",
-            //     &command_type
-            // );
             match command_type {
                 CommandType::DropItem(command) => {
                     drop_item_command_writer.send(log_event!(command));
