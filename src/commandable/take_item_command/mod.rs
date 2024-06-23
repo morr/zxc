@@ -22,6 +22,7 @@ fn execute_command(
     mut carryable_query: Query<(&mut Carryable, &Transform)>,
     mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
     mut commandable_interrupt_writer: EventWriter<ExternalCommandInterruptEvent>,
+    arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     for TakeItemCommand {
         commandable_entity,
@@ -68,7 +69,13 @@ fn execute_command(
             continue;
         }
 
-        carryable.take_into_inventory(&mut pawn, *carryable_entity, &mut commands);
+        carryable.take_into_inventory(
+            &mut pawn,
+            *carryable_entity,
+            commandable_grid_tile,
+            &mut commands,
+            &mut arc_navmesh.write(),
+        );
 
         commandable.complete_executing(
             *commandable_entity,

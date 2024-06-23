@@ -18,15 +18,20 @@ impl Carryable {
         &mut self,
         pawn: &mut Pawn,
         carryable_entity: Entity,
+        grid_tile: IVec2,
         commands: &mut Commands,
+        navmesh: &mut Navmesh,
     ) {
         pawn.inventory.insert(carryable_entity, self.clone());
 
         commands
             .entity(carryable_entity)
             .remove::<MaterialMesh2dBundle<ColorMaterial>>();
+
+        navmesh.remove_occupant::<Carryable>(&carryable_entity, grid_tile.x, grid_tile.y);
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn drop_from_inventory(
         &mut self,
         pawn: &mut Pawn,
@@ -35,6 +40,7 @@ impl Carryable {
         commands: &mut Commands,
         assets_collection: &Res<AssetsCollection>,
         meshes_collection: &Res<MeshesCollection>,
+        navmesh: &mut Navmesh,
     ) {
         // it can be not in inventory if command chain is interrupted before
         // item picked up into inventory
@@ -46,6 +52,8 @@ impl Carryable {
                     assets_collection,
                     meshes_collection,
                 ));
+
+            navmesh.add_occupant::<Carryable>(carryable_entity, grid_tile.x, grid_tile.y);
         }
     }
 

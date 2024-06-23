@@ -29,6 +29,7 @@ fn execute_command(
     mut commandable_interrupt_writer: EventWriter<ExternalCommandInterruptEvent>,
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
+    arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     for DropCarriedItemCommand {
         commandable_entity,
@@ -69,6 +70,7 @@ fn execute_command(
             &mut commands,
             &assets_collection,
             &meshes_collection,
+            &mut arc_navmesh.write(),
         );
 
         commandable.complete_executing(
@@ -94,6 +96,7 @@ fn handle_release_resources(
     mut carryable_query: Query<&mut Carryable>,
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
+    arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     for ReleaseCommandResourcesEvent(interrupted_command_type) in event_reader.read() {
         if let CommandType::DropCarriedItem(DropCarriedItemCommand {
@@ -125,6 +128,7 @@ fn handle_release_resources(
                 &mut commands,
                 &assets_collection,
                 &meshes_collection,
+                &mut arc_navmesh.write(),
             );
         }
     }
