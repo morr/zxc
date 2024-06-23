@@ -101,25 +101,17 @@ fn handle_release_resources(
             carryable_entity,
         }) = interrupted_command_type
         {
-            let (mut pawn, transform) = match commandable_query.get_mut(*commandable_entity) {
-                Ok((pawn, transform)) => (pawn, transform),
-                Err(err) => {
-                    panic!(
-                        "Failed to get query result for commandable_entity {:?}: {:?}",
-                        commandable_entity, err
-                    );
-                }
-            };
-
-            let mut carryable = match carryable_query.get_mut(*carryable_entity) {
-                Ok(carryable) => carryable,
-                Err(err) => {
-                    panic!(
-                        "Failed to get query result for carryable_entity {:?}: {:?}",
-                        carryable_entity, err
-                    );
-                }
-            };
+            let (mut pawn, transform) =
+                commandable_query
+                    .get_mut(*commandable_entity)
+                    .expect(&format!(
+                        "Failed to get query result for commandable_entity {:?}",
+                        commandable_entity
+                    ));
+            let mut carryable = carryable_query.get_mut(*carryable_entity).expect(&format!(
+                "Failed to get query result for carryable_entity {:?}",
+                carryable_entity
+            ));
 
             carryable.drop_from_inventory(
                 &mut pawn,
