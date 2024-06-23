@@ -36,14 +36,17 @@ impl Carryable {
         assets_collection: &Res<AssetsCollection>,
         meshes_collection: &Res<MeshesCollection>,
     ) {
-        pawn.inventory.remove(&carryable_entity).unwrap();
-        commands
-            .entity(carryable_entity)
-            .insert(Carryable::spawn_mesh_bundle(
-                grid_tile,
-                assets_collection,
-                meshes_collection,
-            ));
+        // it can be not in inventory if command chain is interrupted before
+        // item picked up into inventory
+        if pawn.inventory.remove(&carryable_entity).is_some() {
+            commands
+                .entity(carryable_entity)
+                .insert(Carryable::spawn_mesh_bundle(
+                    grid_tile,
+                    assets_collection,
+                    meshes_collection,
+                ));
+        }
     }
 
     pub fn spawn_mesh_bundle(
