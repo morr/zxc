@@ -6,7 +6,7 @@ impl Plugin for DropItemCommandPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<DropItemCommand>().add_systems(
             Update,
-            (execute_command, handle_internal_interrupts)
+            (execute_command, handle_release_resources)
                 .chain()
                 .run_if(in_state(AppState::Playing)),
         );
@@ -35,7 +35,7 @@ fn execute_command(
         carryable_entity,
     } in command_reader.read()
     {
-        let (mut pawn, mut commandable, commandable_transform) =
+        let (mut pawn, mut commandable, transform) =
             match commandable_query.get_mut(*commandable_entity) {
                 Ok((pawn, commandable, transform)) => (pawn, commandable, transform),
                 Err(err) => {
@@ -62,12 +62,10 @@ fn execute_command(
             }
         };
 
-        let grid_tile = commandable_transform.world_pos_to_grid();
-
         carryable.drop_from_inventory(
             &mut pawn,
             *carryable_entity,
-            grid_tile,
+            transform.world_pos_to_grid(),
             &mut commands,
             &assets_collection,
             &meshes_collection,
@@ -81,34 +79,56 @@ fn execute_command(
     }
 }
 
-fn handle_internal_interrupts(
-    // mut commands: Commands,
-    mut interrupt_reader: EventReader<InternalCommandInterruptEvent>,
-    // mut commandable_query: Query<&mut Commandable>,
-    // mut workable_query: Query<&mut Workable>,
-    // mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
-    // mut work_complete_event_writer: EventWriter<WorkCompleteEvent>,
+// The command is executed and completed within the same system (execute_command),
+// so there won't be any interruption to handle.
+// fn handle_internal_interrupts(
+//     mut commands: Commands,
+//     mut event_reader: EventReader<InternalCommandInterruptEvent>,
+// ) {
+// }
+
+fn handle_release_resources(
+    mut commands: Commands,
+    mut event_reader: EventReader<ReleaseCommandResourcesEvent>,
+    mut commandable_query: Query<(&mut Pawn, &Transform)>,
+    mut carryable_query: Query<&mut Carryable>,
+    assets_collection: Res<AssetsCollection>,
+    meshes_collection: Res<MeshesCollection>,
 ) {
-    for InternalCommandInterruptEvent(interrupted_command_type) in interrupt_reader.read() {
-        if let CommandType::DropItem(interrupted_command) = interrupted_command_type {
-            error!("{:?}", interrupted_command)
-            // let TaskKind::Work {
-            //     workable_entity, ..
-            // } = interrupted_command.task.kind
-            // else {
-            //     panic!("Task kind must be TaskKind::Work");
-            // };
-            //
-            // // Handle the workable entity
-            // if let Ok(mut workable) = workable_query.get_mut(workable_entity) {
-            //     if let WorkableState::BeingWorked(ref worked_command) = workable.state {
-            //         if interrupted_command == worked_command {
-            //             tasks_scheduler
-            //                 .send(ScheduleTaskEvent::push_front(worked_command.task.clone()));
-            //             workable.change_state(WorkableState::Idle, workable_entity, &mut commands);
-            //         }
-            //     }
-            // }
+    for ReleaseCommandResourcesEvent(interrupted_command_type) in event_reader.read() {
+        if let CommandType::DropItem(DropItemCommand {
+            commandable_entity,
+            carryable_entity,
+        }) = interrupted_command_type
+        {
+            let (mut pawn, transform) = match commandable_query.get_mut(*commandable_entity) {
+                Ok((pawn, transform)) => (pawn, transform),
+                Err(err) => {
+                    panic!(
+                        "Failed to get query result for commandable_entity {:?}: {:?}",
+                        commandable_entity, err
+                    );
+                }
+            };
+
+            let mut carryable = match carryable_query.get_mut(*carryable_entity) {
+                Ok(carryable) => carryable,
+                Err(err) => {
+                    panic!(
+                        "Failed to get query result for carryable_entity {:?}: {:?}",
+                        carryable_entity, err
+                    );
+                }
+            };
+
+            carryable.drop_from_inventory(
+                &mut pawn,
+                *carryable_entity,
+                transform.world_pos_to_grid(),
+                &mut commands,
+                &assets_collection,
+                &meshes_collection,
+            );
         }
     }
 }
