@@ -15,7 +15,7 @@ impl Plugin for AiPlugin {
 
 fn ai_idle_pawns(
     mut commands: Commands,
-    mut query: Query<
+    mut commandable_query: Query<
         (
             Entity,
             &Pawn,
@@ -29,12 +29,15 @@ fn ai_idle_pawns(
             // With<commandable_state::CommandableStateIdleTag>,
         ),
     >,
+    mut carryable_query: Query<&Transform>,
     mut tasks_queue: ResMut<TasksQueue>,
     mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
     mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
     arc_navmesh: Res<ArcNavmesh>,
 ) {
-    for (commandable_entity, pawn, movable, restable, mut commandable, transform) in &mut query {
+    for (commandable_entity, pawn, movable, restable, mut commandable, transform) in
+        &mut commandable_query
+    {
         ensure_state!(PawnState::Idle, pawn.state);
         continue_unless!(CommandableState::Idle, commandable.state);
 
@@ -60,10 +63,13 @@ fn ai_idle_pawns(
                         }),
                     ]
                 }
-                TaskKind::CarryItem {
-                    carryable_entity,
-                    grid_tile,
-                } => {
+                TaskKind::CarryItem { carryable_entity } => {
+                    let transform = carryable_query.get_mut(carryable_entity).expect(&format!(
+                        "Failed to get query result for carryable_entity {:?}",
+                        carryable_entity
+                    ));
+                    let grid_tile = transform.world_pos_to_grid();
+
                     vec![
                         CommandType::MoveTo(MoveToCommand {
                             commandable_entity,
