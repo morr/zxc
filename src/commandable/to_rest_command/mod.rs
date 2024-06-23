@@ -23,7 +23,7 @@ fn execute_command(
     mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
     mut available_beds: ResMut<AvailableBeds>,
     mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
-    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
+    mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
     arc_navmesh: Res<ArcNavmesh>,
 ) {
     for ToRestCommand { commandable_entity } in command_reader.read() {
@@ -98,7 +98,7 @@ fn execute_command(
                     *commandable_entity,
                     &mut commands,
                     &mut commandable_interrupt_writer,
-                    &mut tasks_scheduler,
+                    &mut commandable_release_resources_writer,
                 );
             }
             Err(err) => {

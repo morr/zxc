@@ -19,6 +19,7 @@ impl Plugin for CommandablePlugin {
         app.add_event::<CommandCompleteEvent>()
             .add_event::<ExternalCommandInterruptEvent>()
             .add_event::<InternalCommandInterruptEvent>()
+            .add_event::<ReleaseCommandResourcesEvent>()
             .register_type::<Commandable>()
             .add_plugins((
                 DropItemCommandPlugin,

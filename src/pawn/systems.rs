@@ -213,7 +213,7 @@ pub fn progress_pawn_death(
     mut pawn_query: Query<(&mut Pawn, &mut Restable, &mut Commandable)>,
     mut bed_query: Query<&mut Bed>,
     mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
-    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
+    mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
     mut available_beds: ResMut<AvailableBeds>,
     mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
@@ -235,7 +235,7 @@ pub fn progress_pawn_death(
                     *entity,
                     &mut commands,
                     &mut commandable_interrupt_writer,
-                    &mut tasks_scheduler,
+                    &mut commandable_release_resources_writer,
                 );
 
                 if let Some(bed_entity) = pawn.owned_bed {

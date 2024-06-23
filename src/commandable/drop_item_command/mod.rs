@@ -4,8 +4,12 @@ pub struct DropItemCommandPlugin;
 
 impl Plugin for DropItemCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<DropItemCommand>()
-            .add_systems(Update, execute_command.run_if(in_state(AppState::Playing)));
+        app.add_event::<DropItemCommand>().add_systems(
+            Update,
+            (execute_command, handle_internal_interrupts)
+                .chain()
+                .run_if(in_state(AppState::Playing)),
+        );
     }
 }
 
@@ -74,5 +78,37 @@ fn execute_command(
             &mut commands,
             &mut commandable_event_writer,
         );
+    }
+}
+
+fn handle_internal_interrupts(
+    // mut commands: Commands,
+    mut interrupt_reader: EventReader<InternalCommandInterruptEvent>,
+    // mut commandable_query: Query<&mut Commandable>,
+    // mut workable_query: Query<&mut Workable>,
+    // mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
+    // mut work_complete_event_writer: EventWriter<WorkCompleteEvent>,
+) {
+    for InternalCommandInterruptEvent(interrupted_command_type) in interrupt_reader.read() {
+        if let CommandType::DropItem(interrupted_command) = interrupted_command_type {
+            error!("{:?}", interrupted_command)
+            // let TaskKind::Work {
+            //     workable_entity, ..
+            // } = interrupted_command.task.kind
+            // else {
+            //     panic!("Task kind must be TaskKind::Work");
+            // };
+            //
+            // // Handle the workable entity
+            // if let Ok(mut workable) = workable_query.get_mut(workable_entity) {
+            //     if let WorkableState::BeingWorked(ref worked_command) = workable.state {
+            //         if interrupted_command == worked_command {
+            //             tasks_scheduler
+            //                 .send(ScheduleTaskEvent::push_front(worked_command.task.clone()));
+            //             workable.change_state(WorkableState::Idle, workable_entity, &mut commands);
+            //         }
+            //     }
+            // }
+        }
     }
 }

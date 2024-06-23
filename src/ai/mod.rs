@@ -31,7 +31,7 @@ fn ai_idle_pawns(
     >,
     mut tasks_queue: ResMut<TasksQueue>,
     mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
-    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
+    mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
     arc_navmesh: Res<ArcNavmesh>,
 ) {
     for (commandable_entity, pawn, movable, restable, mut commandable, transform) in &mut query {
@@ -44,7 +44,7 @@ fn ai_idle_pawns(
                 commandable_entity,
                 &mut commands,
                 &mut commandable_interrupt_writer,
-                &mut tasks_scheduler,
+                &mut commandable_release_resources_writer,
             );
         } else if let Some(task) = tasks_queue.get_task() {
             let commands_sequence = match task.kind {
@@ -91,7 +91,7 @@ fn ai_idle_pawns(
                 commandable_entity,
                 &mut commands,
                 &mut commandable_interrupt_writer,
-                &mut tasks_scheduler,
+                &mut commandable_release_resources_writer,
             );
         } else {
             if !config().pawn.wander_when_idle {
@@ -113,7 +113,7 @@ fn ai_idle_pawns(
                 commandable_entity,
                 &mut commands,
                 &mut commandable_interrupt_writer,
-                &mut tasks_scheduler,
+                &mut commandable_release_resources_writer,
             );
         }
     }

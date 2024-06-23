@@ -10,6 +10,7 @@ impl Plugin for WorkOnCommandPlugin {
                 execute_command,
                 monitor_completion,
                 handle_internal_interrupts,
+                handle_release_resources,
             )
                 .chain()
                 .run_if(in_state(AppState::Playing)),
@@ -114,6 +115,17 @@ fn handle_internal_interrupts(
                     }
                 }
             }
+        }
+    }
+}
+
+fn handle_release_resources(
+    mut interrupt_reader: EventReader<ReleaseCommandResourcesEvent>,
+    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
+) {
+    for ReleaseCommandResourcesEvent(interrupted_command_type) in interrupt_reader.read() {
+        if let CommandType::WorkOn(WorkOnCommand { task, .. }) = interrupted_command_type {
+            tasks_scheduler.send(ScheduleTaskEvent::push_front(task.clone()));
         }
     }
 }

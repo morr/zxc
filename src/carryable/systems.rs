@@ -25,7 +25,7 @@ pub fn spawn_on_event(
         let carryable_id = commands
             .spawn((
                 component,
-                Carryable::spawn_mesh_bundle(*grid_tile, &assets_collection, &meshes_collection)
+                Carryable::spawn_mesh_bundle(*grid_tile, &assets_collection, &meshes_collection),
             ))
             .id();
 

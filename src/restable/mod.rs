@@ -92,7 +92,7 @@ fn progress_fatigue(
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Restable, &mut Commandable)>,
     mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
-    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
+    mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
     // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
     mut event_writer: EventWriter<RestCompleteEvent>,
 ) {
@@ -110,7 +110,7 @@ fn progress_fatigue(
                 commandable_entity,
                 &mut commands,
                 &mut commandable_interrupt_writer,
-                &mut tasks_scheduler,
+                &mut commandable_release_resources_writer,
             );
         }
 

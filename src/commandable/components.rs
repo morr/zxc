@@ -53,17 +53,21 @@ pub struct ExternalCommandInterruptEvent(pub Entity);
 /// Event to interrupt command initiated by the Commandable itself
 pub struct InternalCommandInterruptEvent(pub CommandType);
 
+#[derive(Event, Debug)]
+/// Event to restore world resources claimed by the command
+pub struct ReleaseCommandResourcesEvent(pub CommandType);
+
 impl Commandable {
     pub fn clear_queue(
         &mut self,
         entity: Entity,
         commands: &mut Commands,
         commandable_interrupt_writer: &mut EventWriter<InternalCommandInterruptEvent>,
-        tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
+        commandable_release_resources_writer: &mut EventWriter<ReleaseCommandResourcesEvent>,
     ) {
         trace!("Commandable({:?}) clear_queue", entity);
 
-        self.drain_queue(commandable_interrupt_writer, tasks_scheduler);
+        self.drain_queue(commandable_interrupt_writer, commandable_release_resources_writer);
         self.change_state(CommandableState::Idle, entity, commands);
     }
 
@@ -73,14 +77,14 @@ impl Commandable {
         entity: Entity,
         commands: &mut Commands,
         commandable_interrupt_writer: &mut EventWriter<InternalCommandInterruptEvent>,
-        tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
+        commandable_release_resources_writer: &mut EventWriter<ReleaseCommandResourcesEvent>,
     ) where
         I: IntoIterator<Item = CommandType>,
     {
         let new_queue = command_or_commands.into_iter().collect();
         trace!("Commandable({:?}) set_queue {:?}", entity, new_queue);
 
-        self.drain_queue(commandable_interrupt_writer, tasks_scheduler);
+        self.drain_queue(commandable_interrupt_writer, commandable_release_resources_writer);
         self.queue = new_queue;
         self.change_state(CommandableState::PendingExecution, entity, commands);
     }
@@ -130,7 +134,7 @@ impl Commandable {
         entity: Entity,
         commands: &mut Commands,
         commandable_interrupt_writer: &mut EventWriter<InternalCommandInterruptEvent>,
-        tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
+        commandable_release_resources_writer: &mut EventWriter<ReleaseCommandResourcesEvent>,
         commandable_event_writer: &mut EventWriter<CommandCompleteEvent>,
     ) {
         trace!(
@@ -143,7 +147,7 @@ impl Commandable {
             commandable_interrupt_writer.send(log_event!(InternalCommandInterruptEvent(command_type)));
         }
 
-        self.drain_queue(commandable_interrupt_writer, tasks_scheduler);
+        self.drain_queue(commandable_interrupt_writer, commandable_release_resources_writer);
         self.change_state(CommandableState::Idle, entity, commands);
         // this sync pawn state
         commandable_event_writer.send(log_event!(CommandCompleteEvent(entity)));
@@ -204,7 +208,8 @@ impl Commandable {
     fn drain_queue(
         &mut self,
         commandable_interrupt_writer: &mut EventWriter<InternalCommandInterruptEvent>,
-        tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
+        commandable_release_resources_writer: &mut EventWriter<ReleaseCommandResourcesEvent>,
+        // tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
     ) {
         if let Some(command_type) = self.executing.take() {
             commandable_interrupt_writer
@@ -213,16 +218,21 @@ impl Commandable {
 
         // cleanup queue and maybe do something with its content
         while let Some(command_type) = self.queue.pop_back() {
-            #[allow(clippy::single_match)]
-            match command_type {
-                CommandType::WorkOn(WorkOnCommand {
-                    commandable_entity: _,
-                    task,
-                }) => {
-                    tasks_scheduler.send(ScheduleTaskEvent::push_front(task));
-                }
-                _ => {}
-            }
+            commandable_release_resources_writer
+                .send(log_event!(ReleaseCommandResourcesEvent(command_type)));
+
+            // #[allow(clippy::single_match)]
+            // match command_type {
+            //     CommandType::WorkOn(WorkOnCommand {
+            //         commandable_entity: _,
+            //         task,
+            //     }) => {
+            //         tasks_scheduler.send(ScheduleTaskEvent::push_front(task));
+            //     }
+            //     CommandType::DropItem(DropItemCommand { commandable_entity, carryable_entity }) => {
+            //     }
+            //     _ => {}
+            // }
         }
     }
 }

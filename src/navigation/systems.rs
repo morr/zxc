@@ -14,7 +14,7 @@ pub fn move_user_selected_pawn_on_click_stage_1(
         )>,
     >,
     mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
-    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
+    mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
 ) {
     for ClickEventStage1(grid_tile) in click_event_reader.read() {
         // println!("click {:?}", grid_tile);
@@ -36,7 +36,7 @@ pub fn move_user_selected_pawn_on_click_stage_1(
             *entity,
             &mut commands,
             &mut commandable_interrupt_writer,
-            &mut tasks_scheduler,
+            &mut commandable_release_resources_writer,
         );
     }
 }
