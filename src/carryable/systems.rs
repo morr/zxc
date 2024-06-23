@@ -47,11 +47,15 @@ pub fn spawn_on_event(
 }
 
 pub fn spawn_initial_items(mut event_writer: EventWriter<SpawnCarryableEvent>) {
-    event_writer.send(SpawnCarryableEvent {
-        kind: CarryableKind::Food,
-        amount: config().starting_scene.food,
-        grid_tile: IVec2 { x: -8, y: 0 },
-    });
+    let amount = config().starting_scene.food;
+
+    if amount > 0 {
+        event_writer.send(SpawnCarryableEvent {
+            kind: CarryableKind::Food,
+            amount,
+            grid_tile: IVec2 { x: -8, y: 0 },
+        });
+    }
 }
 
 pub fn store_on_event(
