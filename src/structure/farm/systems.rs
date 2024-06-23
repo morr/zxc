@@ -52,11 +52,11 @@ pub fn progress_planted_and_tending_rest_timers(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     elapsed_time: Res<ElapsedTime>,
-    mut query: Query<(Entity, &mut Farm, &Transform), With<farm_state::Planted>>,
+    mut query: Query<(Entity, &mut Farm), With<farm_state::Planted>>,
     mut farm_progress_event_writer: EventWriter<FarmProgressEvent>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
-    for (workable_entity, mut farm, transform) in query.iter_mut() {
+    for (workable_entity, mut farm) in query.iter_mut() {
         let planted_state = match &mut farm.state {
             FarmState::Planted(state) => state,
             _ => panic!("Farm must be in a timer-assigned state"),
@@ -85,7 +85,6 @@ pub fn progress_planted_and_tending_rest_timers(
                             workable_entity,
                             work_kind: WorkKind::FarmTending,
                         },
-                        grid_tile: transform.world_pos_to_grid(),
                     }));
                 } else {
                     planted_state.is_tending_pending_for_next_day = true;
@@ -141,13 +140,10 @@ pub fn progress_on_state_changed(
                             workable_entity: *workable_entity,
                             work_kind,
                         },
-                        grid_tile,
                     }));
                 }
 
                 if let FarmState::Harvested(_) = state {
-                    // println!("tendings done: {}", farm.tendings_done);
-
                     spawn_food_event_writer.send(log_event!(SpawnCarryableEvent {
                         kind: CarryableKind::Food,
                         amount: farm.yield_amount(),
@@ -161,13 +157,11 @@ pub fn progress_on_state_changed(
 
 pub fn progress_on_new_day(
     mut event_reader: EventReader<NewDayEvent>,
-    mut query: Query<(Entity, &mut Farm, &Transform), With<farm_state::Planted>>,
+    mut query: Query<(Entity, &mut Farm), With<farm_state::Planted>>,
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     for _event in event_reader.read() {
-        // println!("{:?}", event);
-
-        for (workable_entity, mut farm, transform) in query.iter_mut() {
+        for (workable_entity, mut farm) in query.iter_mut() {
             if let FarmState::Planted(planted_state) = &mut farm.state {
                 if planted_state.is_tending_pending_for_next_day {
                     tasks_scheduler.send(ScheduleTaskEvent::push_back(Task {
@@ -175,7 +169,6 @@ pub fn progress_on_new_day(
                             workable_entity,
                             work_kind: WorkKind::FarmTending,
                         },
-                        grid_tile: transform.world_pos_to_grid(),
                     }));
 
                     planted_state.is_tending_pending_for_next_day = false;
