@@ -81,7 +81,10 @@ fn ai_idle_pawns(
                             commandable_entity,
                             carryable_entity,
                         }),
-
+                        CommandType::TaskLock(TaskLockCommand {
+                            commandable_entity,
+                            task,
+                        }),
                     ]
                 }
             };

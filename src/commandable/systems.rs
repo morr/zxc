@@ -7,6 +7,7 @@ pub fn process_pending_commands(
     mut move_to_command_writer: EventWriter<MoveToCommand>,
     mut sleep_command_writer: EventWriter<SleepCommand>,
     mut take_item_command_writer: EventWriter<TakeItemCommand>,
+    mut task_lock_command_writer: EventWriter<TaskLockCommand>,
     mut to_rest_command_writer: EventWriter<ToRestCommand>,
     mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
     mut work_on_command_writer: EventWriter<WorkOnCommand>,
@@ -33,6 +34,9 @@ pub fn process_pending_commands(
                 }
                 CommandType::TakeItem(command) => {
                     take_item_command_writer.send(log_event!(command));
+                }
+                CommandType::TaskLock(command) => {
+                    task_lock_command_writer.send(log_event!(command));
                 }
                 CommandType::ToRest(command) => {
                     to_rest_command_writer.send(log_event!(command));

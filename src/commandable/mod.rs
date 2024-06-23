@@ -7,6 +7,7 @@ expose_submodules!(
     sleep_command,
     systems,
     take_item_command,
+    task_lock_command,
     to_rest_command,
     user_selection_command,
     work_on_command
@@ -26,6 +27,7 @@ impl Plugin for CommandablePlugin {
                 MoveToCommandPlugin,
                 SleepCommandPlugin,
                 TakeItemCommandPlugin,
+                TaskLockCommandPlugin,
                 ToRestCommandPlugin,
                 UserSelectionCommandPlugin,
                 WorkOnCommandPlugin,

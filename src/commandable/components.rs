@@ -9,6 +9,7 @@ pub enum CommandType {
     MoveTo(MoveToCommand),
     Sleep(SleepCommand),
     TakeItem(TakeItemCommand),
+    TaskLock(TaskLockCommand),
     ToRest(ToRestCommand),
     UserSelection(UserSelectionCommand),
     WorkOn(WorkOnCommand),
