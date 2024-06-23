@@ -1,4 +1,4 @@
-mod apply_global_config;
+mod apply_default_global_config;
 
 mod farm {
     use zxc::*;

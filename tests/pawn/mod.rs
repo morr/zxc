@@ -2,11 +2,10 @@ use bevy::time::TimePlugin;
 
 use super::*;
 
-#[allow(unused_imports)]
-use crate::apply_global_config;
-
 #[test]
 fn lifetime_loss_to_zero_leads_to_death_event() {
+    apply_global_config(load_config());
+
     let mut app = App::new();
 
     app.add_plugins((TimePlugin, StoryTimePlugin))
@@ -52,16 +51,19 @@ fn lifetime_loss_to_zero_leads_to_death_event() {
 
 #[test]
 fn state_changed_to_death_by_event() {
+    apply_global_config(load_config());
+
     let mut app = App::new();
 
-    app.add_plugins((WorkablePlugin, CommandablePlugin))
+    app.add_plugins((BedPlugin, WorkablePlugin, RestablePlugin, CommandablePlugin))
         // .add_event::<EntityStateChangeEvent<PawnState>>()
         .add_event::<PawnDeathEvent>()
+        .add_event::<EntityStateChangeEvent<PawnState>>()
         .add_systems(Update, progress_pawn_death);
 
     let pawn_id = app
         .world
-        .spawn((Pawn::default(), Commandable::default()))
+        .spawn((Pawn::default(), Commandable::default(), Restable::default()))
         .id();
 
     app.world

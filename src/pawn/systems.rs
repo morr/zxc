@@ -218,8 +218,6 @@ pub fn progress_pawn_death(
     mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for PawnDeathEvent(entity) in event_reader.read() {
-        // println!("{:?}", PawnDeathEvent(pawn_entity));
-
         match pawn_query.get_mut(*entity) {
             Ok((mut pawn, mut restable, mut commandable)) => {
                 pawn.change_state(
