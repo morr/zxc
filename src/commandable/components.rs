@@ -5,7 +5,7 @@ use std::vec;
 
 #[derive(Debug, Clone, Reflect)]
 pub enum CommandType {
-    DropItem(DropItemCommand),
+    DropCarriedItem(DropCarriedItemCommand),
     MoveTo(MoveToCommand),
     Sleep(SleepCommand),
     TakeItem(TakeItemCommand),

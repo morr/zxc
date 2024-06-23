@@ -1,10 +1,10 @@
 use super::*;
 
-pub struct DropItemCommandPlugin;
+pub struct DropCarriedItemCommandPlugin;
 
-impl Plugin for DropItemCommandPlugin {
+impl Plugin for DropCarriedItemCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<DropItemCommand>().add_systems(
+        app.add_event::<DropCarriedItemCommand>().add_systems(
             Update,
             (execute_command, handle_release_resources)
                 .chain()
@@ -14,7 +14,7 @@ impl Plugin for DropItemCommandPlugin {
 }
 
 #[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
-pub struct DropItemCommand {
+pub struct DropCarriedItemCommand {
     pub commandable_entity: Entity,
     pub carryable_entity: Entity,
 }
@@ -22,7 +22,7 @@ pub struct DropItemCommand {
 #[allow(clippy::too_many_arguments)]
 fn execute_command(
     mut commands: Commands,
-    mut command_reader: EventReader<DropItemCommand>,
+    mut command_reader: EventReader<DropCarriedItemCommand>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
     mut carryable_query: Query<&mut Carryable>,
     mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
@@ -30,7 +30,7 @@ fn execute_command(
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
 ) {
-    for DropItemCommand {
+    for DropCarriedItemCommand {
         commandable_entity,
         carryable_entity,
     } in command_reader.read()
@@ -96,7 +96,7 @@ fn handle_release_resources(
     meshes_collection: Res<MeshesCollection>,
 ) {
     for ReleaseCommandResourcesEvent(interrupted_command_type) in event_reader.read() {
-        if let CommandType::DropItem(DropItemCommand {
+        if let CommandType::DropCarriedItem(DropCarriedItemCommand {
             commandable_entity,
             carryable_entity,
         }) = interrupted_command_type

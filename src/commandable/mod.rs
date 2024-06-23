@@ -2,7 +2,7 @@ use crate::*;
 
 expose_submodules!(
     components,
-    drop_item_command,
+    drop_carried_item_command,
     move_to_command,
     sleep_command,
     systems,
@@ -22,7 +22,7 @@ impl Plugin for CommandablePlugin {
             .add_event::<ReleaseCommandResourcesEvent>()
             .register_type::<Commandable>()
             .add_plugins((
-                DropItemCommandPlugin,
+                DropCarriedItemCommandPlugin,
                 MoveToCommandPlugin,
                 SleepCommandPlugin,
                 TakeItemCommandPlugin,

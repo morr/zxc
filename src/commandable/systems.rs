@@ -3,7 +3,7 @@ use super::*;
 #[allow(clippy::too_many_arguments)]
 pub fn process_pending_commands(
     mut commands: Commands,
-    mut drop_item_command_writer: EventWriter<DropItemCommand>,
+    mut drop_item_command_writer: EventWriter<DropCarriedItemCommand>,
     mut move_to_command_writer: EventWriter<MoveToCommand>,
     mut sleep_command_writer: EventWriter<SleepCommand>,
     mut take_item_command_writer: EventWriter<TakeItemCommand>,
@@ -22,7 +22,7 @@ pub fn process_pending_commands(
 
         if let Some(command_type) = commandable.start_executing(entity, &mut commands) {
             match command_type {
-                CommandType::DropItem(command) => {
+                CommandType::DropCarriedItem(command) => {
                     drop_item_command_writer.send(log_event!(command));
                 }
                 CommandType::MoveTo(command) => {
