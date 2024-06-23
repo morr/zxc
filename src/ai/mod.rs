@@ -77,6 +77,11 @@ fn ai_idle_pawns(
                             commandable_entity,
                             grid_tile,
                         }),
+                        CommandType::DropItem(DropItemCommand {
+                            commandable_entity,
+                            carryable_entity,
+                        }),
+
                     ]
                 }
             };
