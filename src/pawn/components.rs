@@ -1,5 +1,5 @@
-use std::ops::RangeInclusive;
 use bevy::utils::HashMap;
+use std::ops::RangeInclusive;
 
 use super::*;
 use rand::Rng;

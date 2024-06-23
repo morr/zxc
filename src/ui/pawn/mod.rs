@@ -113,7 +113,8 @@ fn update_pawn_ui(
     children_query: Query<&Children>,
 ) {
     for (ui_id, ui_marker) in ui_query.iter() {
-        if let Ok((pawn, movable, restable, feedable, commandable)) = components_query.get(ui_marker.pawn_id)
+        if let Ok((pawn, movable, restable, feedable, commandable)) =
+            components_query.get(ui_marker.pawn_id)
         {
             if let Ok(children) = children_query.get(ui_id) {
                 for &child in children.iter() {
