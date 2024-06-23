@@ -69,7 +69,7 @@ fn ai_idle_pawns(
                             commandable_entity,
                             grid_tile: task.grid_tile,
                         }),
-                        CommandType::PickUp(PickUpCommand {
+                        CommandType::TakeItem(TakeItemCommand {
                             commandable_entity,
                             carryable_entity,
                         }),

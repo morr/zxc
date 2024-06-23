@@ -1,29 +1,29 @@
 use super::*;
 
-pub struct PickUpCommandPlugin;
+pub struct TakeItemCommandPlugin;
 
-impl Plugin for PickUpCommandPlugin {
+impl Plugin for TakeItemCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<PickUpCommand>()
+        app.add_event::<TakeItemCommand>()
             .add_systems(Update, execute_command.run_if(in_state(AppState::Playing)));
     }
 }
 
 #[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
-pub struct PickUpCommand {
+pub struct TakeItemCommand {
     pub commandable_entity: Entity,
     pub carryable_entity: Entity,
 }
 
 fn execute_command(
     mut commands: Commands,
-    mut command_reader: EventReader<PickUpCommand>,
+    mut command_reader: EventReader<TakeItemCommand>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
     mut carryable_query: Query<(&mut Carryable, &Transform)>,
     mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
     mut commandable_interrupt_writer: EventWriter<ExternalCommandInterruptEvent>,
 ) {
-    for PickUpCommand {
+    for TakeItemCommand {
         commandable_entity,
         carryable_entity,
     } in command_reader.read()

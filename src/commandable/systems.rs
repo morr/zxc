@@ -4,7 +4,7 @@ use super::*;
 pub fn process_pending_commands(
     mut commands: Commands,
     mut move_to_command_writer: EventWriter<MoveToCommand>,
-    mut pick_up_command_writer: EventWriter<PickUpCommand>,
+    mut pick_up_command_writer: EventWriter<TakeItemCommand>,
     mut sleep_command_writer: EventWriter<SleepCommand>,
     mut to_rest_command_writer: EventWriter<ToRestCommand>,
     mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
@@ -28,7 +28,7 @@ pub fn process_pending_commands(
                 CommandType::MoveTo(command) => {
                     move_to_command_writer.send(log_event!(command));
                 }
-                CommandType::PickUp(command) => {
+                CommandType::TakeItem(command) => {
                     pick_up_command_writer.send(log_event!(command));
                 }
                 CommandType::Sleep(command) => {

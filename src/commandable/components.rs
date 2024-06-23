@@ -6,7 +6,7 @@ use std::vec;
 #[derive(Debug, Clone, Reflect)]
 pub enum CommandType {
     MoveTo(MoveToCommand),
-    PickUp(PickUpCommand),
+    TakeItem(TakeItemCommand),
     Sleep(SleepCommand),
     ToRest(ToRestCommand),
     UserSelection(UserSelectionCommand),
