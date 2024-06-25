@@ -52,8 +52,14 @@ pub fn spawn_initial_items(mut event_writer: EventWriter<SpawnCarryableEvent>) {
     if amount > 0 {
         event_writer.send(SpawnCarryableEvent {
             kind: CarryableKind::Food,
-            amount,
-            grid_tile: IVec2 { x: -8, y: 0 },
+            amount: amount / 2,
+            grid_tile: IVec2 { x: -12, y: 4 },
+        });
+
+        event_writer.send(SpawnCarryableEvent {
+            kind: CarryableKind::Food,
+            amount: amount / 2,
+            grid_tile: IVec2 { x: -15, y: 3 },
         });
     }
 }
