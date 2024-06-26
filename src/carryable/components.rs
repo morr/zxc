@@ -45,6 +45,10 @@ impl Carryable {
         // it can be not in inventory if command chain is interrupted before
         // item picked up into inventory
         if pawn.inventory.remove(&carryable_entity).is_some() {
+            let tile_occupants = navmesh
+                .get_occupants::<Carryable>(grid_tile.x, grid_tile.y)
+                .filter(|&occupant|)
+
             commands
                 .entity(carryable_entity)
                 .insert(Carryable::spawn_mesh_bundle(
