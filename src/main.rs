@@ -27,7 +27,7 @@ fn main() {
                 })
                 .set(bevy::log::LogPlugin {
                     update_subscriber: Some(|_| configure_logging("info,zxc=trace")),
-                    // update_subscriber: Some(|_| configure_logging("info,zxc=trace")),
+                    // update_subscriber: Some(|_| configure_logging("error")),
                     ..default()
                 }),
         )

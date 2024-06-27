@@ -14,7 +14,7 @@ impl Plugin for CarryablePlugin {
             .add_systems(OnExit(AppState::Loading), spawn_initial_items)
             .add_systems(
                 FixedUpdate,
-                (spawn_on_event, store_on_event)
+                (spawn_on_event, store_on_event, merge_on_event)
                     .chain()
                     .run_if(in_state(AppState::Playing))
                     .run_if(in_state(SimulationState::Running)),
