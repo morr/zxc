@@ -2,7 +2,7 @@ use super::*;
 
 use bevy::sprite::MaterialMesh2dBundle;
 
-#[derive(Debug, Clone, Copy, Reflect)]
+#[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq)]
 pub enum CarryableKind {
     Food,
 }
@@ -42,13 +42,15 @@ impl Carryable {
         assets_collection: &Res<AssetsCollection>,
         meshes_collection: &Res<MeshesCollection>,
         navmesh: &mut Navmesh,
+        merge_carryables_event_writer: &mut EventWriter<MergeCarryablesEvent>,
     ) {
         // it can be not in inventory if command chain is interrupted before
         // item picked up into inventory
         if pawn.inventory.remove(&carryable_entity).is_some() {
-            // let tile_occupants = navmesh
-            //     .get_occupants::<Carryable>(grid_tile.x, grid_tile.y)
-            //     .filter_map(|&occupant_entity| carryable_query.get_mut(occupant_entity).ok());
+            let mut tile_occupants = navmesh
+                .get_occupants::<Carryable>(grid_tile.x, grid_tile.y)
+                .copied()
+                .collect::<Vec<_>>();
 
             commands
                 .entity(carryable_entity)
@@ -59,6 +61,13 @@ impl Carryable {
                 ));
 
             navmesh.add_occupant::<Carryable>(&carryable_entity, grid_tile.x, grid_tile.y);
+
+            if !tile_occupants.is_empty() {
+                tile_occupants.push(carryable_entity);
+                merge_carryables_event_writer.send(log_event!(MergeCarryablesEvent {
+                    entities: tile_occupants,
+                }));
+            }
         }
     }
 
@@ -88,6 +97,11 @@ pub struct SpawnCarryableEvent {
 #[derive(Event, Debug)]
 pub struct StoreCarryableEvent {
     pub entity: Entity,
+}
+
+#[derive(Event, Debug)]
+pub struct MergeCarryablesEvent {
+    pub entities: Vec<Entity>,
 }
 
 #[derive(Resource, Default, Deref, DerefMut)]

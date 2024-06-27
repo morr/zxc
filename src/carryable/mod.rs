@@ -10,6 +10,7 @@ impl Plugin for CarryablePlugin {
             .init_resource::<FoodStock>()
             .add_event::<SpawnCarryableEvent>()
             .add_event::<StoreCarryableEvent>()
+            .add_event::<MergeCarryablesEvent>()
             .add_systems(OnExit(AppState::Loading), spawn_initial_items)
             .add_systems(
                 FixedUpdate,
