@@ -38,6 +38,7 @@ impl Carryable {
         carryable_entity: Entity,
         grid_tile: IVec2,
         commands: &mut Commands,
+        // carryable_query: &Query<&Carryable>,
         assets_collection: &Res<AssetsCollection>,
         meshes_collection: &Res<MeshesCollection>,
         navmesh: &mut Navmesh,
@@ -45,9 +46,9 @@ impl Carryable {
         // it can be not in inventory if command chain is interrupted before
         // item picked up into inventory
         if pawn.inventory.remove(&carryable_entity).is_some() {
-            let tile_occupants = navmesh
-                .get_occupants::<Carryable>(grid_tile.x, grid_tile.y)
-                .filter(|&occupant|)
+            // let tile_occupants = navmesh
+            //     .get_occupants::<Carryable>(grid_tile.x, grid_tile.y)
+            //     .filter_map(|&occupant_entity| carryable_query.get_mut(occupant_entity).ok());
 
             commands
                 .entity(carryable_entity)

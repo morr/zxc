@@ -25,6 +25,7 @@ fn execute_command(
     mut command_reader: EventReader<DropCarriedItemCommand>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
     mut carryable_query: Query<&mut Carryable>,
+    // other_carryables_query: Query<&Carryable>,
     mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
     mut commandable_interrupt_writer: EventWriter<ExternalCommandInterruptEvent>,
     assets_collection: Res<AssetsCollection>,
@@ -48,6 +49,14 @@ fn execute_command(
                 }
             };
 
+
+        let grid_tile = transform.world_pos_to_grid();
+        let navmesh = arc_navmesh.read();
+        let tile_occupants = navmesh
+            .get_occupants::<Carryable>(grid_tile.x, grid_tile.y)
+            .filter_map(|&entity| carryable_query.get(entity).ok())
+            .collect::<Vec<_>>();
+
         let mut carryable = match carryable_query.get_mut(*carryable_entity) {
             Ok(carryable) => carryable,
             Err(err) => {
@@ -66,8 +75,9 @@ fn execute_command(
         carryable.drop_from_inventory(
             &mut pawn,
             *carryable_entity,
-            transform.world_pos_to_grid(),
+            grid_tile,
             &mut commands,
+            // &other_carryables_query,
             &assets_collection,
             &meshes_collection,
             &mut arc_navmesh.write(),
@@ -94,6 +104,7 @@ fn handle_release_resources(
     mut event_reader: EventReader<ReleaseCommandResourcesEvent>,
     mut commandable_query: Query<(&mut Pawn, &Transform)>,
     mut carryable_query: Query<&mut Carryable>,
+    // other_carryables_query: Query<&Carryable>,
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
     arc_navmesh: ResMut<ArcNavmesh>,
@@ -126,6 +137,7 @@ fn handle_release_resources(
                 *carryable_entity,
                 transform.world_pos_to_grid(),
                 &mut commands,
+                // &other_carryables_query,
                 &assets_collection,
                 &meshes_collection,
                 &mut arc_navmesh.write(),
