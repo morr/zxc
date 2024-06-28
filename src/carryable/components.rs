@@ -1,6 +1,6 @@
 use super::*;
 
-use bevy::sprite::MaterialMesh2dBundle;
+use bevy::{reflect::List, sprite::MaterialMesh2dBundle};
 
 #[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq)]
 pub enum CarryableKind {
@@ -47,17 +47,15 @@ impl Carryable {
         // it can be not in inventory if command chain is interrupted before
         // item picked up into inventory
         if pawn.inventory.remove(&carryable_entity).is_some() {
-            let tile_occupants = std::iter::once(carryable_entity)
-                .chain(
-                    navmesh
-                        .get_occupants::<Carryable>(grid_tile.x, grid_tile.y)
-                        .copied(),
-                )
+            let tile_occupants = navmesh
+                .get_occupants::<Carryable>(grid_tile.x, grid_tile.y)
+                .copied()
                 .collect::<Vec<_>>();
 
-            if tile_occupants.len() > 1 {
+            if !tile_occupants.is_empty() {
                 merge_carryables_event_writer.send(log_event!(MergeCarryablesEvent {
-                    entities: tile_occupants,
+                    entity_to_merge: carryable_entity,
+                    other_entities: tile_occupants,
                 }));
             }
 
@@ -103,7 +101,8 @@ pub struct StoreCarryableEvent {
 
 #[derive(Event, Debug)]
 pub struct MergeCarryablesEvent {
-    pub entities: Vec<Entity>,
+    pub entity_to_merge: Entity,
+    pub other_entities: Vec<Entity>,
 }
 
 #[derive(Resource, Default, Deref, DerefMut)]

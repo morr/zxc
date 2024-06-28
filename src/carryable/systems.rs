@@ -94,3 +94,10 @@ pub fn store_on_event(
         }
     }
 }
+
+pub fn merge_on_event(
+    mut event_reader: EventReader<MergeCarryablesEvent>,
+) {
+    for MergeCarryablesEvent { entity_to_merge, other_entities } in event_reader.read() {
+    }
+}
