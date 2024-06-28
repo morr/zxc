@@ -96,8 +96,33 @@ pub fn store_on_event(
 }
 
 pub fn merge_on_event(
+    mut commands: Commands,
     mut event_reader: EventReader<MergeCarryablesEvent>,
+    mut carryables_query: Query<&mut Carryable>,
+    arc_navmesh: ResMut<ArcNavmesh>,
 ) {
-    for MergeCarryablesEvent { entity_to_merge, other_entities } in event_reader.read() {
+    for MergeCarryablesEvent {
+        entity_to_merge,
+        carryable_to_merge,
+        grid_tile,
+        merge_into_entities,
+    } in event_reader.read()
+    {
+        for entity in merge_into_entities {
+            let Ok(mut carryable) = carryables_query.get_mut(*entity) else {
+                continue;
+            };
+            if carryable.kind != carryable_to_merge.kind {
+                continue;
+            }
+            carryable.amount += carryable_to_merge.amount;
+            commands.entity(*entity_to_merge).despawn_recursive();
+            arc_navmesh.write().remove_occupant::<Carryable>(
+                entity_to_merge,
+                grid_tile.x,
+                grid_tile.y,
+            );
+            break;
+        }
     }
 }

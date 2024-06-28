@@ -55,7 +55,9 @@ impl Carryable {
             if !tile_occupants.is_empty() {
                 merge_carryables_event_writer.send(log_event!(MergeCarryablesEvent {
                     entity_to_merge: carryable_entity,
-                    other_entities: tile_occupants,
+                    carryable_to_merge: self.clone(),
+                    grid_tile,
+                    merge_into_entities: tile_occupants,
                 }));
             }
 
@@ -102,7 +104,9 @@ pub struct StoreCarryableEvent {
 #[derive(Event, Debug)]
 pub struct MergeCarryablesEvent {
     pub entity_to_merge: Entity,
-    pub other_entities: Vec<Entity>,
+    pub carryable_to_merge: Carryable,
+    pub grid_tile: IVec2,
+    pub merge_into_entities: Vec<Entity>,
 }
 
 #[derive(Resource, Default, Deref, DerefMut)]
