@@ -1,6 +1,6 @@
 use super::*;
 
-use bevy::{reflect::List, sprite::MaterialMesh2dBundle};
+use bevy::sprite::MaterialMesh2dBundle;
 
 #[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq)]
 pub enum CarryableKind {
