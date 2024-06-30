@@ -46,37 +46,29 @@ impl Feedable {
 }
 
 fn progress_hunger(
-    // mut commands: Commands,
+    mut commands: Commands,
     time: Res<Time>,
     time_scale: Res<TimeScale>,
-    mut query: Query<(Entity, &mut Feedable)>,
-    // mut query: Query<(Entity, &mut Feedable, &mut Commandable)>,
-    // mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
-    // mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
-    // // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
-    // mut event_writer: EventWriter<RestCompleteEvent>,
+    mut query: Query<(Entity, &mut Feedable, &mut Commandable)>,
+    mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
+    mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
+    food_stock: Res<FoodStock>
 ) {
     let time_amount = time_scale.scale_to_seconds(time.delta_seconds());
 
-    // for (commandable_entity, mut feedable, mut commandable) in query.iter_mut() {
-    for (_commandable_entity, mut feedable) in query.iter_mut() {
-        // let wasnt_fresh = !feedable.is_fresh();
-        // let wasnt_full = !feedable.is_overflowed();
+    for (commandable_entity, mut feedable, mut commandable) in query.iter_mut() {
+        let wasnt_overflowed = !feedable.is_overflowed();
 
         feedable.progress_hunger(time_amount);
 
-        // if wasnt_fresh && feedable.is_fresh() {
-        //     commandable.set_queue(
-        //         CommandType::ToRest(ToRestCommand { commandable_entity }),
-        //         commandable_entity,
-        //         &mut commands,
-        //         &mut commandable_interrupt_writer,
-        //         &mut commandable_release_resources_writer,
-        //     );
-        // }
-        //
-        // if wasnt_full && feedable.is_overflowed() {
-        //     event_writer.send(log_event!(RestCompleteEvent { commandable_entity }));
-        // }
+        if wasnt_overflowed && feedable.is_overflowed() && food_stock.amount > 0 {
+            commandable.set_queue(
+                CommandType::Feed(FeedCommand { commandable_entity }),
+                commandable_entity,
+                &mut commands,
+                &mut commandable_interrupt_writer,
+                &mut commandable_release_resources_writer,
+            );
+        }
     }
 }
