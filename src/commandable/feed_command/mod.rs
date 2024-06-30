@@ -1,3 +1,5 @@
+use bevy::utils::petgraph::matrix_graph::Zero;
+
 use super::*;
 
 pub struct FeedCommandPlugin;
@@ -15,5 +17,29 @@ pub struct FeedCommand {
 }
 
 fn execute_command(
+    mut commands: Commands,
+    mut command_reader: EventReader<FeedCommand>,
+    mut commandable_query: Query<(&mut Commandable, &mut Feedable)>,
+    mut food_stock: ResMut<FoodStock>,
+    mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
 ) {
+    for FeedCommand { commandable_entity } in command_reader.read() {
+        if food_stock.amount.is_zero() {
+            continue;
+        }
+
+        if let Ok((mut commandable, mut feedable)) = commandable_query.get_mut(*commandable_entity)
+        {
+            commandable.complete_executing(
+                *commandable_entity,
+                &mut commands,
+                &mut commandable_event_writer,
+            );
+
+            while feedable.is_overflowed() && food_stock.amount > 0 {
+                feedable.feed();
+                food_stock.amount -= 1;
+            }
+        }
+    }
 }

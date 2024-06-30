@@ -43,6 +43,10 @@ impl Feedable {
         let amount = time_amount * config().feedable.living_cost;
         self.hunger = (self.hunger + amount).clamp(HUNGER_FRESH, HUNGER_OVERFLOW);
     }
+
+    pub fn feed(&mut self) {
+        self.hunger -= HUNGER_OVERFLOW;
+    }
 }
 
 fn progress_hunger(
