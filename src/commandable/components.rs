@@ -13,6 +13,7 @@ pub enum CommandType {
     ToRest(ToRestCommand),
     UserSelection(UserSelectionCommand),
     WorkOn(WorkOnCommand),
+    Feed(FeedCommand),
 }
 
 // it is implemented so a single command can be passed into Commandable.schedule
