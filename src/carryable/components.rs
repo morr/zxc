@@ -109,5 +109,7 @@ pub struct MergeCarryablesEvent {
     pub merge_into_entities: Vec<Entity>,
 }
 
-#[derive(Resource, Default, Deref, DerefMut)]
-pub struct FoodStock(pub u32);
+#[derive(Resource, Default)]
+pub struct FoodStock {
+    pub amount: u32,
+}

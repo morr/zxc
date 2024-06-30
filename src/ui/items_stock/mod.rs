@@ -52,7 +52,7 @@ fn render_items_stock_ui(
     spawn_item::<FoodStockTextUIMarker>(
         &mut root,
         FoodStockTextUIMarker::default(),
-        food.0,
+        food.amount,
         font_assets.fira.clone(),
         icon_assets.bread.clone(),
     );
@@ -118,10 +118,10 @@ fn spawn_item<T: Component>(
 
 fn update_food_stock_text(
     mut query: Query<&mut Text, With<FoodStockTextUIMarker>>,
-    food: Res<FoodStock>,
+    food_stock: Res<FoodStock>,
 ) {
     let mut text = query.single_mut();
-    text.sections[0].value = format_item_text(food.0);
+    text.sections[0].value = format_item_text(food_stock.amount);
 }
 
 fn format_item_text(amount: u32) -> String {

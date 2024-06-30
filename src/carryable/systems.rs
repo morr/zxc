@@ -6,7 +6,7 @@ pub fn spawn_on_event(
     mut commands: Commands,
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
-    mut food: ResMut<FoodStock>,
+    mut food_stock: ResMut<FoodStock>,
     arc_navmesh: Res<ArcNavmesh>,
 ) {
     for SpawnCarryableEvent {
@@ -32,7 +32,7 @@ pub fn spawn_on_event(
         // increment food stock
         match *kind {
             CarryableKind::Food => {
-                **food += *amount;
+                food_stock.amount += *amount;
             }
         };
 
