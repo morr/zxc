@@ -22,6 +22,7 @@ fn ai_idle_pawns(
             &Pawn,
             &Movable,
             &Restable,
+            &Feedable,
             &mut Commandable,
             &Transform,
         ),
@@ -36,14 +37,23 @@ fn ai_idle_pawns(
     mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
     mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
     arc_navmesh: Res<ArcNavmesh>,
+    food_stock: Res<FoodStock>
 ) {
-    for (commandable_entity, pawn, movable, restable, mut commandable, transform) in
+    for (commandable_entity, pawn, movable, restable, feedable, mut commandable, transform) in
         &mut commandable_query
     {
         ensure_state!(PawnState::Idle, pawn.state);
         continue_unless!(CommandableState::Idle, commandable.state);
 
-        if restable.is_overflowed() {
+        if feedable.is_overflowed() && food_stock.amount > 0 {
+            commandable.set_queue(
+                CommandType::Feed(FeedCommand { commandable_entity }),
+                commandable_entity,
+                &mut commands,
+                &mut commandable_interrupt_writer,
+                &mut commandable_release_resources_writer,
+            );
+        } else if restable.is_overflowed() {
             commandable.set_queue(
                 CommandType::ToRest(ToRestCommand { commandable_entity }),
                 commandable_entity,
