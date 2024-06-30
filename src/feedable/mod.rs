@@ -50,7 +50,9 @@ fn progress_hunger(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Feedable, &mut Commandable)>,
-    food_stock: Res<FoodStock>,
+    mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
+    mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
+    food_stock: Res<FoodStock>
 ) {
     let time_amount = time_scale.scale_to_seconds(time.delta_seconds());
 
@@ -60,10 +62,12 @@ fn progress_hunger(
         feedable.progress_hunger(time_amount);
 
         if wasnt_overflowed && feedable.is_overflowed() && food_stock.amount > 0 {
-            commandable.extend_queue(
+            commandable.set_queue(
                 CommandType::Feed(FeedCommand { commandable_entity }),
                 commandable_entity,
                 &mut commands,
+                &mut commandable_interrupt_writer,
+                &mut commandable_release_resources_writer,
             );
         }
     }
