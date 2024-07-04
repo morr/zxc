@@ -8,7 +8,8 @@ impl Plugin for FeedablePlugin {
             .add_event::<FoodConsumedEvent>()
             .add_systems(
                 Update,
-                progress_hunger
+                (progress_hunger, process_consumed_food)
+                    .chain()
                     .run_if(in_state(AppState::Playing))
                     .run_if(in_state(SimulationState::Running)),
             );
@@ -80,6 +81,32 @@ fn progress_hunger(
                 &mut commandable_interrupt_writer,
                 &mut commandable_release_resources_writer,
             );
+        }
+    }
+}
+
+fn process_consumed_food(
+    mut commands: Commands,
+    mut event_reader: EventReader<FoodConsumedEvent>,
+    mut carryable_query: Query<(Entity, &mut Carryable, &Transform), With<CarryableFoodMarker>>,
+    arc_navmesh: ResMut<ArcNavmesh>
+) {
+    for event in event_reader.read() {
+        let FoodConsumedEvent { amount: mut amount_consumed } = *event;
+
+        for (entity, mut carryable, transform) in carryable_query.iter_mut() {
+            if amount_consumed < carryable.amount {
+                carryable.amount -= amount_consumed;
+                break;
+            } else {
+                amount_consumed -= carryable.amount;
+
+                commands.entity(entity).despawn_recursive();
+
+                let grid_tile = transform.world_pos_to_grid();
+                arc_navmesh.write().remove_occupant::<Carryable>(&entity, grid_tile.x, grid_tile.y);
+
+            }
         }
     }
 }
