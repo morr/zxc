@@ -24,13 +24,14 @@ fn execute_command(
     mut commands: Commands,
     mut command_reader: EventReader<DropCarriedItemCommand>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
-    // carryable_query: Query<&Carryable>,
+    mut carryable_query: Query<&mut Carryable>,
     mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
-    // mut commandable_interrupt_writer: EventWriter<ExternalCommandInterruptEvent>,
+    mut commandable_interrupt_writer: EventWriter<ExternalCommandInterruptEvent>,
     mut merge_carryables_event_writer: EventWriter<MergeCarryablesEvent>,
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
     arc_navmesh: ResMut<ArcNavmesh>,
+    mut food_stock: ResMut<FoodStock>,
 ) {
     for DropCarriedItemCommand {
         commandable_entity,
@@ -49,29 +50,31 @@ fn execute_command(
                 }
             };
 
-        // let carryable = match carryable_query.get(*carryable_entity) {
-        //     Ok(carryable) => carryable,
-        //     Err(err) => {
-        //         warn!(
-        //             "Failed to get query result for carryable_entity {:?}: {:?}",
-        //             carryable_entity, err
-        //         );
-        //         interrupt_commandable_commands_queue!(
-        //             commandable_interrupt_writer,
-        //             *commandable_entity
-        //         );
-        //         continue;
-        //     }
-        // };
+        let mut carryable = match carryable_query.get_mut(*carryable_entity) {
+            Ok(carryable) => carryable,
+            Err(err) => {
+                warn!(
+                    "Failed to get query result for carryable_entity {:?}: {:?}",
+                    carryable_entity, err
+                );
+                interrupt_commandable_commands_queue!(
+                    commandable_interrupt_writer,
+                    *commandable_entity
+                );
+                continue;
+            }
+        };
 
         pawn.drop_item(
             *carryable_entity,
+            &mut carryable,
             transform.world_pos_to_grid(),
             &mut commands,
             &assets_collection,
             &meshes_collection,
             &mut arc_navmesh.write(),
             &mut merge_carryables_event_writer,
+            &mut food_stock,
         );
 
         commandable.complete_executing(
@@ -95,11 +98,12 @@ fn handle_release_resources(
     mut commands: Commands,
     mut event_reader: EventReader<ReleaseCommandResourcesEvent>,
     mut commandable_query: Query<(&mut Pawn, &Transform)>,
-    carryable_query: Query<&Carryable>,
+    mut carryable_query: Query<&mut Carryable>,
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
     arc_navmesh: ResMut<ArcNavmesh>,
     mut merge_carryables_event_writer: EventWriter<MergeCarryablesEvent>,
+    mut food_stock: ResMut<FoodStock>,
 ) {
     for ReleaseCommandResourcesEvent(interrupted_command_type) in event_reader.read() {
         if let CommandType::DropCarriedItem(DropCarriedItemCommand {
@@ -115,8 +119,8 @@ fn handle_release_resources(
                         commandable_entity, err
                     )
                 });
-            let carryable = carryable_query
-                .get(*carryable_entity)
+            let mut carryable = carryable_query
+                .get_mut(*carryable_entity)
                 .unwrap_or_else(|err| {
                     panic!(
                         "Failed to get query result for carryable_entity {:?} {:?}",
@@ -126,12 +130,14 @@ fn handle_release_resources(
 
             pawn.drop_item(
                 *carryable_entity,
+                &mut carryable,
                 transform.world_pos_to_grid(),
                 &mut commands,
                 &assets_collection,
                 &meshes_collection,
                 &mut arc_navmesh.write(),
                 &mut merge_carryables_event_writer,
+                &mut food_stock,
             );
         }
     }

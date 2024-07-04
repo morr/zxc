@@ -5,6 +5,7 @@ use bevy::sprite::MaterialMesh2dBundle;
 #[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq)]
 pub enum CarryableKind {
     Food,
+    InInventory,
 }
 
 #[derive(Component, Reflect, Debug, Clone)]
@@ -26,6 +27,24 @@ impl Carryable {
                 grid_tile.grid_tile_center_to_world().extend(ITEM_Z_INDEX),
             ),
             ..default()
+        }
+    }
+
+    pub fn to_inventory(&mut self, food_stock: &mut ResMut<FoodStock>) {
+        if self.kind == CarryableKind::Food {
+            food_stock.amount -= self.amount;
+        }
+
+        self.kind = CarryableKind::InInventory;
+        self.amount = 0;
+    }
+
+    pub fn from_inventory(&mut self, kind: CarryableKind,  amount: u32, food_stock: &mut ResMut<FoodStock>) {
+        self.kind = kind;
+        self.amount = amount;
+
+        if self.kind == CarryableKind::Food {
+            food_stock.amount += self.amount;
         }
     }
 }

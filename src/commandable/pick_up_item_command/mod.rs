@@ -20,7 +20,7 @@ fn execute_command(
     mut commands: Commands,
     mut command_reader: EventReader<PickUpItemCommand>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
-    carryable_query: Query<(&Carryable, &Transform)>,
+    mut carryable_query: Query<(&mut Carryable, &Transform)>,
     mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
     mut commandable_interrupt_writer: EventWriter<ExternalCommandInterruptEvent>,
     arc_navmesh: ResMut<ArcNavmesh>,
@@ -43,7 +43,7 @@ fn execute_command(
                 }
             };
 
-        let (carryable, carryable_transform) = match carryable_query.get(*carryable_entity)
+        let (mut carryable, carryable_transform) = match carryable_query.get_mut(*carryable_entity)
         {
             Ok((carryable, transform)) => (carryable, transform),
             Err(err) => {
@@ -73,7 +73,7 @@ fn execute_command(
 
         pawn.pick_up_item(
             *carryable_entity,
-            carryable.clone(),
+            &mut carryable,
             commandable_grid_tile,
             &mut commands,
             &mut arc_navmesh.write(),

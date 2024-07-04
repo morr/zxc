@@ -59,17 +59,14 @@ impl Pawn {
     pub fn pick_up_item(
         &mut self,
         carryable_entity: Entity,
-        carryable: Carryable,
+        carryable: &mut Carryable,
         grid_tile: IVec2,
         commands: &mut Commands,
         navmesh: &mut Navmesh,
         food_stock: &mut ResMut<FoodStock>,
     ) {
-        if carryable.kind == CarryableKind::Food {
-            food_stock.amount -= carryable.amount;
-        }
-
-        self.inventory.insert(carryable_entity, carryable);
+        self.inventory.insert(carryable_entity, carryable.clone());
+        carryable.to_inventory(food_stock);
 
         commands
             .entity(carryable_entity)
@@ -82,16 +79,19 @@ impl Pawn {
     pub fn drop_item(
         &mut self,
         carryable_entity: Entity,
+        carryable: &mut Carryable,
         grid_tile: IVec2,
         commands: &mut Commands,
         assets_collection: &Res<AssetsCollection>,
         meshes_collection: &Res<MeshesCollection>,
         navmesh: &mut Navmesh,
         merge_carryables_event_writer: &mut EventWriter<MergeCarryablesEvent>,
+        food_stock: &mut ResMut<FoodStock>,
     ) {
         // it can be not in inventory if command chain is interrupted before
         // item picked up into inventory
-        let Some(carryable) = self.inventory.remove(&carryable_entity) else { return };
+        let Some(Carryable { kind, amount }) = self.inventory.remove(&carryable_entity) else { return };
+        carryable.from_inventory(kind, amount, food_stock);
 
         let tile_occupants = navmesh
             .get_occupants::<Carryable>(grid_tile.x, grid_tile.y)
@@ -101,7 +101,7 @@ impl Pawn {
         if !tile_occupants.is_empty() {
             merge_carryables_event_writer.send(log_event!(MergeCarryablesEvent {
                 entity_to_merge: carryable_entity,
-                carryable_to_merge: carryable,
+                carryable_to_merge: carryable.clone(),
                 grid_tile,
                 merge_into_entities: tile_occupants,
             }));
