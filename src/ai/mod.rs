@@ -37,7 +37,7 @@ fn ai_idle_pawns(
     mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
     mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
     arc_navmesh: Res<ArcNavmesh>,
-    food_stock: Res<FoodStock>
+    food_stock: Res<FoodStock>,
 ) {
     for (commandable_entity, pawn, movable, restable, feedable, mut commandable, transform) in
         &mut commandable_query
@@ -62,7 +62,7 @@ fn ai_idle_pawns(
                 &mut commandable_release_resources_writer,
             );
         } else if let Some(task) = tasks_queue.get_task() {
-            let commands_sequence = match task.0 {
+            let maybe_commands_sequence = match task.0 {
                 TaskKind::Work {
                     workable_entity,
                     ref work_kind,
@@ -76,7 +76,7 @@ fn ai_idle_pawns(
                             )
                         });
 
-                    vec![
+                    Some(vec![
                         CommandType::MoveTo(MoveToCommand {
                             commandable_entity,
                             grid_tile: transform.world_pos_to_grid(),
@@ -90,54 +90,50 @@ fn ai_idle_pawns(
                             commandable_entity,
                             task,
                         }),
-                    ]
+                    ])
                 }
                 TaskKind::CarryItem {
                     carryable_entity,
                     destination_grid_tile: grid_tile,
                 } => {
-                    let transform =
-                        carryable_query
-                            .get_mut(carryable_entity)
-                            .unwrap_or_else(|err| {
-                                panic!(
-                                    "Failed to get query result for carryable_entity {:?} {:?}",
-                                    carryable_entity, err
-                                )
-                            });
-
-                    vec![
-                        CommandType::MoveTo(MoveToCommand {
-                            commandable_entity,
-                            grid_tile: transform.world_pos_to_grid(),
-                        }),
-                        CommandType::TakeItem(TakeItemCommand {
-                            commandable_entity,
-                            carryable_entity,
-                        }),
-                        CommandType::MoveTo(MoveToCommand {
-                            commandable_entity,
-                            grid_tile,
-                        }),
-                        CommandType::DropCarriedItem(DropCarriedItemCommand {
-                            commandable_entity,
-                            carryable_entity,
-                        }),
-                        CommandType::CompleteTask(CompleteTaskCommand {
-                            commandable_entity,
-                            task,
-                        }),
-                    ]
+                    if let Ok(transform) = carryable_query.get_mut(carryable_entity) {
+                        Some(vec![
+                            CommandType::MoveTo(MoveToCommand {
+                                commandable_entity,
+                                grid_tile: transform.world_pos_to_grid(),
+                            }),
+                            CommandType::TakeItem(TakeItemCommand {
+                                commandable_entity,
+                                carryable_entity,
+                            }),
+                            CommandType::MoveTo(MoveToCommand {
+                                commandable_entity,
+                                grid_tile,
+                            }),
+                            CommandType::DropCarriedItem(DropCarriedItemCommand {
+                                commandable_entity,
+                                carryable_entity,
+                            }),
+                            CommandType::CompleteTask(CompleteTaskCommand {
+                                commandable_entity,
+                                task,
+                            }),
+                        ])
+                    } else {
+                        None
+                    }
                 }
             };
 
-            commandable.set_queue(
-                commands_sequence,
-                commandable_entity,
-                &mut commands,
-                &mut commandable_interrupt_writer,
-                &mut commandable_release_resources_writer,
-            );
+            if let Some(commands_sequence) = maybe_commands_sequence {
+                commandable.set_queue(
+                    commands_sequence,
+                    commandable_entity,
+                    &mut commands,
+                    &mut commandable_interrupt_writer,
+                    &mut commandable_release_resources_writer,
+                );
+            }
         } else {
             if !config().pawn.wander_when_idle {
                 continue;
