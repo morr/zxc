@@ -77,6 +77,46 @@ impl Pawn {
 
         navmesh.remove_occupant::<Carryable>(&carryable_entity, grid_tile.x, grid_tile.y);
     }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn drop_item(
+        &mut self,
+        carryable_entity: Entity,
+        grid_tile: IVec2,
+        commands: &mut Commands,
+        assets_collection: &Res<AssetsCollection>,
+        meshes_collection: &Res<MeshesCollection>,
+        navmesh: &mut Navmesh,
+        merge_carryables_event_writer: &mut EventWriter<MergeCarryablesEvent>,
+    ) {
+        // it can be not in inventory if command chain is interrupted before
+        // item picked up into inventory
+        let Some(carryable) = self.inventory.remove(&carryable_entity) else { return };
+
+        let tile_occupants = navmesh
+            .get_occupants::<Carryable>(grid_tile.x, grid_tile.y)
+            .copied()
+            .collect::<Vec<_>>();
+
+        if !tile_occupants.is_empty() {
+            merge_carryables_event_writer.send(log_event!(MergeCarryablesEvent {
+                entity_to_merge: carryable_entity,
+                carryable_to_merge: carryable,
+                grid_tile,
+                merge_into_entities: tile_occupants,
+            }));
+        }
+
+        commands
+            .entity(carryable_entity)
+            .insert(Carryable::spawn_mesh_bundle(
+                grid_tile,
+                assets_collection,
+                meshes_collection,
+            ));
+
+        navmesh.add_occupant::<Carryable>(&carryable_entity, grid_tile.x, grid_tile.y);
+    }
 }
 
 macro_rules! pawn_states {
