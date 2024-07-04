@@ -4,12 +4,14 @@ pub struct FeedablePlugin;
 
 impl Plugin for FeedablePlugin {
     fn build(&self, app: &mut App) {
-        app.register_type::<Feedable>().add_systems(
-            Update,
-            progress_hunger
-                .run_if(in_state(AppState::Playing))
-                .run_if(in_state(SimulationState::Running)),
-        );
+        app.register_type::<Feedable>()
+            .add_event::<FoodConsumedEvent>()
+            .add_systems(
+                Update,
+                progress_hunger
+                    .run_if(in_state(AppState::Playing))
+                    .run_if(in_state(SimulationState::Running)),
+            );
     }
 }
 
@@ -28,6 +30,11 @@ impl Default for Feedable {
             hunger: HUNGER_FRESH,
         }
     }
+}
+
+#[derive(Event, Debug)]
+pub struct FoodConsumedEvent {
+    pub amount: u32,
 }
 
 impl Feedable {
@@ -56,7 +63,7 @@ fn progress_hunger(
     mut query: Query<(Entity, &mut Feedable, &mut Commandable)>,
     mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
     mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
-    food_stock: Res<FoodStock>
+    food_stock: Res<FoodStock>,
 ) {
     let time_amount = time_scale.scale_to_seconds(time.delta_seconds());
 
