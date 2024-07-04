@@ -15,20 +15,25 @@ pub fn spawn_on_event(
         grid_tile,
     } in spawn_event_reader.read()
     {
-        let component = match *kind {
-            CarryableKind::Food => Carryable {
-                kind: CarryableKind::Food,
-                amount: *amount,
-            },
+        let components = match *kind {
+            CarryableKind::Food => (
+                Carryable {
+                    kind: CarryableKind::Food,
+                    amount: *amount,
+                },
+                CarryableFoodMarker,
+            ),
             CarryableKind::InInventory => {
                 panic!("Cannot spawn CarryableKind::InInventory")
             }
         };
 
         let carryable_id = commands
-            .spawn((
-                component,
-                Carryable::spawn_mesh_bundle(*grid_tile, &assets_collection, &meshes_collection),
+            .spawn(components)
+            .insert(Carryable::spawn_mesh_bundle(
+                *grid_tile,
+                &assets_collection,
+                &meshes_collection,
             ))
             .id();
 

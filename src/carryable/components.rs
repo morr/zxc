@@ -8,6 +8,9 @@ pub enum CarryableKind {
     InInventory,
 }
 
+#[derive(Component, Reflect, Default)]
+pub struct CarryableFoodMarker;
+
 #[derive(Component, Reflect, Debug, Clone)]
 pub struct Carryable {
     pub kind: CarryableKind,
