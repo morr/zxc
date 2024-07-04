@@ -7,8 +7,8 @@ pub fn process_pending_commands(
     mut drop_carried_item_command_writer: EventWriter<DropCarriedItemCommand>,
     mut feed_command_writer: EventWriter<FeedCommand>,
     mut move_to_command_writer: EventWriter<MoveToCommand>,
-    mut sleep_command_writer: EventWriter<SleepCommand>,
     mut pick_up_item_command_writer: EventWriter<PickUpItemCommand>,
+    mut sleep_command_writer: EventWriter<SleepCommand>,
     mut to_rest_command_writer: EventWriter<ToRestCommand>,
     mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
     mut work_on_command_writer: EventWriter<WorkOnCommand>,
@@ -36,11 +36,11 @@ pub fn process_pending_commands(
                 CommandType::MoveTo(command) => {
                     move_to_command_writer.send(log_event!(command));
                 }
-                CommandType::Sleep(command) => {
-                    sleep_command_writer.send(log_event!(command));
-                }
                 CommandType::PickUpItem(command) => {
                     pick_up_item_command_writer.send(log_event!(command));
+                }
+                CommandType::Sleep(command) => {
+                    sleep_command_writer.send(log_event!(command));
                 }
                 CommandType::ToRest(command) => {
                     to_rest_command_writer.send(log_event!(command));

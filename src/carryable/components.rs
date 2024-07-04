@@ -14,23 +14,6 @@ pub struct Carryable {
 }
 
 impl Carryable {
-    pub fn take_into_inventory(
-        &mut self,
-        pawn: &mut Pawn,
-        carryable_entity: Entity,
-        grid_tile: IVec2,
-        commands: &mut Commands,
-        navmesh: &mut Navmesh,
-    ) {
-        pawn.inventory.insert(carryable_entity, self.clone());
-
-        commands
-            .entity(carryable_entity)
-            .remove::<MaterialMesh2dBundle<ColorMaterial>>();
-
-        navmesh.remove_occupant::<Carryable>(&carryable_entity, grid_tile.x, grid_tile.y);
-    }
-
     #[allow(clippy::too_many_arguments)]
     pub fn drop_from_inventory(
         &mut self,

@@ -7,13 +7,13 @@ use std::vec;
 pub enum CommandType {
     CompleteTask(CompleteTaskCommand),
     DropCarriedItem(DropCarriedItemCommand),
+    Feed(FeedCommand),
     MoveTo(MoveToCommand),
-    Sleep(SleepCommand),
     PickUpItem(PickUpItemCommand),
+    Sleep(SleepCommand),
     ToRest(ToRestCommand),
     UserSelection(UserSelectionCommand),
     WorkOn(WorkOnCommand),
-    Feed(FeedCommand),
 }
 
 // it is implemented so a single command can be passed into Commandable.schedule

@@ -15,6 +15,7 @@ pub struct PickUpItemCommand {
     pub carryable_entity: Entity,
 }
 
+#[allow(clippy::too_many_arguments)]
 fn execute_command(
     mut commands: Commands,
     mut command_reader: EventReader<PickUpItemCommand>,
@@ -69,9 +70,9 @@ fn execute_command(
             continue;
         }
 
-        carryable.take_into_inventory(
-            &mut pawn,
+        pawn.pick_up_item(
             *carryable_entity,
+            carryable.clone(),
             commandable_grid_tile,
             &mut commands,
             &mut arc_navmesh.write(),

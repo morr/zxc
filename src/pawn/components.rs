@@ -55,6 +55,23 @@ impl Pawn {
     pub fn decrease_lifetime(&mut self, amount: f32) {
         self.lifetime = f32::max(self.lifetime - amount, 0.0);
     }
+
+    pub fn pick_up_item(
+        &mut self,
+        carryable_entity: Entity,
+        carryable: Carryable,
+        grid_tile: IVec2,
+        commands: &mut Commands,
+        navmesh: &mut Navmesh,
+    ) {
+        self.inventory.insert(carryable_entity, carryable);
+
+        commands
+            .entity(carryable_entity)
+            .remove::<bevy::sprite::MaterialMesh2dBundle<ColorMaterial>>();
+
+        navmesh.remove_occupant::<Carryable>(&carryable_entity, grid_tile.x, grid_tile.y);
+    }
 }
 
 macro_rules! pawn_states {
