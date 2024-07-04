@@ -23,7 +23,6 @@ fn execute_command(
     mut food_stock: ResMut<FoodStock>,
     mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
     mut food_consumed_event_writer: EventWriter<FoodConsumedEvent>,
-    // mut carryable_food_query: Query<(Entity, &mut Carryable), With<CarryableFoodMarker>>,
 ) {
     let amount_before = food_stock.amount;
 
@@ -47,9 +46,9 @@ fn execute_command(
         }
     }
 
-    if food_stock.amount != amount_before {
-        food_consumed_event_writer.send(FoodConsumedEvent {
+    if amount_before != food_stock.amount {
+        food_consumed_event_writer.send(log_event!(FoodConsumedEvent {
             amount: amount_before - food_stock.amount,
-        });
+        }));
     }
 }
