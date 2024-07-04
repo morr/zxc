@@ -48,13 +48,6 @@ impl Default for Pawn {
 }
 
 impl Pawn {
-    // pub fn get_task(&self) -> &Task {
-    //     match &self.state {
-    //         PawnState::TaskAssigned(task) | PawnState::Working(task) => task,
-    //         _ => panic!("Pawn must be in a task-assigned state"),
-    //     }
-    // }
-
     pub fn is_birthday(&self, total_day: u32) -> bool {
         self.birth_year_day == ElapsedTime::total_day_to_year_day(total_day)
     }
@@ -129,9 +122,6 @@ pawn_states!(
 
 #[derive(Component)]
 pub struct PawnStateText;
-
-// #[derive(Event, Debug)]
-// pub struct PawnBirthdayEvent(pub Entity);
 
 #[derive(Event, Debug)]
 pub struct PawnDeathEvent(pub Entity);
