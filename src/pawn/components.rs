@@ -63,7 +63,12 @@ impl Pawn {
         grid_tile: IVec2,
         commands: &mut Commands,
         navmesh: &mut Navmesh,
+        food_stock: &mut ResMut<FoodStock>,
     ) {
+        if carryable.kind == CarryableKind::Food {
+            food_stock.amount -= carryable.amount;
+        }
+
         self.inventory.insert(carryable_entity, carryable);
 
         commands
