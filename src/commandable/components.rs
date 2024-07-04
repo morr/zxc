@@ -9,7 +9,7 @@ pub enum CommandType {
     DropCarriedItem(DropCarriedItemCommand),
     MoveTo(MoveToCommand),
     Sleep(SleepCommand),
-    TakeItem(TakeItemCommand),
+    PickUpItem(PickUpItemCommand),
     ToRest(ToRestCommand),
     UserSelection(UserSelectionCommand),
     WorkOn(WorkOnCommand),

@@ -8,7 +8,7 @@ expose_submodules!(
     feed_command,
     move_to_command,
     sleep_command,
-    take_item_command,
+    pick_up_item_command,
     to_rest_command,
     user_selection_command,
     work_on_command
@@ -29,7 +29,7 @@ impl Plugin for CommandablePlugin {
                 FeedCommandPlugin,
                 MoveToCommandPlugin,
                 SleepCommandPlugin,
-                TakeItemCommandPlugin,
+                PickUpItemCommandPlugin,
                 ToRestCommandPlugin,
                 UserSelectionCommandPlugin,
                 WorkOnCommandPlugin,

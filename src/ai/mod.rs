@@ -102,7 +102,7 @@ fn ai_idle_pawns(
                                 commandable_entity,
                                 grid_tile: transform.world_pos_to_grid(),
                             }),
-                            CommandType::TakeItem(TakeItemCommand {
+                            CommandType::PickUpItem(PickUpItemCommand {
                                 commandable_entity,
                                 carryable_entity,
                             }),
