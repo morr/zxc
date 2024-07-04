@@ -119,14 +119,17 @@ fn handle_release_resources(
                         commandable_entity, err
                     )
                 });
-            let mut carryable = carryable_query
-                .get_mut(*carryable_entity)
-                .unwrap_or_else(|err| {
+            let maybe_carryable = carryable_query.get_mut(*carryable_entity);
+            let Ok(mut carryable) = maybe_carryable else {
+                if pawn.inventory.contains_key(carryable_entity) {
                     panic!(
-                        "Failed to get query result for carryable_entity {:?} {:?}",
-                        carryable_entity, err
+                        "Failed to get query result for carryable_entity {:?} while pawn {:?} has it in inventory",
+                        carryable_entity, pawn
                     )
-                });
+                } else {
+                    continue;
+                }
+            };
 
             pawn.drop_item(
                 *carryable_entity,
