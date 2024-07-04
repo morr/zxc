@@ -20,6 +20,9 @@ pub fn spawn_on_event(
                 kind: CarryableKind::Food,
                 amount: *amount,
             },
+            CarryableKind::InInventory => {
+                panic!("Cannot spawn CarryableKind::InInventory")
+            }
         };
 
         let carryable_id = commands
@@ -30,10 +33,8 @@ pub fn spawn_on_event(
             .id();
 
         // increment food stock
-        match *kind {
-            CarryableKind::Food => {
-                food_stock.amount += *amount;
-            }
+        if *kind == CarryableKind::Food {
+            food_stock.amount += *amount;
         };
 
         arc_navmesh
