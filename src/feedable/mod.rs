@@ -89,12 +89,16 @@ fn process_consumed_food(
     mut commands: Commands,
     mut event_reader: EventReader<FoodConsumedEvent>,
     mut carryable_query: Query<(Entity, &mut Carryable, &Transform), With<CarryableFoodMarker>>,
-    arc_navmesh: ResMut<ArcNavmesh>
+    arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     for event in event_reader.read() {
-        let FoodConsumedEvent { amount: mut amount_consumed } = *event;
+        let FoodConsumedEvent {
+            amount: mut amount_consumed,
+        } = *event;
 
         for (entity, mut carryable, transform) in carryable_query.iter_mut() {
+            continue_unless!(CarryableKind::Food, carryable.kind);
+
             if amount_consumed < carryable.amount {
                 carryable.amount -= amount_consumed;
                 break;
@@ -104,8 +108,9 @@ fn process_consumed_food(
                 commands.entity(entity).despawn_recursive();
 
                 let grid_tile = transform.world_pos_to_grid();
-                arc_navmesh.write().remove_occupant::<Carryable>(&entity, grid_tile.x, grid_tile.y);
-
+                arc_navmesh
+                    .write()
+                    .remove_occupant::<Carryable>(&entity, grid_tile.x, grid_tile.y);
             }
         }
     }

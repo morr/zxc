@@ -90,7 +90,9 @@ impl Pawn {
     ) {
         // it can be not in inventory if command chain is interrupted before
         // item picked up into inventory
-        let Some(Carryable { kind, amount }) = self.inventory.remove(&carryable_entity) else { return };
+        let Some(Carryable { kind, amount }) = self.inventory.remove(&carryable_entity) else {
+            return;
+        };
         carryable.from_inventory(kind, amount, food_stock);
 
         let tile_occupants = navmesh
