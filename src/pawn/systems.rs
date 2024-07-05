@@ -63,7 +63,7 @@ pub fn spawn_pawns(
                 Feedable::default(),
             ))
             // .insert(ShowAabbGizmo {
-            //     color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
+            //     color: Some(Color::srgba(1.0, 1.0, 1.0, 0.25)),
             // })
             .with_children(|parent| {
                 parent.spawn((

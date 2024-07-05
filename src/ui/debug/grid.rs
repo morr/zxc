@@ -30,7 +30,7 @@ pub fn render_grid(mut gizmos: Gizmos) {
                 grid_tile_edge_to_world(config().grid.half_size),
                 grid_tile_edge_to_world(i),
             ),
-            Color::rgba(0.2, 0.2, 0.2, 0.5),
+            Color::srgba(0.2, 0.2, 0.2, 0.5),
         );
     }
 
@@ -44,7 +44,7 @@ pub fn render_grid(mut gizmos: Gizmos) {
                 grid_tile_edge_to_world(i),
                 grid_tile_edge_to_world(config().grid.half_size),
             ),
-            Color::rgba(0.2, 0.2, 0.2, 0.5),
+            Color::srgba(0.2, 0.2, 0.2, 0.5),
         );
     }
 

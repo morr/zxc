@@ -125,17 +125,17 @@ impl FromWorld for AssetsCollection {
         let mut materials = world.get_resource_mut::<Assets<ColorMaterial>>().unwrap();
 
         Self {
-            pawn_idle: materials.add(ColorMaterial::from(Color::hex("f6f8fa").unwrap())),
-            pawn_moving: materials.add(ColorMaterial::from(Color::hex("1193cf").unwrap())),
+            pawn_idle: materials.add(ColorMaterial::from(Color::from(Srgba::hex("f6f8fa").unwrap()))),
+            pawn_moving: materials.add(ColorMaterial::from(Color::from(Srgba::hex("1193cf").unwrap()))),
             // pawn_moving: materials.add(ColorMaterial::from(Color::hex("e178c5").unwrap())),
-            pawn_pathfinding: materials.add(ColorMaterial::from(Color::hex("fb8f44").unwrap())),
-            pawn_pathfinding_error: materials.add(ColorMaterial::from(Color::RED)),
-            pawn_working: materials.add(ColorMaterial::from(Color::hex("74d61f").unwrap())),
-            pawn_dead: materials.add(ColorMaterial::from(Color::hex("181a1c").unwrap())),
-            navmesh_passable: materials.add(ColorMaterial::from(Color::rgba(0.0, 0.0, 0.75, 0.5))),
+            pawn_pathfinding: materials.add(ColorMaterial::from(Color::from(Srgba::hex("fb8f44").unwrap()))),
+            pawn_pathfinding_error: materials.add(ColorMaterial::from(Color::from(Srgba::hex("ff0000").unwrap()))),
+            pawn_working: materials.add(ColorMaterial::from(Color::from(Srgba::hex("74d61f").unwrap()))),
+            pawn_dead: materials.add(ColorMaterial::from(Color::from(Srgba::hex("181a1c").unwrap()))),
+            navmesh_passable: materials.add(ColorMaterial::from(Color::srgba(0.0, 0.0, 0.75, 0.5))),
             navmesh_impassable: materials
-                .add(ColorMaterial::from(Color::rgba(1.0, 0.0, 0.0, 0.75))),
-            food: materials.add(ColorMaterial::from(Color::hex("fe9516").unwrap())),
+                .add(ColorMaterial::from(Color::srgba(1.0, 0.0, 0.0, 0.75))),
+            food: materials.add(ColorMaterial::from(Color::from(Srgba::hex("fe9516").unwrap()))),
         }
     }
 }

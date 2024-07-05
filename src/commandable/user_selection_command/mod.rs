@@ -29,7 +29,7 @@ fn execute_command(
         // add aabb to to selected
         if let Some(UserSelectionData { entity: id, .. }) = maybe_new_selection {
             commands.entity(*id).insert(ShowAabbGizmo {
-                color: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
+                color: Some(Color::srgba(1.0, 1.0, 1.0, 0.25)),
             });
         }
 

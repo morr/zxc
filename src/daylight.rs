@@ -24,7 +24,7 @@ fn setup(mut commands: Commands) {
     commands
         .spawn(SpriteBundle {
             sprite: Sprite {
-                color: Color::rgba(0.1, 0.1, 0.3, 0.0), // Initial color, mostly transparent
+                color: Color::srgba(0.1, 0.1, 0.3, 0.0), // Initial color, mostly transparent
                 custom_size: Some(grid_size.grid_tile_edge_to_world()), // Large enough to cover the screen
                 //
                 ..default()

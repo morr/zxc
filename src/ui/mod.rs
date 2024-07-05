@@ -14,7 +14,7 @@ expose_submodules!(
     debug
 );
 
-pub static UI_COLOR: Lazy<Color> = Lazy::new(|| Color::hex("181a1c").unwrap());
+pub static UI_COLOR: Lazy<Color> = Lazy::new(|| Color::from(Srgba::hex("181a1c").unwrap()));
 pub static UI_SCREEN_EDGE_PX_OFFSET: Val = Val::Px(8.);
 pub static UI_WINDOWS_GAP: Val = Val::Px(25.);
 
@@ -48,11 +48,13 @@ pub enum UiOpacity {
 }
 
 pub fn ui_color(opacity: UiOpacity) -> Color {
-    *UI_COLOR.clone().set_a(match opacity {
+    let mut color = UI_COLOR.clone();
+    color.set_alpha(match opacity {
         UiOpacity::Light => 0.25,
         UiOpacity::Medium => 0.65,
         UiOpacity::Heavy => 0.85,
-    })
+    });
+    color
 }
 
 pub fn bg_color(opacity: UiOpacity) -> BackgroundColor {

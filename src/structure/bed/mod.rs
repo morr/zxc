@@ -55,7 +55,7 @@ impl Bed {
                 },
             ))
             // .insert(ShowAabbGizmo {
-            //     colo: Some(Color::rgba(1.0, 1.0, 1.0, 0.25)),
+            //     colo: Some(Color::srgba(1.0, 1.0, 1.0, 0.25)),
             // })
             .id();
 
