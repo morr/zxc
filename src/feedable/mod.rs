@@ -47,6 +47,10 @@ impl Feedable {
         self.hunger == HUNGER_OVERFLOW
     }
 
+    pub fn is_death_starving(&self) -> bool {
+        self.hunger == HUNGER_OVERFLOW * config().feedable.max_starvation_multiplier
+    }
+
     pub fn progress_hunger(&mut self, time_amount: f32) {
         let amount = time_amount * config().feedable.living_cost;
         self.hunger = (self.hunger + amount).clamp(
@@ -60,6 +64,7 @@ impl Feedable {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn progress_hunger(
     mut commands: Commands,
     time: Res<Time>,
@@ -67,12 +72,14 @@ fn progress_hunger(
     mut query: Query<(Entity, &mut Feedable, &mut Commandable)>,
     mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
     mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
+    mut pawn_death_event_writer: EventWriter<PawnDeathEvent>,
     food_stock: Res<FoodStock>,
 ) {
     let time_amount = time_scale.scale_to_seconds(time.delta_seconds());
 
     for (commandable_entity, mut feedable, mut commandable) in query.iter_mut() {
         let wasnt_overflowed = !feedable.is_overflowed();
+        let wasnt_death_starving = !feedable.is_death_starving();
 
         feedable.progress_hunger(time_amount);
 
@@ -84,6 +91,13 @@ fn progress_hunger(
                 &mut commandable_interrupt_writer,
                 &mut commandable_release_resources_writer,
             );
+        }
+
+        if wasnt_death_starving && feedable.is_death_starving() {
+            pawn_death_event_writer.send(log_event!(PawnDeathEvent {
+                entity: commandable_entity,
+                reason: PawnDeathReason::Starvation
+            }));
         }
     }
 }

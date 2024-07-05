@@ -200,7 +200,10 @@ pub fn progress_pawn_dying(
         pawn.decrease_lifetime(time_scale.scale_to_seconds(time.delta_seconds()));
 
         if pawn.lifetime.is_zero() {
-            event_writer.send(log_event!(PawnDeathEvent(entity)));
+            event_writer.send(log_event!(PawnDeathEvent{
+                entity,
+                reason: PawnDeathReason::OldAge
+            }));
             commands.entity(entity).remove::<DyingMarker>();
         }
     }
@@ -217,7 +220,7 @@ pub fn progress_pawn_death(
     mut available_beds: ResMut<AvailableBeds>,
     mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
 ) {
-    for PawnDeathEvent(entity) in event_reader.read() {
+    for PawnDeathEvent { entity, .. } in event_reader.read() {
         match pawn_query.get_mut(*entity) {
             Ok((mut pawn, mut restable, mut commandable)) => {
                 pawn.change_state(

@@ -125,7 +125,7 @@ pub fn stop_movable_on_death(
     mut event_reader: EventReader<PawnDeathEvent>,
     mut query: Query<&mut Movable>,
 ) {
-    for PawnDeathEvent(entity) in event_reader.read() {
+    for PawnDeathEvent { entity, .. } in event_reader.read() {
         // println!("{:?}", event);
         let Ok(mut movable) = query.get_mut(*entity) else {
             continue;

@@ -46,7 +46,8 @@ mod pawn {
 
         // PawnDeathEvent is sent
         assert!(maybe_event.is_some());
-        assert_eq!(maybe_event.unwrap().0, pawn_id);
+        assert_eq!(maybe_event.unwrap().entity, pawn_id);
+        assert_eq!(maybe_event.unwrap().reason, PawnDeathReason::OldAge);
     }
 
     #[test]
@@ -66,7 +67,7 @@ mod pawn {
 
         app.world
             .resource_mut::<Events<PawnDeathEvent>>()
-            .send(PawnDeathEvent(pawn_id));
+            .send(PawnDeathEvent { entity: pawn_id, reason: PawnDeathReason::OldAge });
 
         app.update();
 
