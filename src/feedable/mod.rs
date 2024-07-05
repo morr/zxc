@@ -44,7 +44,7 @@ impl Feedable {
     }
 
     pub fn is_overflowed(&self) -> bool {
-        self.hunger == HUNGER_OVERFLOW
+        self.hunger >= HUNGER_OVERFLOW
     }
 
     pub fn is_death_starving(&self) -> bool {
