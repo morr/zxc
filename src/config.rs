@@ -194,6 +194,8 @@ impl RestableConfig {
 pub struct FeedableConfig {
     /// amount of saturation change per in-game hour
     pub living_cost: f32,
+    /// how many starvation overflows pawn can survive
+    pub max_starvation_multiplier: f32,
 }
 
 impl FeedableConfig {
