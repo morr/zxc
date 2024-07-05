@@ -40,7 +40,7 @@ fn execute_command(
             );
 
             while feedable.is_overflowed() && food_stock.amount > 0 {
-                feedable.feed();
+                feedable.be_fed();
                 food_stock.amount -= 1;
             }
         }

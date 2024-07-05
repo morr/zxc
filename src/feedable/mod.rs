@@ -55,7 +55,7 @@ impl Feedable {
         );
     }
 
-    pub fn feed(&mut self) {
+    pub fn be_fed(&mut self) {
         self.hunger -= HUNGER_OVERFLOW;
     }
 }
