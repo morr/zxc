@@ -92,7 +92,13 @@ fn format_simulation_speed_text(
 ) -> String {
     match time_state.get() {
         SimulationState::Running => format!("Speed: {}x", time_scale.0),
-        SimulationState::Paused => "Paused".to_string(),
+        SimulationState::Paused => {
+            if time_scale.0 > 1.0 {
+                format!("Paused ({}x)", time_scale.0)
+            } else {
+                "Paused (1x)".to_string()
+            }
+        },
     }
 }
 
