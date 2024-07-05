@@ -64,7 +64,7 @@ pub struct StateChangeEvent<T>(pub T);
 #[derive(Debug, Event)]
 pub struct EntityStateChangeEvent<T>(pub Entity, pub T);
 
-#[derive(Clone, Eq, PartialEq, Debug, Hash, Default, States)]
+#[derive(States, Default, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum AppState {
     #[default]
     Loading,
@@ -72,20 +72,19 @@ pub enum AppState {
     Quiting,
 }
 
-use bevy::log::BoxedSubscriber;
 use tracing_subscriber::{fmt, prelude::*, EnvFilter, Registry};
 
-pub fn configure_logging(log_level: &str) -> BoxedSubscriber {
-    let fmt_layer = fmt::Layer::default()
-        .without_time()
-        .with_writer(std::io::stderr);
-
-    let filter_layer = EnvFilter::try_new(log_level).unwrap();
-
-    let subscriber = Registry::default().with(filter_layer).with(fmt_layer);
-
-    Box::new(subscriber)
-}
+// pub fn configure_logging(log_level: &str) -> BoxedSubscriber {
+//     let fmt_layer = fmt::Layer::default()
+//         .without_time()
+//         .with_writer(std::io::stderr);
+//
+//     let filter_layer = EnvFilter::try_new(log_level).unwrap();
+//
+//     let subscriber = Registry::default().with(filter_layer).with(fmt_layer);
+//
+//     Box::new(subscriber)
+// }
 
 #[macro_export]
 macro_rules! ensure_state {

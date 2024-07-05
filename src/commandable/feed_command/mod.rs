@@ -1,4 +1,4 @@
-use bevy::utils::petgraph::matrix_graph::Zero;
+use rand_distr::num_traits::Zero;
 
 use super::*;
 

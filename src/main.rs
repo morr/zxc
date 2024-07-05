@@ -25,11 +25,11 @@ fn main() {
                     }),
                     ..default()
                 })
-                .set(bevy::log::LogPlugin {
-                    update_subscriber: Some(|_| configure_logging("info,zxc=trace")),
-                    // update_subscriber: Some(|_| configure_logging("error")),
-                    ..default()
-                }),
+                // .set(bevy::log::LogPlugin {
+                //     update_subscriber: Some(|_| configure_logging("info,zxc=trace")),
+                //     // update_subscriber: Some(|_| configure_logging("error")),
+                //     ..default()
+                // }),
         )
         // .add_plugins(bevy_inspector_egui::quick::FilterQueryInspectorPlugin::<With<Commandable>>::default())
         .init_state::<AppState>()
