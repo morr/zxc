@@ -48,7 +48,7 @@ pub enum UiOpacity {
 }
 
 pub fn ui_color(opacity: UiOpacity) -> Color {
-    let mut color = UI_COLOR.clone();
+    let mut color = *UI_COLOR;
     color.set_alpha(match opacity {
         UiOpacity::Light => 0.25,
         UiOpacity::Medium => 0.65,

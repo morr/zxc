@@ -122,6 +122,6 @@ pub fn close_on_esc(
         }
 
         next_state.set(AppState::Quiting);
-        event_writer.send(AppExit);
+        event_writer.send(AppExit::Success);
     }
 }

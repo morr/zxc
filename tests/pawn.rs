@@ -13,7 +13,7 @@ mod pawn {
             .add_systems(Update, progress_pawn_dying);
 
         let pawn_id = app
-            .world
+            .world_mut()
             .spawn((
                 Pawn {
                     state: PawnState::Idle,
@@ -29,19 +29,19 @@ mod pawn {
         app.update();
 
         // lifetime is changed
-        let pawn = app.world.get::<Pawn>(pawn_id).unwrap();
+        let pawn = app.world().get::<Pawn>(pawn_id).unwrap();
         assert_eq!(pawn.lifetime, 0.0);
 
         // Dying component is removed
-        let maybe_dying = app.world.get::<DyingMarker>(pawn_id);
+        let maybe_dying = app.world().get::<DyingMarker>(pawn_id);
         assert!(maybe_dying.is_none());
 
         let mut reader = app
-            .world
+            .world_mut()
             .resource_mut::<Events<PawnDeathEvent>>()
             .get_reader();
         let maybe_event = reader
-            .read(app.world.resource::<Events<PawnDeathEvent>>())
+            .read(app.world_mut().resource::<Events<PawnDeathEvent>>())
             .next();
 
         // PawnDeathEvent is sent
@@ -61,17 +61,20 @@ mod pawn {
             .add_systems(Update, progress_pawn_death);
 
         let pawn_id = app
-            .world
+            .world_mut()
             .spawn((Pawn::default(), Commandable::default(), Restable::default()))
             .id();
 
-        app.world
+        app.world_mut()
             .resource_mut::<Events<PawnDeathEvent>>()
-            .send(PawnDeathEvent { entity: pawn_id, reason: PawnDeathReason::OldAge });
+            .send(PawnDeathEvent {
+                entity: pawn_id,
+                reason: PawnDeathReason::OldAge,
+            });
 
         app.update();
 
-        let pawn = app.world.get::<Pawn>(pawn_id).unwrap();
+        let pawn = app.world().get::<Pawn>(pawn_id).unwrap();
         assert_eq!(pawn.state, PawnState::Dead);
     }
 }

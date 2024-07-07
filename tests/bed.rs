@@ -6,7 +6,7 @@ mod bed {
         let mut app = App::new();
         app.add_plugins(BedPlugin);
 
-        assert_eq!(**app.world.resource::<AvailableBeds>(), 0);
+        assert_eq!(**app.world().resource::<AvailableBeds>(), 0);
     }
 
     #[test]
@@ -23,7 +23,7 @@ mod bed {
 
         app.update();
 
-        assert_eq!(**app.world.resource::<AvailableBeds>(), 1);
+        assert_eq!(**app.world().resource::<AvailableBeds>(), 1);
     }
 
     fn setup(

@@ -51,12 +51,12 @@ pub fn render_grid(mut gizmos: Gizmos) {
     gizmos.line_2d(
         Vec2::new(0.0, 0.0),
         Vec2::new(config().grid.size as f32 * config().tile.size, 0.0),
-        Color::rgb(1.0, 0.0, 0.0),
+        Color::srgb(1.0, 0.0, 0.0),
     );
 
     gizmos.line_2d(
         Vec2::new(0.0, 0.0),
         Vec2::new(0.0, config().grid.size as f32 * config().tile.size),
-        Color::rgb(0.0, 1.0, 0.0),
+        Color::srgb(0.0, 1.0, 0.0),
     );
 }
