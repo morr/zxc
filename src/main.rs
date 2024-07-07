@@ -72,6 +72,8 @@ pub fn close_on_esc(
         &Pawn,
         &Movable,
         &Commandable,
+        &Restable,
+        &Feedable,
         // Option<&commandable_state::CommandableStateIdleTag>,
         // Option<&commandable_state::CommandableStatePendingExecutionTag>,
         // Option<&commandable_state::CommandableStateExecutingTag>,
@@ -98,20 +100,18 @@ pub fn close_on_esc(
             pawn,
             movable,
             commandable,
-            // commandable_idle_tag,
-            // commandable_pending_execution_tag,
-            // commandable_executing_tag,
+            restable,
+            feedable
         ) in pawns_query.iter()
         {
             info!("========== Pawn {:?} ==========", entity);
             info!("{:?}", pawn);
             info!(
-                "{:?}",
-                // "{:?} {:?} {:?} {:?}",
+                "{:?} {:?} {:?} {:?}",
+                movable,
                 commandable,
-                // commandable_idle_tag,
-                // commandable_pending_execution_tag,
-                // commandable_executing_tag
+                restable,
+                feedable,
             );
             info!("{:?}", movable);
         }
