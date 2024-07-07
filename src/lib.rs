@@ -4,6 +4,15 @@ pub use bevy_inspector_egui::prelude::*;
 pub use once_cell::sync::Lazy;
 // pub use bevy_magic_light_2d::prelude::*;
 
+macro_rules! use_modules {
+    ( $( $x:ident ),* ) => {
+        $(
+            pub mod $x;
+            pub use crate::$x::*;
+        )*
+    };
+}
+
 macro_rules! expose_submodules {
     ( $( $x:ident ),* ) => {
         $(
@@ -13,49 +22,29 @@ macro_rules! expose_submodules {
     };
 }
 
-pub mod ai;
-pub mod assets;
-pub mod async_queue;
-pub mod camera;
-pub mod carryable;
-pub mod commandable;
-pub mod config;
-pub mod daylight;
-pub mod feedable;
-pub mod input;
-pub mod map;
-pub mod movable;
-pub mod navigation;
-pub mod pawn;
-pub mod restable;
-pub mod story_time;
-pub mod structure;
-pub mod tasks_queue;
-pub mod ui;
-pub mod user_selection;
-pub mod workable;
-
-pub use crate::ai::*;
-pub use crate::assets::*;
-pub use crate::async_queue::*;
-pub use crate::camera::*;
-pub use crate::carryable::*;
-pub use crate::commandable::*;
-pub use crate::config::*;
-pub use crate::daylight::*;
-pub use crate::feedable::*;
-pub use crate::input::*;
-pub use crate::map::*;
-pub use crate::movable::*;
-pub use crate::navigation::*;
-pub use crate::pawn::*;
-pub use crate::restable::*;
-pub use crate::story_time::*;
-pub use crate::structure::*;
-pub use crate::tasks_queue::*;
-pub use crate::ui::*;
-pub use crate::user_selection::*;
-pub use crate::workable::*;
+use_modules!(
+    ai,
+    assets,
+    async_queue,
+    camera,
+    carryable,
+    commandable,
+    config,
+    daylight,
+    feedable,
+    input,
+    map,
+    movable,
+    navigation,
+    pawn,
+    restable,
+    story_time,
+    structure,
+    tasks_queue,
+    ui,
+    user_selection,
+    workable
+);
 
 #[derive(Debug, Event)]
 pub struct StateChangeEvent<T>(pub T);
