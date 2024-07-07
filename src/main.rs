@@ -25,11 +25,11 @@ fn main() {
                     }),
                     ..default()
                 })
-                // .set(bevy::log::LogPlugin {
-                //     update_subscriber: Some(|_| configure_logging("info,zxc=trace")),
-                //     // update_subscriber: Some(|_| configure_logging("error")),
-                //     ..default()
-                // }),
+                .set(bevy::log::LogPlugin {
+                    level: bevy::log::Level::TRACE,
+                    filter: "info,zxc=trace".to_string(),
+                    ..default()
+                }),
         )
         // .add_plugins(bevy_inspector_egui::quick::FilterQueryInspectorPlugin::<With<Commandable>>::default())
         .init_state::<AppState>()
@@ -48,7 +48,7 @@ fn main() {
             structure::StructurePlugin,
             ui::UiPlugin,
             input::InputPlugin,
-            tasks_queue::TasksQueuePlugin
+            tasks_queue::TasksQueuePlugin,
         ))
         .add_plugins((
             ai::AiPlugin,
@@ -95,23 +95,12 @@ pub fn close_on_esc(
     }
 
     if is_quiting {
-        for (
-            entity,
-            pawn,
-            movable,
-            commandable,
-            restable,
-            feedable
-        ) in pawns_query.iter()
-        {
+        for (entity, pawn, movable, commandable, restable, feedable) in pawns_query.iter() {
             info!("========== Pawn {:?} ==========", entity);
             info!("{:?}", pawn);
             info!(
                 "{:?} {:?} {:?} {:?}",
-                movable,
-                commandable,
-                restable,
-                feedable,
+                movable, commandable, restable, feedable,
             );
             info!("{:?}", movable);
         }

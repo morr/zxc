@@ -1,4 +1,3 @@
-use bevy::log::tracing_subscriber;
 pub use bevy::prelude::*;
 pub use bevy_asset_loader::prelude::*;
 pub use bevy_inspector_egui::prelude::*;
@@ -18,10 +17,10 @@ pub mod ai;
 pub mod assets;
 pub mod async_queue;
 pub mod camera;
+pub mod carryable;
 pub mod commandable;
 pub mod config;
 pub mod daylight;
-pub mod carryable;
 pub mod feedable;
 pub mod input;
 pub mod map;
@@ -71,20 +70,6 @@ pub enum AppState {
     Playing,
     Quiting,
 }
-
-use tracing_subscriber::{fmt, prelude::*, EnvFilter, Registry};
-
-// pub fn configure_logging(log_level: &str) -> BoxedSubscriber {
-//     let fmt_layer = fmt::Layer::default()
-//         .without_time()
-//         .with_writer(std::io::stderr);
-//
-//     let filter_layer = EnvFilter::try_new(log_level).unwrap();
-//
-//     let subscriber = Registry::default().with(filter_layer).with(fmt_layer);
-//
-//     Box::new(subscriber)
-// }
 
 #[macro_export]
 macro_rules! ensure_state {
