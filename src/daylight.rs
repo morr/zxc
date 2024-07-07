@@ -49,7 +49,7 @@ fn day_night_cycle_system(
         0.5 + 0.5 * theta.cos()
     }; // Transition the transparency
     for mut sprite in query.iter_mut() {
-        sprite.color.set_a(transparency * 0.7); // Adjust transparency to simulate day/night
+        sprite.color.set_alpha(transparency * 0.7); // Adjust transparency to simulate day/night
     }
 }
 

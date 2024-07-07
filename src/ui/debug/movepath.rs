@@ -28,12 +28,12 @@ pub fn render_movepath(
             continue;
         }
 
-        let color = Color::Rgba {
+        let color = Color::from(Srgba {
             red: 1.0,
             green: 1.0,
             blue: 0.25,
             alpha: 0.25,
-        };
+        });
 
         let mut prev_world = transform.translation.truncate();
         for (index, path_target) in movable.path.iter().enumerate() {
