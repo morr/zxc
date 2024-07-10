@@ -10,7 +10,7 @@ bevy_pancam = { git = "https://github.com/tomara-x/bevy_pancam.git", branch =  "
 bevy_framepace = "0.17.1"
 pathfinding = "4.9.1"
 bevy_asset_loader = "0.21.0"
-bevy-inspector-egui = "0.25.0"
+bevy-inspector-egui = "0.25.1"
 # bevy_magic_light_2d = { git = "https://github.com/zaycev/bevy-magic-light-2d.git", branch = "main" }
 rand_distr = "0.4.3"
 ron = "0.8.1"
