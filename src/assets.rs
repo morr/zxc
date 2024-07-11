@@ -26,8 +26,11 @@ pub struct FontAssets {
 #[derive(AssetCollection, Resource)]
 pub struct TextureAssets {
     // https://screamingbrainstudios.itch.io/tiny-texture-pack/download/eyJpZCI6MTAzMzEyOSwiZXhwaXJlcyI6MTcxMDc5ODI3OX0%3d.%2f%2bodleBeo8EbYeM%2bKnn3UZPKq2U%3d
-    #[asset(path = "sprites/grass.png")]
+    #[asset(path = "sprites/tile/grass.png")]
     pub grass: Handle<Image>,
+    // https://www.the3rdsequence.com/texturedb/texture/44/clear+sea+water/
+    #[asset(path = "sprites/tile/water.png")]
+    pub water: Handle<Image>,
 
     // https://fin-nio.itch.io/pixel-houses
     #[asset(path = "sprites/castle_complete.png")]
