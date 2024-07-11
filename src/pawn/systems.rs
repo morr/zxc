@@ -10,7 +10,7 @@ pub fn spawn_pawns(
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
     font_assets: Res<FontAssets>,
-    warehouse_query: Query<&Transform, With<Warehouse>>,
+    // warehouse_query: Query<&Transform, With<Warehouse>>,
     farm_query: Query<&Transform, With<Farm>>,
     arc_navmesh: ResMut<ArcNavmesh>,
     mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
@@ -19,7 +19,7 @@ pub fn spawn_pawns(
     let mut rng = rand::thread_rng();
     let radius = config().tile.size * i32::max(BASE_WIDTH, BASE_HEIGHT) as f32;
 
-    let warehouse_transform = warehouse_query.single();
+    // let warehouse_transform = warehouse_query.single();
     let maybe_farm_transform = farm_query.iter().next();
 
     let mut navmesh = arc_navmesh.write();
@@ -28,8 +28,10 @@ pub fn spawn_pawns(
 
         let position = if i >= 4 || maybe_farm_transform.is_none() {
             Vec3::new(
-                warehouse_transform.translation.x + random_angle.cos() * radius,
-                warehouse_transform.translation.y + random_angle.sin() * radius,
+                random_angle.cos() * radius,
+                random_angle.sin() * radius,
+                // warehouse_transform.translation.x + random_angle.cos() * radius,
+                // warehouse_transform.translation.y + random_angle.sin() * radius,
                 PAWN_Z_INDEX,
             )
         } else {
