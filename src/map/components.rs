@@ -1,15 +1,12 @@
 use super::*;
 
-#[derive(Component, Debug)]
-pub struct Tile(pub IVec2);
+#[derive(Component, Debug, Clone)]
+pub struct Tile {
+    pub grid_tile: IVec2
+}
 
-// #[derive(Component)]
-// pub struct Actor;
-//
-// #[derive(Default, Component, Debug)]
-// pub struct Pathing {
-//     pub target_position: Option<Vec2>,
-//     pub metadata: Option<RouteMetadata>,
-//     pub portal_route: Option<Vec<(SectorID, FieldCell)>>,
-//     pub has_los: bool,
-// }
+impl Tile {
+    pub fn texture(&self, assets: &Res<TextureAssets>) -> Handle<Image> {
+        assets.grass.clone()
+    }
+}

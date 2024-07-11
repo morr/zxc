@@ -1,36 +1,73 @@
 use super::*;
 
-pub fn spawn_map(
+pub fn generate_map(
     mut commands: Commands,
     assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
-    // mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
+) {
+    let grid = initialize_grid();
+
+    spawn_tiles(&mut commands, &assets, &arc_navmesh, &grid);
+}
+
+fn initialize_grid() -> Vec<Vec<Tile>> {
+    let mut grid = vec![
+        vec![
+            Tile {
+                grid_tile: IVec2::new(0, 0)
+            };
+            config().grid.size as usize
+        ];
+        config().grid.size as usize
+    ];
+
+   for (x, row ) in grid.iter_mut().enumerate() {
+        for (y, cell) in row.iter_mut().enumerate() {
+            cell.grid_tile.x = navmesh_index_to_grid_tile(x);
+            cell.grid_tile.y = navmesh_index_to_grid_tile(y);
+            // *cell = if rng.gen_bool(0.55) { CellState::Alive } else { CellState::Dead };
+        }
+    }
+
+    grid
+}
+
+
+fn spawn_tiles(
+    commands: &mut Commands,
+    assets: &Res<TextureAssets>,
+    arc_navmesh: &ResMut<ArcNavmesh>,
+    grid: &Vec<Vec<Tile>>, // mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
 ) {
     // println!("spawn map");
     let mut navmesh = arc_navmesh.write();
 
-    for x in -config().grid.half_size..config().grid.half_size {
-        for y in -config().grid.half_size..config().grid.half_size {
-            let grid_tile = IVec2::new(x, y);
+    for row in grid.iter() {
+        for tile in row.iter() {
+    // for x in -config().grid.half_size..config().grid.half_size {
+        // for y in -config().grid.half_size..config().grid.half_size {
+            // let grid_tile = IVec2::new(x, y);
+
+            // let tile = Tile { grid_tile };
 
             let id = commands
                 .spawn(SpriteBundle {
-                    texture: assets.grass.clone(),
+                    texture: tile.texture(assets),
                     sprite: Sprite {
                         custom_size: Some(Vec2::new(config().tile.size, config().tile.size)),
                         ..default()
                     },
                     transform: Transform::from_xyz(
-                        grid_tile_edge_to_world(x) + config().tile.size / 2.,
-                        grid_tile_edge_to_world(y) + config().tile.size / 2.,
+                        grid_tile_edge_to_world(tile.grid_tile.x) + config().tile.size / 2.,
+                        grid_tile_edge_to_world(tile.grid_tile.y) + config().tile.size / 2.,
                         TILE_Z_INDEX,
                     ),
                     ..default()
                 })
-                .insert(Tile(grid_tile))
+                .insert(tile.clone())
                 .id();
 
-            navmesh.add_occupant::<Tile>(&id, grid_tile.x, grid_tile.y);
+            navmesh.add_occupant::<Tile>(&id, tile.grid_tile.x, tile.grid_tile.y);
             // no need to inform about occupation change for spawned empty map tiles
             // occupation_change_event_writer.send(log_event!(OccupationChangeEvent::new(grid_tile)));
         }
