@@ -5,7 +5,7 @@ pub fn generate_map(
     assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
-    let grid = cellular_automata::generate();
+    let grid = generator::empty::generate();
 
     spawn_tiles(&mut commands, &assets, &arc_navmesh, &grid);
 }
