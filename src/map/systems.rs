@@ -5,20 +5,18 @@ pub fn generate_map(
     assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
+    let mut navmesh = arc_navmesh.write();
     let grid = generator::empty::generate();
 
-    spawn_tiles(&mut commands, &assets, &arc_navmesh, &grid);
+    spawn_tiles(&mut commands, &assets, &mut navmesh, &grid);
 }
 
 fn spawn_tiles(
     commands: &mut Commands,
     assets: &Res<TextureAssets>,
-    arc_navmesh: &ResMut<ArcNavmesh>,
+    navmesh: &mut Navmesh,
     grid: &[Vec<Tile>], // mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
 ) {
-    // println!("spawn map");
-    let mut navmesh = arc_navmesh.write();
-
     for row in grid.iter() {
         for tile in row.iter() {
             let id = commands
@@ -76,5 +74,26 @@ pub fn track_hover(
         //         break;
         //     }
         // }
+    }
+}
+
+pub fn rebuild_map(
+    mut event_reader: EventReader<RebuildMapEvent>,
+    mut commands: Commands,
+    assets: Res<TextureAssets>,
+    arc_navmesh: ResMut<ArcNavmesh>,
+    tiles_query: Query<(Entity, &Tile)>,
+) {
+    for _event in event_reader.read() {
+        let mut navmesh = arc_navmesh.write();
+
+        for (entity, tile) in tiles_query.iter() {
+            navmesh.remove_occupant::<Tile>(&entity, tile.grid_tile.x, tile.grid_tile.y);
+            commands.entity(entity).despawn_recursive();
+        }
+
+        let grid = generator::cellular_automata::generate();
+
+        spawn_tiles(&mut commands, &assets, &mut navmesh, &grid);
     }
 }
