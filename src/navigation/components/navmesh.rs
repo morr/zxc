@@ -36,6 +36,11 @@ impl Default for Navmesh {
 }
 
 impl Navmesh {
+    pub fn is_in_range(x: i32, y: i32) -> bool {
+        x < config().grid.half_size && x > -config().grid.half_size &&
+            y < config().grid.half_size && y > -config().grid.half_size
+    }
+
     pub fn tile_successors(&self, x: i32, y: i32) -> Vec<(IVec2, i32)> {
         self.successors[grid_tile_to_navmesh_index(x)][grid_tile_to_navmesh_index(y)].clone()
     }

@@ -21,7 +21,10 @@ pub fn mouse_input(
         .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
         .map(|ray| ray.origin.truncate())
     {
-        let event = HoverEvent(world_position.world_pos_to_grid());
+        let grid_tile = world_position.world_pos_to_grid();
+        if !Navmesh::is_in_range(grid_tile.x, grid_tile.y) { return };
+
+        let event = HoverEvent(grid_tile);
         // println!("{:?}", event);
 
         let is_new_hover = match prev_hovered_grid_tile.0 {
