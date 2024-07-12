@@ -6,7 +6,7 @@ pub enum TileKind {
     Grass,
 }
 
-#[derive(Component, Debug, Clone, Copy)]
+#[derive(Component, Debug, Clone, Copy, Reflect)]
 pub struct Tile {
     pub grid_tile: IVec2,
     pub kind: TileKind,
@@ -20,3 +20,6 @@ impl Tile {
         }
     }
 }
+
+#[derive(Event, Debug)]
+pub struct RebuildMapEvent;

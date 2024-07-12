@@ -21,12 +21,6 @@ fn spawn_tiles(
 
     for row in grid.iter() {
         for tile in row.iter() {
-            // for x in -config().grid.half_size..config().grid.half_size {
-            // for y in -config().grid.half_size..config().grid.half_size {
-            // let grid_tile = IVec2::new(x, y);
-
-            // let tile = Tile { grid_tile };
-
             let id = commands
                 .spawn(SpriteBundle {
                     texture: tile.texture(assets),
