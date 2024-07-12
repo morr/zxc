@@ -1,6 +1,6 @@
 use crate::*;
 
-expose_submodules!(components, systems, utils);
+expose_submodules!(components, systems, utils, generators);
 
 pub struct MapPlugin;
 impl Plugin for MapPlugin {

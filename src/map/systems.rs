@@ -5,33 +5,10 @@ pub fn generate_map(
     assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
-    let grid = initialize_grid();
+    let grid = cellular_automata::generate();
 
     spawn_tiles(&mut commands, &assets, &arc_navmesh, &grid);
 }
-
-fn initialize_grid() -> Vec<Vec<Tile>> {
-    let mut grid = vec![
-        vec![
-            Tile {
-                grid_tile: IVec2::new(0, 0)
-            };
-            config().grid.size as usize
-        ];
-        config().grid.size as usize
-    ];
-
-   for (x, row ) in grid.iter_mut().enumerate() {
-        for (y, cell) in row.iter_mut().enumerate() {
-            cell.grid_tile.x = navmesh_index_to_grid_tile(x);
-            cell.grid_tile.y = navmesh_index_to_grid_tile(y);
-            // *cell = if rng.gen_bool(0.55) { CellState::Alive } else { CellState::Dead };
-        }
-    }
-
-    grid
-}
-
 
 fn spawn_tiles(
     commands: &mut Commands,
@@ -44,8 +21,8 @@ fn spawn_tiles(
 
     for row in grid.iter() {
         for tile in row.iter() {
-    // for x in -config().grid.half_size..config().grid.half_size {
-        // for y in -config().grid.half_size..config().grid.half_size {
+            // for x in -config().grid.half_size..config().grid.half_size {
+            // for y in -config().grid.half_size..config().grid.half_size {
             // let grid_tile = IVec2::new(x, y);
 
             // let tile = Tile { grid_tile };
