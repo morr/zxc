@@ -14,6 +14,9 @@ pub struct Tile {
 
 impl Tile {
     pub fn texture(&self, assets: &Res<TextureAssets>) -> Handle<Image> {
-        assets.grass.clone()
+        match self.kind {
+            TileKind::Grass => assets.grass.clone(),
+            TileKind::Water => assets.water.clone(),
+        }
     }
 }
