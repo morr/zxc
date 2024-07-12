@@ -54,8 +54,8 @@ fn initialize_grid() -> Vec<Vec<CellState>> {
     grid
 }
 
-fn evolve_grid(grid: &Vec<Vec<CellState>>) -> Vec<Vec<CellState>> {
-    let mut new_grid = grid.clone();
+fn evolve_grid(grid: &[Vec<CellState>]) -> Vec<Vec<CellState>> {
+    let mut new_grid = grid.to_owned();
 
     for y in 0..config().grid.size as usize {
         for x in 0..config().grid.size as usize {
@@ -72,7 +72,7 @@ fn evolve_grid(grid: &Vec<Vec<CellState>>) -> Vec<Vec<CellState>> {
     new_grid
 }
 
-fn count_live_neighbors(grid: &Vec<Vec<CellState>>, x: usize, y: usize) -> usize {
+fn count_live_neighbors(grid: &[Vec<CellState>], x: usize, y: usize) -> usize {
     let mut count = 0;
     for dy in -1..=1 {
         for dx in -1..=1 {
@@ -81,6 +81,8 @@ fn count_live_neighbors(grid: &Vec<Vec<CellState>>, x: usize, y: usize) -> usize
             }
             let nx = x as i32 + dx;
             let ny = y as i32 + dy;
+
+            #[allow(clippy::collapsible_if)]
             if nx >= 0 && nx < config().grid.size && ny >= 0 && ny < config().grid.size {
                 if grid[ny as usize][nx as usize] == CellState::Alive {
                     count += 1;

@@ -14,7 +14,7 @@ fn spawn_tiles(
     commands: &mut Commands,
     assets: &Res<TextureAssets>,
     arc_navmesh: &ResMut<ArcNavmesh>,
-    grid: &Vec<Vec<Tile>>, // mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
+    grid: &[Vec<Tile>], // mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
 ) {
     // println!("spawn map");
     let mut navmesh = arc_navmesh.write();
@@ -41,7 +41,7 @@ fn spawn_tiles(
                     ),
                     ..default()
                 })
-                .insert(tile.clone())
+                .insert(*tile)
                 .id();
 
             navmesh.add_occupant::<Tile>(&id, tile.grid_tile.x, tile.grid_tile.y);
