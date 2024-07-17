@@ -80,6 +80,8 @@ pub fn track_hover(
 pub fn rebuild_map(
     mut event_reader: EventReader<RebuildMapEvent>,
     mut commands: Commands,
+    iterations: Res<generator::cellular_automata::CellularAutomataIterations>,
+    rng_gen_bool: Res<generator::cellular_automata::CellularAutomataRngGenBool>,
     assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
     tiles_query: Query<(Entity, &Tile)>,
@@ -92,7 +94,7 @@ pub fn rebuild_map(
             commands.entity(entity).despawn_recursive();
         }
 
-        let grid = generator::cellular_automata::generate();
+        let grid = generator::cellular_automata::generate(**iterations, **rng_gen_bool);
 
         spawn_tiles(&mut commands, &assets, &mut navmesh, &grid);
     }

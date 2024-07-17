@@ -1,7 +1,20 @@
 use super::*;
 use rand::Rng;
 
-const ITERATIONS: usize = 5;
+pub struct CellularAutomataPlugin;
+
+impl Plugin for CellularAutomataPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(CellularAutomataIterations(5))
+            .insert_resource(CellularAutomataRngGenBool(0.55));
+    }
+}
+
+#[derive(Resource, Deref, DerefMut)]
+pub struct CellularAutomataIterations(pub usize);
+
+#[derive(Resource, Deref, DerefMut)]
+pub struct CellularAutomataRngGenBool(pub f64);
 
 #[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq)]
 enum CellState {
@@ -9,10 +22,10 @@ enum CellState {
     Dead,
 }
 
-pub fn generate() -> Vec<Vec<Tile>> {
-    let mut grid = initialize_grid();
+pub fn generate(iterations: usize, rng_gen_bool: f64) -> Vec<Vec<Tile>> {
+    let mut grid = initialize_grid(rng_gen_bool);
 
-    for _ in 0..ITERATIONS {
+    for _ in 0..iterations {
         grid = evolve_grid(&grid);
     }
 
@@ -36,14 +49,14 @@ pub fn generate() -> Vec<Vec<Tile>> {
         .collect()
 }
 
-fn initialize_grid() -> Vec<Vec<CellState>> {
+fn initialize_grid(rng_gen_bool: f64) -> Vec<Vec<CellState>> {
     let mut rng = rand::thread_rng();
     let mut grid =
         vec![vec![CellState::Dead; config().grid.size as usize]; config().grid.size as usize];
 
     for row in grid.iter_mut() {
         for cell in row.iter_mut() {
-            *cell = if rng.gen_bool(0.55) {
+            *cell = if rng.gen_bool(rng_gen_bool) {
                 CellState::Alive
             } else {
                 CellState::Dead
