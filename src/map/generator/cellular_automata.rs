@@ -9,13 +9,15 @@ impl Plugin for CellularAutomataPlugin {
             .insert_resource(CellularAutomataRngGenBool(0.55));
 
         #[cfg(feature = "bevy_egui")]
-        app.add_systems(Update, ui_system);
+        app.insert_resource(CellularAutomataAutoGenerate(true))
+            .add_systems(Update, ui_system);
     }
 }
 
 #[cfg(feature = "bevy_egui")]
 fn ui_system(
     mut contexts: bevy_inspector_egui::bevy_egui::EguiContexts,
+    mut auto_generate: ResMut<generator::cellular_automata::CellularAutomataAutoGenerate>,
     mut iterations: ResMut<generator::cellular_automata::CellularAutomataIterations>,
     mut rng_gen_bool: ResMut<generator::cellular_automata::CellularAutomataRngGenBool>,
     mut rebuild_map_event_writer: EventWriter<RebuildMapEvent>,
@@ -23,19 +25,38 @@ fn ui_system(
     let ctx = contexts.ctx_mut();
 
     bevy_egui::egui::Window::new("Cellular Automata Settings").show(ctx, |ui| {
-        ui.add(bevy_egui::egui::Slider::new(&mut iterations.0, 0..=120).text("iterations"));
-        ui.add(bevy_egui::egui::Slider::new(&mut rng_gen_bool.0, 0.0..=1.0).text("rng_gen_bool"));
-        if ui.button("Generate").clicked() {
+        ui.add(bevy_egui::egui::Checkbox::new(
+            &mut auto_generate.0,
+            "auto generate",
+        ));
+        let iterations_slider =
+            ui.add(bevy_egui::egui::Slider::new(&mut iterations.0, 0..=10).text("iterations"));
+        let rng_gen_bool_slider = ui
+            .add(bevy_egui::egui::Slider::new(&mut rng_gen_bool.0, 0.0..=1.0).text("rng_gen_bool"));
+
+        let maybe_button = if **auto_generate {
+            None
+        } else {
+            Some(ui.button("Generate"))
+        };
+
+        if (maybe_button.is_some() && maybe_button.unwrap().clicked())
+            || (**auto_generate && (iterations_slider.changed() || rng_gen_bool_slider.changed()))
+        {
             rebuild_map_event_writer.send(RebuildMapEvent);
         }
     });
 }
 
-#[derive(Resource, Deref, DerefMut)]
+#[derive(Resource, Deref, DerefMut, PartialEq, Eq, Default)]
 pub struct CellularAutomataIterations(pub usize);
 
-#[derive(Resource, Deref, DerefMut)]
+#[derive(Resource, Deref, DerefMut, PartialEq, Default)]
 pub struct CellularAutomataRngGenBool(pub f64);
+
+#[derive(Resource, Deref, DerefMut, PartialEq, Eq, Default)]
+#[cfg(feature = "bevy_egui")]
+pub struct CellularAutomataAutoGenerate(pub bool);
 
 #[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq)]
 enum CellState {
