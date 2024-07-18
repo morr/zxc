@@ -1,7 +1,7 @@
 use super::*;
+use bevy::prelude::*;
 use rand::{Rng, SeedableRng};
 use rand_chacha::ChaCha8Rng;
-use rayon::prelude::*;
 use std::collections::HashMap;
 
 pub struct CellularAutomataPlugin;
@@ -13,7 +13,9 @@ impl Plugin for CellularAutomataPlugin {
             initial_alive_probability: 0.55,
             grid_size: 100,
             seed: None,
-        });
+        })
+        .add_systems(Update, generate_map)
+        .add_event::<RegenerateMapEvent>();
 
         #[cfg(feature = "bevy_egui")]
         app.add_systems(Update, ui_system);
@@ -28,7 +30,7 @@ pub struct CellularAutomataConfig {
     pub seed: Option<u64>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
 enum CellType {
     DeepWater,
     ShallowWater,
@@ -38,35 +40,33 @@ enum CellType {
     Mountain,
 }
 
-pub fn generate(config: &CellularAutomataConfig) -> Vec<Vec<Tile>> {
-    let mut rng = match config.seed {
-        Some(seed) => ChaCha8Rng::seed_from_u64(seed),
-        None => ChaCha8Rng::from_entropy(),
-    };
+#[derive(Component)]
+struct MapGrid(Vec<Vec<CellType>>);
 
-    let mut grid = initialize_grid(config, &mut rng);
+#[derive(Event)]
+struct RegenerateMapEvent;
 
-    for _ in 0..config.iterations {
-        grid = evolve_grid(&grid);
+fn generate_map(
+    mut commands: Commands,
+    config: Res<CellularAutomataConfig>,
+    mut regenerate_events: EventReader<RegenerateMapEvent>,
+) {
+    if regenerate_events.iter().next().is_some() {
+        let mut rng = match config.seed {
+            Some(seed) => ChaCha8Rng::seed_from_u64(seed),
+            None => ChaCha8Rng::from_entropy(),
+        };
+
+        let mut grid = initialize_grid(&config, &mut rng);
+
+        for _ in 0..config.iterations {
+            grid = evolve_grid(&grid);
+        }
+
+        smooth_grid(&mut grid);
+
+        commands.spawn(MapGrid(grid));
     }
-
-    smooth_grid(&mut grid);
-
-    grid.into_par_iter()
-        .enumerate()
-        .map(|(x, row)| {
-            row.into_par_iter()
-                .enumerate()
-                .map(|(y, cell)| Tile {
-                    grid_tile: IVec2::new(
-                        navmesh_index_to_grid_tile(x),
-                        navmesh_index_to_grid_tile(y),
-                    ),
-                    kind: cell_type_to_tile_kind(cell),
-                })
-                .collect()
-        })
-        .collect()
 }
 
 fn initialize_grid(config: &CellularAutomataConfig, rng: &mut impl Rng) -> Vec<Vec<CellType>> {
@@ -86,11 +86,10 @@ fn initialize_grid(config: &CellularAutomataConfig, rng: &mut impl Rng) -> Vec<V
 }
 
 fn evolve_grid(grid: &[Vec<CellType>]) -> Vec<Vec<CellType>> {
-    let size = grid.len();
-    grid.par_iter()
+    grid.iter()
         .enumerate()
         .map(|(y, row)| {
-            row.par_iter()
+            row.iter()
                 .enumerate()
                 .map(|(x, &cell)| {
                     let live_neighbors = count_live_neighbors(grid, x, y);
@@ -101,11 +100,11 @@ fn evolve_grid(grid: &[Vec<CellType>]) -> Vec<Vec<CellType>> {
         .collect()
 }
 
-fn count_live_neighbors(grid: &Vec<Vec<CellType>>, x: usize, y: usize) -> usize {
+fn count_live_neighbors(grid: &[Vec<CellType>], x: usize, y: usize) -> usize {
     get_neighbors(grid, x, y).iter().filter(|&&cell| is_land(cell)).count()
 }
 
-fn get_neighbors(grid: &Vec<Vec<CellType>>, x: usize, y: usize) -> Vec<CellType> {
+fn get_neighbors(grid: &[Vec<CellType>], x: usize, y: usize) -> Vec<CellType> {
     let mut neighbors = Vec::new();
     let grid_size = grid.len() as i32;
     for dy in -1..=1 {
@@ -161,22 +160,11 @@ fn most_common_neighbor(neighbors: &[CellType]) -> CellType {
     counts.into_iter().max_by_key(|&(_, count)| count).map(|(cell, _)| cell).unwrap_or(CellType::DeepWater)
 }
 
-fn cell_type_to_tile_kind(cell: CellType) -> TileKind {
-    match cell {
-        CellType::DeepWater => TileKind::DeepWater,
-        CellType::ShallowWater => TileKind::ShallowWater,
-        CellType::Sand => TileKind::Sand,
-        CellType::Grass => TileKind::Grass,
-        CellType::Forest => TileKind::Forest,
-        CellType::Mountain => TileKind::Mountain,
-    }
-}
-
 #[cfg(feature = "bevy_egui")]
 fn ui_system(
     mut contexts: bevy_inspector_egui::bevy_egui::EguiContexts,
     mut config: ResMut<CellularAutomataConfig>,
-    mut rebuild_map_event_writer: EventWriter<RebuildMapEvent>,
+    mut regenerate_events: EventWriter<RegenerateMapEvent>,
 ) {
     let ctx = contexts.ctx_mut();
 
@@ -192,7 +180,7 @@ fn ui_system(
         }
 
         if changed {
-            rebuild_map_event_writer.send(RebuildMapEvent);
+            regenerate_events.send(RegenerateMapEvent);
         }
     });
 }
