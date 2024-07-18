@@ -2,8 +2,12 @@ use super::*;
 
 #[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq)]
 pub enum TileKind {
-    Water,
+    DeepWater,
+    ShallowWater,
+    Sand,
     Grass,
+    Forest,
+    Mountain
 }
 
 #[derive(Component, Debug, Clone, Copy, Reflect)]
@@ -15,8 +19,12 @@ pub struct Tile {
 impl Tile {
     pub fn texture(&self, assets: &Res<TextureAssets>) -> Handle<Image> {
         match self.kind {
+            TileKind::ShallowWater => assets.shallow_water.clone(),
+            TileKind::DeepWater => assets.deep_water.clone(),
+            TileKind::Sand => assets.sand.clone(),
             TileKind::Grass => assets.grass.clone(),
-            TileKind::Water => assets.water.clone(),
+            TileKind::Forest => assets.forest.clone(),
+            TileKind::Mountain => assets.mountain.clone(),
         }
     }
 }

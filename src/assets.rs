@@ -22,15 +22,23 @@ pub struct FontAssets {
     pub fira: Handle<Font>,
 }
 
-// https://itch.io/game-assets/free/tag-textures
+// thttps://itch.io/game-assets/free/tag-textures
 #[derive(AssetCollection, Resource)]
 pub struct TextureAssets {
+    #[asset(path = "sprites/tile/deep_water.png")]
+    pub deep_water: Handle<Image>,
+    // https://www.the3rdsequence.com/texturedb/texture/44/clear+sea+water/
+    #[asset(path = "sprites/tile/shallow_water.png")]
+    pub shallow_water: Handle<Image>,
+    #[asset(path = "sprites/tile/sand.png")]
+    pub sand: Handle<Image>,
     // https://screamingbrainstudios.itch.io/tiny-texture-pack/download/eyJpZCI6MTAzMzEyOSwiZXhwaXJlcyI6MTcxMDc5ODI3OX0%3d.%2f%2bodleBeo8EbYeM%2bKnn3UZPKq2U%3d
     #[asset(path = "sprites/tile/grass.png")]
     pub grass: Handle<Image>,
-    // https://www.the3rdsequence.com/texturedb/texture/44/clear+sea+water/
-    #[asset(path = "sprites/tile/water.png")]
-    pub water: Handle<Image>,
+    #[asset(path = "sprites/tile/forest.png")]
+    pub forest: Handle<Image>,
+    #[asset(path = "sprites/tile/mountain.png")]
+    pub mountain: Handle<Image>,
 
     // https://fin-nio.itch.io/pixel-houses
     #[asset(path = "sprites/castle_complete.png")]
