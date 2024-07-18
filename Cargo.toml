@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 rand = "0.8"
 bevy = { version = "0.14.0", features = ["dynamic_linking"] }
-bevy_pancam = "0.12"
+bevy_pancam = { version = "0.12", features = ["bevy_egui"] }
 bevy_framepace = "0.17.1"
 pathfinding = "4.9.1"
 bevy_asset_loader = "0.21.0"
