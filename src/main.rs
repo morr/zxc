@@ -32,6 +32,7 @@ fn main() {
                 }),
         )
         // .add_plugins(bevy_inspector_egui::quick::FilterQueryInspectorPlugin::<With<Commandable>>::default())
+        .add_plugins(bevy_inspector_egui::bevy_egui::EguiPlugin)
         .init_state::<AppState>()
         .add_loading_state(
             LoadingState::new(AppState::Loading).continue_to_state(AppState::Playing),

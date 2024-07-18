@@ -7,7 +7,28 @@ impl Plugin for CellularAutomataPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(CellularAutomataIterations(5))
             .insert_resource(CellularAutomataRngGenBool(0.55));
+
+        #[cfg(feature = "bevy_egui")]
+        app.add_systems(Update, ui_system);
     }
+}
+
+#[cfg(feature = "bevy_egui")]
+fn ui_system(
+    mut contexts: bevy_inspector_egui::bevy_egui::EguiContexts,
+    mut iterations: ResMut<generator::cellular_automata::CellularAutomataIterations>,
+    mut rng_gen_bool: ResMut<generator::cellular_automata::CellularAutomataRngGenBool>,
+    mut rebuild_map_event_writer: EventWriter<RebuildMapEvent>,
+) {
+    let ctx = contexts.ctx_mut();
+
+    bevy_egui::egui::Window::new("Cellular Automata Settings").show(ctx, |ui| {
+        ui.add(bevy_egui::egui::Slider::new(&mut iterations.0, 0..=120).text("iterations"));
+        ui.add(bevy_egui::egui::Slider::new(&mut rng_gen_bool.0, 0.0..=1.0).text("rng_gen_bool"));
+        if ui.button("Generate").clicked() {
+            rebuild_map_event_writer.send(RebuildMapEvent);
+        }
+    });
 }
 
 #[derive(Resource, Deref, DerefMut)]
