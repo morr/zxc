@@ -1,5 +1,4 @@
 use super::*;
-use bevy::prelude::*;
 use rand::{Rng, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 use std::collections::HashMap;
@@ -9,13 +8,11 @@ pub struct CellularAutomataPlugin;
 impl Plugin for CellularAutomataPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(CellularAutomataConfig {
+            auto_generate: true,
             iterations: 5,
             initial_alive_probability: 0.55,
-            grid_size: 100,
             seed: None,
-        })
-        .add_systems(Update, generate_map)
-        .add_event::<RegenerateMapEvent>();
+        });
 
         #[cfg(feature = "bevy_egui")]
         app.add_systems(Update, ui_system);
@@ -24,9 +21,9 @@ impl Plugin for CellularAutomataPlugin {
 
 #[derive(Resource)]
 pub struct CellularAutomataConfig {
+    pub auto_generate: bool,
     pub iterations: usize,
     pub initial_alive_probability: f64,
-    pub grid_size: usize,
     pub seed: Option<u64>,
 }
 
@@ -40,41 +37,43 @@ enum CellType {
     Mountain,
 }
 
-#[derive(Component)]
-struct MapGrid(Vec<Vec<CellType>>);
+pub fn generate(ca_config: &Res<CellularAutomataConfig>) -> Vec<Vec<Tile>> {
+    let mut rng = match ca_config.seed {
+        Some(seed) => ChaCha8Rng::seed_from_u64(seed),
+        None => ChaCha8Rng::from_entropy(),
+    };
 
-#[derive(Event)]
-struct RegenerateMapEvent;
+    let mut grid = initialize_grid(&ca_config, &mut rng);
 
-fn generate_map(
-    mut commands: Commands,
-    config: Res<CellularAutomataConfig>,
-    mut regenerate_events: EventReader<RegenerateMapEvent>,
-) {
-    if regenerate_events.iter().next().is_some() {
-        let mut rng = match config.seed {
-            Some(seed) => ChaCha8Rng::seed_from_u64(seed),
-            None => ChaCha8Rng::from_entropy(),
-        };
-
-        let mut grid = initialize_grid(&config, &mut rng);
-
-        for _ in 0..config.iterations {
-            grid = evolve_grid(&grid);
-        }
-
-        smooth_grid(&mut grid);
-
-        commands.spawn(MapGrid(grid));
+    for _ in 0..ca_config.iterations {
+        grid = evolve_grid(&grid);
     }
+
+    smooth_grid(&mut grid);
+
+    grid.iter()
+        .enumerate()
+        .map(|(x, row)| {
+            row.iter()
+                .enumerate()
+                .map(|(y, &cell_type)| Tile {
+                    grid_tile: IVec2::new(
+                        navmesh_index_to_grid_tile(x),
+                        navmesh_index_to_grid_tile(y),
+                    ),
+                    kind: cell_state_to_tile_kind(cell_type),
+                })
+                .collect()
+        })
+        .collect()
 }
 
-fn initialize_grid(config: &CellularAutomataConfig, rng: &mut impl Rng) -> Vec<Vec<CellType>> {
-    (0..config.grid_size)
+fn initialize_grid(ca_config: &CellularAutomataConfig, rng: &mut impl Rng) -> Vec<Vec<CellType>> {
+    (0..config().grid.size)
         .map(|_| {
-            (0..config.grid_size)
+            (0..config().grid.size)
                 .map(|_| {
-                    if rng.gen_bool(config.initial_alive_probability) {
+                    if rng.gen_bool(ca_config.initial_alive_probability) {
                         CellType::Grass
                     } else {
                         CellType::DeepWater
@@ -101,7 +100,10 @@ fn evolve_grid(grid: &[Vec<CellType>]) -> Vec<Vec<CellType>> {
 }
 
 fn count_live_neighbors(grid: &[Vec<CellType>], x: usize, y: usize) -> usize {
-    get_neighbors(grid, x, y).iter().filter(|&&cell| is_land(cell)).count()
+    get_neighbors(grid, x, y)
+        .iter()
+        .filter(|&&cell| is_land(cell))
+        .count()
 }
 
 fn get_neighbors(grid: &[Vec<CellType>], x: usize, y: usize) -> Vec<CellType> {
@@ -109,7 +111,9 @@ fn get_neighbors(grid: &[Vec<CellType>], x: usize, y: usize) -> Vec<CellType> {
     let grid_size = grid.len() as i32;
     for dy in -1..=1 {
         for dx in -1..=1 {
-            if dx == 0 && dy == 0 { continue; }
+            if dx == 0 && dy == 0 {
+                continue;
+            }
             let nx = x as i32 + dx;
             let ny = y as i32 + dy;
             if nx >= 0 && nx < grid_size && ny >= 0 && ny < grid_size {
@@ -121,7 +125,10 @@ fn get_neighbors(grid: &[Vec<CellType>], x: usize, y: usize) -> Vec<CellType> {
 }
 
 fn is_land(cell: CellType) -> bool {
-    matches!(cell, CellType::Grass | CellType::Forest | CellType::Mountain)
+    matches!(
+        cell,
+        CellType::Grass | CellType::Forest | CellType::Mountain
+    )
 }
 
 fn apply_rules(cell: CellType, live_neighbors: usize) -> CellType {
@@ -157,30 +164,64 @@ fn most_common_neighbor(neighbors: &[CellType]) -> CellType {
     for &cell in neighbors {
         *counts.entry(cell).or_insert(0) += 1;
     }
-    counts.into_iter().max_by_key(|&(_, count)| count).map(|(cell, _)| cell).unwrap_or(CellType::DeepWater)
+    counts
+        .into_iter()
+        .max_by_key(|&(_, count)| count)
+        .map(|(cell, _)| cell)
+        .unwrap_or(CellType::DeepWater)
+}
+
+fn cell_state_to_tile_kind(cell_type: CellType) -> TileKind {
+    match cell_type {
+        CellType::DeepWater => TileKind::DeepWater,
+        CellType::ShallowWater => TileKind::ShallowWater,
+        CellType::Sand => TileKind::Sand,
+        CellType::Grass => TileKind::Grass,
+        CellType::Forest => TileKind::Forest,
+        CellType::Mountain => TileKind::Mountain,
+    }
 }
 
 #[cfg(feature = "bevy_egui")]
 fn ui_system(
-    mut contexts: bevy_inspector_egui::bevy_egui::EguiContexts,
-    mut config: ResMut<CellularAutomataConfig>,
-    mut regenerate_events: EventWriter<RegenerateMapEvent>,
+    mut egui_contexts: bevy_inspector_egui::bevy_egui::EguiContexts,
+    mut ca_config: ResMut<CellularAutomataConfig>,
+    mut rebuild_map_event_writer: EventWriter<RebuildMapEvent>,
 ) {
-    let ctx = contexts.ctx_mut();
+    let ctx = egui_contexts.ctx_mut();
 
     bevy_egui::egui::Window::new("Cellular Automata Settings").show(ctx, |ui| {
-        let mut changed = false;
-        changed |= ui.add(bevy_egui::egui::Slider::new(&mut config.iterations, 0..=20).text("Iterations")).changed();
-        changed |= ui.add(bevy_egui::egui::Slider::new(&mut config.initial_alive_probability, 0.0..=1.0).text("Initial Alive Probability")).changed();
-        changed |= ui.add(bevy_egui::egui::Slider::new(&mut config.grid_size, 50..=200).text("Grid Size")).changed();
+        ui.add(bevy_egui::egui::Checkbox::new(
+            &mut ca_config.auto_generate,
+            "Auto Generate",
+        ));
+        let iterations_slider = ui.add(
+            bevy_egui::egui::Slider::new(&mut ca_config.iterations, 0..=10).text("Iterations"),
+        );
+        let initial_alive_probability_slider = ui.add(
+            bevy_egui::egui::Slider::new(&mut ca_config.initial_alive_probability, 0.0..=1.0)
+                .text("Initial Alive Probability"),
+        );
 
-        if ui.button("Generate New Seed").clicked() {
-            config.seed = Some(rand::random());
-            changed = true;
+        let generate_new_seed_button = ui.button("Generate New Seed");
+        if generate_new_seed_button.clicked() {
+            ca_config.seed = Some(rand::random());
         }
 
-        if changed {
-            regenerate_events.send(RegenerateMapEvent);
+        let maybe_button = if ca_config.auto_generate {
+            None
+        } else {
+            Some(ui.button("Generate"))
+        };
+
+        let is_changed = iterations_slider.changed()
+            || initial_alive_probability_slider.changed()
+            || generate_new_seed_button.clicked();
+
+        if (maybe_button.is_some() && maybe_button.unwrap().clicked())
+            || (ca_config.auto_generate && is_changed)
+        {
+            rebuild_map_event_writer.send(log_event!(RebuildMapEvent));
         }
     });
 }
