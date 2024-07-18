@@ -14,7 +14,7 @@ pub fn spawn_pawns(
     farm_query: Query<&Transform, With<Farm>>,
     arc_navmesh: ResMut<ArcNavmesh>,
     mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
-    mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
+    // mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
 ) {
     let mut rng = rand::thread_rng();
     let radius = config().tile.size * i32::max(BASE_WIDTH, BASE_HEIGHT) as f32;
@@ -92,14 +92,14 @@ pub fn spawn_pawns(
         occupation_change_event_writer.send(log_event!(OccupationChangeEvent::new(grid_tile)));
 
         // auto-select first pawn
-        if i.is_zero() {
-            user_selection_command_writer.send(log_event!(UserSelectionCommand(Some(
-                UserSelectionData {
-                    entity: pawn_id,
-                    kind: UserSelectionKind::Pawn,
-                }
-            ))));
-        }
+        // if i.is_zero() {
+        //     user_selection_command_writer.send(log_event!(UserSelectionCommand(Some(
+        //         UserSelectionData {
+        //             entity: pawn_id,
+        //             kind: UserSelectionKind::Pawn,
+        //         }
+        //     ))));
+        // }
     }
 }
 
