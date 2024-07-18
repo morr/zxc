@@ -24,6 +24,7 @@ pub struct TileTextUIMarker {}
 pub fn render_tile_ui(
     tile_id: Entity,
     container_ui_commands: &mut EntityCommands,
+    tile: &Tile,
     grid_tile: IVec2,
     font_assets: &Res<FontAssets>,
     opacity: UiOpacity,
@@ -38,6 +39,10 @@ pub fn render_tile_ui(
                         parent.spawn(headline_text_bundle(format!("Tile {:?}", tile_id), font_assets));
                         parent.spawn(property_text_bundle::<TileTextUIMarker>(
                             format!("{:?}", grid_tile),
+                            font_assets,
+                        ));
+                        parent.spawn(property_text_bundle::<TileTextUIMarker>(
+                            format!("{:?}", tile.kind),
                             font_assets,
                         ));
                     });
