@@ -141,7 +141,7 @@ pub fn handle_debug_info_keys(
     }
 
     if keys.just_pressed(KeyCode::KeyR) {
-        rebuild_map_event_writer.send(RebuildMapEvent);
+        rebuild_map_event_writer.send(log_event!(RebuildMapEvent));
     }
 
     if keys.just_pressed(KeyCode::KeyM) {

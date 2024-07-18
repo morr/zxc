@@ -43,7 +43,7 @@ fn ui_system(
         if (maybe_button.is_some() && maybe_button.unwrap().clicked())
             || (**auto_generate && (iterations_slider.changed() || rng_gen_bool_slider.changed()))
         {
-            rebuild_map_event_writer.send(RebuildMapEvent);
+            rebuild_map_event_writer.send(log_event!(RebuildMapEvent));
         }
     });
 }
