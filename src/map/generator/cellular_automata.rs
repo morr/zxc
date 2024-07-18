@@ -10,6 +10,7 @@ impl Plugin for CellularAutomataPlugin {
         app.insert_resource(CellularAutomataConfig {
             auto_generate: true,
             iterations: 5,
+            smoothing_iterations: 2,
             initial_alive_probability: 0.55,
             seed: None,
         });
@@ -23,6 +24,7 @@ impl Plugin for CellularAutomataPlugin {
 pub struct CellularAutomataConfig {
     pub auto_generate: bool,
     pub iterations: usize,
+    pub smoothing_iterations: usize,
     pub initial_alive_probability: f64,
     pub seed: Option<u64>,
 }
@@ -49,7 +51,9 @@ pub fn generate(ca_config: &Res<CellularAutomataConfig>) -> Vec<Vec<Tile>> {
         grid = evolve_grid(&grid);
     }
 
-    smooth_grid(&mut grid);
+    for _ in 0..ca_config.smoothing_iterations {
+        grid = smooth_grid(&grid);
+    }
 
     grid.iter()
         .enumerate()
@@ -145,9 +149,9 @@ fn apply_rules(cell: CellType, live_neighbors: usize) -> CellType {
     }
 }
 
-fn smooth_grid(grid: &mut Vec<Vec<CellType>>) {
+fn smooth_grid(grid: &[Vec<CellType>]) -> Vec<Vec<CellType>> {
     let size = grid.len();
-    let mut new_grid = grid.clone();
+    let mut new_grid = grid.to_owned();
 
     for y in 0..size {
         for x in 0..size {
@@ -156,7 +160,7 @@ fn smooth_grid(grid: &mut Vec<Vec<CellType>>) {
         }
     }
 
-    *grid = new_grid;
+    new_grid
 }
 
 fn most_common_neighbor(neighbors: &[CellType]) -> CellType {
@@ -198,6 +202,10 @@ fn ui_system(
         let iterations_slider = ui.add(
             bevy_egui::egui::Slider::new(&mut ca_config.iterations, 0..=10).text("Iterations"),
         );
+        let smoothing_iterations_slider = ui.add(
+            bevy_egui::egui::Slider::new(&mut ca_config.smoothing_iterations, 0..=10)
+                .text("Smoothing Iterations"),
+        );
         let initial_alive_probability_slider = ui.add(
             bevy_egui::egui::Slider::new(&mut ca_config.initial_alive_probability, 0.0..=1.0)
                 .text("Initial Alive Probability"),
@@ -215,6 +223,7 @@ fn ui_system(
         };
 
         let is_changed = iterations_slider.changed()
+            || smoothing_iterations_slider.changed()
             || initial_alive_probability_slider.changed()
             || generate_new_seed_button.clicked();
 
