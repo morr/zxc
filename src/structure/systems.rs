@@ -156,7 +156,7 @@ pub fn spawn_bed(
 ) {
     let mut navmesh = arc_navmesh.write();
 
-    for x in 0..config().starting_scene.beds_num {
+    for x in 0..config().starting_scene.beds {
         let grid_tile = IVec2::new(-7 + x * BED_SIZE, 3);
 
         Bed::spawn(

@@ -12,7 +12,7 @@ RootConfig(
         pawns: 1,
         day_hour: 8,
         farms: 10,
-        beds_num: 1,
+        beds: 1,
         time_scale: 1.0,
         //time_scale: 15.0,
         //time_scale: 50.0,
