@@ -85,8 +85,7 @@ pub struct TileConfig {
 pub struct StartingSceneConfig {
     pub pawns: i32,
     pub day_hour: u32,
-    pub farm_width: i32,
-    pub farm_height: i32,
+    pub farms: i32,
     pub beds_num: i32,
     pub time_scale: f32,
     pub food: u32,

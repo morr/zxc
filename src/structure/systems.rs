@@ -53,8 +53,14 @@ pub fn spawn_farm(
     let grid_tile_start = IVec2::new(-13, 0);
     let mut navmesh = arc_navmesh.write();
 
-    for x in 0..config().starting_scene.farm_width {
-        for y in 0..config().starting_scene.farm_height {
+    let mut farms_spawned = 0;
+    let half_size = (config().starting_scene.farms as f32 / 2.0).ceil() as i32;
+
+    for x in 1..half_size {
+        for y in 1..half_size {
+            if farms_spawned == config().starting_scene.farms {
+                continue;
+            }
             let grid_tile = IVec2::new(
                 grid_tile_start.x + FARM_TILE_SIZE * x,
                 grid_tile_start.y + FARM_TILE_SIZE * y,
@@ -67,6 +73,7 @@ pub fn spawn_farm(
                 &mut navmesh,
                 &mut state_change_event_writer,
             );
+            farms_spawned += 1;
         }
     }
 }
