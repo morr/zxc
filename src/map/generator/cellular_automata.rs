@@ -11,7 +11,7 @@ impl Plugin for CellularAutomataPlugin {
             auto_generate: true,
             iterations: 5,
             smoothing_iterations: 2,
-            initial_alive_probability: 0.55,
+            initial_alive_probability: 55,
             seed: None,
         });
 
@@ -25,7 +25,7 @@ pub struct CellularAutomataConfig {
     pub auto_generate: bool,
     pub iterations: usize,
     pub smoothing_iterations: usize,
-    pub initial_alive_probability: f64,
+    pub initial_alive_probability: usize,
     pub seed: Option<u64>,
 }
 
@@ -77,7 +77,7 @@ fn initialize_grid(ca_config: &CellularAutomataConfig, rng: &mut impl Rng) -> Ve
         .map(|_| {
             (0..config().grid.size)
                 .map(|_| {
-                    if rng.gen_bool(ca_config.initial_alive_probability) {
+                    if rng.gen_bool(ca_config.initial_alive_probability as f64 / 100.0) {
                         CellType::Grass
                     } else {
                         CellType::DeepWater
@@ -207,7 +207,7 @@ fn ui_system(
                 .text("Smoothing Iterations"),
         );
         let initial_alive_probability_slider = ui.add(
-            bevy_egui::egui::Slider::new(&mut ca_config.initial_alive_probability, 0.0..=1.0)
+            bevy_egui::egui::Slider::new(&mut ca_config.initial_alive_probability, 0..=100)
                 .text("Initial Alive Probability"),
         );
 
