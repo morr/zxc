@@ -87,6 +87,7 @@ pub struct StartingSceneConfig {
     pub day_hour: u32,
     pub farms: i32,
     pub beds: i32,
+    pub storages: i32,
     pub time_scale: f32,
     pub food: u32,
 }

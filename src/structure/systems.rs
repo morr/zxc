@@ -175,12 +175,15 @@ pub fn spawn_storage(
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     let mut navmesh = arc_navmesh.write();
-    let grid_tile = IVec2::new(-15, 6);
 
-    Storage::spawn(
-        grid_tile,
-        &mut commands,
-        assets.storage.clone(),
-        &mut navmesh
-    );
+    for x in 0..config().starting_scene.storages {
+        let grid_tile = IVec2::new(-15 + x, 6);
+
+        Storage::spawn(
+            grid_tile,
+            &mut commands,
+            assets.storage.clone(),
+            &mut navmesh
+        );
+    }
 }
