@@ -45,7 +45,7 @@ pub fn generate(ca_config: &Res<CellularAutomataConfig>) -> Vec<Vec<Tile>> {
         None => ChaCha8Rng::from_entropy(),
     };
 
-    let mut grid = initialize_grid(&ca_config, &mut rng);
+    let mut grid = initialize_grid(ca_config, &mut rng);
 
     for _ in 0..ca_config.iterations {
         grid = evolve_grid(&grid);

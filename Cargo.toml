@@ -6,6 +6,7 @@ edition = "2021"
 [features]
 default = ["bevy_egui"]
 bevy_egui = ["dep:bevy_egui"]
+debug_ui = []
 
 [dependencies]
 rand = "0.8"
