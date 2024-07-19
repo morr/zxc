@@ -14,7 +14,6 @@ pub struct DebugUiHeadlineUIMarker {}
 #[derive(Component, Default)]
 pub struct DebugHelpBlockUIMarker {}
 
-
 pub fn render_debug_ui_container(mut commands: Commands) {
     commands.spawn((
         NodeBundle {
@@ -53,9 +52,9 @@ pub fn render_debug_ui_info(
 
                 container_parent.spawn((
                     TextBundle::from_section(
+                        // \"r\" - rebuild map
                         "\"space\" - pause
 \"=\"/\"-\" - change game speed
-\"r\" - rebuild map
 \"h\" - toggle help
 \"g\" - toggle grid
 \"n\" - toggle navmesh
@@ -106,7 +105,7 @@ pub fn handle_debug_info_keys(
     mut state_change_event_writer: EventWriter<StateChangeEvent<DebugNavmeshState>>,
     debug_movepath_state: Res<State<DebugMovepathState>>,
     mut next_debug_movepath_state: ResMut<NextState<DebugMovepathState>>,
-    mut rebuild_map_event_writer: EventWriter<RebuildMapEvent>,
+    // mut rebuild_map_event_writer: EventWriter<RebuildMapEvent>,
 ) {
     if keys.just_pressed(KeyCode::KeyH) {
         // commands.entity(query.single_mut()).iis
@@ -140,9 +139,9 @@ pub fn handle_debug_info_keys(
         state_change_event_writer.send(log_event!(StateChangeEvent(new_state)));
     }
 
-    if keys.just_pressed(KeyCode::KeyR) {
-        rebuild_map_event_writer.send(log_event!(RebuildMapEvent));
-    }
+    // if keys.just_pressed(KeyCode::KeyR) {
+    //     rebuild_map_event_writer.send(log_event!(RebuildMapEvent));
+    // }
 
     if keys.just_pressed(KeyCode::KeyM) {
         match debug_movepath_state.get() {
