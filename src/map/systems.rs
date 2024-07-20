@@ -85,7 +85,7 @@ pub fn rebuild_map(
     arc_navmesh: ResMut<ArcNavmesh>,
     tiles_query: Query<(Entity, &Tile)>,
 ) {
-    for _event in event_reader.read() {
+    for RebuildMapEvent { generator_kind } in event_reader.read() {
         let mut navmesh = arc_navmesh.write();
 
         for (entity, tile) in tiles_query.iter() {
@@ -93,7 +93,9 @@ pub fn rebuild_map(
             commands.entity(entity).despawn_recursive();
         }
 
-        let grid = generator::cellular_automata::generate(&ca_config);
+        let grid = match generator_kind {
+            GeneratorKind::CellularAutomata => generator::cellular_automata::generate(&ca_config),
+        };
 
         spawn_tiles(&mut commands, &assets, &mut navmesh, &grid);
     }

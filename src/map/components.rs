@@ -7,7 +7,7 @@ pub enum TileKind {
     Sand,
     Grass,
     Forest,
-    Mountain
+    Mountain,
 }
 
 #[derive(Component, Debug, Clone, Copy, Reflect)]
@@ -30,4 +30,12 @@ impl Tile {
 }
 
 #[derive(Event, Debug)]
-pub struct RebuildMapEvent;
+pub struct RebuildMapEvent {
+    pub generator_kind: GeneratorKind,
+}
+
+#[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq)]
+pub enum GeneratorKind {
+    CellularAutomata,
+    // MarkovJuniour
+}
