@@ -39,6 +39,12 @@ pub struct TextureAssets {
     pub forest: Handle<Image>,
     #[asset(path = "sprites/tile/mountain.png")]
     pub mountain: Handle<Image>,
+    #[asset(path = "sprites/tile/rocky_dirt.png")]
+    pub rocky_dirt: Handle<Image>,
+    #[asset(path = "sprites/tile/dirt.png")]
+    pub dirt: Handle<Image>,
+    #[asset(path = "sprites/tile/fertile_dirt.png")]
+    pub fertile_dirt: Handle<Image>,
 
     // https://fin-nio.itch.io/pixel-houses
     #[asset(path = "sprites/castle_complete.png")]
@@ -170,3 +176,4 @@ impl FromWorld for MeshesCollection {
         }
     }
 }
+

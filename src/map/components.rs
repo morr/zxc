@@ -8,6 +8,9 @@ pub enum TileKind {
     Grass,
     Forest,
     Mountain,
+    RockyDirt,
+    Dirt,
+    FertileDirt
 }
 
 #[derive(Component, Debug, Clone, Copy, Reflect)]
@@ -25,6 +28,9 @@ impl Tile {
             TileKind::Grass => assets.grass.clone(),
             TileKind::Forest => assets.forest.clone(),
             TileKind::Mountain => assets.mountain.clone(),
+            TileKind::RockyDirt => assets.mountain.clone(),
+            TileKind::Dirt => assets.mountain.clone(),
+            TileKind::FertileDirt => assets.mountain.clone(),
         }
     }
 }
@@ -37,5 +43,5 @@ pub struct RebuildMapEvent {
 #[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq)]
 pub enum GeneratorKind {
     CellularAutomata,
-    // MarkovJuniour
+    MarkovJunior
 }

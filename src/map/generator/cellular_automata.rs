@@ -39,19 +39,19 @@ enum CellType {
     Mountain,
 }
 
-pub fn generate(ca_config: &Res<CellularAutomataConfig>) -> Vec<Vec<Tile>> {
-    let mut rng = match ca_config.seed {
+pub fn generate(generator_config: &Res<CellularAutomataConfig>) -> Vec<Vec<Tile>> {
+    let mut rng = match generator_config.seed {
         Some(seed) => ChaCha8Rng::seed_from_u64(seed),
         None => ChaCha8Rng::from_entropy(),
     };
 
-    let mut grid = initialize_grid(ca_config, &mut rng);
+    let mut grid = initialize_grid(generator_config, &mut rng);
 
-    for _ in 0..ca_config.iterations {
+    for _ in 0..generator_config.iterations {
         grid = evolve_grid(&grid);
     }
 
-    for _ in 0..ca_config.smoothing_iterations {
+    for _ in 0..generator_config.smoothing_iterations {
         grid = smooth_grid(&grid);
     }
 
@@ -72,12 +72,12 @@ pub fn generate(ca_config: &Res<CellularAutomataConfig>) -> Vec<Vec<Tile>> {
         .collect()
 }
 
-fn initialize_grid(ca_config: &CellularAutomataConfig, rng: &mut impl Rng) -> Vec<Vec<CellType>> {
+fn initialize_grid(generator_config: &CellularAutomataConfig, rng: &mut impl Rng) -> Vec<Vec<CellType>> {
     (0..config().grid.size)
         .map(|_| {
             (0..config().grid.size)
                 .map(|_| {
-                    if rng.gen_bool(ca_config.initial_alive_probability as f64 / 100.0) {
+                    if rng.gen_bool(generator_config.initial_alive_probability as f64 / 100.0) {
                         CellType::Grass
                     } else {
                         CellType::DeepWater
@@ -189,34 +189,34 @@ fn cell_state_to_tile_kind(cell_type: CellType) -> TileKind {
 #[cfg(feature = "bevy_egui")]
 fn ui_system(
     mut egui_contexts: bevy_inspector_egui::bevy_egui::EguiContexts,
-    mut ca_config: ResMut<CellularAutomataConfig>,
+    mut generator_config: ResMut<CellularAutomataConfig>,
     mut rebuild_map_event_writer: EventWriter<RebuildMapEvent>,
 ) {
     let ctx = egui_contexts.ctx_mut();
 
     bevy_egui::egui::Window::new("Cellular Automata Settings").show(ctx, |ui| {
         ui.add(bevy_egui::egui::Checkbox::new(
-            &mut ca_config.auto_generate,
+            &mut generator_config.auto_generate,
             "Auto Generate",
         ));
         let iterations_slider = ui.add(
-            bevy_egui::egui::Slider::new(&mut ca_config.iterations, 0..=10).text("Iterations"),
+            bevy_egui::egui::Slider::new(&mut generator_config.iterations, 0..=10).text("Iterations"),
         );
         let smoothing_iterations_slider = ui.add(
-            bevy_egui::egui::Slider::new(&mut ca_config.smoothing_iterations, 0..=10)
+            bevy_egui::egui::Slider::new(&mut generator_config.smoothing_iterations, 0..=10)
                 .text("Smoothing Iterations"),
         );
         let initial_alive_probability_slider = ui.add(
-            bevy_egui::egui::Slider::new(&mut ca_config.initial_alive_probability, 0..=100)
+            bevy_egui::egui::Slider::new(&mut generator_config.initial_alive_probability, 0..=100)
                 .text("Initial Alive Probability"),
         );
 
         let generate_new_seed_button = ui.button("Generate New Seed");
         if generate_new_seed_button.clicked() {
-            ca_config.seed = Some(rand::random());
+            generator_config.seed = Some(rand::random());
         }
 
-        let maybe_button = if ca_config.auto_generate {
+        let maybe_button = if generator_config.auto_generate {
             None
         } else {
             Some(ui.button("Generate"))
@@ -228,7 +228,7 @@ fn ui_system(
             || generate_new_seed_button.clicked();
 
         if (maybe_button.is_some() && maybe_button.unwrap().clicked())
-            || (ca_config.auto_generate && is_changed)
+            || (generator_config.auto_generate && is_changed)
         {
             rebuild_map_event_writer.send(log_event!(RebuildMapEvent {
                 generator_kind: GeneratorKind::CellularAutomata
