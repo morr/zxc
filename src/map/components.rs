@@ -28,9 +28,9 @@ impl Tile {
             TileKind::Grass => assets.grass.clone(),
             TileKind::Forest => assets.forest.clone(),
             TileKind::Mountain => assets.mountain.clone(),
-            TileKind::RockyDirt => assets.mountain.clone(),
-            TileKind::Dirt => assets.mountain.clone(),
-            TileKind::FertileDirt => assets.mountain.clone(),
+            TileKind::RockyDirt => assets.rocky_dirt.clone(),
+            TileKind::Dirt => assets.dirt.clone(),
+            TileKind::FertileDirt => assets.fertile_dirt.clone(),
         }
     }
 }
