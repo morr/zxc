@@ -9,18 +9,18 @@ RootConfig(
         size: 32.0,
     ),
     starting_scene: StartingSceneConfig(
-        pawns: 0,
+        pawns: 4,
         day_hour: 8,
-        farms: 0,
-        beds: 0,
-        storages: 0,
+        farms: 8,
+        beds: 2,
+        storages: 1,
         time_scale: 1.0,
         //time_scale: 15.0,
         //time_scale: 50.0,
         //time_scale: 300.0,
         //time_scale: 500.0
         //time_scale: 30000.0
-        food: 0
+        food: 30
     ),
     time: TimeConfig(
         day_duration: 60.0,
