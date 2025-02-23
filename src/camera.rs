@@ -61,6 +61,14 @@ fn spawn_camera(mut commands: Commands) {
         .insert(PanCam {
             enabled: true,
             grab_buttons: vec![MouseButton::Left, MouseButton::Middle],
+            move_keys: bevy_pancam::DirectionKeys {
+                // the keyboard buttons used to move the camera
+                up: vec![KeyCode::KeyW], // initalize the struct like this or use the provided methods for
+                down: vec![KeyCode::KeyS], // common key combinations
+                left: vec![KeyCode::KeyA],
+                right: vec![KeyCode::KeyD],
+            },
+            speed: 600., // the speed for the keyboard movement
             max_scale: 20.0,
             max_x: f32::INFINITY,
             max_y: f32::INFINITY,
