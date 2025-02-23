@@ -37,7 +37,7 @@ enum CellType {
 pub fn generate(generator_config: &Res<MarkovJuniorConfig>) -> Vec<Vec<Tile>> {
     let mut rng = match generator_config.seed {
         Some(seed) => ChaCha8Rng::seed_from_u64(seed),
-        None => ChaCha8Rng::from_entropy(),
+        None => ChaCha8Rng::from_os_rng(),
     };
 
     let mut grid = initialize_grid(&mut rng);
@@ -71,7 +71,7 @@ fn initialize_grid(rng: &mut impl Rng) -> Vec<Vec<CellType>> {
     let landmass_size = config().grid.size / 3;
     for y in (center - landmass_size)..(center + landmass_size) {
         for x in (center - landmass_size)..(center + landmass_size) {
-            if rng.gen_bool(0.7) {
+            if rng.random_bool(0.7) {
                 grid[y as usize][x as usize] = CellType::Dirt;
             }
         }
@@ -117,21 +117,21 @@ fn apply_rule(cell: CellType, neighbors: &[CellType], rng: &mut impl Rng) -> Cel
 
     match cell {
         CellType::DeepWater => {
-            if land_count >= 5 && rng.gen_bool(0.3) {
+            if land_count >= 5 && rng.random_bool(0.3) {
                 CellType::ShallowWater
             } else {
                 cell
             }
         }
         CellType::ShallowWater => {
-            if land_count >= 6 && rng.gen_bool(0.4) {
+            if land_count >= 6 && rng.random_bool(0.4) {
                 CellType::Sand
             } else {
                 cell
             }
         }
         CellType::Sand => {
-            if land_count >= 7 && rng.gen_bool(0.5) {
+            if land_count >= 7 && rng.random_bool(0.5) {
                 if rocky_count >= 2 {
                     CellType::RockyDirt
                 } else {
@@ -142,25 +142,25 @@ fn apply_rule(cell: CellType, neighbors: &[CellType], rng: &mut impl Rng) -> Cel
             }
         }
         CellType::RockyDirt => {
-            if fertile_count >= 3 && rng.gen_bool(0.2) {
+            if fertile_count >= 3 && rng.random_bool(0.2) {
                 CellType::Dirt
             } else {
                 cell
             }
         }
         CellType::Dirt => {
-            if fertile_count >= 2 && rng.gen_bool(0.3) {
+            if fertile_count >= 2 && rng.random_bool(0.3) {
                 CellType::FertileDirt
-            } else if rocky_count >= 4 && rng.gen_bool(0.2) {
+            } else if rocky_count >= 4 && rng.random_bool(0.2) {
                 CellType::RockyDirt
-            } else if land_count <= 3 && rng.gen_bool(0.2) {
+            } else if land_count <= 3 && rng.random_bool(0.2) {
                 CellType::Sand
             } else {
                 cell
             }
         }
         CellType::FertileDirt => {
-            if land_count <= 4 && rng.gen_bool(0.2) {
+            if land_count <= 4 && rng.random_bool(0.2) {
                 CellType::Dirt
             } else {
                 cell
@@ -269,7 +269,7 @@ fn ui_system(
 //     }
 //
 //     fn generate(&mut self, iterations: usize) {
-//         let mut rng = rand::thread_rng();
+//         let mut rng = rand::rng();
 //
 //         for _ in 0..iterations {
 //             let valid_patterns = self.find_valid_patterns();

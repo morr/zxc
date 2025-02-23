@@ -141,7 +141,7 @@ fn ai_idle_pawns(
             if movable.state != MovableState::Idle {
                 continue;
             }
-            let mut rng = rand::thread_rng();
+            let mut rng = rand::rng();
 
             let world_pos = transform.translation.truncate();
             let end_tile = find_empty_grid_tile(world_pos, &arc_navmesh.read(), &mut rng, 0);

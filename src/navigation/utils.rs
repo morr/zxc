@@ -20,7 +20,7 @@ pub fn find_empty_grid_tile(
     recursion_depth: usize,
 ) -> IVec2 {
     let move_vector: Vec2 = UnitCircle.sample(rng).into();
-    let tiles_to_move = rng.gen_range(2.0..(5.0 + recursion_depth as f32)) * config().tile.size;
+    let tiles_to_move = rng.random_range(2.0..(5.0 + recursion_depth as f32)) * config().tile.size;
     let end_tile = (start_world_pos + move_vector * tiles_to_move).world_pos_to_grid();
 
     if recursion_depth >= MAX_ATTEMPTS_TO_FIND_IDLE_WALK_PATH {

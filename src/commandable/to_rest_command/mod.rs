@@ -74,7 +74,7 @@ fn execute_command(
                             find_empty_grid_tile(
                                 pawn_transform.translation.truncate(),
                                 &arc_navmesh.read(),
-                                &mut rand::thread_rng(),
+                                &mut rand::rng(),
                                 0,
                             ),
                             false,

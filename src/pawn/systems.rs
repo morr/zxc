@@ -16,7 +16,7 @@ pub fn spawn_pawns(
     mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
     // mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
 ) {
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     let radius = config().tile.size * i32::max(BASE_WIDTH, BASE_HEIGHT) as f32;
 
     // let warehouse_transform = warehouse_query.single();
@@ -24,7 +24,7 @@ pub fn spawn_pawns(
 
     let mut navmesh = arc_navmesh.write();
     for i in 0..config().starting_scene.pawns {
-        let random_angle: f32 = rng.gen_range(0.0..360.0);
+        let random_angle: f32 = rng.random_range(0.0..360.0);
 
         let position = if i >= 4 || maybe_farm_transform.is_none() {
             Vec3::new(

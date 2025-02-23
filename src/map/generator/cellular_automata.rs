@@ -42,7 +42,7 @@ enum CellType {
 pub fn generate(generator_config: &Res<CellularAutomataConfig>) -> Vec<Vec<Tile>> {
     let mut rng = match generator_config.seed {
         Some(seed) => ChaCha8Rng::seed_from_u64(seed),
-        None => ChaCha8Rng::from_entropy(),
+        None => ChaCha8Rng::from_os_rng(),
     };
 
     let mut grid = initialize_grid(generator_config, &mut rng);
@@ -77,7 +77,7 @@ fn initialize_grid(generator_config: &CellularAutomataConfig, rng: &mut impl Rng
         .map(|_| {
             (0..config().grid.size)
                 .map(|_| {
-                    if rng.gen_bool(generator_config.initial_alive_probability as f64 / 100.0) {
+                    if rng.random_bool(generator_config.initial_alive_probability as f64 / 100.0) {
                         CellType::Grass
                     } else {
                         CellType::DeepWater
