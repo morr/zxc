@@ -199,7 +199,7 @@ pub fn progress_pawn_dying(
     mut event_writer: EventWriter<PawnDeathEvent>,
 ) {
     for (entity, mut pawn) in query.iter_mut() {
-        pawn.decrease_lifetime(time_scale.scale_to_seconds(time.delta_seconds()));
+        pawn.decrease_lifetime(time_scale.scale_to_seconds(time.delta_secs()));
 
         if pawn.lifetime.is_zero() {
             event_writer.send(log_event!(PawnDeathEvent{

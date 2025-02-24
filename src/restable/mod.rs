@@ -96,7 +96,7 @@ fn progress_fatigue(
     // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
     mut event_writer: EventWriter<RestCompleteEvent>,
 ) {
-    let time_amount = time_scale.scale_to_seconds(time.delta_seconds());
+    let time_amount = time_scale.scale_to_seconds(time.delta_secs());
 
     for (commandable_entity, mut restable, mut commandable) in query.iter_mut() {
         let wasnt_fresh = !restable.is_fresh();

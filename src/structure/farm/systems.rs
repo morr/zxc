@@ -62,7 +62,7 @@ pub fn progress_planted_and_tending_rest_timers(
             _ => panic!("Farm must be in a timer-assigned state"),
         };
 
-        let delta = time_scale.scale_to_duration(time.delta_seconds());
+        let delta = time_scale.scale_to_duration(time.delta_secs());
         planted_state.growth_timer.tick(delta);
 
         if planted_state.growth_timer.finished() {
@@ -104,7 +104,7 @@ pub fn progress_harvested_timer(
             _ => panic!("Farm must be in a timer-assigned state"),
         };
 
-        let delta = time_scale.scale_to_duration(time.delta_seconds());
+        let delta = time_scale.scale_to_duration(time.delta_secs());
         state.rest_timer.tick(delta);
 
         if state.rest_timer.finished() {

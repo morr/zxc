@@ -7,7 +7,7 @@ pub fn track_time(
     mut event_writer: EventWriter<NewDayEvent>,
 ) {
     let prev_day = elapsed_time.total_days();
-    elapsed_time.0 += time_scale.scale_to_seconds(time.delta_seconds());
+    elapsed_time.0 += time_scale.scale_to_seconds(time.delta_secs());
     let new_day = elapsed_time.total_days();
 
     if new_day != prev_day {

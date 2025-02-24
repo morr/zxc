@@ -75,7 +75,7 @@ fn progress_hunger(
     mut pawn_death_event_writer: EventWriter<PawnDeathEvent>,
     food_stock: Res<FoodStock>,
 ) {
-    let time_amount = time_scale.scale_to_seconds(time.delta_seconds());
+    let time_amount = time_scale.scale_to_seconds(time.delta_secs());
 
     for (commandable_entity, mut feedable, mut commandable) in query.iter_mut() {
         let wasnt_overflowed = !feedable.is_overflowed();

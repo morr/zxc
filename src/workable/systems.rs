@@ -11,7 +11,7 @@ pub fn progress_work(
     time_scale: Res<TimeScale>,
     mut event_writer: EventWriter<WorkCompleteEvent>,
 ) {
-    let elapsed_time = time_scale.scale_to_seconds(time.delta_seconds());
+    let elapsed_time = time_scale.scale_to_seconds(time.delta_secs());
 
     for (workable_entity, mut workable) in workable_query.iter_mut() {
         ensure_state!(WorkableState::BeingWorked(_), workable.state);
@@ -90,7 +90,7 @@ pub fn complete_work(
 //     time_scale: Res<TimeScale>,
 //     mut event_writer: EventWriter<WorkCompleteEvent>,
 // ) {
-//     let elapsed_time = time_scale.scale_to_seconds(time.delta_seconds());
+//     let elapsed_time = time_scale.scale_to_seconds(time.delta_secs());
 //
 //     for (pawn_entity, pawn) in pawns_query.iter() {
 //         let task = pawn.get_task();
