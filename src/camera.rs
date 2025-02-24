@@ -22,31 +22,24 @@ fn spawn_camera(mut commands: Commands) {
     // , camera_targets: Res<CameraTargets>) {
     commands
         .spawn((
-            Camera2dBundle {
-                transform: Transform {
-                    translation: Vec3::new(
-                        0.0, 0.0,
-                        // tile_pos_to_world((GRID_COLS as f32 / 2.0) as u32),
-                        // tile_pos_to_world((GRID_ROWS as f32 / 2.0) as u32),
-                        0.0,
-                    ),
-                    ..default()
-                },
-                projection: OrthographicProjection {
-                    // don't forget to set `near` and `far`
-                    near: -1000.0,
-                    far: 1000.0,
-                    // initial zoom
-                    scale: 1.25,
-                    // ... any other settings you want to change ...
-                    ..default()
-                },
-                // camera: Camera {
-                //     hdr: true,
-                //     target: RenderTarget::Image(camera_targets.floor_target.clone()),
-                //     ..default()
-                // },
+            Camera2d,
+            Transform {
+                translation: Vec3::new(
+                    0.0, 0.0,
+                    // tile_pos_to_world((GRID_COLS as f32 / 2.0) as u32),
+                    // tile_pos_to_world((GRID_ROWS as f32 / 2.0) as u32),
+                    0.0,
+                ),
                 ..default()
+            },
+            OrthographicProjection {
+                // don't forget to set `near` and `far`
+                near: -1000.0,
+                far: 1000.0,
+                // initial zoom
+                scale: 1.25,
+                // ... any other settings you want to change ...
+                ..OrthographicProjection::default_2d()
             },
             Name::new("main_camera"),
             FloorCamera,
