@@ -104,7 +104,7 @@ fn spawn_item<T: Component>(
                 parent.spawn((
                     TextBundle::from_section(
                         format_item_text(amount),
-                        TextStyle {
+                        TextFont {
                             font,
                             font_size: 20.,
                             color: Color::WHITE,

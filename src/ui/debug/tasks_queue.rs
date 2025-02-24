@@ -32,7 +32,7 @@ pub fn render_tasks_ui(
                 container_parent.spawn((
                     TextBundle::from_section(
                         format_details(&tasks_queue),
-                        TextStyle {
+                        TextFont {
                             font: font_assets.fira.clone(),
                             font_size: 12.,
                             color: Color::WHITE,

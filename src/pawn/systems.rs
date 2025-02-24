@@ -69,19 +69,14 @@ pub fn spawn_pawns(
             // })
             .with_children(|parent| {
                 parent.spawn((
-                    Text2dBundle {
-                        text: Text::from_section(
-                            "",
-                            TextStyle {
-                                font: font_assets.fira.clone(),
-                                font_size: 13.0,
-                                color: Color::WHITE,
-                            },
-                        ),
-                        // visibility: Visibility::Hidden,
-                        transform: Transform::from_xyz(0.0, 21.0, PAWN_Z_INDEX),
+                    Text::new(""),
+                    TextFont {
+                        font: font_assets.fira.clone(),
+                        font_size: 13.0,
                         ..default()
                     },
+                    TextColor(Color::WHITE),
+                    Transform::from_xyz(0.0, 21.0, PAWN_Z_INDEX),
                     PawnStateText,
                 ));
             })
@@ -134,18 +129,19 @@ pub fn update_pawn_state_text(
     mut event_reader: EventReader<EntityStateChangeEvent<PawnState>>,
     children_query: Query<&Children>,
     // mut state_text_query: Query<(&mut Text, &mut Visibility), With<PawnStateText>>,
-    mut state_text_query: Query<&mut Text, With<PawnStateText>>,
+    // mut state_text_query: Query<&mut Text, With<PawnStateText>>,
+    mut text_writer: TextUiWriter,
     commandable_query: Query<&Commandable>,
 ) {
     for EntityStateChangeEvent(pawn_entity, state) in event_reader.read() {
         // println!("{:?}", event);
         for text_entity in children_query.iter_descendants(*pawn_entity) {
             // let (mut text, mut visibility) = state_text_query.get_mut(text_entity).unwrap();
-            let mut text = state_text_query.get_mut(text_entity).unwrap();
+            // let mut text = state_text_query.get_mut(text_entity).unwrap();
 
             // *visibility = Visibility::Visible;
 
-            text.sections[0].value = match state {
+            *text_writer.text(text_entity, 0) = match state {
                 PawnState::Idle => "Idle".into(),
                 PawnState::Dead => "DEAD".into(),
                 PawnState::ExecutingCommand => {
@@ -202,7 +198,7 @@ pub fn progress_pawn_dying(
         pawn.decrease_lifetime(time_scale.scale_to_seconds(time.delta_secs()));
 
         if pawn.lifetime.is_zero() {
-            event_writer.send(log_event!(PawnDeathEvent{
+            event_writer.send(log_event!(PawnDeathEvent {
                 entity,
                 reason: PawnDeathReason::OldAge
             }));

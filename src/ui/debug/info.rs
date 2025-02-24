@@ -59,7 +59,7 @@ pub fn render_debug_ui_info(
 \"g\" - toggle grid
 \"n\" - toggle navmesh
 \"m\" - toggle movepath",
-                        TextStyle {
+                        TextFont {
                             font: font_assets.fira.clone(),
                             font_size: 12.,
                             color: Color::WHITE,

@@ -55,7 +55,7 @@ fn render_simulation_speed_ui(
             parent.spawn((
                 TextBundle::from_section(
                     format_simulation_speed_text(&time_state, &time_scale),
-                    TextStyle {
+                    TextFont {
                         font: font_assets.fira.clone(),
                         font_size: 24.,
                         color: Color::WHITE,
@@ -66,7 +66,7 @@ fn render_simulation_speed_ui(
             parent.spawn((
                 TextBundle::from_section(
                     format_date_time_text(&elapsed_time),
-                    TextStyle {
+                    TextFont {
                         font: font_assets.fira.clone(),
                         font_size: 18.,
                         color: Color::WHITE,

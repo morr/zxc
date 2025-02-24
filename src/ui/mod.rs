@@ -105,7 +105,7 @@ fn render_entity_component_node_bunlde<T: Default>() -> (NodeBundle, T) {
 fn headline_text_bundle(text: String, font_assets: &Res<FontAssets>) -> TextBundle {
     TextBundle::from_section(
         text,
-        TextStyle {
+        TextFont {
             font: font_assets.fira.clone(),
             font_size: 18.,
             color: Color::WHITE,
@@ -120,7 +120,7 @@ fn property_text_bundle<T: Default>(
     (
         TextBundle::from_section(
             text,
-            TextStyle {
+            TextFont {
                 font: font_assets.fira.clone(),
                 font_size: 16.,
                 color: Color::WHITE,
