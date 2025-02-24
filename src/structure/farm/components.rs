@@ -155,18 +155,17 @@ impl Farm {
             FarmState::Harvested(_) => assets.harvested.clone(),
         };
 
-        entity_commands.insert(SpriteBundle {
-            texture,
-            sprite: Sprite {
+        entity_commands.insert((
+            Sprite {
+                image: texture,
                 custom_size: Some(size.grid_tile_edge_to_world()),
                 ..default()
             },
-            transform: Transform::from_translation(
+            Transform::from_translation(
                 (grid_tile.grid_tile_edge_to_world() + size.grid_tile_edge_to_world() / 2.0)
                     .extend(STRUCTURE_Z_INDEX),
             ),
-            ..default()
-        });
+        ));
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -245,9 +244,15 @@ impl Farm {
 
 fn workable_props(farm_state: &FarmState) -> (Option<WorkKind>, f32) {
     match farm_state {
-        FarmState::NotPlanted => (Some(WorkKind::FarmPlanting), config().farming.planting_hours),
+        FarmState::NotPlanted => (
+            Some(WorkKind::FarmPlanting),
+            config().farming.planting_hours,
+        ),
         FarmState::Planted(_) => (Some(WorkKind::FarmTending), config().farming.tending_hours),
-        FarmState::Grown => (Some(WorkKind::FarmHarvest), config().farming.harvesting_hours),
+        FarmState::Grown => (
+            Some(WorkKind::FarmHarvest),
+            config().farming.harvesting_hours,
+        ),
         FarmState::Harvested(_) => (None, 0.0),
     }
 }

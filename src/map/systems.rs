@@ -20,19 +20,18 @@ fn spawn_tiles(
     for row in grid.iter() {
         for tile in row.iter() {
             let id = commands
-                .spawn(SpriteBundle {
-                    texture: tile.texture(assets),
-                    sprite: Sprite {
+                .spawn((
+                    Sprite {
+                        image: tile.texture(assets),
                         custom_size: Some(Vec2::new(config().tile.size, config().tile.size)),
                         ..default()
                     },
-                    transform: Transform::from_xyz(
+                    Transform::from_xyz(
                         grid_tile_edge_to_world(tile.grid_tile.x) + config().tile.size / 2.,
                         grid_tile_edge_to_world(tile.grid_tile.y) + config().tile.size / 2.,
                         TILE_Z_INDEX,
                     ),
-                    ..default()
-                })
+                ))
                 .insert(*tile)
                 .id();
 

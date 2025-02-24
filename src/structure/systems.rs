@@ -20,18 +20,15 @@ pub fn spawn_base(
     commands.spawn((
         Warehouse::default(),
         Name::new("Warehouse"),
-        SpriteBundle {
-            texture: assets.castle.clone(),
-            sprite: Sprite {
-                custom_size: Some(size.grid_tile_edge_to_world()),
-                ..default()
-            },
-            transform: Transform::from_translation(
-                (grid_tile.grid_tile_edge_to_world() + size.grid_tile_edge_to_world() / 2.0)
-                    .extend(STRUCTURE_Z_INDEX),
-            ),
+        Sprite {
+            image: assets.castle.clone(),
+            custom_size: Some(size.grid_tile_edge_to_world()),
             ..default()
         },
+        Transform::from_translation(
+            (grid_tile.grid_tile_edge_to_world() + size.grid_tile_edge_to_world() / 2.0)
+                .extend(STRUCTURE_Z_INDEX),
+        ),
     ));
     // .insert(ShowAabbGizmo {
     //     color: Some(Color::srgba(1.0, 1.0, 1.0, 0.25)),
@@ -89,18 +86,15 @@ pub fn spawn_house(
     commands.spawn((
         House::default(),
         Name::new("House"),
-        SpriteBundle {
-            texture: assets.house_3.clone(),
-            sprite: Sprite {
-                custom_size: Some(size.grid_tile_edge_to_world()),
-                ..default()
-            },
-            transform: Transform::from_translation(
-                (grid_tile.grid_tile_edge_to_world() + size.grid_tile_edge_to_world() / 2.0)
-                    .extend(STRUCTURE_Z_INDEX),
-            ),
+        Sprite {
+            image: assets.house_3.clone(),
+            custom_size: Some(size.grid_tile_edge_to_world()),
             ..default()
         },
+        Transform::from_translation(
+            (grid_tile.grid_tile_edge_to_world() + size.grid_tile_edge_to_world() / 2.0)
+                .extend(STRUCTURE_Z_INDEX),
+        ),
     ));
     // .insert(ShowAabbGizmo {
     //     color: Some(Color::srgba(1.0, 1.0, 1.0, 0.25)),
@@ -124,18 +118,15 @@ pub fn spawn_well(
     commands.spawn((
         Well::default(),
         Name::new("well"),
-        SpriteBundle {
-            texture: assets.well.clone(),
-            sprite: Sprite {
-                custom_size: Some(size.grid_tile_edge_to_world()),
-                ..default()
-            },
-            transform: Transform::from_translation(
-                (grid_tile.grid_tile_edge_to_world() + size.grid_tile_edge_to_world() / 2.0)
-                    .extend(STRUCTURE_Z_INDEX),
-            ),
+        Sprite {
+            image: assets.well.clone(),
+            custom_size: Some(size.grid_tile_edge_to_world()),
             ..default()
         },
+        Transform::from_translation(
+            (grid_tile.grid_tile_edge_to_world() + size.grid_tile_edge_to_world() / 2.0)
+                .extend(STRUCTURE_Z_INDEX),
+        ),
     ));
     // .insert(ShowAabbGizmo {
     //     color: Some(Color::srgba(1.0, 1.0, 1.0, 0.25)),
@@ -183,7 +174,7 @@ pub fn spawn_storage(
             grid_tile,
             &mut commands,
             assets.storage.clone(),
-            &mut navmesh
+            &mut navmesh,
         );
     }
 }

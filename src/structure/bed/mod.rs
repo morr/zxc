@@ -40,19 +40,15 @@ impl Bed {
             .spawn((
                 Bed::default(),
                 Name::new("Bed"),
-                SpriteBundle {
-                    texture,
-                    sprite: Sprite {
-                        custom_size: Some(size.grid_tile_edge_to_world()),
-                        ..default()
-                    },
-                    transform: Transform::from_translation(
-                        (grid_tile.grid_tile_edge_to_world()
-                            + size.grid_tile_edge_to_world() / 2.0)
-                            .extend(STRUCTURE_Z_INDEX),
-                    ),
+                Sprite {
+                    image: texture,
+                    custom_size: Some(size.grid_tile_edge_to_world()),
                     ..default()
                 },
+                Transform::from_translation(
+                    (grid_tile.grid_tile_edge_to_world() + size.grid_tile_edge_to_world() / 2.0)
+                        .extend(STRUCTURE_Z_INDEX),
+                ),
             ))
             // .insert(ShowAabbGizmo {
             //     colo: Some(Color::srgba(1.0, 1.0, 1.0, 0.25)),
