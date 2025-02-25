@@ -22,17 +22,15 @@ fn setup(mut commands: Commands) {
 
     // Add an overlay sprite
     commands
-        .spawn(SpriteBundle {
-            sprite: Sprite {
+        .spawn((
+            Sprite {
                 color: Color::srgba(0.1, 0.1, 0.3, 0.0), // Initial color, mostly transparent
                 custom_size: Some(grid_size.grid_tile_edge_to_world()), // Large enough to cover the screen
                 //
                 ..default()
             },
-            transform: Transform::from_translation(Vec3::new(0., 0., NIGHT_Z_INDEX)),
-
-            ..default()
-        })
+            Transform::from_translation(Vec3::new(0., 0., NIGHT_Z_INDEX)),
+        ))
         .insert(NightOverlay);
 }
 
