@@ -1,5 +1,3 @@
-use bevy::sprite::MaterialMesh2dBundle;
-
 use super::*;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
@@ -46,20 +44,19 @@ fn handle_state_changes(
                     .navtiles
                     .for_each_tile_mut(|navtile, tile_pos| {
                         commands
-                            .spawn(MaterialMesh2dBundle {
-                                mesh: mesh_handle.clone().into(),
-                                material: if navtile.is_passable() {
+                            .spawn((
+                                Mesh2d(mesh_handle.clone()),
+                                MeshMaterial2D(if navtile.is_passable() {
                                     assets.navmesh_passable.clone()
                                 } else {
                                     assets.navmesh_impassable.clone()
-                                },
-                                transform: Transform::from_translation(
+                                }),
+                                Transform::from_translation(
                                     tile_pos
                                         .grid_tile_center_to_world()
                                         .extend(TILE_Z_INDEX + 1.0),
                                 ),
-                                ..default()
-                            })
+                            ))
                             .insert(DebugNavmeshTile);
                     });
             }

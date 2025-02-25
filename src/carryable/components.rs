@@ -1,7 +1,5 @@
 use super::*;
 
-use bevy::sprite::MaterialMesh2dBundle;
-
 #[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq)]
 pub enum CarryableKind {
     Food,
@@ -22,15 +20,14 @@ impl Carryable {
         grid_tile: IVec2,
         assets_collection: &Res<AssetsCollection>,
         meshes_collection: &Res<MeshesCollection>,
-    ) -> MaterialMesh2dBundle<ColorMaterial> {
-        MaterialMesh2dBundle {
-            mesh: meshes_collection.food.clone().into(),
-            material: assets_collection.food.clone(),
-            transform: Transform::from_translation(
+    ) -> (Mesh2d, MeshMaterial2d<ColorMaterial>, Transform) {
+        (
+            Mesh2d(meshes_collection.food.clone()),
+            MeshMaterial2d(assets_collection.food.clone()),
+            Transform::from_translation(
                 grid_tile.grid_tile_center_to_world().extend(ITEM_Z_INDEX),
-            ),
-            ..default()
-        }
+            )
+        )
     }
 
     pub fn to_inventory(&mut self, food_stock: &mut ResMut<FoodStock>) {

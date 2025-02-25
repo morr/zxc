@@ -70,7 +70,9 @@ impl Pawn {
 
         commands
             .entity(carryable_entity)
-            .remove::<bevy::sprite::MaterialMesh2dBundle<ColorMaterial>>();
+            .remove::<Mesh2d>()
+            .remove::<MeshMaterial2d<ColorMaterial>>()
+            .remove::<Transform>();
 
         navmesh.remove_occupant::<Carryable>(&carryable_entity, grid_tile.x, grid_tile.y);
     }

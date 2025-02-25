@@ -1,4 +1,3 @@
-use bevy::sprite::MaterialMesh2dBundle;
 use rand::Rng;
 use rand_distr::num_traits::Zero;
 
@@ -54,12 +53,9 @@ pub fn spawn_pawns(
                 Commandable::default(),
                 Name::new("Pawn"),
                 // state: PawnState::Idle,
-                MaterialMesh2dBundle {
-                    mesh: meshes_collection.pawn.clone().into(),
-                    material: assets_collection.pawn_idle.clone(),
-                    transform: Transform::from_translation(position),
-                    ..default()
-                },
+                Mesh2d(meshes_collection.pawn.clone()),
+                MeshMaterial2d(assets_collection.pawn_idle.clone()),
+                Transform::from_translation(position),
                 Movable::new(config().pawn.speed * config().tile.size),
                 Restable::default(),
                 Feedable::default(),
