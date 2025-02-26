@@ -17,16 +17,13 @@ impl Plugin for UiUserSelectedPlugin {
 
 fn render_selected_ui(mut commands: Commands) {
     commands.spawn((
-        NodeBundle {
-            style: Style {
-                position_type: PositionType::Absolute,
-                display: Display::Flex,
-                flex_direction: FlexDirection::Row,
-                column_gap: Val::Px(25.),
-                top: UI_SCREEN_EDGE_PX_OFFSET,
-                left: Val::Px(100.),
-                ..default()
-            },
+        Node {
+            position_type: PositionType::Absolute,
+            display: Display::Flex,
+            flex_direction: FlexDirection::Row,
+            column_gap: Val::Px(25.),
+            top: UI_SCREEN_EDGE_PX_OFFSET,
+            left: Val::Px(100.),
             ..default()
         },
         UserSelectedRootUIMarker::default(),
@@ -52,7 +49,9 @@ fn update_ui_on_user_select_event(
         if let Some(UserSelectionData { entity: id, kind }) = &user_selection.0 {
             match kind {
                 UserSelectionKind::Pawn => {
-                    if let Ok((pawn, movable, restable, feedable, commandable)) = pawn_query.get(*id) {
+                    if let Ok((pawn, movable, restable, feedable, commandable)) =
+                        pawn_query.get(*id)
+                    {
                         render_pawn_ui(
                             *id,
                             &mut user_selected_root_ui_commands,

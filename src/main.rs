@@ -47,7 +47,7 @@ fn main() {
             user_selection::UserSelectPlugin,
             structure::StructurePlugin,
             #[cfg(feature = "debug_ui")]
-            // ui::UiPlugin,
+            ui::UiPlugin,
             input::InputPlugin,
             tasks_queue::TasksQueuePlugin,
         ))

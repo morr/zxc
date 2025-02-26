@@ -29,23 +29,20 @@ impl Plugin for UiDebugPlugin {
     }
 }
 
-pub fn render_debug_ui_window_node_bundle<T: Default>() -> (NodeBundle, T) {
+pub fn render_debug_ui_window_node_bundle<T: Default>() -> (Node, BackgroundColor, T) {
     (
-        NodeBundle {
-            style: Style {
-                display: Display::Flex,
-                flex_direction: FlexDirection::Column,
-                padding: UiRect {
-                    top: Val::Px(10.0),
-                    right: Val::Px(10.0),
-                    bottom: Val::Px(10.0),
-                    left: Val::Px(10.0),
-                },
-                ..default()
+        Node {
+            display: Display::Flex,
+            flex_direction: FlexDirection::Column,
+            padding: UiRect {
+                top: Val::Px(10.0),
+                right: Val::Px(10.0),
+                bottom: Val::Px(10.0),
+                left: Val::Px(10.0),
             },
-            background_color: bg_color(UiOpacity::Light),
             ..default()
         },
+        BackgroundColor(ui_color(UiOpacity::Light)),
         T::default(),
     )
 }

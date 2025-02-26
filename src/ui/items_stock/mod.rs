@@ -28,8 +28,8 @@ fn render_items_stock_ui(
     font_assets: Res<FontAssets>,
     food: Res<FoodStock>,
 ) {
-    let mut root = commands.spawn(NodeBundle {
-        style: Style {
+    let mut root = commands.spawn(
+        Node {
             position_type: PositionType::Absolute,
             display: Display::Flex,
             flex_direction: FlexDirection::Column,
@@ -38,8 +38,7 @@ fn render_items_stock_ui(
             left: UI_SCREEN_EDGE_PX_OFFSET,
             ..default()
         },
-        ..default()
-    });
+    );
 
     spawn_item::<PawnStockTextUIMarker>(
         &mut root,
@@ -67,8 +66,8 @@ fn spawn_item<T: Component>(
 ) {
     root.with_children(|parent| {
         parent
-            .spawn(NodeBundle {
-                style: Style {
+            .spawn((
+                Node {
                     display: Display::Flex,
                     flex_direction: FlexDirection::Row,
                     align_items: AlignItems::Center,
@@ -80,9 +79,9 @@ fn spawn_item<T: Component>(
                     },
                     ..default()
                 },
-                background_color: bg_color(UiOpacity::Heavy),
+                BackgroundColor(ui_color(UiOpacity::Heavy)),
                 ..default()
-            })
+            ))
             .with_children(|parent| {
                 parent.spawn(ImageBundle {
                     style: Style {

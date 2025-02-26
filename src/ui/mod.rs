@@ -57,45 +57,39 @@ pub fn ui_color(opacity: UiOpacity) -> Color {
     color
 }
 
-pub fn bg_color(opacity: UiOpacity) -> BackgroundColor {
-    ui_color(opacity).into()
-}
+// pub fn bg_color(opacity: UiOpacity) -> BackgroundColor {
+//     ui_color(opacity).into()
+// }
 
 fn render_entity_node_bunlde<T: TargetEntityUiMarker>(
     target_id: Entity,
     opacity: UiOpacity,
-) -> (NodeBundle, T) {
+) -> (Node, BackgroundColor, T) {
     (
-        NodeBundle {
-            style: Style {
-                display: Display::Flex,
-                flex_direction: FlexDirection::Column,
-                row_gap: Val::Px(10.),
-                padding: UiRect {
-                    top: Val::Px(10.),
-                    right: Val::Px(10.),
-                    bottom: Val::Px(10.),
-                    left: Val::Px(10.),
-                },
-                // max_width: Val::Percent(25.0),
-                width: Val::Px(300.),
-                ..default()
+        Node {
+            display: Display::Flex,
+            flex_direction: FlexDirection::Column,
+            row_gap: Val::Px(10.),
+            padding: UiRect {
+                top: Val::Px(10.),
+                right: Val::Px(10.),
+                bottom: Val::Px(10.),
+                left: Val::Px(10.),
             },
-            background_color: bg_color(opacity),
+            // max_width: Val::Percent(25.0),
+            width: Val::Px(300.),
             ..default()
         },
+        BackgroundColor(ui_color(opacity)),
         T::new(target_id),
     )
 }
 
-fn render_entity_component_node_bunlde<T: Default>() -> (NodeBundle, T) {
+fn render_entity_component_node_bunlde<T: Default>() -> (Node, T) {
     (
-        NodeBundle {
-            style: Style {
-                display: Display::Flex,
-                flex_direction: FlexDirection::Column,
-                ..default()
-            },
+        Node {
+            display: Display::Flex,
+            flex_direction: FlexDirection::Column,
             ..default()
         },
         T::default(),

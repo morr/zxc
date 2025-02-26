@@ -32,7 +32,7 @@ fn render_simulation_speed_ui(
 ) {
     commands
         .spawn(NodeBundle {
-            style: Style {
+            Node {
                 position_type: PositionType::Absolute,
                 top: Val::Px(0.),
                 right: Val::Px(0.),

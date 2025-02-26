@@ -16,16 +16,13 @@ pub struct DebugHelpBlockUIMarker {}
 
 pub fn render_debug_ui_container(mut commands: Commands) {
     commands.spawn((
-        NodeBundle {
-            style: Style {
-                position_type: PositionType::Absolute,
-                display: Display::Flex,
-                flex_direction: FlexDirection::Column,
-                row_gap: UI_WINDOWS_GAP,
-                bottom: Val::Px(0.0),
-                right: Val::Px(0.0),
-                ..default()
-            },
+        Node {
+            position_type: PositionType::Absolute,
+            display: Display::Flex,
+            flex_direction: FlexDirection::Column,
+            row_gap: UI_WINDOWS_GAP,
+            bottom: Val::Px(0.0),
+            right: Val::Px(0.0),
             ..default()
         },
         DebugUiContainerarker::default(),

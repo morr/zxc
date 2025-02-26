@@ -17,17 +17,14 @@ impl Plugin for UiHoveredPlugin {
 
 fn render_hovered_ui(mut commands: Commands) {
     commands.spawn((
-        NodeBundle {
-            style: Style {
-                position_type: PositionType::Absolute,
-                display: Display::Flex,
-                flex_direction: FlexDirection::Row,
-                align_items: AlignItems::FlexEnd,
-                column_gap: UI_WINDOWS_GAP,
-                bottom: UI_SCREEN_EDGE_PX_OFFSET,
-                left: UI_SCREEN_EDGE_PX_OFFSET,
-                ..default()
-            },
+        Node {
+            position_type: PositionType::Absolute,
+            display: Display::Flex,
+            flex_direction: FlexDirection::Row,
+            align_items: AlignItems::FlexEnd,
+            column_gap: UI_WINDOWS_GAP,
+            bottom: UI_SCREEN_EDGE_PX_OFFSET,
+            left: UI_SCREEN_EDGE_PX_OFFSET,
             ..default()
         },
         HoveredUIRootMarker::default(),
@@ -65,7 +62,9 @@ fn update_ui_on_hover_event(
         }
     }
 
-    let Some(grid_tile) = possibly_hovered_grid_tiles.last() else { return };
+    let Some(grid_tile) = possibly_hovered_grid_tiles.last() else {
+        return;
+    };
 
     let hovered_root_ui_id = hovered_root_ui_query.get_single().unwrap();
     let mut hovered_root_ui_commands = commands.entity(hovered_root_ui_id);

@@ -46,7 +46,7 @@ fn handle_state_changes(
                         commands
                             .spawn((
                                 Mesh2d(mesh_handle.clone()),
-                                MeshMaterial2D(if navtile.is_passable() {
+                                MeshMaterial2d(if navtile.is_passable() {
                                     assets.navmesh_passable.clone()
                                 } else {
                                     assets.navmesh_impassable.clone()
