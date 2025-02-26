@@ -6,7 +6,6 @@ fn main() {
 
     App::new()
         // .insert_resource(CONFIG.get().unwrap().clone())
-        .insert_resource(Msaa::Off)
         .add_plugins(
             DefaultPlugins
                 .set(ImagePlugin::default_nearest())

@@ -43,6 +43,7 @@ fn spawn_camera(mut commands: Commands) {
             },
             Name::new("main_camera"),
             FloorCamera,
+            Msaa::Off
         ))
         // .insert(SpriteCamera)
         // .spawn({
