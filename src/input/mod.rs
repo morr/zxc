@@ -79,7 +79,7 @@ pub fn mouse_input(
     let window = q_window.single();
     if let Some(world_position) = window
         .cursor_position()
-        .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
+        .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor).ok())
         .map(|ray| ray.origin.truncate())
     {
         let grid_tile = world_position.world_pos_to_grid();
@@ -109,7 +109,7 @@ pub fn mouse_input(
         // then, ask bevy to convert into world coordinates, and truncate to discard Z
         if let Some(world_position) = window
             .cursor_position()
-            .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
+            .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor).ok())
             .map(|ray| ray.origin.truncate())
         {
             let event = ClickEventStage0(world_position.world_pos_to_grid());
