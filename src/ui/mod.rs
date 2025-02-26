@@ -1,17 +1,16 @@
 use crate::*;
 
 expose_submodules!(
-    bed,
-    carryable,
-    farm,
-    pawn,
-    storage,
-    tile,
-    hovered,
-    items_stock,
-    simulation_state,
-    user_select,
-    debug
+    // bed,
+    // carryable,
+    // farm,
+    // pawn,
+    // storage,
+    // tile,
+    // hovered,
+    // items_stock,
+    simulation_state // user_select,
+                     // debug
 );
 
 pub static UI_COLOR: Lazy<Color> = Lazy::new(|| Color::from(Srgba::hex("181a1c").unwrap()));
@@ -24,15 +23,15 @@ impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
             UiSimulationStatePlugin,
-            UiItemsStockPlugin,
-            UiUserSelectedPlugin,
-            UiPawnPlugin,
-            UiFarmPlugin,
-            UiBedPlugin,
-            UiCarryablePlugin,
-            UiStoragePlugin,
-            UiHoveredPlugin,
-            UiDebugPlugin,
+            // UiItemsStockPlugin,
+            // UiUserSelectedPlugin,
+            // UiPawnPlugin,
+            // UiFarmPlugin,
+            // UiBedPlugin,
+            // UiCarryablePlugin,
+            // UiStoragePlugin,
+            // UiHoveredPlugin,
+            // UiDebugPlugin,
         ));
     }
 }
@@ -96,30 +95,33 @@ fn render_entity_component_node_bunlde<T: Default>() -> (Node, T) {
     )
 }
 
-fn headline_text_bundle(text: String, font_assets: &Res<FontAssets>) -> TextBundle {
-    TextBundle::from_section(
-        text,
+fn headline_text_bundle(
+    text: String,
+    font_assets: &Res<FontAssets>,
+) -> (Text, TextFont, TextColor) {
+    (
+        Text(text),
         TextFont {
             font: font_assets.fira.clone(),
             font_size: 18.,
-            color: Color::WHITE,
+            ..default()
         },
+        TextColor(Color::WHITE),
     )
 }
 
 fn property_text_bundle<T: Default>(
     text: String,
     font_assets: &Res<FontAssets>,
-) -> (TextBundle, T) {
+) -> (Text, TextFont, TextColor, T) {
     (
-        TextBundle::from_section(
-            text,
-            TextFont {
-                font: font_assets.fira.clone(),
-                font_size: 16.,
-                color: Color::WHITE,
-            },
-        ),
+        Text(text),
+        TextFont {
+            font: font_assets.fira.clone(),
+            font_size: 16.,
+            ..default()
+        },
+        TextColor(Color::WHITE),
         T::default(),
     )
 }

@@ -31,7 +31,7 @@ fn render_simulation_speed_ui(
     time_scale: Res<TimeScale>,
 ) {
     commands
-        .spawn(NodeBundle {
+        .spawn((
             Node {
                 position_type: PositionType::Absolute,
                 top: Val::Px(0.),
@@ -48,42 +48,40 @@ fn render_simulation_speed_ui(
                 },
                 ..default()
             },
-            background_color: bg_color(UiOpacity::Medium),
-            ..default()
-        })
+            BackgroundColor(ui_color(UiOpacity::Medium)),
+        ))
         .with_children(|parent| {
             parent.spawn((
-                TextBundle::from_section(
-                    format_simulation_speed_text(&time_state, &time_scale),
-                    TextFont {
-                        font: font_assets.fira.clone(),
-                        font_size: 24.,
-                        color: Color::WHITE,
-                    },
-                ),
+                Text(format_simulation_speed_text(&time_state, &time_scale)),
+                TextFont {
+                    font: font_assets.fira.clone(),
+                    font_size: 24.,
+                    ..default()
+                },
+                TextColor(Color::WHITE),
                 SimulationSpeedTextUIMarker::default(),
             ));
             parent.spawn((
-                TextBundle::from_section(
-                    format_date_time_text(&elapsed_time),
-                    TextFont {
-                        font: font_assets.fira.clone(),
-                        font_size: 18.,
-                        color: Color::WHITE,
-                    },
-                ),
+                Text(format_date_time_text(&elapsed_time)),
+                TextFont {
+                    font: font_assets.fira.clone(),
+                    font_size: 18.,
+                    ..default()
+                },
+                TextColor(Color::WHITE),
                 SimulationDateTimeTextUIMarker::default(),
             ));
         });
 }
 
 fn update_simulation_speed_text(
-    mut query: Query<&mut Text, With<SimulationSpeedTextUIMarker>>,
+    query: Query<Entity, With<SimulationSpeedTextUIMarker>>,
+    mut writer: TextUiWriter,
     time_state: Res<State<SimulationState>>,
     time_scale: Res<TimeScale>,
 ) {
-    let mut text = query.single_mut();
-    text.sections[0].value = format_simulation_speed_text(&time_state, &time_scale);
+    let entity = query.single();
+    *writer.text(entity, 0) = format_simulation_speed_text(&time_state, &time_scale);
 }
 
 fn format_simulation_speed_text(
@@ -98,16 +96,17 @@ fn format_simulation_speed_text(
             } else {
                 "Paused (1x)".to_string()
             }
-        },
+        }
     }
 }
 
 fn update_simulation_date_time_text(
-    mut query: Query<&mut Text, With<SimulationDateTimeTextUIMarker>>,
+    query: Query<Entity, With<SimulationDateTimeTextUIMarker>>,
+    mut writer: TextUiWriter,
     elapsed_time: Res<ElapsedTime>,
 ) {
-    let mut text = query.single_mut();
-    text.sections[0].value = format_date_time_text(&elapsed_time);
+    let entity = query.single();
+    *writer.text(entity, 0) = format_date_time_text(&elapsed_time);
 }
 
 fn format_date_time_text(elapsed_time: &Res<ElapsedTime>) -> String {
