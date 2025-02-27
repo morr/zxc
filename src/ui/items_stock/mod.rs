@@ -28,17 +28,15 @@ fn render_items_stock_ui(
     font_assets: Res<FontAssets>,
     food: Res<FoodStock>,
 ) {
-    let mut root = commands.spawn(
-        Node {
-            position_type: PositionType::Absolute,
-            display: Display::Flex,
-            flex_direction: FlexDirection::Column,
-            row_gap: Val::Px(8.),
-            top: UI_SCREEN_EDGE_PX_OFFSET,
-            left: UI_SCREEN_EDGE_PX_OFFSET,
-            ..default()
-        },
-    );
+    let mut root = commands.spawn(Node {
+        position_type: PositionType::Absolute,
+        display: Display::Flex,
+        flex_direction: FlexDirection::Column,
+        row_gap: Val::Px(8.),
+        top: UI_SCREEN_EDGE_PX_OFFSET,
+        left: UI_SCREEN_EDGE_PX_OFFSET,
+        ..default()
+    });
 
     spawn_item::<PawnStockTextUIMarker>(
         &mut root,
@@ -80,11 +78,12 @@ fn spawn_item<T: Component>(
                     ..default()
                 },
                 BackgroundColor(ui_color(UiOpacity::Heavy)),
-                ..default()
             ))
             .with_children(|parent| {
-                parent.spawn(ImageBundle {
-                    style: Style {
+                parent.spawn((
+                    ImageNode::new(image),
+                    // material: materials.add(texture_handle.into()),
+                    Node {
                         width: Val::Px(28.),
                         height: Val::Px(28.),
                         margin: UiRect {
@@ -93,22 +92,19 @@ fn spawn_item<T: Component>(
                             bottom: Val::Px(0.),
                             left: Val::Px(0.),
                         },
-                        ..default() // size: Size::new(Val::Percent(100.0), Val::Percent(100.0)), // Image will fill the node
+                        ..default()
+                        // size: Size::new(Val::Percent(100.0), Val::Percent(100.0)), // Image will fill the node
                     },
-                    // material: materials.add(texture_handle.into()),
-                    image: image.into(),
-                    ..default()
-                });
+                ));
 
                 parent.spawn((
-                    TextBundle::from_section(
-                        format_item_text(amount),
-                        TextFont {
-                            font,
-                            font_size: 20.,
-                            color: Color::WHITE,
-                        },
-                    ),
+                    Text(format_item_text(amount)),
+                    TextFont {
+                        font,
+                        font_size: 20.,
+                        ..default()
+                    },
+                    TextColor(Color::WHITE),
                     marker_component,
                 ));
             });
@@ -116,11 +112,12 @@ fn spawn_item<T: Component>(
 }
 
 fn update_food_stock_text(
-    mut query: Query<&mut Text, With<FoodStockTextUIMarker>>,
+    query: Query<Entity, With<FoodStockTextUIMarker>>,
+    mut writer: TextUiWriter,
     food_stock: Res<FoodStock>,
 ) {
-    let mut text = query.single_mut();
-    text.sections[0].value = format_item_text(food_stock.amount);
+    let entity = query.single();
+    *writer.text(entity, 0) = format_item_text(food_stock.amount);
 }
 
 fn format_item_text(amount: u32) -> String {
@@ -128,9 +125,10 @@ fn format_item_text(amount: u32) -> String {
 }
 
 fn update_pawn_stock_text(
-    mut text_query: Query<&mut Text, With<PawnStockTextUIMarker>>,
+    text_query: Query<Entity, With<PawnStockTextUIMarker>>,
+    mut writer: TextUiWriter,
     pawns_query: Query<&Pawn>,
 ) {
-    let mut text = text_query.single_mut();
-    text.sections[0].value = format_item_text(pawns_query.iter().count() as u32);
+    let entity = text_query.single();
+    *writer.text(entity, 0) = format_item_text(pawns_query.iter().count() as u32)
 }

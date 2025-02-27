@@ -8,9 +8,10 @@ expose_submodules!(
     // storage,
     // tile,
     // hovered,
-    // items_stock,
-    simulation_state // user_select,
-                     // debug
+    items_stock,
+    simulation_state
+    // user_select,
+    // debug
 );
 
 pub static UI_COLOR: Lazy<Color> = Lazy::new(|| Color::from(Srgba::hex("181a1c").unwrap()));
@@ -23,7 +24,7 @@ impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
             UiSimulationStatePlugin,
-            // UiItemsStockPlugin,
+            UiItemsStockPlugin,
             // UiUserSelectedPlugin,
             // UiPawnPlugin,
             // UiFarmPlugin,
