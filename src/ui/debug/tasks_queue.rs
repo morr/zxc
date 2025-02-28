@@ -30,15 +30,14 @@ pub fn render_tasks_ui(
                 ));
 
                 container_parent.spawn((
-                    TextBundle::from_section(
-                        format_details(&tasks_queue),
-                        TextFont {
-                            font: font_assets.fira.clone(),
-                            font_size: 12.,
-                            color: Color::WHITE,
-                        },
-                    )
-                    .with_style(Style {
+                    Text(format_details(&tasks_queue)),
+                    TextFont {
+                        font: font_assets.fira.clone(),
+                        font_size: 12.,
+                        ..default()
+                    },
+                    TextColor(Color::WHITE),
+                    Node {
                         margin: UiRect {
                             top: Val::Px(8.0),
                             right: Val::Px(0.0),
@@ -46,7 +45,7 @@ pub fn render_tasks_ui(
                             left: Val::Px(0.0),
                         },
                         ..default()
-                    }),
+                    },
                     DebugTasksQueueDetailsUIMarker::default(),
                 ));
             });
@@ -55,9 +54,9 @@ pub fn render_tasks_ui(
 
 pub fn update_debug_tasks_queue(
     ui_query: Query<Entity, With<DebugTasksUIMarker>>,
-    mut texts: Query<
+    texts_query: Query<
         (
-            &mut Text,
+            Entity,
             Option<&DebugTasksQueueHeadlineUIMarker>,
             Option<&DebugTasksQueueDetailsUIMarker>,
         ),
@@ -68,12 +67,13 @@ pub fn update_debug_tasks_queue(
     >,
     tasks_queue: Res<TasksQueue>,
     children_query: Query<&Children>,
+    mut writer: TextUiWriter,
 ) {
     let ui_id = ui_query.get_single().unwrap();
 
     if let Ok(children) = children_query.get(ui_id) {
         for &child in children.iter() {
-            update_text_markers_recursive(child, &tasks_queue, &mut texts, &children_query);
+            update_text_markers_recursive(child, &tasks_queue, &texts_query, &children_query, &mut writer);
         }
     }
 }
@@ -81,9 +81,9 @@ pub fn update_debug_tasks_queue(
 fn update_text_markers_recursive(
     entity: Entity,
     tasks_queue: &Res<TasksQueue>,
-    texts: &mut Query<
+    texts_query: &Query<
         (
-            &mut Text,
+            Entity,
             Option<&DebugTasksQueueHeadlineUIMarker>,
             Option<&DebugTasksQueueDetailsUIMarker>,
         ),
@@ -93,8 +93,9 @@ fn update_text_markers_recursive(
         )>,
     >,
     children_query: &Query<&Children>,
+    writer: &mut TextUiWriter,
 ) {
-    if let Ok((mut text, headline_marker, details_marker)) = texts.get_mut(entity) {
+    if let Ok((text_entity, headline_marker, details_marker)) = texts_query.get(entity) {
         if headline_marker.is_some() {
             *writer.text(text_entity, 0) = format_headline(tasks_queue);
         }
@@ -105,7 +106,7 @@ fn update_text_markers_recursive(
 
     if let Ok(children) = children_query.get(entity) {
         for &child in children.iter() {
-            update_text_markers_recursive(child, tasks_queue, texts, children_query);
+            update_text_markers_recursive(child, tasks_queue, texts_query, children_query, writer);
         }
     }
 }

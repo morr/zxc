@@ -10,8 +10,8 @@ expose_submodules!(
     hovered,
     items_stock,
     simulation_state,
-    user_select
-    //debug
+    user_select,
+    debug
 );
 
 pub static UI_COLOR: Lazy<Color> = Lazy::new(|| Color::from(Srgba::hex("181a1c").unwrap()));
@@ -32,7 +32,7 @@ impl Plugin for UiPlugin {
             UiStoragePlugin,
             UiHoveredPlugin,
             UiUserSelectedPlugin,
-            // UiDebugPlugin,
+            UiDebugPlugin,
         ));
     }
 }

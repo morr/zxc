@@ -48,7 +48,7 @@ pub fn render_debug_ui_info(
                 ));
 
                 container_parent.spawn((
-                    TextBundle::from_section(
+                    Text::new(
                         // \"r\" - rebuild map
                         "\"space\" - pause
 \"=\"/\"-\" - change game speed
@@ -56,13 +56,14 @@ pub fn render_debug_ui_info(
 \"g\" - toggle grid
 \"n\" - toggle navmesh
 \"m\" - toggle movepath",
-                        TextFont {
-                            font: font_assets.fira.clone(),
-                            font_size: 12.,
-                            color: Color::WHITE,
-                        },
-                    )
-                    .with_style(Style {
+                    ),
+                    TextFont {
+                        font: font_assets.fira.clone(),
+                        font_size: 12.,
+                        ..default()
+                    },
+                    TextColor(Color::WHITE),
+                    Node {
                         margin: UiRect {
                             top: Val::Px(8.0),
                             right: Val::Px(0.0),
@@ -70,7 +71,7 @@ pub fn render_debug_ui_info(
                             left: Val::Px(0.0),
                         },
                         ..default()
-                    }),
+                    },
                     DebugHelpBlockUIMarker::default(),
                 ));
             });
@@ -79,9 +80,10 @@ pub fn render_debug_ui_info(
 
 pub fn update_debug_ui_headline(
     async_queue_counter: Res<AsyncQueueCounter>,
-    mut query: Query<&mut Text, With<DebugUiHeadlineUIMarker>>,
+    text_query: Query<Entity, With<DebugUiHeadlineUIMarker>>,
+    mut writer: TextUiWriter,
 ) {
-    let mut text = query.single_mut();
+    let text_entity = text_query.single();
     *writer.text(text_entity, 0) = format_headline(&async_queue_counter);
 }
 
@@ -94,7 +96,7 @@ pub fn handle_debug_info_keys(
     // mut commands: Commands,
     keys: Res<ButtonInput<KeyCode>>,
     // query: Query<Entity>,
-    mut query: Query<(&mut Visibility, &mut Style), With<DebugHelpBlockUIMarker>>,
+    mut query: Query<(&mut Visibility, &mut Node), With<DebugHelpBlockUIMarker>>,
     debug_grid_state: Res<State<DebugGridState>>,
     mut next_debug_grid_state: ResMut<NextState<DebugGridState>>,
     debug_navmesh_state: Res<State<DebugNavmeshState>>,
