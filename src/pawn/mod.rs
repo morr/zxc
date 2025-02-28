@@ -19,8 +19,6 @@ impl Plugin for PawnPlugin {
                     progress_pawn_daily,
                     progress_pawn_dying,
                     progress_pawn_death,
-                    // progress_pawn_age,
-                    // progress_pawn_lifetime,
                 )
                     .chain()
                     .run_if(in_state(AppState::Playing)),
