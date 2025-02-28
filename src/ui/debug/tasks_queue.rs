@@ -96,10 +96,10 @@ fn update_text_markers_recursive(
 ) {
     if let Ok((mut text, headline_marker, details_marker)) = texts.get_mut(entity) {
         if headline_marker.is_some() {
-            text.sections[0].value = format_headline(tasks_queue);
+            *writer.text(text_entity, 0) = format_headline(tasks_queue);
         }
         if details_marker.is_some() {
-            text.sections[0].value = format_details(tasks_queue);
+            *writer.text(text_entity, 0) = format_details(tasks_queue);
         }
     }
 

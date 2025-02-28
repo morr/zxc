@@ -82,7 +82,7 @@ pub fn update_debug_ui_headline(
     mut query: Query<&mut Text, With<DebugUiHeadlineUIMarker>>,
 ) {
     let mut text = query.single_mut();
-    text.sections[0].value = format_headline(&async_queue_counter);
+    *writer.text(text_entity, 0) = format_headline(&async_queue_counter);
 }
 
 fn format_headline(async_queue_counter: &Res<AsyncQueueCounter>) -> String {

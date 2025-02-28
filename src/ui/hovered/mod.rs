@@ -111,23 +111,23 @@ fn update_ui_on_hover_event(
     //         );
     //     }
     // }
-    //
-    // // hover over Pawn
-    // for pawn_id in navmesh.get_occupants::<Pawn>(grid_tile.x, grid_tile.y) {
-    //     if let Ok((pawn, movable, restable, feedable, commandable)) = pawn_query.get(*pawn_id) {
-    //         render_pawn_ui(
-    //             *pawn_id,
-    //             &mut hovered_root_ui_commands,
-    //             pawn,
-    //             movable,
-    //             restable,
-    //             feedable,
-    //             commandable,
-    //             &font_assets,
-    //             UiOpacity::Medium,
-    //         );
-    //     }
-    // }
+
+    // hover over Pawn
+    for pawn_id in navmesh.get_occupants::<Pawn>(grid_tile.x, grid_tile.y) {
+        if let Ok((pawn, movable, restable, feedable, commandable)) = pawn_query.get(*pawn_id) {
+            render_pawn_ui(
+                *pawn_id,
+                &mut hovered_root_ui_commands,
+                pawn,
+                movable,
+                restable,
+                feedable,
+                commandable,
+                &font_assets,
+                UiOpacity::Medium,
+            );
+        }
+    }
 
     // hover over Farm
     for farm_id in navmesh.get_occupants::<Farm>(grid_tile.x, grid_tile.y) {

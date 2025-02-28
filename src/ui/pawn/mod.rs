@@ -74,9 +74,10 @@ impl Plugin for UiPawnPlugin {
 
 fn update_pawn_ui(
     ui_query: Query<(Entity, &PawnUIMarker)>,
-    mut texts: Query<
+    texts_query: Query<
         (
-            &mut Text,
+            Entity,
+
             Option<&PawnAgeTextUIMarker>,
             Option<&PawnLifetimeTextUIMarker>,
             Option<&PawnBirthdayTextUIMarker>,
@@ -111,6 +112,7 @@ fn update_pawn_ui(
     >,
     components_query: Query<(&Pawn, &Movable, &Restable, &Feedable, &Commandable)>,
     children_query: Query<&Children>,
+    mut writer: TextUiWriter,
 ) {
     for (ui_id, ui_marker) in ui_query.iter() {
         if let Ok((pawn, movable, restable, feedable, commandable)) =
@@ -125,8 +127,9 @@ fn update_pawn_ui(
                         restable,
                         feedable,
                         commandable,
-                        &mut texts,
+                        &texts_query,
                         &children_query,
+                        &mut writer,
                     );
                 }
             }
@@ -142,9 +145,9 @@ fn update_text_markers_recursive(
     restable: &Restable,
     feedable: &Feedable,
     commandable: &Commandable,
-    texts: &mut Query<
+    texts_query: &Query<
         (
-            &mut Text,
+            Entity,
             Option<&PawnAgeTextUIMarker>,
             Option<&PawnLifetimeTextUIMarker>,
             Option<&PawnBirthdayTextUIMarker>,
@@ -178,9 +181,10 @@ fn update_text_markers_recursive(
         )>,
     >,
     children_query: &Query<&Children>,
+    writer: &mut TextUiWriter,
 ) {
     if let Ok((
-        mut text,
+        text_entity,
         pawn_age_marker,
         pwan_lifetime_marker,
         pawn_birthday_marker,
@@ -195,49 +199,49 @@ fn update_text_markers_recursive(
         commandable_state_marker,
         commandable_executing_command_marker,
         commandable_pending_commands_marker,
-    )) = texts.get_mut(entity)
+    )) = texts_query.get(entity)
     {
         if pawn_age_marker.is_some() {
-            text.sections[0].value = pawn_age_text(pawn);
+            *writer.text(text_entity, 0) = pawn_age_text(pawn);
         }
         if pwan_lifetime_marker.is_some() {
-            text.sections[0].value = pawn_lifetime_text(pawn);
+            *writer.text(text_entity, 0) = pawn_lifetime_text(pawn);
         }
         if pawn_birthday_marker.is_some() {
-            text.sections[0].value = pawn_birthday_text(pawn);
+            *writer.text(text_entity, 0) = pawn_birthday_text(pawn);
         }
         if pwan_state_marker.is_some() {
-            text.sections[0].value = pawn_state_text(pawn);
+            *writer.text(text_entity, 0) = pawn_state_text(pawn);
         }
         if pwan_inventory_marker.is_some() {
-            text.sections[0].value = pawn_inventory_text(pawn);
+            *writer.text(text_entity, 0) = pawn_inventory_text(pawn);
         }
         if movable_speed_marker.is_some() {
-            text.sections[0].value = movable_speed_text(movable);
+            *writer.text(text_entity, 0) = movable_speed_text(movable);
         }
         if movable_path_marker.is_some() {
-            text.sections[0].value = movable_path_text(movable);
+            *writer.text(text_entity, 0) = movable_path_text(movable);
         }
         if movable_state_marker.is_some() {
-            text.sections[0].value = movable_state_text(movable);
+            *writer.text(text_entity, 0) = movable_state_text(movable);
         }
         if restable_state_marker.is_some() {
-            text.sections[0].value = restable_state_text(restable);
+            *writer.text(text_entity, 0) = restable_state_text(restable);
         }
         if restable_fatigue_marker.is_some() {
-            text.sections[0].value = restable_fatigue_text(restable);
+            *writer.text(text_entity, 0) = restable_fatigue_text(restable);
         }
         if feedable_hunger_marker.is_some() {
-            text.sections[0].value = feedable_hunger_text(feedable);
+            *writer.text(text_entity, 0) = feedable_hunger_text(feedable);
         }
         if commandable_state_marker.is_some() {
-            text.sections[0].value = commandable_state_text(commandable);
+            *writer.text(text_entity, 0) = commandable_state_text(commandable);
         }
         if commandable_executing_command_marker.is_some() {
-            text.sections[0].value = commandable_executing_text(commandable);
+            *writer.text(text_entity, 0) = commandable_executing_text(commandable);
         }
         if commandable_pending_commands_marker.is_some() {
-            text.sections[0].value = commandable_queue_text(commandable);
+            *writer.text(text_entity, 0) = commandable_queue_text(commandable);
         }
     }
 
@@ -250,8 +254,9 @@ fn update_text_markers_recursive(
                 restable,
                 feedable,
                 commandable,
-                texts,
+                texts_query,
                 children_query,
+                writer
             );
         }
     }

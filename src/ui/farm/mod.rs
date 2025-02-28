@@ -141,9 +141,9 @@ fn update_farm_ui(
                         child,
                         farm,
                         workable,
-                        &mut writer,
                         &texts_query,
                         &children_query,
+                        &mut writer,
                     );
                 }
             }
@@ -155,7 +155,6 @@ fn update_text_markers_recursive(
     entity: Entity,
     farm: &Farm,
     workable: &Workable,
-    writer: &mut TextUiWriter,
     texts_query: &Query<
         (
             Entity,
@@ -178,6 +177,7 @@ fn update_text_markers_recursive(
         )>,
     >,
     children_query: &Query<&Children>,
+    writer: &mut TextUiWriter,
 ) {
     if let Ok((
         text_entity,
@@ -194,28 +194,35 @@ fn update_text_markers_recursive(
             *writer.text(text_entity, 0) = farm_state_text(farm);
         }
         if farm_tendings_marker.is_some() {
-            *writer.text(text_entity,0) = farm_tendings_text(farm);
+            *writer.text(text_entity, 0) = farm_tendings_text(farm);
         }
         if farm_yield_marker.is_some() {
-            *writer.text(text_entity,0) = farm_yield_text(farm);
+            *writer.text(text_entity, 0) = farm_yield_text(farm);
         }
         if workable_state_marker.is_some() {
-            *writer.text(text_entity,0) = workable_state_text(workable);
+            *writer.text(text_entity, 0) = workable_state_text(workable);
         }
         if workable_work_kind_marker.is_some() {
-            *writer.text(text_entity,0) = workable_work_kind_text(workable);
+            *writer.text(text_entity, 0) = workable_work_kind_text(workable);
         }
         if workable_amount_done_marker.is_some() {
-            *writer.text(text_entity,0) = workable_amount_done_text(workable);
+            *writer.text(text_entity, 0) = workable_amount_done_text(workable);
         }
         if workable_amount_total_marker.is_some() {
-            *writer.text(text_entity,0) = workable_amount_total_text(workable);
+            *writer.text(text_entity, 0) = workable_amount_total_text(workable);
         }
     }
 
     if let Ok(children) = children_query.get(entity) {
         for &child in children.iter() {
-            update_text_markers_recursive(child, farm, workable, writer, texts_query, children_query);
+            update_text_markers_recursive(
+                child,
+                farm,
+                workable,
+                texts_query,
+                children_query,
+                writer,
+            );
         }
     }
 }

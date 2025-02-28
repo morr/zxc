@@ -83,7 +83,7 @@ pub fn render_storage_ui(
 // ) {
 //     if let Ok((mut text, storage_owner_marker)) = texts.get_mut(entity) {
 //         if storage_owner_marker.is_some() {
-//             text.sections[0].value = storage_owner_text(storage);
+//             *writer.text(text_entity, 0) = storage_owner_text(storage);
 //         }
 //     }
 //

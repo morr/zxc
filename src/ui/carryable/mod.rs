@@ -109,10 +109,10 @@ fn update_text_markers_recursive(
 ) {
     if let Ok((mut text, carryable_kind_marker, carryable_amount_marker)) = texts.get_mut(entity) {
         if carryable_kind_marker.is_some() {
-            text.sections[0].value = carryable_kind_text(carryable);
+            *writer.text(text_entity, 0) = carryable_kind_text(carryable);
         }
         if carryable_amount_marker.is_some() {
-            text.sections[0].value = carryable_amount_text(carryable);
+            *writer.text(text_entity, 0) = carryable_amount_text(carryable);
         }
     }
 
