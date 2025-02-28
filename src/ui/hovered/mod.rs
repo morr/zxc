@@ -128,21 +128,21 @@ fn update_ui_on_hover_event(
     //         );
     //     }
     // }
-    //
-    // // hover over Farm
-    // for farm_id in navmesh.get_occupants::<Farm>(grid_tile.x, grid_tile.y) {
-    //     if let Ok((farm, workable)) = farm_query.get(*farm_id) {
-    //         render_farm_ui(
-    //             *farm_id,
-    //             &mut hovered_root_ui_commands,
-    //             farm,
-    //             workable,
-    //             &font_assets,
-    //             UiOpacity::Medium,
-    //         );
-    //     }
-    // }
-    //
+
+    // hover over Farm
+    for farm_id in navmesh.get_occupants::<Farm>(grid_tile.x, grid_tile.y) {
+        if let Ok((farm, workable)) = farm_query.get(*farm_id) {
+            render_farm_ui(
+                *farm_id,
+                &mut hovered_root_ui_commands,
+                farm,
+                workable,
+                &font_assets,
+                UiOpacity::Medium,
+            );
+        }
+    }
+
     // // hover over Carryable
     // for carryable_id in navmesh.get_occupants::<Carryable>(grid_tile.x, grid_tile.y) {
     //     if let Ok(carryable) = carryable_query.get(*carryable_id) {

@@ -108,9 +108,9 @@ pub fn render_farm_ui(
 
 fn update_farm_ui(
     ui_query: Query<(Entity, &FarmUIMarker)>,
-    mut texts: Query<
+    texts_query: Query<
         (
-            &mut Text,
+            Entity,
             Option<&FarmStateTextUIMarker>,
             Option<&FarmTendingsTextUIMarker>,
             Option<&FarmYieldTextUIMarker>,
@@ -131,6 +131,7 @@ fn update_farm_ui(
     >,
     components_query: Query<(&Farm, &Workable)>,
     children_query: Query<&Children>,
+    mut writer: TextUiWriter,
 ) {
     for (ui_id, ui_marker) in ui_query.iter() {
         if let Ok((farm, workable)) = components_query.get(ui_marker.farm_id) {
@@ -140,7 +141,8 @@ fn update_farm_ui(
                         child,
                         farm,
                         workable,
-                        &mut texts,
+                        &mut writer,
+                        &texts_query,
                         &children_query,
                     );
                 }
@@ -153,9 +155,10 @@ fn update_text_markers_recursive(
     entity: Entity,
     farm: &Farm,
     workable: &Workable,
-    texts: &mut Query<
+    writer: &mut TextUiWriter,
+    texts_query: &Query<
         (
-            &mut Text,
+            Entity,
             Option<&FarmStateTextUIMarker>,
             Option<&FarmTendingsTextUIMarker>,
             Option<&FarmYieldTextUIMarker>,
@@ -177,7 +180,7 @@ fn update_text_markers_recursive(
     children_query: &Query<&Children>,
 ) {
     if let Ok((
-        mut text,
+        text_entity,
         farm_state_marker,
         farm_tendings_marker,
         farm_yield_marker,
@@ -185,34 +188,34 @@ fn update_text_markers_recursive(
         workable_work_kind_marker,
         workable_amount_done_marker,
         workable_amount_total_marker,
-    )) = texts.get_mut(entity)
+    )) = texts_query.get(entity)
     {
         if farm_state_marker.is_some() {
-            text.sections[0].value = farm_state_text(farm);
+            *writer.text(text_entity, 0) = farm_state_text(farm);
         }
         if farm_tendings_marker.is_some() {
-            text.sections[0].value = farm_tendings_text(farm);
+            *writer.text(text_entity,0) = farm_tendings_text(farm);
         }
         if farm_yield_marker.is_some() {
-            text.sections[0].value = farm_yield_text(farm);
+            *writer.text(text_entity,0) = farm_yield_text(farm);
         }
         if workable_state_marker.is_some() {
-            text.sections[0].value = workable_state_text(workable);
+            *writer.text(text_entity,0) = workable_state_text(workable);
         }
         if workable_work_kind_marker.is_some() {
-            text.sections[0].value = workable_work_kind_text(workable);
+            *writer.text(text_entity,0) = workable_work_kind_text(workable);
         }
         if workable_amount_done_marker.is_some() {
-            text.sections[0].value = workable_amount_done_text(workable);
+            *writer.text(text_entity,0) = workable_amount_done_text(workable);
         }
         if workable_amount_total_marker.is_some() {
-            text.sections[0].value = workable_amount_total_text(workable);
+            *writer.text(text_entity,0) = workable_amount_total_text(workable);
         }
     }
 
     if let Ok(children) = children_query.get(entity) {
         for &child in children.iter() {
-            update_text_markers_recursive(child, farm, workable, texts, children_query);
+            update_text_markers_recursive(child, farm, workable, writer, texts_query, children_query);
         }
     }
 }
