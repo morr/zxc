@@ -9,8 +9,8 @@ expose_submodules!(
     tile,
     hovered,
     items_stock,
-    simulation_state
-    // user_select
+    simulation_state,
+    user_select
     //debug
 );
 
@@ -31,7 +31,7 @@ impl Plugin for UiPlugin {
             UiCarryablePlugin,
             UiStoragePlugin,
             UiHoveredPlugin,
-            // UiUserSelectedPlugin,
+            UiUserSelectedPlugin,
             // UiDebugPlugin,
         ));
     }
