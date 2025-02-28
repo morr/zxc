@@ -65,7 +65,7 @@ pub fn spawn_pawns(
             // })
             .with_children(|parent| {
                 parent.spawn((
-                    Text::new(""),
+                    Text2d::new(""),
                     TextFont {
                         font: font_assets.fira.clone(),
                         font_size: 13.0,
@@ -126,7 +126,7 @@ pub fn update_pawn_state_text(
     children_query: Query<&Children>,
     // mut state_text_query: Query<(&mut Text, &mut Visibility), With<PawnStateText>>,
     // mut state_text_query: Query<&mut Text, With<PawnStateText>>,
-    mut text_writer: TextUiWriter,
+    mut text_writer: Text2dWriter,
     commandable_query: Query<&Commandable>,
 ) {
     for EntityStateChangeEvent(pawn_entity, state) in event_reader.read() {

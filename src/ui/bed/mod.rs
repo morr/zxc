@@ -60,7 +60,8 @@ pub fn render_bed_ui(
 
 fn update_bed_ui(
     ui_query: Query<(Entity, &BedUIMarker)>,
-    mut texts: Query<(&mut Text, Option<&BedOwnerUIMarker>), Or<(With<BedOwnerUIMarker>,)>>,
+    texts_query: Query<(Entity, Option<&BedOwnerUIMarker>), Or<(With<BedOwnerUIMarker>,)>>,
+    mut writer: TextUiWriter,
     components_query: Query<&Bed>,
     children_query: Query<&Children>,
 ) {
@@ -68,7 +69,7 @@ fn update_bed_ui(
         if let Ok(bed) = components_query.get(ui_marker.bed_id) {
             if let Ok(children) = children_query.get(ui_id) {
                 for &child in children.iter() {
-                    update_text_markers_recursive(child, bed, &mut texts, &children_query);
+                    update_text_markers_recursive(child, bed, &mut writer, &texts_query, &children_query);
                 }
             }
         }
@@ -78,18 +79,19 @@ fn update_bed_ui(
 fn update_text_markers_recursive(
     entity: Entity,
     bed: &Bed,
-    texts: &mut Query<(&mut Text, Option<&BedOwnerUIMarker>), Or<(With<BedOwnerUIMarker>,)>>,
+    writer: &mut TextUiWriter,
+    texts_query: &Query<(Entity, Option<&BedOwnerUIMarker>), Or<(With<BedOwnerUIMarker>,)>>,
     children_query: &Query<&Children>,
 ) {
-    if let Ok((mut text, bed_owner_marker)) = texts.get_mut(entity) {
+    if let Ok((bed_entity, bed_owner_marker)) = texts_query.get(entity) {
         if bed_owner_marker.is_some() {
-            text.sections[0].value = bed_owner_text(bed);
+            *writer.text(bed_entity, 0) = bed_owner_text(bed);
         }
     }
 
     if let Ok(children) = children_query.get(entity) {
         for &child in children.iter() {
-            update_text_markers_recursive(child, bed, texts, children_query);
+            update_text_markers_recursive(child, bed, writer, texts_query, children_query);
         }
     }
 }
