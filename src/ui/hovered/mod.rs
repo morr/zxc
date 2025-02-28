@@ -98,61 +98,61 @@ fn update_ui_on_hover_event(
             );
         }
     }
-
-    // hover over Storage
-    for storage_id in navmesh.get_occupants::<Storage>(grid_tile.x, grid_tile.y) {
-        if let Ok(storage) = storage_query.get(*storage_id) {
-            render_storage_ui(
-                *storage_id,
-                &mut hovered_root_ui_commands,
-                storage,
-                &font_assets,
-                UiOpacity::Medium,
-            );
-        }
-    }
-
-    // hover over Pawn
-    for pawn_id in navmesh.get_occupants::<Pawn>(grid_tile.x, grid_tile.y) {
-        if let Ok((pawn, movable, restable, feedable, commandable)) = pawn_query.get(*pawn_id) {
-            render_pawn_ui(
-                *pawn_id,
-                &mut hovered_root_ui_commands,
-                pawn,
-                movable,
-                restable,
-                feedable,
-                commandable,
-                &font_assets,
-                UiOpacity::Medium,
-            );
-        }
-    }
-
-    // hover over Farm
-    for farm_id in navmesh.get_occupants::<Farm>(grid_tile.x, grid_tile.y) {
-        if let Ok((farm, workable)) = farm_query.get(*farm_id) {
-            render_farm_ui(
-                *farm_id,
-                &mut hovered_root_ui_commands,
-                farm,
-                workable,
-                &font_assets,
-                UiOpacity::Medium,
-            );
-        }
-    }
-
-    // hover over Carryable
-    for carryable_id in navmesh.get_occupants::<Carryable>(grid_tile.x, grid_tile.y) {
-        if let Ok(carryable) = carryable_query.get(*carryable_id) {
-            render_carryable_ui(
-                *carryable_id,
-                &mut hovered_root_ui_commands,
-                carryable,
-                &font_assets,
-                UiOpacity::Medium,
-            );
-        }
-    }
+    //
+    // // hover over Storage
+    // for storage_id in navmesh.get_occupants::<Storage>(grid_tile.x, grid_tile.y) {
+    //     if let Ok(storage) = storage_query.get(*storage_id) {
+    //         render_storage_ui(
+    //             *storage_id,
+    //             &mut hovered_root_ui_commands,
+    //             storage,
+    //             &font_assets,
+    //             UiOpacity::Medium,
+    //         );
+    //     }
+    // }
+    //
+    // // hover over Pawn
+    // for pawn_id in navmesh.get_occupants::<Pawn>(grid_tile.x, grid_tile.y) {
+    //     if let Ok((pawn, movable, restable, feedable, commandable)) = pawn_query.get(*pawn_id) {
+    //         render_pawn_ui(
+    //             *pawn_id,
+    //             &mut hovered_root_ui_commands,
+    //             pawn,
+    //             movable,
+    //             restable,
+    //             feedable,
+    //             commandable,
+    //             &font_assets,
+    //             UiOpacity::Medium,
+    //         );
+    //     }
+    // }
+    //
+    // // hover over Farm
+    // for farm_id in navmesh.get_occupants::<Farm>(grid_tile.x, grid_tile.y) {
+    //     if let Ok((farm, workable)) = farm_query.get(*farm_id) {
+    //         render_farm_ui(
+    //             *farm_id,
+    //             &mut hovered_root_ui_commands,
+    //             farm,
+    //             workable,
+    //             &font_assets,
+    //             UiOpacity::Medium,
+    //         );
+    //     }
+    // }
+    //
+    // // hover over Carryable
+    // for carryable_id in navmesh.get_occupants::<Carryable>(grid_tile.x, grid_tile.y) {
+    //     if let Ok(carryable) = carryable_query.get(*carryable_id) {
+    //         render_carryable_ui(
+    //             *carryable_id,
+    //             &mut hovered_root_ui_commands,
+    //             carryable,
+    //             &font_assets,
+    //             UiOpacity::Medium,
+    //         );
+    //     }
+    // }
 }
