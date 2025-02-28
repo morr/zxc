@@ -72,9 +72,9 @@ pub fn render_carryable_ui(
 
 fn update_carryable_ui(
     ui_query: Query<(Entity, &CarryableUIMarker)>,
-    mut texts: Query<
+    texts_query: Query<
         (
-            &mut Text,
+            Entity,
             Option<&CarryableKindUIMarker>,
             Option<&CarryableAmountUIMarker>,
         ),
@@ -82,12 +82,13 @@ fn update_carryable_ui(
     >,
     components_query: Query<&Carryable>,
     children_query: Query<&Children>,
+    mut writer: TextUiWriter,
 ) {
     for (ui_id, ui_marker) in ui_query.iter() {
         if let Ok(carryable) = components_query.get(ui_marker.carryable_id) {
             if let Ok(children) = children_query.get(ui_id) {
                 for &child in children.iter() {
-                    update_text_markers_recursive(child, carryable, &mut texts, &children_query);
+                    update_text_markers_recursive(child, carryable, &texts_query, &children_query, &mut writer);
                 }
             }
         }
@@ -97,17 +98,18 @@ fn update_carryable_ui(
 fn update_text_markers_recursive(
     entity: Entity,
     carryable: &Carryable,
-    texts: &mut Query<
+    texts_query: &Query<
         (
-            &mut Text,
+            Entity,
             Option<&CarryableKindUIMarker>,
             Option<&CarryableAmountUIMarker>,
         ),
         Or<(With<CarryableKindUIMarker>, With<CarryableAmountUIMarker>)>,
     >,
     children_query: &Query<&Children>,
+    writer: &mut TextUiWriter,
 ) {
-    if let Ok((mut text, carryable_kind_marker, carryable_amount_marker)) = texts.get_mut(entity) {
+    if let Ok((text_entity, carryable_kind_marker, carryable_amount_marker)) = texts_query.get(entity) {
         if carryable_kind_marker.is_some() {
             *writer.text(text_entity, 0) = carryable_kind_text(carryable);
         }
@@ -118,7 +120,7 @@ fn update_text_markers_recursive(
 
     if let Ok(children) = children_query.get(entity) {
         for &child in children.iter() {
-            update_text_markers_recursive(child, carryable, texts, children_query);
+            update_text_markers_recursive(child, carryable, texts_query, children_query, writer);
         }
     }
 }
