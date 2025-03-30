@@ -1,21 +1,28 @@
-// src/ui/debug/grid.rs
 use super::*;
 
 pub struct DebugGridPlugin;
 impl Plugin for DebugGridPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(DebugGridVisible(config().debug.is_grid))
-           .add_systems(
-                Update,
-                render_grid
-                    .run_if(in_state(AppState::Playing))
-                    .run_if(|visible: Res<DebugGridVisible>| visible.0),
-            );
+        app.insert_state(if config().debug.is_grid {
+            DebugGridState::Visible
+        } else {
+            DebugGridState::Hidden
+        })
+        .add_systems(
+            Update,
+            render_grid
+                .run_if(in_state(AppState::Playing))
+                .run_if(in_state(DebugGridState::Visible)),
+        );
     }
 }
 
-#[derive(Resource)]
-pub struct DebugGridVisible(pub bool);
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
+pub enum DebugGridState {
+    #[default]
+    Hidden,
+    Visible,
+}
 
 pub fn render_grid(mut gizmos: Gizmos) {
     for i in -config().grid.half_size..config().grid.half_size {
