@@ -25,7 +25,8 @@ fn spawn_camera(mut commands: Commands) {
             Camera2d,
             Transform {
                 translation: Vec3::new(
-                    0.0, 0.0,
+                    0.0,
+                    0.0,
                     // tile_pos_to_world((GRID_COLS as f32 / 2.0) as u32),
                     // tile_pos_to_world((GRID_ROWS as f32 / 2.0) as u32),
                     0.0,
@@ -33,12 +34,10 @@ fn spawn_camera(mut commands: Commands) {
                 ..default()
             },
             OrthographicProjection {
-                // don't forget to set `near` and `far`
                 near: -1000.0,
                 far: 1000.0,
                 // initial zoom
                 scale: 1.25,
-                // ... any other settings you want to change ...
                 ..OrthographicProjection::default_2d()
             },
             Name::new("main_camera"),
@@ -56,13 +55,12 @@ fn spawn_camera(mut commands: Commands) {
             enabled: true,
             grab_buttons: vec![MouseButton::Left, MouseButton::Middle],
             move_keys: bevy_pancam::DirectionKeys {
-                // the keyboard buttons used to move the camera
-                up: vec![KeyCode::KeyW], // initalize the struct like this or use the provided methods for
-                down: vec![KeyCode::KeyS], // common key combinations
+                up: vec![KeyCode::KeyW],
+                down: vec![KeyCode::KeyS],
                 left: vec![KeyCode::KeyA],
                 right: vec![KeyCode::KeyD],
             },
-            speed: 600., // the speed for the keyboard movement
+            speed: 600.,
             max_scale: 20.0,
             max_x: f32::INFINITY,
             max_y: f32::INFINITY,
