@@ -2,6 +2,9 @@ RootConfig(
     app: AppConfig(
         resolution: (1920, 1080),
     ),
+    debug: DebugConfig(
+        is_grid: true,
+    ),
     grid: GridConfig(
         size: 500,
     ),

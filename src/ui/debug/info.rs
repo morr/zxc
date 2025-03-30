@@ -55,6 +55,7 @@ pub fn render_debug_ui_info(
 \"h\" - toggle help
 \"g\" - toggle grid
 \"n\" - toggle navmesh
+\"p\" - toggle perlin noise
 \"m\" - toggle movepath",
                     ),
                     TextFont {
@@ -97,8 +98,7 @@ pub fn handle_debug_info_keys(
     keys: Res<ButtonInput<KeyCode>>,
     // query: Query<Entity>,
     mut query: Query<(&mut Visibility, &mut Node), With<DebugHelpBlockUIMarker>>,
-    debug_grid_state: Res<State<DebugGridState>>,
-    mut next_debug_grid_state: ResMut<NextState<DebugGridState>>,
+    mut debug_grid_visible: ResMut<DebugGridVisible>,
     debug_navmesh_state: Res<State<DebugNavmeshState>>,
     mut next_debug_navmesh_state: ResMut<NextState<DebugNavmeshState>>,
     mut state_change_event_writer: EventWriter<StateChangeEvent<DebugNavmeshState>>,
@@ -123,10 +123,7 @@ pub fn handle_debug_info_keys(
     }
 
     if keys.just_pressed(KeyCode::KeyG) {
-        match debug_grid_state.get() {
-            DebugGridState::Visible => next_debug_grid_state.set(DebugGridState::Hidden),
-            DebugGridState::Hidden => next_debug_grid_state.set(DebugGridState::Visible),
-        };
+        debug_grid_visible.0 = !debug_grid_visible.0;
     }
 
     if keys.just_pressed(KeyCode::KeyN) {

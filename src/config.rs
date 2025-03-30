@@ -36,6 +36,7 @@ pub fn config() -> &'static RootConfig {
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct RootConfig {
     pub app: AppConfig,
+    pub debug: DebugConfig,
     pub grid: GridConfig,
     pub tile: TileConfig,
     pub starting_scene: StartingSceneConfig,
@@ -59,6 +60,11 @@ impl RootConfig {
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct AppConfig {
     pub resolution: (u32, u32),
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct DebugConfig {
+    pub is_grid: bool,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
