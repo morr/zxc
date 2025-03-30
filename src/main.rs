@@ -1,4 +1,5 @@
 use bevy::app::AppExit;
+use bevy::dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin};
 use zxc::*;
 
 fn main() {
@@ -30,6 +31,17 @@ fn main() {
                     ..default()
                 }),
         )
+        .add_plugins(FpsOverlayPlugin {
+            config: FpsOverlayConfig {
+                text_config: TextFont {
+                    font_size: 14.0,
+                    font: default(),
+                    font_smoothing: bevy::text::FontSmoothing::default(),
+                },
+                text_color: Color::srgba(1.0, 1.0, 1.0, 0.75),
+                enabled: true,
+            },
+        })
         // .add_plugins(bevy_inspector_egui::quick::FilterQueryInspectorPlugin::<With<Commandable>>::default())
         .add_plugins(bevy_inspector_egui::bevy_egui::EguiPlugin)
         .init_state::<AppState>()
