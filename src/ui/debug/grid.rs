@@ -1,5 +1,12 @@
 use super::*;
 
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
+pub enum DebugGridState {
+    #[default]
+    Hidden,
+    Visible,
+}
+
 pub struct DebugGridPlugin;
 impl Plugin for DebugGridPlugin {
     fn build(&self, app: &mut App) {
@@ -15,13 +22,6 @@ impl Plugin for DebugGridPlugin {
                 .run_if(in_state(DebugGridState::Visible)),
         );
     }
-}
-
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
-pub enum DebugGridState {
-    #[default]
-    Hidden,
-    Visible,
 }
 
 pub fn render_grid(mut gizmos: Gizmos) {

@@ -65,6 +65,7 @@ pub struct AppConfig {
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct DebugConfig {
     pub is_grid: bool,
+    pub is_navmesh: bool,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
