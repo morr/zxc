@@ -3,8 +3,9 @@ RootConfig(
         resolution: (1920, 1080),
     ),
     debug: DebugConfig(
-        is_grid: false,
-        is_navmesh: false
+        is_grid: true,
+        is_navmesh: false,
+        is_noise: true
     ),
     grid: GridConfig(
         size: 500,

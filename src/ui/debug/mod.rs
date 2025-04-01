@@ -1,6 +1,6 @@
 use crate::*;
 
-expose_submodules!(grid, movepath, navmesh, info, tasks_queue);
+expose_submodules!(grid, movepath, navmesh, noise, info, tasks_queue);
 
 pub struct UiDebugPlugin;
 
@@ -8,6 +8,7 @@ impl Plugin for UiDebugPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(DebugGridPlugin)
             .add_plugins(DebugNavmeshPlugin)
+            .add_plugins(DebugNoisePlugin)
             .add_plugins(DebugMovepathPlugin)
             .add_systems(OnExit(AppState::Loading), render_debug_ui_container)
             .add_systems(
