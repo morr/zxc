@@ -54,6 +54,7 @@ pub fn render_debug_ui_info(
 \"=\"/\"-\" - change game speed
 \"h\" - toggle help
 \"g\" - toggle grid
+\"p\" - toggle perlin noise
 \"n\" - toggle navmesh
 \"m\" - toggle movepath",
                     ),
@@ -97,11 +98,18 @@ pub fn handle_debug_info_keys(
     keys: Res<ButtonInput<KeyCode>>,
     // query: Query<Entity>,
     mut query: Query<(&mut Visibility, &mut Node), With<DebugHelpBlockUIMarker>>,
+
     debug_grid_state: Res<State<DebugGridState>>,
     mut next_debug_grid_state: ResMut<NextState<DebugGridState>>,
+
     debug_navmesh_state: Res<State<DebugNavmeshState>>,
     mut next_debug_navmesh_state: ResMut<NextState<DebugNavmeshState>>,
-    mut state_change_event_writer: EventWriter<StateChangeEvent<DebugNavmeshState>>,
+    mut debug_navmesh_state_change_event_writer: EventWriter<StateChangeEvent<DebugNavmeshState>>,
+
+    debug_noise_state: Res<State<DebugNoiseState>>,
+    mut next_debug_noise_state: ResMut<NextState<DebugNoiseState>>,
+    mut debug_noise_state_change_event_writer: EventWriter<StateChangeEvent<DebugNoiseState>>,
+
     debug_movepath_state: Res<State<DebugMovepathState>>,
     mut next_debug_movepath_state: ResMut<NextState<DebugMovepathState>>,
     // mut rebuild_map_event_writer: EventWriter<RebuildMapEvent>,
@@ -135,7 +143,16 @@ pub fn handle_debug_info_keys(
             DebugNavmeshState::Hidden => DebugNavmeshState::Visible,
         };
         next_debug_navmesh_state.set(new_state.clone());
-        state_change_event_writer.send(log_event!(StateChangeEvent(new_state)));
+        debug_navmesh_state_change_event_writer.send(log_event!(StateChangeEvent(new_state)));
+    }
+
+    if keys.just_pressed(KeyCode::KeyP) {
+        let new_state = match debug_noise_state.get() {
+            DebugNoiseState::Visible => DebugNoiseState::Hidden,
+            DebugNoiseState::Hidden => DebugNoiseState::Visible,
+        };
+        next_debug_noise_state.set(new_state.clone());
+        debug_noise_state_change_event_writer.send(log_event!(StateChangeEvent(new_state)));
     }
 
     // if keys.just_pressed(KeyCode::KeyR) {
