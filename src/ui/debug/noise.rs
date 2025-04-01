@@ -1,12 +1,5 @@
-// use ::noise::{
-//     utils::{NoiseMap, PlaneMapBuilder},
-//     Fbm, Perlin,
-// };
-// use rand::Rng;
-
-use ::noise::Perlin;
-
 use super::*;
+use ::noise::Perlin;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
 pub enum DebugNoiseState {
@@ -46,7 +39,7 @@ impl Default for NoiseSettings {
 }
 
 #[derive(Resource, Default)]
-pub struct NoiseData(Option<Vec<u8>>);
+pub struct NoiseData(Option<Vec<f32>>);
 
 pub struct DebugNoisePlugin;
 impl Plugin for DebugNoisePlugin {
@@ -77,21 +70,17 @@ fn initialize_noise_data(noise_settings: Res<NoiseSettings>, mut noise_data: Res
     let width = config().grid.size as usize;
     let height = config().grid.size as usize;
 
-    let mut data = vec![0u8; width * height * 4];
+    let mut data = vec![0.0f32; width * height];
 
     // Generate noise values for each pixel in the texture
     for y in 0..height {
         for x in 0..width {
-            let offseted_x = x as f64 + noise_settings.offset_x as f64;
-            let offseted_y = y as f64 + noise_settings.offset_y as f64;
+            let offseted_x = x as i32 + noise_settings.offset_x;
+            let offseted_y = y as i32 + noise_settings.offset_y;
 
-            // Convert pixel coordinates to normalized grid coordinates (0.0 to 1.0)
-            let grid_x = offseted_x / width as f64;
-            let grid_y = offseted_y / height as f64;
-
-            // Scale to the grid range and apply frequency
-            let nx = grid_x * config().grid.size as f64 * noise_settings.frequency;
-            let ny = grid_y * config().grid.size as f64 * noise_settings.frequency;
+            // scale to the grid range and apply frequency
+            let nx = offseted_x as f64 * noise_settings.frequency;
+            let ny = offseted_y as f64 * noise_settings.frequency;
 
             let mut noise_value = 0.0;
             let mut amplitude = 1.0;
@@ -106,20 +95,11 @@ fn initialize_noise_data(noise_settings: Res<NoiseSettings>, mut noise_data: Res
                 frequency *= noise_settings.lacunarity;
             }
 
-            // Normalize to 0.0 - 1.0
-            noise_value = (noise_value + 1.0) / 2.0;
+            // normalize to 0.0 - 1.0
+            let normalized_value = ((noise_value + 1.0) / 2.0) as f32;
+            let index = y * width + x;
 
-            // Convert to 0-255 for RGBA
-            let value = (noise_value * 255.0) as u8;
-
-            // Calculate pixel index (y * width + x) * 4 for RGBA format
-            let idx = (y * width + x) * 4;
-
-            // Set RGBA values (grayscale with full opacity)
-            data[idx] = value; // R
-            data[idx + 1] = value; // G
-            data[idx + 2] = value; // B
-            data[idx + 3] = 255; // A (full opacity)
+            data[index] = normalized_value;
         }
     }
 
