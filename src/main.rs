@@ -56,6 +56,7 @@ fn main() {
             assets::AssetsPlugin,
             map::MapPlugin,
             navigation::NavigationPlugin,
+            noise::NoisePlugin,
             user_selection::UserSelectPlugin,
             structure::StructurePlugin,
             #[cfg(feature = "debug_ui")]

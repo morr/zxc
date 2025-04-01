@@ -36,6 +36,7 @@ use_modules!(
     map,
     movable,
     navigation,
+    noise,
     pawn,
     restable,
     story_time,
