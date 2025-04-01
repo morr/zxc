@@ -6,7 +6,6 @@ pub struct NoisePlugin;
 impl Plugin for NoisePlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<NoiseSettings>()
-            .init_resource::<NoiseData>()
             .add_systems(Startup, generate_noise);
     }
 }
