@@ -1,93 +1,125 @@
+use bevy::{
+    asset::RenderAssetUsages,
+    image::{ImageAddressMode, ImageFilterMode, ImageSampler, ImageSamplerDescriptor},
+    render::render_resource::{Extent3d, TextureDimension, TextureFormat},
+};
+
 use super::*;
+
+pub struct DebugNoisePlugin;
+impl Plugin for DebugNoisePlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_state(if config().debug.is_noise {
+            DebugNoiseState::Visible
+        } else {
+            DebugNoiseState::Hidden
+        })
+        .add_event::<StateChangeEvent<DebugNoiseState>>()
+        .add_systems(Startup, setup_noise_texture.after(generate_noise))
+        .add_systems(
+            FixedUpdate,
+            handle_state_changes.run_if(in_state(AppState::Playing)),
+        );
+    }
+}
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
 pub enum DebugNoiseState {
-    // MainMenu,
     #[default]
     Hidden,
     Visible,
 }
 
 #[derive(Component)]
-pub struct DebugNoiseTile;
+pub struct DebugNoise;
 
-pub struct DebugNoisePlugin;
-impl Plugin for DebugNoisePlugin {
-    fn build(&self, app: &mut App) {
-        app
-            .insert_state(if config().debug.is_noise {
-                DebugNoiseState::Visible
-            } else {
-                DebugNoiseState::Hidden
-            })
-            .add_event::<StateChangeEvent<DebugNoiseState>>()
-            .add_systems(
-                FixedUpdate,
-                handle_state_changes.run_if(in_state(AppState::Playing)),
-            )
-            .add_systems(
-                OnExit(AppState::Loading),
-                initialize_noise_debug_tiles.run_if(in_state(AppState::Playing)),
-            );
-    }
-}
+#[derive(Resource)]
+pub struct NoiseTextureHandle(pub Handle<Image>);
 
+fn setup_noise_texture(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
+    let texture = create_empty_texture(config().grid.size as u32, config().grid.size as u32);
+    let handle = images.add(texture);
 
-fn initialize_noise_debug_tiles(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    assets: Res<AssetsCollection>,
-    noise_state: Res<State<DebugNoiseState>>,
-    query_tiles: Query<Entity, With<DebugNoiseTile>>,
-) {
-    update_noise_tiles_visibility(
-        &mut commands,
-        &mut meshes,
-        &assets,
-        &query_tiles,
-        noise_state.get(),
-    );
+    commands.insert_resource(NoiseTextureHandle(handle));
 }
 
 fn handle_state_changes(
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    assets: Res<AssetsCollection>,
     mut event_reader: EventReader<StateChangeEvent<DebugNoiseState>>,
-    query_tiles: Query<Entity, With<DebugNoiseTile>>,
+    query_mesh: Query<Entity, With<DebugNoise>>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    noise_texture: Res<NoiseTextureHandle>,
 ) {
-    for event in event_reader.read() {
-        update_noise_tiles_visibility(&mut commands, &mut meshes, &assets, &query_tiles, &event.0);
-    }
-}
+    for StateChangeEvent(state) in event_reader.read() {
+        match state {
+            DebugNoiseState::Visible => {
+                println!("DebugNoiseState::Hidden => DebugNoiseState::Visible");
+                let grid_world_size = config().grid.size as f32 * config().tile.size;
+                let mesh = meshes.add(Rectangle::new(grid_world_size, grid_world_size));
+                let material = materials.add(ColorMaterial::from(noise_texture.0.clone()));
 
-fn update_noise_tiles_visibility(
-    commands: &mut Commands,
-    meshes: &mut ResMut<Assets<Mesh>>,
-    assets: &Res<AssetsCollection>,
-    query_tiles: &Query<Entity, With<DebugNoiseTile>>,
-    state: &DebugNoiseState, // Changed to reference
-) {
-    match state {
-        DebugNoiseState::Visible => {
-            // let mesh = Mesh::from(Rectangle::new(
-            //     config().tile.size * config().grid.size as f32,
-            //     config().tile.size * config().grid.size as f32,
-            // ));
-            // let mesh_handle = meshes.add(mesh);
-            //
-            // commands
-            //     .spawn((
-            //         Mesh2d(mesh_handle.clone()),
-            //         MeshMaterial2d(assets.navmesh_passable.clone()),
-            //         Transform::from_xyz(0.0, 0.0, TILE_Z_INDEX + 1.0),
-            //     ))
-            //     .insert(DebugNoiseTile);
-        }
-        DebugNoiseState::Hidden => {
-            for entity in query_tiles.iter() {
-                commands.entity(entity).despawn_recursive();
+                commands.spawn((
+                    Mesh2d(mesh),
+                    MeshMaterial2d(material),
+                    Transform::from_xyz(0.0, 0.0, TILE_Z_INDEX + 1.0),
+                    DebugNoise,
+                ));
+
+                // println!("DebugNoiseState::Visible => DebugNoiseState::Hidden");
+
+                // commands.spawn((
+                //     Mesh2d(mesh_handle.clone()),
+                //     MeshMaterial2d(if navtile.is_passable() {
+                //         assets.navmesh_passable.clone()
+                //     } else {
+                //         assets.navmesh_impassable.clone()
+                //     }),
+                //     Transform::from_xyz(0., 0., TILE_Z_INDEX + 1.0),
+                //     DebugNoiseMesh
+                //
+                //     // Sprite::from_image(
+                //     //     noise_texture.0.clone()
+                //     // ),
+                //     // Transform::from_xyz(0., 0., TILE_Z_INDEX + 1.0),
+                // ));
+            }
+            DebugNoiseState::Hidden => {
+                println!("DebugNoiseState::Visible => DebugNoiseState::Hidden");
+                commands.entity(query_mesh.single()).despawn_recursive();
             }
         }
     }
+}
+
+fn create_empty_texture(width: u32, height: u32) -> Image {
+    // calculate total pixels for rgba format (4 bytes per pixel)
+    let pixel_count = width * height;
+    let texture_data = vec![0u8; (pixel_count * 4) as usize];
+
+    // create the image with proper sampling settings
+    let mut texture = Image::new(
+        Extent3d {
+            width,
+            height,
+            depth_or_array_layers: 1,
+        },
+        TextureDimension::D2,
+        texture_data,
+        TextureFormat::Rgba8Unorm,
+        RenderAssetUsages::RENDER_WORLD | RenderAssetUsages::MAIN_WORLD,
+    );
+
+    // Set nearest-neighbor filtering with proper address modes
+    texture.sampler = ImageSampler::Descriptor(ImageSamplerDescriptor {
+        mag_filter: ImageFilterMode::Nearest,
+        min_filter: ImageFilterMode::Nearest,
+        mipmap_filter: ImageFilterMode::Nearest,
+        address_mode_u: ImageAddressMode::ClampToEdge,
+        address_mode_v: ImageAddressMode::ClampToEdge,
+        address_mode_w: ImageAddressMode::ClampToEdge,
+        ..default()
+    });
+
+    texture
 }

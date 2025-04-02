@@ -24,8 +24,8 @@ pub struct NoiseSettings {
 impl Default for NoiseSettings {
     fn default() -> Self {
         Self {
-            // seed: rand::random(),
-            seed: 1655470700,
+            seed: rand::random(),
+            // seed: 1655470700,
             frequency: 0.01,
             octaves: 4,
             lacunarity: 2.0,
@@ -37,9 +37,9 @@ impl Default for NoiseSettings {
 }
 
 #[derive(Resource, Default)]
-pub struct NoiseData(Option<Vec<f32>>);
+pub struct NoiseData(pub Vec<f32>);
 
-fn generate_noise(noise_settings: Res<NoiseSettings>, mut noise_data: ResMut<NoiseData>) {
+pub fn generate_noise(mut commands: Commands, noise_settings: Res<NoiseSettings>) {
     let perlin = Perlin::new(noise_settings.seed);
 
     let width = config().grid.size as usize;
@@ -78,5 +78,5 @@ fn generate_noise(noise_settings: Res<NoiseSettings>, mut noise_data: ResMut<Noi
         }
     }
 
-    noise_data.0 = Some(data);
+    commands.insert_resource(NoiseData(data));
 }
