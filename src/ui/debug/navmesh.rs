@@ -13,16 +13,27 @@ pub struct DebugNavmeshTile;
 pub struct DebugNavmeshPlugin;
 impl Plugin for DebugNavmeshPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_state(if config().debug.is_navmesh {
-            DebugNavmeshState::Visible
-        } else {
-            DebugNavmeshState::Hidden
-        })
-        .add_event::<StateChangeEvent<DebugNavmeshState>>()
-        .add_systems(
-            FixedUpdate,
-            handle_state_changes.run_if(in_state(AppState::Playing)),
-        );
+        app.insert_state(DebugNavmeshState::Hidden)
+            .add_event::<StateChangeEvent<DebugNavmeshState>>()
+            .add_systems(
+                FixedUpdate,
+                handle_state_changes.run_if(in_state(AppState::Playing)),
+            );
+
+        if config().debug.is_navmesh {
+            app.add_systems(
+                OnExit(AppState::Loading),
+                (|mut next_state: ResMut<NextState<DebugNavmeshState>>,
+                  mut debug_navmesh_state_change_event_writer: EventWriter<
+                    StateChangeEvent<DebugNavmeshState>,
+                >| {
+                    next_state.set(DebugNavmeshState::Visible);
+                    debug_navmesh_state_change_event_writer
+                        .send(log_event!(StateChangeEvent(DebugNavmeshState::Visible)));
+                })
+                .after(generate_map),
+            );
+        }
     }
 }
 
