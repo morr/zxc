@@ -9,17 +9,28 @@ use super::*;
 pub struct DebugNoisePlugin;
 impl Plugin for DebugNoisePlugin {
     fn build(&self, app: &mut App) {
-        app.insert_state(if config().debug.is_noise {
-            DebugNoiseState::Visible
-        } else {
-            DebugNoiseState::Hidden
-        })
-        .add_event::<StateChangeEvent<DebugNoiseState>>()
-        .add_systems(Startup, setup_noise_texture.after(generate_noise))
-        .add_systems(
-            FixedUpdate,
-            handle_state_changes.run_if(in_state(AppState::Playing)),
-        );
+        app.insert_state(DebugNoiseState::Hidden)
+            .add_event::<StateChangeEvent<DebugNoiseState>>()
+            .add_systems(Startup, setup_noise_texture.after(generate_noise))
+            .add_systems(
+                FixedUpdate,
+                handle_state_changes.run_if(in_state(AppState::Playing)),
+            );
+
+        if config().debug.is_noise {
+            app.add_systems(
+                OnExit(AppState::Loading),
+                (|mut next_state: ResMut<NextState<DebugNoiseState>>,
+                  mut debug_noise_state_change_event_writer: EventWriter<
+                    StateChangeEvent<DebugNoiseState>,
+                >| {
+                    next_state.set(DebugNoiseState::Visible);
+                    debug_noise_state_change_event_writer
+                        .send(log_event!(StateChangeEvent(DebugNoiseState::Visible)));
+                })
+                .after(generate_map),
+            );
+        }
     }
 }
 

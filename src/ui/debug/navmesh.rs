@@ -48,7 +48,6 @@ fn handle_state_changes(
     for StateChangeEvent(state) in event_reader.read() {
         match state {
             DebugNavmeshState::Visible => {
-                println!("DebugNavmeshState::Hidden => DebugNavmeshState::Visible");
                 let mesh = Mesh::from(Rectangle::new(config().tile.size, config().tile.size));
                 let mesh_handle = meshes.add(mesh);
 
@@ -74,7 +73,6 @@ fn handle_state_changes(
                     });
             }
             DebugNavmeshState::Hidden => {
-                println!("DebugNavmeshState::Visible => DebugNavmeshState::Hidden");
                 for entity in query_tiles.iter() {
                     commands.entity(entity).despawn_recursive();
                 }
