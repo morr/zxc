@@ -28,7 +28,8 @@ impl Plugin for DebugNoisePlugin {
                     debug_noise_state_change_event_writer
                         .send(log_event!(StateChangeEvent(DebugNoiseState::Visible)));
                 })
-                .after(generate_map),
+                .after(generate_map)
+                .after(setup_noise_texture),
             );
         }
     }
@@ -47,10 +48,33 @@ pub struct DebugNoise;
 #[derive(Resource)]
 pub struct NoiseTextureHandle(pub Handle<Image>);
 
-fn setup_noise_texture(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
-    let texture = create_empty_texture(config().grid.size as u32, config().grid.size as u32);
-    let handle = images.add(texture);
+fn setup_noise_texture(
+    mut commands: Commands,
+    mut images: ResMut<Assets<Image>>,
+    noise_data: Res<NoiseData>,
+) {
+    let size = config().grid.size as usize;
+    let mut texture = create_empty_texture(size as u32, size as u32);
 
+    for y in 0..size {
+        for x in 0..size {
+            // pixel index (y * width + x) * 4 for RGBA format
+            let noise_index = y * size + x;
+            let noise_value = noise_data.0.get(noise_index).unwrap();
+
+            let texture_index = noise_index * 4;
+            // Convert to 0-255 for RGBA
+            let rgb_value = (noise_value * 255.0) as u8;
+
+            // Set RGBA values (grayscale with full opacity)
+            texture.data[texture_index] = rgb_value; // R
+            texture.data[texture_index + 1] = rgb_value; // G
+            texture.data[texture_index + 2] = rgb_value; // B
+            texture.data[texture_index + 3] = 255; // A (full opacity)
+        }
+    }
+
+    let handle = images.add(texture);
     commands.insert_resource(NoiseTextureHandle(handle));
 }
 
@@ -73,7 +97,7 @@ fn handle_state_changes(
                 commands.spawn((
                     Mesh2d(mesh),
                     MeshMaterial2d(material),
-                    Transform::from_xyz(0.0, 0.0, TILE_Z_INDEX + 1.0),
+                    Transform::from_xyz(0.0, 0.0, TILE_Z_INDEX + 2.0),
                     DebugNoise,
                 ));
 
