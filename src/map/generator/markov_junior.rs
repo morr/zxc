@@ -57,6 +57,7 @@ pub fn generate(generator_config: &Res<MarkovJuniorConfig>) -> Vec<Vec<Tile>> {
                         navmesh_index_to_grid_tile(y),
                     ),
                     kind: cell_state_to_tile_kind(cell_type),
+                    noise_value: 0.0,
                 })
                 .collect()
         })
@@ -64,7 +65,8 @@ pub fn generate(generator_config: &Res<MarkovJuniorConfig>) -> Vec<Vec<Tile>> {
 }
 
 fn initialize_grid(rng: &mut impl Rng) -> Vec<Vec<CellType>> {
-    let mut grid = vec![vec![CellType::DeepWater; config().grid.size as usize]; config().grid.size as usize];
+    let mut grid =
+        vec![vec![CellType::DeepWater; config().grid.size as usize]; config().grid.size as usize];
 
     // Create an initial landmass
     let center = config().grid.size / 2;
@@ -99,7 +101,9 @@ fn get_neighbors(grid: &[Vec<CellType>], x: usize, y: usize) -> Vec<CellType> {
     let grid_size = grid.len() as i32;
     for dy in -1..=1 {
         for dx in -1..=1 {
-            if dx == 0 && dy == 0 { continue; }
+            if dx == 0 && dy == 0 {
+                continue;
+            }
             let nx = x as i32 + dx;
             let ny = y as i32 + dy;
             if nx >= 0 && nx < grid_size && ny >= 0 && ny < grid_size {
@@ -111,9 +115,18 @@ fn get_neighbors(grid: &[Vec<CellType>], x: usize, y: usize) -> Vec<CellType> {
 }
 
 fn apply_rule(cell: CellType, neighbors: &[CellType], rng: &mut impl Rng) -> CellType {
-    let land_count = neighbors.iter().filter(|&&c| c != CellType::DeepWater && c != CellType::ShallowWater).count();
-    let fertile_count = neighbors.iter().filter(|&&c| c == CellType::FertileDirt).count();
-    let rocky_count = neighbors.iter().filter(|&&c| c == CellType::RockyDirt).count();
+    let land_count = neighbors
+        .iter()
+        .filter(|&&c| c != CellType::DeepWater && c != CellType::ShallowWater)
+        .count();
+    let fertile_count = neighbors
+        .iter()
+        .filter(|&&c| c == CellType::FertileDirt)
+        .count();
+    let rocky_count = neighbors
+        .iter()
+        .filter(|&&c| c == CellType::RockyDirt)
+        .count();
 
     match cell {
         CellType::DeepWater => {
@@ -194,7 +207,8 @@ fn ui_system(
             "Auto Generate",
         ));
         let iterations_slider = ui.add(
-            bevy_egui::egui::Slider::new(&mut generator_config.iterations, 0..=1000).text("Iterations"),
+            bevy_egui::egui::Slider::new(&mut generator_config.iterations, 0..=1000)
+                .text("Iterations"),
         );
         // let smoothing_iterations_slider = ui.add(
         //     bevy_egui::egui::Slider::new(&mut generator_config.smoothing_iterations, 0..=10)
@@ -230,7 +244,6 @@ fn ui_system(
         }
     });
 }
-
 
 // use rand::Rng;
 //
@@ -372,4 +385,3 @@ fn ui_system(
 //     markov.generate(100);
 //     markov.print_grid();
 // }
-

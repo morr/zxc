@@ -66,6 +66,7 @@ pub fn generate(generator_config: &Res<CellularAutomataConfig>) -> Vec<Vec<Tile>
                         navmesh_index_to_grid_tile(y),
                     ),
                     kind: cell_state_to_tile_kind(cell_type),
+                    noise_value: 0.0
                 })
                 .collect()
         })

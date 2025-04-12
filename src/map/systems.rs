@@ -4,9 +4,10 @@ pub fn generate_map(
     mut commands: Commands,
     assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
+    noise_data: Res<NoiseData>,
 ) {
     let mut navmesh = arc_navmesh.write();
-    let grid = generator::empty::generate();
+    let grid = generator::empty::generate(&noise_data);
 
     spawn_tiles(&mut commands, &assets, &mut navmesh, &grid);
 }
@@ -15,7 +16,7 @@ fn spawn_tiles(
     commands: &mut Commands,
     assets: &Res<TextureAssets>,
     navmesh: &mut Navmesh,
-    grid: &[Vec<Tile>], // mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
+    grid: &[Vec<Tile>],
 ) {
     for row in grid.iter() {
         for tile in row.iter() {
