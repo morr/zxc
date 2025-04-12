@@ -4,10 +4,9 @@ pub fn generate_map(
     mut commands: Commands,
     assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
-    noise_data: Res<NoiseData>,
 ) {
     let mut navmesh = arc_navmesh.write();
-    let grid = generator::empty::generate(&noise_data);
+    let grid = generator::empty::generate();
 
     spawn_tiles(&mut commands, &assets, &mut navmesh, &grid);
 }
