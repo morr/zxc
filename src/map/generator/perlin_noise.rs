@@ -1,7 +1,10 @@
 use super::*;
+use ::noise::Perlin;
 use rand::{Rng, SeedableRng};
 use rand_chacha::ChaCha8Rng;
-use ::noise::Perlin;
+
+#[cfg(feature = "bevy_egui")]
+use bevy_egui::egui;
 
 pub struct PerlinNoisePlugin;
 
@@ -117,54 +120,68 @@ pub fn generate_noise(seed: u32, generator_config: &Res<PerlinNoiseConfig>) -> V
     data
 }
 
-
 #[cfg(feature = "bevy_egui")]
 fn ui_system(
     mut egui_contexts: bevy_inspector_egui::bevy_egui::EguiContexts,
     mut generator_config: ResMut<PerlinNoiseConfig>,
     mut rebuild_map_event_writer: EventWriter<RebuildMapEvent>,
 ) {
-    // let ctx = egui_contexts.ctx_mut();
-    //
-    // bevy_egui::egui::Window::new("Cellular Automata Settings").show(ctx, |ui| {
-    //     ui.add(bevy_egui::egui::Checkbox::new(
-    //         &mut generator_config.auto_generate,
-    //         "Auto Generate",
-    //     ));
-    //     let iterations_slider = ui.add(
-    //         bevy_egui::egui::Slider::new(&mut generator_config.iterations, 0..=10).text("Iterations"),
-    //     );
-    //     let smoothing_iterations_slider = ui.add(
-    //         bevy_egui::egui::Slider::new(&mut generator_config.smoothing_iterations, 0..=10)
-    //             .text("Smoothing Iterations"),
-    //     );
-    //     let initial_alive_probability_slider = ui.add(
-    //         bevy_egui::egui::Slider::new(&mut generator_config.initial_alive_probability, 0..=100)
-    //             .text("Initial Alive Probability"),
-    //     );
-    //
-    //     let generate_new_seed_button = ui.button("Generate New Seed");
-    //     if generate_new_seed_button.clicked() {
-    //         generator_config.seed = Some(rand::random());
-    //     }
-    //
-    //     let maybe_button = if generator_config.auto_generate {
-    //         None
-    //     } else {
-    //         Some(ui.button("Generate"))
-    //     };
-    //
-    //     let is_changed = iterations_slider.changed()
-    //         || smoothing_iterations_slider.changed()
-    //         || initial_alive_probability_slider.changed()
-    //         || generate_new_seed_button.clicked();
-    //
-    //     if (maybe_button.is_some() && maybe_button.unwrap().clicked())
-    //         || (generator_config.auto_generate && is_changed)
-    //     {
-    //         rebuild_map_event_writer.send(log_event!(RebuildMapEvent {
-    //             generator_kind: GeneratorKind::CellularAutomata
-    //         }));
-    //     }
-    // });
+
+    let ctx = egui_contexts.ctx_mut();
+
+    bevy_egui::egui::Window::new("Perlin Noise Settings").show(ctx, |ui| {
+        let mut is_changed = false;
+
+        ui.add(bevy_egui::egui::Checkbox::new(
+            &mut generator_config.auto_generate,
+            "Auto Generate",
+        ));
+
+        is_changed |= ui
+            .add(
+                egui::Slider::new(&mut generator_config.frequency, 0.001..=0.1)
+                    .text("Frequency")
+                    .logarithmic(true),
+            )
+            .changed();
+
+        let mut octaves = generator_config.octaves as i32;
+        if ui
+            .add(egui::Slider::new(&mut octaves, 1..=8).text("Octaves"))
+            .changed()
+        {
+            generator_config.octaves = octaves as usize;
+            is_changed = true;
+        }
+
+        is_changed |= ui
+            .add(egui::Slider::new(&mut generator_config.lacunarity, 1.0..=4.0).text("Lacunarity"))
+            .changed();
+
+        is_changed |= ui
+            .add(
+                egui::Slider::new(&mut generator_config.persistence, 0.0..=1.0).text("Persistence"),
+            )
+            .changed();
+
+        let generate_new_seed_button = ui.button("Generate New Seed");
+        if generate_new_seed_button.clicked() {
+            generator_config.seed = Some(rand::random());
+            is_changed = true;
+        }
+
+        let maybe_button = if generator_config.auto_generate {
+            None
+        } else {
+            Some(ui.button("Generate"))
+        };
+
+        if (maybe_button.is_some() && maybe_button.unwrap().clicked())
+            || (generator_config.auto_generate && is_changed)
+        {
+            rebuild_map_event_writer.send(log_event!(RebuildMapEvent {
+                generator_kind: GeneratorKind::PerlinNoise
+            }));
+        }
+    });
 }
