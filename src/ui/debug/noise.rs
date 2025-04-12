@@ -6,6 +6,7 @@ use bevy::{
 use std::collections::HashMap;
 
 use super::*;
+use crate::map::RebuildMapEvent;
 
 pub struct DebugNoisePlugin;
 impl Plugin for DebugNoisePlugin {
@@ -14,11 +15,15 @@ impl Plugin for DebugNoisePlugin {
             .add_event::<StateChangeEvent<DebugNoiseState>>()
             .add_systems(
                 OnExit(AppState::Loading),
-                setup_noise_texture.after(generate_map),
+                initialize_noise_texture.after(generate_map),
+            )
+            .add_systems(
+                Update,
+                refresh_on_map_rebuild.run_if(in_state(AppState::Playing)),
             )
             .add_systems(
                 FixedUpdate,
-                handle_state_changes.run_if(in_state(AppState::Playing)),
+                toggle_noise_visibility.run_if(in_state(AppState::Playing)),
             );
 
         if config().debug.is_noise {
@@ -33,7 +38,7 @@ impl Plugin for DebugNoisePlugin {
                         .send(log_event!(StateChangeEvent(DebugNoiseState::Visible)));
                 })
                 .after(generate_map)
-                .after(setup_noise_texture),
+                .after(initialize_noise_texture),
             );
         }
     }
@@ -52,7 +57,7 @@ pub struct DebugNoise;
 #[derive(Resource)]
 pub struct NoiseTextureHandle(pub Handle<Image>);
 
-fn create_noise_map_from_tiles(tile_query: &Query<&Tile>) -> HashMap<(usize, usize), f32> {
+fn extract_tile_noise_map(tile_query: &Query<&Tile>) -> HashMap<(usize, usize), f32> {
     let size = config().grid.size as usize;
     let mut noise_map = HashMap::new();
 
@@ -70,16 +75,9 @@ fn create_noise_map_from_tiles(tile_query: &Query<&Tile>) -> HashMap<(usize, usi
     noise_map
 }
 
-fn setup_noise_texture(
-    mut commands: Commands,
-    mut images: ResMut<Assets<Image>>,
-    tile_query: Query<&Tile>,
-) {
+fn render_noise_to_texture(noise_map: &HashMap<(usize, usize), f32>) -> Image {
     let size = config().grid.size as usize;
-    let mut texture = create_empty_texture(size as u32, size as u32);
-
-    // Get noise values from tiles
-    let noise_map = create_noise_map_from_tiles(&tile_query);
+    let mut texture = create_blank_texture(size as u32, size as u32);
 
     // Fill the texture using the noise values from tiles
     for y in 0..size {
@@ -99,11 +97,101 @@ fn setup_noise_texture(
         }
     }
 
+    texture
+}
+
+fn refresh_noise_visualization(
+    commands: &mut Commands,
+    texture_handle: Handle<Image>,
+    meshes: &mut ResMut<Assets<Mesh>>,
+    materials: &mut ResMut<Assets<ColorMaterial>>,
+    query_mesh: &Query<Entity, With<DebugNoise>>,
+) {
+    // First, remove the old visualization if it exists
+    for entity in query_mesh.iter() {
+        commands.entity(entity).despawn();
+    }
+
+    // Create a new visualization
+    let grid_world_size = config().grid.size as f32 * config().tile.size;
+    let mesh = meshes.add(Rectangle::new(grid_world_size, grid_world_size));
+    let material = materials.add(ColorMaterial::from(texture_handle));
+
+    commands.spawn((
+        Mesh2d(mesh),
+        MeshMaterial2d(material),
+        Transform::from_xyz(0.0, 0.0, TILE_Z_INDEX + 2.0),
+        DebugNoise,
+    ));
+}
+
+fn initialize_noise_texture(
+    mut commands: Commands,
+    mut images: ResMut<Assets<Image>>,
+    tile_query: Query<&Tile>,
+) {
+    // Get noise values from tiles
+    let noise_map = extract_tile_noise_map(&tile_query);
+
+    // Create texture
+    let texture = render_noise_to_texture(&noise_map);
+
+    // Add texture to assets and store handle in resource
     let handle = images.add(texture);
     commands.insert_resource(NoiseTextureHandle(handle));
 }
 
-fn handle_state_changes(
+#[allow(clippy::too_many_arguments)]
+fn refresh_on_map_rebuild(
+    mut event_reader: EventReader<RebuildMapEvent>,
+    mut images: ResMut<Assets<Image>>,
+    tile_query: Query<&Tile>,
+    noise_texture: Option<Res<NoiseTextureHandle>>,
+    current_state: Res<State<DebugNoiseState>>,
+    query_mesh: Query<Entity, With<DebugNoise>>,
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
+    // Only process if there's a rebuild event
+    if event_reader.is_empty() {
+        return;
+    }
+
+    // Consume all rebuild events (we only need to know they happened)
+    for _ in event_reader.read() {}
+
+    // Get noise values from tiles
+    let noise_map = extract_tile_noise_map(&tile_query);
+
+    // Create texture
+    let texture = render_noise_to_texture(&noise_map);
+
+    // Update or create the texture resource
+    let texture_handle = if let Some(texture_res) = noise_texture {
+        // Update existing texture
+        *images.get_mut(&texture_res.0).unwrap() = texture;
+        texture_res.0.clone()
+    } else {
+        // Create new texture resource
+        let handle = images.add(texture);
+        commands.insert_resource(NoiseTextureHandle(handle.clone()));
+        handle
+    };
+
+    // If the noise visualization is currently visible, update the visualization too
+    if *current_state.get() == DebugNoiseState::Visible {
+        refresh_noise_visualization(
+            &mut commands,
+            texture_handle,
+            &mut meshes,
+            &mut materials,
+            &query_mesh,
+        );
+    }
+}
+
+fn toggle_noise_visibility(
     mut commands: Commands,
     mut event_reader: EventReader<StateChangeEvent<DebugNoiseState>>,
     query_mesh: Query<Entity, With<DebugNoise>>,
@@ -115,16 +203,13 @@ fn handle_state_changes(
         match state {
             DebugNoiseState::Visible => {
                 println!("DebugNoiseState::Hidden => DebugNoiseState::Visible");
-                let grid_world_size = config().grid.size as f32 * config().tile.size;
-                let mesh = meshes.add(Rectangle::new(grid_world_size, grid_world_size));
-                let material = materials.add(ColorMaterial::from(noise_texture.0.clone()));
-
-                commands.spawn((
-                    Mesh2d(mesh),
-                    MeshMaterial2d(material),
-                    Transform::from_xyz(0.0, 0.0, TILE_Z_INDEX + 2.0),
-                    DebugNoise,
-                ));
+                refresh_noise_visualization(
+                    &mut commands,
+                    noise_texture.0.clone(),
+                    &mut meshes,
+                    &mut materials,
+                    &query_mesh,
+                );
             }
             DebugNoiseState::Hidden => {
                 println!("DebugNoiseState::Visible => DebugNoiseState::Hidden");
@@ -134,7 +219,7 @@ fn handle_state_changes(
     }
 }
 
-fn create_empty_texture(width: u32, height: u32) -> Image {
+fn create_blank_texture(width: u32, height: u32) -> Image {
     // calculate total pixels for rgba format (4 bytes per pixel)
     let pixel_count = width * height;
     let texture_data = vec![0u8; (pixel_count * 4) as usize];
