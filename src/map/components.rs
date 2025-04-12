@@ -44,5 +44,6 @@ pub struct RebuildMapEvent {
 #[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq)]
 pub enum GeneratorKind {
     CellularAutomata,
-    MarkovJunior
+    MarkovJunior,
+    PerlinNoise
 }

@@ -11,7 +11,6 @@ impl Plugin for MapPlugin {
             .add_systems(OnExit(AppState::Loading), generate_map)
             .add_systems(Update, track_hover.run_if(in_state(AppState::Playing)));
 
-        #[cfg(feature = "map_generator")]
         app
             .add_plugins((
                 generator::cellular_automata::CellularAutomataPlugin,
