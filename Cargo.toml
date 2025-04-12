@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [features]
-default = ["bevy_egui", "debug_ui"]
+default = ["bevy_egui", "debug_ui", "map_generator"]
 bevy_egui = ["dep:bevy_egui"]
 debug_ui = []
 map_generator = []

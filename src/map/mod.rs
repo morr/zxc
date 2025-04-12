@@ -15,7 +15,8 @@ impl Plugin for MapPlugin {
         app
             .add_plugins((
                 generator::cellular_automata::CellularAutomataPlugin,
-                generator::markov_junior::MarkovJuniorPlugin
+                generator::markov_junior::MarkovJuniorPlugin,
+                generator::perlin_noise::PerlinNoisePlugin
             ))
             .add_systems(FixedUpdate, rebuild_map.run_if(in_state(AppState::Playing)));
 
