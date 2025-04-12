@@ -76,7 +76,6 @@ pub fn track_hover(
     }
 }
 
-#[cfg(feature = "map_generator")]
 pub fn rebuild_map(
     mut event_reader: EventReader<RebuildMapEvent>,
     mut commands: Commands,

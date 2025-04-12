@@ -4,10 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [features]
-default = ["bevy_egui", "debug_ui", "map_generator"]
+default = ["bevy_egui", "debug_ui"]
 bevy_egui = ["dep:bevy_egui"]
 debug_ui = []
-map_generator = []
 
 [dependencies]
 bevy = { version = "0.15.2", features = ["dynamic_linking", "bevy_dev_tools"] }
