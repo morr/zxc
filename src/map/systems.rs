@@ -79,8 +79,6 @@ pub fn track_hover(
 pub fn rebuild_map(
     mut event_reader: EventReader<RebuildMapEvent>,
     mut commands: Commands,
-    ca_config: Res<generator::cellular_automata::CellularAutomataConfig>,
-    mj_config: Res<generator::markov_junior::MarkovJuniorConfig>,
     pn_config: Res<generator::perlin_noise::PerlinNoiseConfig>,
     assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
@@ -95,8 +93,6 @@ pub fn rebuild_map(
         }
 
         let grid = match generator_kind {
-            GeneratorKind::CellularAutomata => generator::cellular_automata::generate(&ca_config),
-            GeneratorKind::MarkovJunior => generator::markov_junior::generate(&mj_config),
             GeneratorKind::PerlinNoise => generator::perlin_noise::generate(&pn_config),
         };
 

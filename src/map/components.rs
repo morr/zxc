@@ -10,7 +10,7 @@ pub enum TileKind {
     Mountain,
     RockyDirt,
     Dirt,
-    FertileDirt
+    FertileDirt,
 }
 
 #[derive(Component, Debug, Clone, Copy, Reflect)]
@@ -43,7 +43,5 @@ pub struct RebuildMapEvent {
 
 #[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq)]
 pub enum GeneratorKind {
-    CellularAutomata,
-    MarkovJunior,
-    PerlinNoise
+    PerlinNoise,
 }
