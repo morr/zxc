@@ -3,10 +3,11 @@ use super::*;
 pub fn generate_map(
     mut commands: Commands,
     assets: Res<TextureAssets>,
+    pn_config: Res<generator::perlin_noise::PerlinNoiseConfig>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     let mut navmesh = arc_navmesh.write();
-    let grid = generator::empty::generate();
+    let grid = generator::perlin_noise::generate(&pn_config);
 
     spawn_tiles(&mut commands, &assets, &mut navmesh, &grid);
 }
