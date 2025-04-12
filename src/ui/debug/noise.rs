@@ -3,6 +3,7 @@ use bevy::{
     image::{ImageAddressMode, ImageFilterMode, ImageSampler, ImageSamplerDescriptor},
     render::render_resource::{Extent3d, TextureDimension, TextureFormat},
 };
+use std::collections::HashMap;
 
 use super::*;
 
@@ -11,7 +12,10 @@ impl Plugin for DebugNoisePlugin {
     fn build(&self, app: &mut App) {
         app.insert_state(DebugNoiseState::Hidden)
             .add_event::<StateChangeEvent<DebugNoiseState>>()
-            .add_systems(Startup, setup_noise_texture.after(generate_noise))
+            .add_systems(
+                OnExit(AppState::Loading),
+                setup_noise_texture.after(generate_map),
+            )
             .add_systems(
                 FixedUpdate,
                 handle_state_changes.run_if(in_state(AppState::Playing)),
@@ -48,21 +52,42 @@ pub struct DebugNoise;
 #[derive(Resource)]
 pub struct NoiseTextureHandle(pub Handle<Image>);
 
+fn create_noise_map_from_tiles(tile_query: &Query<&Tile>) -> HashMap<(usize, usize), f32> {
+    let size = config().grid.size as usize;
+    let mut noise_map = HashMap::new();
+
+    for tile in tile_query.iter() {
+        let grid_pos = tile.grid_tile;
+        // Convert from grid coordinates to noise texture coordinates
+        let x = grid_tile_to_navmesh_index(grid_pos.x);
+        let y = grid_tile_to_navmesh_index(grid_pos.y);
+
+        if x < size && y < size {
+            noise_map.insert((x, y), tile.noise_value);
+        }
+    }
+
+    noise_map
+}
+
 fn setup_noise_texture(
     mut commands: Commands,
     mut images: ResMut<Assets<Image>>,
-    noise_data: Res<NoiseData>,
+    tile_query: Query<&Tile>,
 ) {
     let size = config().grid.size as usize;
     let mut texture = create_empty_texture(size as u32, size as u32);
 
+    // Get noise values from tiles
+    let noise_map = create_noise_map_from_tiles(&tile_query);
+
+    // Fill the texture using the noise values from tiles
     for y in 0..size {
         for x in 0..size {
-            // pixel index (y * width + x) * 4 for RGBA format
-            let noise_index = y * size + x;
-            let noise_value = noise_data.0.get(noise_index).unwrap();
+            let noise_value = *noise_map.get(&(x, y)).unwrap_or(&0.0);
 
-            let texture_index = noise_index * 4;
+            // pixel index (y * width + x) * 4 for RGBA format
+            let texture_index = (y * size + x) * 4;
             // Convert to 0-255 for RGBA
             let rgb_value = (noise_value * 255.0) as u8;
 
@@ -100,24 +125,6 @@ fn handle_state_changes(
                     Transform::from_xyz(0.0, 0.0, TILE_Z_INDEX + 2.0),
                     DebugNoise,
                 ));
-
-                // println!("DebugNoiseState::Visible => DebugNoiseState::Hidden");
-
-                // commands.spawn((
-                //     Mesh2d(mesh_handle.clone()),
-                //     MeshMaterial2d(if navtile.is_passable() {
-                //         assets.navmesh_passable.clone()
-                //     } else {
-                //         assets.navmesh_impassable.clone()
-                //     }),
-                //     Transform::from_xyz(0., 0., TILE_Z_INDEX + 1.0),
-                //     DebugNoiseMesh
-                //
-                //     // Sprite::from_image(
-                //     //     noise_texture.0.clone()
-                //     // ),
-                //     // Transform::from_xyz(0., 0., TILE_Z_INDEX + 1.0),
-                // ));
             }
             DebugNoiseState::Hidden => {
                 println!("DebugNoiseState::Visible => DebugNoiseState::Hidden");
