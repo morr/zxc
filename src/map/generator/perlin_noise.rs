@@ -72,6 +72,18 @@ pub fn generate(generator_config: &Res<PerlinNoiseConfig>) -> Vec<Vec<Tile>> {
 
             let noise_index = y * config().grid.size as usize + x;
             cell.noise_value = noise[noise_index];
+
+            cell.kind = match cell.noise_value {
+                n if n < 0.2 => TileKind::DeepWater,
+                n if n < 0.3 => TileKind::ShallowWater,
+                n if n < 0.4 => TileKind::Sand,
+                n if n < 0.6 => TileKind::Grass,
+                n if n < 0.7 => TileKind::Forest,
+                n if n < 0.8 => TileKind::RockyDirt,
+                // n if n < 0.9 => TileKind::Dirt,
+                // n if n < 0.95 => TileKind::FertileDirt,
+                _ => TileKind::Mountain,
+            };
         }
     }
 
