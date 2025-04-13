@@ -85,7 +85,9 @@ fn render_noise_to_texture(noise_map: &HashMap<(usize, usize), f32>) -> Image {
             let noise_value = *noise_map.get(&(x, y)).unwrap_or(&0.0);
 
             // pixel index (y * width + x) * 4 for RGBA format
-            let texture_index = (y * size + x) * 4;
+            // let texture_index = (y * size + x) * 4;
+            // flip Y coordinate
+            let texture_index = ((size - 1 - y) * size + x) * 4;
             // Convert to 0-255 for RGBA
             let rgb_value = (noise_value * 255.0) as u8;
 
