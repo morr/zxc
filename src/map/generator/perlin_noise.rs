@@ -1,5 +1,4 @@
 use super::*;
-use ::noise::Perlin;
 use rand::{Rng, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 
@@ -17,6 +16,15 @@ impl Plugin for PerlinNoisePlugin {
     }
 }
 
+#[derive(Debug, PartialEq)]
+pub enum NoiseDistortion {
+    RawValue,
+    EdgeShape,
+    Distortion,
+    DistortionX,
+    DistortionY,
+}
+
 #[derive(Resource)]
 pub struct PerlinNoiseConfig {
     pub auto_generate: bool,
@@ -27,19 +35,21 @@ pub struct PerlinNoiseConfig {
     pub persistence: f64,
     pub offset_x: i32,
     pub offset_y: i32,
+    pub distortion: NoiseDistortion,
 }
 
 impl Default for PerlinNoiseConfig {
     fn default() -> Self {
         Self {
             auto_generate: true,
-            seed: None,
+            seed: Some(15759246571423803862),
             frequency: 0.01,
             octaves: 4,
             lacunarity: 2.0,
             persistence: 0.5,
             offset_x: 0,
             offset_y: 0,
+            distortion: NoiseDistortion::RawValue,
         }
     }
 }
@@ -75,9 +85,9 @@ pub fn generate(generator_config: &Res<PerlinNoiseConfig>) -> Vec<Vec<Tile>> {
 
             cell.kind = match cell.noise_value {
                 n if n < 0.1 => TileKind::DeepWater,
-                n if n < 0.2 => TileKind::ShallowWater,
-                n if n < 0.3 => TileKind::Sand,
-                n if n < 0.7 => TileKind::Grass,
+                n if n < 0.15 => TileKind::ShallowWater,
+                n if n < 0.2 => TileKind::Sand,
+                n if n < 0.6 => TileKind::Grass,
                 _ => TileKind::Forest,
                 //
                 // n if n < 0.2 => TileKind::DeepWater,
@@ -97,7 +107,8 @@ pub fn generate(generator_config: &Res<PerlinNoiseConfig>) -> Vec<Vec<Tile>> {
 }
 
 pub fn generate_noise(seed: u32, generator_config: &Res<PerlinNoiseConfig>) -> Vec<f32> {
-    let perlin = Perlin::new(seed);
+    // let noise = Perlin::new(seed);
+    let noise = noise::Simplex::new(seed);
 
     let width = config().grid.size as usize;
     let height = config().grid.size as usize;
@@ -107,29 +118,40 @@ pub fn generate_noise(seed: u32, generator_config: &Res<PerlinNoiseConfig>) -> V
     // generate noise values for each pixel in the texture
     for y in 0..height {
         for x in 0..width {
-            let offseted_x = x as i32 + generator_config.offset_x;
-            let offseted_y = y as i32 + generator_config.offset_y;
-
-            // scale to the grid range and apply frequency
-            let nx = offseted_x as f64 * generator_config.frequency;
-            let ny = offseted_y as f64 * generator_config.frequency;
-
-            let mut noise_value = 0.0;
-            let mut amplitude = 1.0;
-            let mut frequency = 1.0;
-
-            // generate octaves of noise
-            for _ in 0..generator_config.octaves {
-                noise_value +=
-                    ::noise::NoiseFn::get(&perlin, [nx * frequency, ny * frequency, 0.0])
-                        * amplitude;
-                amplitude *= generator_config.persistence;
-                frequency *= generator_config.lacunarity;
-            }
-
-            // normalize to 0.0 - 1.0
-            let normalized_value = ((noise_value + 1.0) / 2.0) as f32;
             let index = y * width + x;
+            let raw_value = noise_value(x, y, &noise, generator_config);
+
+            let normalized_value = match generator_config.distortion {
+                NoiseDistortion::RawValue => raw_value,
+                NoiseDistortion::EdgeShape => {
+                    if (0.475..=0.525).contains(&raw_value) {
+                        raw_value
+                    } else {
+                        0.0
+                    }
+                }
+                NoiseDistortion::Distortion => {
+                    let value2 = noise_value(x + 1, y + 1, &noise, generator_config);
+                    noise_value(
+                        (raw_value * width as f32).floor() as usize,
+                        (value2 * height as f32).floor() as usize,
+                        &noise,
+                        generator_config,
+                    )
+                }
+                NoiseDistortion::DistortionX => noise_value(
+                    (raw_value * width as f32).floor() as usize,
+                    0,
+                    &noise,
+                    generator_config,
+                ),
+                NoiseDistortion::DistortionY => noise_value(
+                    0,
+                    (raw_value * width as f32).floor() as usize,
+                    &noise,
+                    generator_config,
+                ),
+            };
 
             data[index] = normalized_value;
         }
@@ -138,13 +160,41 @@ pub fn generate_noise(seed: u32, generator_config: &Res<PerlinNoiseConfig>) -> V
     data
 }
 
+fn noise_value(
+    x: usize,
+    y: usize,
+    noise: &noise::Simplex,
+    generator_config: &Res<PerlinNoiseConfig>,
+) -> f32 {
+    let offseted_x = x as i32 + generator_config.offset_x;
+    let offseted_y = y as i32 + generator_config.offset_y;
+
+    // scale to the grid range and apply frequency
+    let nx = offseted_x as f64 * generator_config.frequency;
+    let ny = offseted_y as f64 * generator_config.frequency;
+
+    let mut noise_value = 0.0;
+    let mut amplitude = 1.0;
+    let mut frequency = 1.0;
+
+    // generate octaves of noise
+    for _ in 0..generator_config.octaves {
+        noise_value +=
+            ::noise::NoiseFn::get(&noise, [nx * frequency, ny * frequency, 0.0]) * amplitude;
+        amplitude *= generator_config.persistence;
+        frequency *= generator_config.lacunarity;
+    }
+
+    // normalize to 0.0 - 1.0
+    ((noise_value + 1.0) / 2.0) as f32
+}
+
 #[cfg(feature = "bevy_egui")]
 fn ui_system(
     mut egui_contexts: bevy_inspector_egui::bevy_egui::EguiContexts,
     mut generator_config: ResMut<PerlinNoiseConfig>,
     mut rebuild_map_event_writer: EventWriter<RebuildMapEvent>,
 ) {
-
     let ctx = egui_contexts.ctx_mut();
 
     bevy_egui::egui::Window::new("Perlin Noise Settings").show(ctx, |ui| {
@@ -181,6 +231,47 @@ fn ui_system(
                 egui::Slider::new(&mut generator_config.persistence, 0.0..=1.0).text("Persistence"),
             )
             .changed();
+
+        // Add ComboBox for noise distortion type
+        egui::ComboBox::from_label("Noise Distortion")
+            .selected_text(format!("{:?}", generator_config.distortion))
+            .show_ui(ui, |ui| {
+                is_changed |= ui
+                    .selectable_value(
+                        &mut generator_config.distortion,
+                        NoiseDistortion::RawValue,
+                        "Raw Value",
+                    )
+                    .changed();
+                is_changed |= ui
+                    .selectable_value(
+                        &mut generator_config.distortion,
+                        NoiseDistortion::EdgeShape,
+                        "Edge Shape",
+                    )
+                    .changed();
+                is_changed |= ui
+                    .selectable_value(
+                        &mut generator_config.distortion,
+                        NoiseDistortion::Distortion,
+                        "Distortion",
+                    )
+                    .changed();
+                is_changed |= ui
+                    .selectable_value(
+                        &mut generator_config.distortion,
+                        NoiseDistortion::DistortionX,
+                        "Distortion X",
+                    )
+                    .changed();
+                is_changed |= ui
+                    .selectable_value(
+                        &mut generator_config.distortion,
+                        NoiseDistortion::DistortionY,
+                        "Distortion Y",
+                    )
+                    .changed();
+            });
 
         let generate_new_seed_button = ui.button("Generate New Seed");
         if generate_new_seed_button.clicked() {
