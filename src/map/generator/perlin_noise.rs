@@ -21,8 +21,7 @@ pub enum NoiseDistortion {
     RawValue,
     EdgeShape,
     Distortion,
-    DistortionX,
-    DistortionY,
+    Skewed
 }
 
 #[derive(Resource)]
@@ -54,6 +53,19 @@ impl Default for PerlinNoiseConfig {
     }
 }
 
+// http://www-cs-students.stanford.edu/~amitp/game-programming/polygon-map-generation/
+
+// Biome types:
+// high elevations get snow, rock, tundra;
+// medium elevations get shrubs, deserts, forests, and grassland;
+// low elevations get rain forests, grassland, and beaches.
+
+// Elevation    Moisture Zone
+// Zone 6 (wet)	5	4	3	2	1 (dry)
+// 4 (high)	SNOW	TUNDRA	BARE	SCORCHED
+// 3	TAIGA	SHRUBLAND	TEMPERATE DESERT
+// 2	TEMPERATE RAIN FOREST	TEMPERATE DECIDUOUS FOREST	GRASSLAND	TEMPERATE DESERT
+// 1 (low)	TROPICAL RAIN FOREST	TROPICAL SEASONAL FOREST	GRASSLAND	SUBTROPICAL DESERT
 pub fn generate(generator_config: &Res<PerlinNoiseConfig>) -> Vec<Vec<Tile>> {
     let mut rng = match generator_config.seed {
         Some(seed) => ChaCha8Rng::seed_from_u64(seed),
@@ -139,18 +151,12 @@ pub fn generate_noise(seed: u32, generator_config: &Res<PerlinNoiseConfig>) -> V
                         generator_config,
                     )
                 }
-                NoiseDistortion::DistortionX => noise_value(
-                    (raw_value * width as f32).floor() as usize,
-                    0,
+                NoiseDistortion::Skewed => noise_value(
+                    x,
+                    y * 2,
                     &noise,
                     generator_config,
-                ),
-                NoiseDistortion::DistortionY => noise_value(
-                    0,
-                    (raw_value * width as f32).floor() as usize,
-                    &noise,
-                    generator_config,
-                ),
+                )
             };
 
             data[index] = normalized_value;
@@ -260,15 +266,8 @@ fn ui_system(
                 is_changed |= ui
                     .selectable_value(
                         &mut generator_config.distortion,
-                        NoiseDistortion::DistortionX,
-                        "Distortion X",
-                    )
-                    .changed();
-                is_changed |= ui
-                    .selectable_value(
-                        &mut generator_config.distortion,
-                        NoiseDistortion::DistortionY,
-                        "Distortion Y",
+                        NoiseDistortion::Skewed,
+                        "Skewed",
                     )
                     .changed();
             });
