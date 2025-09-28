@@ -9,11 +9,11 @@ use super::*;
 pub struct ArcNavmesh(pub Arc<RwLock<Navmesh>>);
 
 impl ArcNavmesh {
-    pub fn read(&self) -> RwLockReadGuard<Navmesh> {
+    pub fn read(&self) -> RwLockReadGuard<'_, Navmesh> {
         self.0.read().unwrap()
     }
 
-    pub fn write(&self) -> RwLockWriteGuard<Navmesh> {
+    pub fn write(&self) -> RwLockWriteGuard<'_, Navmesh> {
         self.0.write().unwrap()
     }
 }
@@ -37,8 +37,10 @@ impl Default for Navmesh {
 
 impl Navmesh {
     pub fn is_in_range(x: i32, y: i32) -> bool {
-        x < config().grid.half_size && x > -config().grid.half_size &&
-            y < config().grid.half_size && y > -config().grid.half_size
+        x < config().grid.half_size
+            && x > -config().grid.half_size
+            && y < config().grid.half_size
+            && y > -config().grid.half_size
     }
 
     pub fn tile_successors(&self, x: i32, y: i32) -> Vec<(IVec2, i32)> {
@@ -64,7 +66,7 @@ impl Navmesh {
     pub fn is_passable(&self, x: i32, y: i32) -> bool {
         self.navtiles
             .get_some(x, y)
-            .map_or(false, |navtile| navtile.is_passable())
+            .map_or_else(|| false, |navtile| navtile.is_passable())
     }
 
     pub fn add_occupant<T: 'static>(&mut self, id: &Entity, grid_tile_x: i32, grid_tile_y: i32) {
@@ -99,11 +101,7 @@ impl Navmesh {
             .get_all_occupants()
     }
 
-    pub fn has_occupants_except_of<T: 'static>(
-        &self,
-        grid_tile_x: i32,
-        grid_tile_y: i32,
-    ) -> bool {
+    pub fn has_occupants_except_of<T: 'static>(&self, grid_tile_x: i32, grid_tile_y: i32) -> bool {
         self.navtiles
             .get(grid_tile_x, grid_tile_y)
             .has_occupants_except_of::<T>()
