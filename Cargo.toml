@@ -1,7 +1,9 @@
+cargo-features = ["edition2024"]
+
 [package]
 name = "zxc"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [features]
 default = ["bevy_egui", "debug_ui"]
