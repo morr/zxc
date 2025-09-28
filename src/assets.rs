@@ -6,8 +6,8 @@ impl Plugin for AssetsPlugin {
     fn build(&self, app: &mut App) {
         app.configure_loading_state(
             LoadingStateConfig::new(AppState::Loading)
-                .init_resource::<AssetsCollection>()
-                .init_resource::<MeshesCollection>()
+                .finally_init_resource::<AssetsCollection>()
+                .finally_init_resource::<MeshesCollection>()
                 .load_collection::<FontAssets>()
                 .load_collection::<TextureAssets>()
                 .load_collection::<IconAssets>()
