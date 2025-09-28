@@ -42,7 +42,7 @@ fn update_ui_on_user_select_event(
     for _event in user_select_event_reader.read() {
         // println!("{:?}", event);
 
-        let selected_root_ui_id = user_selected_root_ui_query.get_single().unwrap();
+        let selected_root_ui_id = user_selected_root_ui_query.single().unwrap();
         let mut user_selected_root_ui_commands = commands.entity(selected_root_ui_id);
         user_selected_root_ui_commands.despawn_descendants();
 

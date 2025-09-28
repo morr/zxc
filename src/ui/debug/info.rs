@@ -35,7 +35,7 @@ pub fn render_debug_ui_info(
     root_ui_query: Query<Entity, With<DebugUiContainerarker>>,
     async_queue_counter: Res<AsyncQueueCounter>,
 ) {
-    let root_ui_id = root_ui_query.get_single().unwrap();
+    let root_ui_id = root_ui_query.single().unwrap();
     let mut root_ui_commands = commands.entity(root_ui_id);
 
     root_ui_commands.with_children(|parent| {

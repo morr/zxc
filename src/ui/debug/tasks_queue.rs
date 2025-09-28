@@ -17,7 +17,7 @@ pub fn render_tasks_ui(
     root_ui_query: Query<Entity, With<DebugUiContainerarker>>,
     tasks_queue: Res<TasksQueue>,
 ) {
-    let root_ui_id = root_ui_query.get_single().unwrap();
+    let root_ui_id = root_ui_query.single().unwrap();
     let mut root_ui_commands = commands.entity(root_ui_id);
 
     root_ui_commands.with_children(|parent| {
@@ -69,7 +69,7 @@ pub fn update_debug_tasks_queue(
     children_query: Query<&Children>,
     mut writer: TextUiWriter,
 ) {
-    let ui_id = ui_query.get_single().unwrap();
+    let ui_id = ui_query.single().unwrap();
 
     if let Ok(children) = children_query.get(ui_id) {
         for &child in children.iter() {
