@@ -6640,6 +6640,7 @@ dependencies = [
  "bevy_egui 0.36.0",
  "bevy_framepace",
  "bevy_pancam",
+ "bevy_platform",
  "ctor",
  "lazy_static",
  "noise",

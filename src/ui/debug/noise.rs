@@ -3,7 +3,7 @@ use bevy::{
     image::{ImageAddressMode, ImageFilterMode, ImageSampler, ImageSamplerDescriptor},
     render::render_resource::{Extent3d, TextureDimension, TextureFormat},
 };
-use std::collections::HashMap;
+use bevy_platform::collections::HashMap;
 
 use super::*;
 use crate::map::RebuildMapEvent;

@@ -1,7 +1,8 @@
 use std::any::TypeId;
 
 use super::*;
-use bevy::utils::{HashMap, HashSet};
+use bevy_platform::collections::{HashMap, HashSet};
+
 use rand_distr::num_traits::Zero;
 
 const DEFAULT_COST: i32 = 1;
