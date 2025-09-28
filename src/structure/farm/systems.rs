@@ -66,7 +66,7 @@ pub fn progress_planted_and_tending_rest_timers(
         planted_state.growth_timer.tick(delta);
 
         if planted_state.growth_timer.finished() {
-            farm_progress_event_writer.send(log_event!(FarmProgressEvent(workable_entity)));
+            farm_progress_event_writer.write(log_event!(FarmProgressEvent(workable_entity)));
         }
 
         if !planted_state.tending_rest_timer.finished() {
@@ -80,7 +80,7 @@ pub fn progress_planted_and_tending_rest_timers(
                 // );
 
                 if planted_state.tending_rest_started_day != elapsed_time.total_days() {
-                    tasks_scheduler.send(ScheduleTaskEvent::push_back(Task(TaskKind::Work {
+                    tasks_scheduler.write(ScheduleTaskEvent::push_back(Task(TaskKind::Work {
                         workable_entity,
                         work_kind: WorkKind::FarmTending,
                     })));
@@ -108,7 +108,7 @@ pub fn progress_harvested_timer(
         state.rest_timer.tick(delta);
 
         if state.rest_timer.finished() {
-            farm_progress_event_writer.send(log_event!(FarmProgressEvent(entity)));
+            farm_progress_event_writer.write(log_event!(FarmProgressEvent(entity)));
         }
     }
 }
@@ -133,14 +133,14 @@ pub fn progress_on_state_changed(
                 let grid_tile = transform.world_pos_to_grid();
 
                 if let Some(work_kind) = maybe_task_kind {
-                    tasks_scheduler.send(ScheduleTaskEvent::push_back(Task(TaskKind::Work {
+                    tasks_scheduler.write(ScheduleTaskEvent::push_back(Task(TaskKind::Work {
                         workable_entity: *workable_entity,
                         work_kind,
                     })));
                 }
 
                 if let FarmState::Harvested(_) = state {
-                    spawn_food_event_writer.send(log_event!(SpawnCarryableEvent {
+                    spawn_food_event_writer.write(log_event!(SpawnCarryableEvent {
                         kind: CarryableKind::Food,
                         amount: farm.yield_amount(),
                         grid_tile,

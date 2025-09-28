@@ -29,7 +29,7 @@ impl Plugin for DebugNavmeshPlugin {
                 >| {
                     next_state.set(DebugNavmeshState::Visible);
                     debug_navmesh_state_change_event_writer
-                        .send(log_event!(StateChangeEvent(DebugNavmeshState::Visible)));
+                        .write(log_event!(StateChangeEvent(DebugNavmeshState::Visible)));
                 })
                 .after(generate_map),
             );

@@ -35,7 +35,7 @@ impl Plugin for DebugNoisePlugin {
                 >| {
                     next_state.set(DebugNoiseState::Visible);
                     debug_noise_state_change_event_writer
-                        .send(log_event!(StateChangeEvent(DebugNoiseState::Visible)));
+                        .write(log_event!(StateChangeEvent(DebugNoiseState::Visible)));
                 })
                 .after(generate_map)
                 .after(initialize_noise_texture),

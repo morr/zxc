@@ -94,7 +94,7 @@ fn progress_hunger(
         }
 
         if wasnt_death_starving && feedable.is_death_starving() {
-            pawn_death_event_writer.send(log_event!(PawnDeathEvent {
+            pawn_death_event_writer.write(log_event!(PawnDeathEvent {
                 entity: commandable_entity,
                 reason: PawnDeathReason::Starvation
             }));

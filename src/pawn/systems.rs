@@ -80,11 +80,11 @@ pub fn spawn_pawns(
 
         let grid_tile = position.truncate().world_pos_to_grid();
         navmesh.add_occupant::<Pawn>(&pawn_id, grid_tile.x, grid_tile.y);
-        occupation_change_event_writer.send(log_event!(OccupationChangeEvent::new(grid_tile)));
+        occupation_change_event_writer.write(log_event!(OccupationChangeEvent::new(grid_tile)));
 
         // auto-select first pawn
         // if i.is_zero() {
-        //     user_selection_command_writer.send(log_event!(UserSelectionCommand(Some(
+        //     user_selection_command_writer.write(log_event!(UserSelectionCommand(Some(
         //         UserSelectionData {
         //             entity: pawn_id,
         //             kind: UserSelectionKind::Pawn,
@@ -172,7 +172,7 @@ pub fn progress_pawn_daily(
         for (entity, mut pawn) in query.iter_mut() {
             if pawn.is_birthday(event.0) {
                 pawn.age += 1;
-                // event_writer.send(log_event!(PawnBirthdayEvent(entity)));
+                // event_writer.write(log_event!(PawnBirthdayEvent(entity)));
             }
             pawn.decrease_lifetime(config().time.day_duration);
 
@@ -194,7 +194,7 @@ pub fn progress_pawn_dying(
         pawn.decrease_lifetime(time_scale.scale_to_seconds(time.delta_secs()));
 
         if pawn.lifetime.is_zero() {
-            event_writer.send(log_event!(PawnDeathEvent {
+            event_writer.write(log_event!(PawnDeathEvent {
                 entity,
                 reason: PawnDeathReason::OldAge
             }));

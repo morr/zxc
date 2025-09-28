@@ -13,7 +13,7 @@ pub fn track_time(
     if new_day != prev_day {
         // in may pass many days in one tick under very high time scale
         for total_day in (prev_day + 1)..=new_day {
-            event_writer.send(log_event!(NewDayEvent(total_day)));
+            event_writer.write(log_event!(NewDayEvent(total_day)));
         }
     }
 }

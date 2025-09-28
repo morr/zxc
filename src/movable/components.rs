@@ -46,7 +46,7 @@ impl Movable {
             if let MovableState::Moving(end_tile) | MovableState::Pathfinding(end_tile) = self.state
             {
                 if let Some(event_writer) = maybe_event_writer {
-                    event_writer.send(log_event!(MovableReachedDestinationEvent(entity, end_tile)));
+                    event_writer.write(log_event!(MovableReachedDestinationEvent(entity, end_tile)));
                 }
             }
         }
@@ -55,7 +55,7 @@ impl Movable {
         self.state = MovableState::Idle;
 
         // if let Some(movable_state_change_event_writer) = maybe_movable_state_change_event_writer {
-        //     movable_state_change_event_writer.send(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
+        //     movable_state_change_event_writer.write(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
         // }
     }
 
@@ -70,7 +70,7 @@ impl Movable {
         self.state = MovableState::Moving(end_tile);
         self.path = path;
         commands.entity(entity).insert(MovableStateMovinTag);
-        // movable_state_change_event_writer.send(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
+        // movable_state_change_event_writer.write(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -88,7 +88,7 @@ impl Movable {
         // println!("MovableState {:?}=>{:?}", self.state, MovableState::Pathfinding(end_tile));
         self.stop_moving(entity, commands);
         self.state = MovableState::Pathfinding(end_tile);
-        // movable_state_change_event_writer.send(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
+        // movable_state_change_event_writer.write(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
 
         let navmesh_arc_clone = arc_navmesh.0.clone();
         let task = spawn_async_task(queue_counter, async move {
@@ -122,12 +122,12 @@ impl Movable {
     //     }
     //
     //     self.state = MovableState::Pathfinding(end_tile);
-    //     pathfind_event_writer.send(log_event!(PathfindRequestEvent {
+    //     pathfind_event_writer.write(log_event!(PathfindRequestEvent {
     //         start_tile,
     //         end_tile,
     //         entity,
     //     }));
-    //     movable_state_event_writer.send(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
+    //     movable_state_event_writer.write(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
     // }
 
     pub fn to_pathfinding_error(
@@ -140,7 +140,7 @@ impl Movable {
         // println!("MovableState {:?}=>{:?}", self.state, MovableState::PathfindingError(end_tile));
         self.stop_moving(entity, commands);
         self.state = MovableState::PathfindingError(end_tile);
-        // movable_state_event_writer.send(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
+        // movable_state_event_writer.write(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
     }
 
     fn stop_moving(&mut self, entity: Entity, commands: &mut Commands) {

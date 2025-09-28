@@ -31,7 +31,7 @@ pub fn find_new_selection_on_click(
 
         // send next stage click event if not user selection action is to be performed
         if entities.is_empty() {
-            click_event_writer.send(log_event!(ClickEventStage1(*grid_tile)));
+            click_event_writer.write(log_event!(ClickEventStage1(*grid_tile)));
             return;
         }
 
@@ -60,6 +60,6 @@ pub fn find_new_selection_on_click(
         let maybe_new_selection =
             maybe_selection_index.map(|selection_index| entities[selection_index].clone());
 
-        user_selection_command_writer.send(log_event!(UserSelectionCommand(maybe_new_selection)));
+        user_selection_command_writer.write(log_event!(UserSelectionCommand(maybe_new_selection)));
     }
 }

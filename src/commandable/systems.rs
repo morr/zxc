@@ -25,31 +25,31 @@ pub fn process_pending_commands(
         if let Some(command_type) = commandable.start_executing(entity, &mut commands) {
             match command_type {
                 CommandType::CompleteTask(command) => {
-                    complete_task_command_writer.send(log_event!(command));
+                    complete_task_command_writer.write(log_event!(command));
                 }
                 CommandType::DropCarriedItem(command) => {
-                    drop_carried_item_command_writer.send(log_event!(command));
+                    drop_carried_item_command_writer.write(log_event!(command));
                 }
                 CommandType::Feed(command) => {
-                    feed_command_writer.send(log_event!(command));
+                    feed_command_writer.write(log_event!(command));
                 }
                 CommandType::MoveTo(command) => {
-                    move_to_command_writer.send(log_event!(command));
+                    move_to_command_writer.write(log_event!(command));
                 }
                 CommandType::PickUpItem(command) => {
-                    pick_up_item_command_writer.send(log_event!(command));
+                    pick_up_item_command_writer.write(log_event!(command));
                 }
                 CommandType::Sleep(command) => {
-                    sleep_command_writer.send(log_event!(command));
+                    sleep_command_writer.write(log_event!(command));
                 }
                 CommandType::ToRest(command) => {
-                    to_rest_command_writer.send(log_event!(command));
+                    to_rest_command_writer.write(log_event!(command));
                 }
                 CommandType::UserSelection(command) => {
-                    user_selection_command_writer.send(log_event!(command));
+                    user_selection_command_writer.write(log_event!(command));
                 }
                 CommandType::WorkOn(command) => {
-                    work_on_command_writer.send(log_event!(command));
+                    work_on_command_writer.write(log_event!(command));
                 }
             }
 

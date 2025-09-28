@@ -33,7 +33,7 @@ pub fn move_moving_entities(
                     }
 
                     occupation_change_event_writer
-                        .send(OccupationChangeEvent(vec![current_tile, final_tile]));
+                        .write(OccupationChangeEvent(vec![current_tile, final_tile]));
                 }
             }
             _ => {

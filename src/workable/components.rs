@@ -55,13 +55,13 @@ impl Workable {
 
         // if let WorkableState::BeingWorked(command) = prev_state {
         //     // println!("reseting workable in WorkableState::BeingWorked state");
-        //     commandable_interrupt_writer.send(log_event!(InterruptCommandEvent(CommandType::WorkOn(command))));
+        //     commandable_interrupt_writer.write(log_event!(InterruptCommandEvent(CommandType::WorkOn(command))));
         // }
         // println!("workable reset");
         if let WorkableState::BeingWorked(command) = prev_state {
             // println!("{:?}", ExternalCommandInterruptEvent(command.commandable_entity));
             // println!("reseting workable in WorkableState::BeingWorked state");
-            commandable_interrupt_writer.send(log_event!(ExternalCommandInterruptEvent(
+            commandable_interrupt_writer.write(log_event!(ExternalCommandInterruptEvent(
                 command.commandable_entity
             )));
         }
@@ -107,7 +107,7 @@ macro_rules! workable_states {
                 self.remove_old_state_component(commands, entity);
                 let prev_state = mem::replace(&mut self.state, new_state);
                 self.add_new_state_component(commands, entity);
-                // state_change_event_writer.send(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
+                // state_change_event_writer.write(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
 
                 prev_state
             }

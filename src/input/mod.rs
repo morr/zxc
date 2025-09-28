@@ -98,7 +98,7 @@ pub fn mouse_input(
         if is_new_hover {
             // println!("{:?}", event);
             prev_hovered_grid_tile.0 = Some(event.0);
-            hover_event_writer.send(log_event!(event));
+            hover_event_writer.write(log_event!(event));
         }
     }
 
@@ -114,7 +114,7 @@ pub fn mouse_input(
         {
             let event = ClickEventStage0(world_position.world_pos_to_grid());
             // println!("{:?}", event);
-            click_event_writer.send(log_event!(event));
+            click_event_writer.write(log_event!(event));
         }
     }
 }

@@ -32,7 +32,7 @@ pub fn progress_work(
                 panic!()
             };
 
-            event_writer.send(log_event!(WorkCompleteEvent {
+            event_writer.write(log_event!(WorkCompleteEvent {
                 commandable_entity,
                 workable_entity,
                 work_kind
@@ -55,10 +55,10 @@ pub fn complete_work(
         match work_kind {
             // event.workable_entity the same is task.entity
             WorkKind::FarmPlanting | WorkKind::FarmHarvest => {
-                farm_progress_event_writer.send(log_event!(FarmProgressEvent(*workable_entity)));
+                farm_progress_event_writer.write(log_event!(FarmProgressEvent(*workable_entity)));
             }
             WorkKind::FarmTending => {
-                farm_tending_event_writer.send(log_event!(FarmTendedEvent(*workable_entity)));
+                farm_tending_event_writer.write(log_event!(FarmTendedEvent(*workable_entity)));
             }
         }
     }
@@ -101,7 +101,7 @@ pub fn complete_work(
 //             // println!("work_complete {:?}", task);
 //             workable.reset_amount_done();
 //
-//             event_writer.send(log_event!(WorkCompleteEvent {
+//             event_writer.write(log_event!(WorkCompleteEvent {
 //                 pawn_entity,
 //                 workable_entity,
 //             }));
@@ -126,10 +126,10 @@ pub fn complete_work(
 //         match task.kind {
 //             // event.workable_entity the same is task.entity
 //             TaskKind::FarmPlant | TaskKind::FarmHarvest => {
-//                 farm_progress_event_writer.send(log_event!(FarmProgressEvent(event.workable_entity)));
+//                 farm_progress_event_writer.write(log_event!(FarmProgressEvent(event.workable_entity)));
 //             }
 //             TaskKind::FarmTending => {
-//                 farm_tending_event_writer.send(log_event!(FarmTendedEvent(event.workable_entity)));
+//                 farm_tending_event_writer.write(log_event!(FarmTendedEvent(event.workable_entity)));
 //             }
 //         }
 //

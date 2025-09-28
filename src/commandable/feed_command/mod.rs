@@ -47,7 +47,7 @@ fn execute_command(
     }
 
     if amount_before != food_stock.amount {
-        food_consumed_event_writer.send(log_event!(FoodConsumedEvent {
+        food_consumed_event_writer.write(log_event!(FoodConsumedEvent {
             amount: amount_before - food_stock.amount,
         }));
     }

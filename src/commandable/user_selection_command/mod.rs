@@ -34,6 +34,6 @@ fn execute_command(
         }
 
         *current_user_selection = CurrentUserSelection(maybe_new_selection.clone());
-        user_selection_change_event_writer.send(log_event!(UserSelectionChangeEvent));
+        user_selection_change_event_writer.write(log_event!(UserSelectionChangeEvent));
     }
 }

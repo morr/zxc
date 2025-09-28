@@ -103,7 +103,7 @@ impl Pawn {
             .collect::<Vec<_>>();
 
         if !tile_occupants.is_empty() {
-            merge_carryables_event_writer.send(log_event!(MergeCarryablesEvent {
+            merge_carryables_event_writer.write(log_event!(MergeCarryablesEvent {
                 entity_to_merge: carryable_entity,
                 carryable_to_merge: carryable.clone(),
                 grid_tile,
@@ -155,7 +155,7 @@ macro_rules! pawn_states {
                 self.remove_old_state_component(commands, entity);
                 let prev_state = mem::replace(&mut self.state, new_state);
                 self.add_new_state_component(commands, entity);
-                state_change_event_writer.send(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
+                state_change_event_writer.write(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
 
                 prev_state
             }

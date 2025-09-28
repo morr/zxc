@@ -46,7 +46,7 @@ pub fn spawn_on_event(
             .write()
             .add_occupant::<Carryable>(&carryable_id, grid_tile.x, grid_tile.y);
 
-        store_event_writer.send(log_event!(StoreCarryableEvent {
+        store_event_writer.write(log_event!(StoreCarryableEvent {
             entity: carryable_id
         }));
     }
@@ -56,13 +56,13 @@ pub fn spawn_initial_items(mut event_writer: EventWriter<SpawnCarryableEvent>) {
     let amount = config().starting_scene.food;
 
     if amount > 0 {
-        event_writer.send(SpawnCarryableEvent {
+        event_writer.write(SpawnCarryableEvent {
             kind: CarryableKind::Food,
             amount: amount / 2,
             grid_tile: IVec2 { x: -12, y: 4 },
         });
 
-        event_writer.send(SpawnCarryableEvent {
+        event_writer.write(SpawnCarryableEvent {
             kind: CarryableKind::Food,
             amount: amount / 2,
             grid_tile: IVec2 { x: -15, y: 3 },
