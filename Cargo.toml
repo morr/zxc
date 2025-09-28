@@ -1,5 +1,3 @@
-cargo-features = ["edition2024"]
-
 [package]
 name = "zxc"
 version = "0.1.0"
@@ -11,13 +9,13 @@ bevy_egui = ["dep:bevy_egui"]
 debug_ui = []
 
 [dependencies]
-bevy = { version = "0.15.2", features = ["dynamic_linking", "bevy_dev_tools"] }
-bevy_egui = { version = "0.32", optional = true }
-bevy_pancam = { version = "0.17", features = ["bevy_egui"] }
-bevy_framepace = "0.18.1"
+bevy = { version = "0.16.1", features = ["dynamic_linking", "bevy_dev_tools"] }
+bevy_egui = { version = "0.36", optional = true }
+bevy_pancam = { version = "0.18", features = ["bevy_egui"] }
+bevy_framepace = "0.19"
 pathfinding = "4.9.1"
-bevy_asset_loader = "0.22.0"
-bevy-inspector-egui = "0.29.1"
+bevy_asset_loader = "0.23"
+bevy-inspector-egui = "0.33"
 # bevy_magic_light_2d = { git = "https://github.com/zaycev/bevy-magic-light-2d.git", branch = "main" }
 rand = "0.9"
 rand_distr = "0.5"
