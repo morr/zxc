@@ -33,13 +33,13 @@ fn spawn_camera(mut commands: Commands) {
                 ),
                 ..default()
             },
-            OrthographicProjection {
+            Projection::Orthographic(OrthographicProjection {
                 near: -1000.0,
                 far: 1000.0,
                 // initial zoom
                 scale: 1.25,
                 ..OrthographicProjection::default_2d()
-            },
+            }),
             Name::new("main_camera"),
             FloorCamera,
             Msaa::Off
