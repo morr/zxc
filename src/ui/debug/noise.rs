@@ -78,6 +78,7 @@ fn extract_tile_noise_map(tile_query: &Query<&Tile>) -> HashMap<(usize, usize), 
 fn render_noise_to_texture(noise_map: &HashMap<(usize, usize), f32>) -> Image {
     let size = config().grid.size as usize;
     let mut texture = create_blank_texture(size as u32, size as u32);
+    let data = texture.data.as_mut().expect("Texture data should be initialized");
 
     // Fill the texture using the noise values from tiles
     for y in 0..size {
@@ -92,10 +93,10 @@ fn render_noise_to_texture(noise_map: &HashMap<(usize, usize), f32>) -> Image {
             let rgb_value = (noise_value * 255.0) as u8;
 
             // Set RGBA values (grayscale with full opacity)
-            texture.data[texture_index] = rgb_value; // R
-            texture.data[texture_index + 1] = rgb_value; // G
-            texture.data[texture_index + 2] = rgb_value; // B
-            texture.data[texture_index + 3] = 255; // A (full opacity)
+            data[texture_index] = rgb_value; // R
+            data[texture_index + 1] = rgb_value; // G
+            data[texture_index + 2] = rgb_value; // B
+            data[texture_index + 3] = 255; // A (full opacity)
         }
     }
 
