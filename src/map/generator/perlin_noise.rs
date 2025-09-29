@@ -12,7 +12,7 @@ impl Plugin for PerlinNoisePlugin {
         app.init_resource::<PerlinNoiseConfig>();
 
         #[cfg(feature = "bevy_egui")]
-        app.add_systems(Update, ui_system);
+        app.add_systems(bevy_egui::EguiPrimaryContextPass, ui_system);
     }
 }
 
