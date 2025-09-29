@@ -80,7 +80,7 @@ fn update_simulation_speed_text(
     time_state: Res<State<SimulationState>>,
     time_scale: Res<TimeScale>,
 ) {
-    let entity = query.single();
+    let entity = query.single().unwrap();
     *writer.text(entity, 0) = format_simulation_speed_text(&time_state, &time_scale);
 }
 
@@ -105,7 +105,7 @@ fn update_simulation_date_time_text(
     mut writer: TextUiWriter,
     elapsed_time: Res<ElapsedTime>,
 ) {
-    let entity = query.single();
+    let entity = query.single().unwrap();
     *writer.text(entity, 0) = format_date_time_text(&elapsed_time);
 }
 

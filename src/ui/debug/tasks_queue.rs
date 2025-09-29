@@ -72,7 +72,7 @@ pub fn update_debug_tasks_queue(
     let ui_id = ui_query.single().unwrap();
 
     if let Ok(children) = children_query.get(ui_id) {
-        for &child in children.iter() {
+        for child in children.iter() {
             update_text_markers_recursive(child, &tasks_queue, &texts_query, &children_query, &mut writer);
         }
     }
@@ -105,7 +105,7 @@ fn update_text_markers_recursive(
     }
 
     if let Ok(children) = children_query.get(entity) {
-        for &child in children.iter() {
+        for child in children.iter() {
             update_text_markers_recursive(child, tasks_queue, texts_query, children_query, writer);
         }
     }

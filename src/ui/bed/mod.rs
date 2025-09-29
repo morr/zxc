@@ -68,7 +68,7 @@ fn update_bed_ui(
     for (ui_id, ui_marker) in ui_query.iter() {
         if let Ok(bed) = components_query.get(ui_marker.bed_id) {
             if let Ok(children) = children_query.get(ui_id) {
-                for &child in children.iter() {
+                for child in children.iter() {
                     update_text_markers_recursive(child, bed, &mut writer, &texts_query, &children_query);
                 }
             }
@@ -90,7 +90,7 @@ fn update_text_markers_recursive(
     }
 
     if let Ok(children) = children_query.get(entity) {
-        for &child in children.iter() {
+        for child in children.iter() {
             update_text_markers_recursive(child, bed, writer, texts_query, children_query);
         }
     }

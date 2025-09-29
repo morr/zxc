@@ -116,7 +116,7 @@ fn update_food_stock_text(
     mut writer: TextUiWriter,
     food_stock: Res<FoodStock>,
 ) {
-    let entity = query.single();
+    let entity = query.single().unwrap();
     *writer.text(entity, 0) = format_item_text(food_stock.amount);
 }
 
@@ -129,6 +129,6 @@ fn update_pawn_stock_text(
     mut writer: TextUiWriter,
     pawns_query: Query<&Pawn>,
 ) {
-    let entity = text_query.single();
+    let entity = text_query.single().unwrap();
     *writer.text(entity, 0) = format_item_text(pawns_query.iter().count() as u32)
 }

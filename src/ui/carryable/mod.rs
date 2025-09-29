@@ -87,7 +87,7 @@ fn update_carryable_ui(
     for (ui_id, ui_marker) in ui_query.iter() {
         if let Ok(carryable) = components_query.get(ui_marker.carryable_id) {
             if let Ok(children) = children_query.get(ui_id) {
-                for &child in children.iter() {
+                for child in children.iter() {
                     update_text_markers_recursive(child, carryable, &texts_query, &children_query, &mut writer);
                 }
             }
@@ -119,7 +119,7 @@ fn update_text_markers_recursive(
     }
 
     if let Ok(children) = children_query.get(entity) {
-        for &child in children.iter() {
+        for child in children.iter() {
             update_text_markers_recursive(child, carryable, texts_query, children_query, writer);
         }
     }

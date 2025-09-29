@@ -90,7 +90,7 @@ pub fn rebuild_map(
 
         for (entity, tile) in tiles_query.iter() {
             navmesh.remove_occupant::<Tile>(&entity, tile.grid_tile.x, tile.grid_tile.y);
-            commands.entity(entity).despawn_recursive();
+            commands.entity(entity).despawn();
         }
 
         let grid = match generator_kind {

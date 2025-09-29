@@ -215,7 +215,7 @@ fn toggle_noise_visibility(
             }
             DebugNoiseState::Hidden => {
                 println!("DebugNoiseState::Visible => DebugNoiseState::Hidden");
-                commands.entity(query_mesh.single()).despawn_recursive();
+                commands.entity(query_mesh.single().unwrap()).despawn();
             }
         }
     }

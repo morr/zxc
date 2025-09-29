@@ -246,7 +246,7 @@ fn update_text_markers_recursive(
     }
 
     if let Ok(children) = children_query.get(entity) {
-        for &child in children.iter() {
+        for child in children.iter() {
             update_text_markers_recursive(
                 child,
                 pawn,

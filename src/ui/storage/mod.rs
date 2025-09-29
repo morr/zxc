@@ -67,7 +67,7 @@ pub fn render_storage_ui(
 //     for (ui_id, ui_marker) in ui_query.iter() {
 //         if let Ok(storage) = components_query.get(ui_marker.storage_id) {
 //             if let Ok(children) = children_query.get(ui_id) {
-//                 for &child in children.iter() {
+//                 for child in children.iter() {
 //                     update_text_markers_recursive(child, storage, &mut texts, &children_query);
 //                 }
 //             }
@@ -88,7 +88,7 @@ pub fn render_storage_ui(
 //     }
 //
 //     if let Ok(children) = children_query.get(entity) {
-//         for &child in children.iter() {
+//         for child in children.iter() {
 //             update_text_markers_recursive(child, storage, texts, children_query);
 //         }
 //     }

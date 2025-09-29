@@ -84,7 +84,7 @@ pub fn update_debug_ui_headline(
     text_query: Query<Entity, With<DebugUiHeadlineUIMarker>>,
     mut writer: TextUiWriter,
 ) {
-    let text_entity = text_query.single();
+    let text_entity = text_query.single().unwrap();
     *writer.text(text_entity, 0) = format_headline(&async_queue_counter);
 }
 
@@ -115,8 +115,7 @@ pub fn handle_debug_info_keys(
     // mut rebuild_map_event_writer: EventWriter<RebuildMapEvent>,
 ) {
     if keys.just_pressed(KeyCode::KeyH) {
-        // commands.entity(query.single_mut()).iis
-        let (mut visibility, mut style) = query.single_mut();
+        let (mut visibility, mut style) = query.single_mut().unwrap();
 
         match *visibility {
             Visibility::Hidden => {
