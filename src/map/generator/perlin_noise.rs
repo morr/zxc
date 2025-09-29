@@ -201,7 +201,7 @@ fn ui_system(
     mut generator_config: ResMut<PerlinNoiseConfig>,
     mut rebuild_map_event_writer: EventWriter<RebuildMapEvent>,
 ) {
-    let ctx = egui_contexts.ctx_mut();
+    let ctx = egui_contexts.ctx_mut().unwrap();
 
     bevy_egui::egui::Window::new("Perlin Noise Settings").show(ctx, |ui| {
         let mut is_changed = false;

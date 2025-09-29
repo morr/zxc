@@ -74,7 +74,7 @@ fn handle_state_changes(
             }
             DebugNavmeshState::Hidden => {
                 for entity in query_tiles.iter() {
-                    commands.entity(entity).despawn_recursive();
+                    commands.entity(entity).despawn();
                 }
             }
         }

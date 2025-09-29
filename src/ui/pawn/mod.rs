@@ -119,7 +119,7 @@ fn update_pawn_ui(
             components_query.get(ui_marker.pawn_id)
         {
             if let Ok(children) = children_query.get(ui_id) {
-                for &child in children.iter() {
+                for child in children.iter() {
                     update_text_markers_recursive(
                         child,
                         pawn,

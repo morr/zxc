@@ -122,7 +122,7 @@ pub fn merge_on_event(
                 continue;
             }
             carryable.amount += carryable_to_merge.amount;
-            commands.entity(*entity_to_merge).despawn_recursive();
+            commands.entity(*entity_to_merge).despawn();
             arc_navmesh.write().remove_occupant::<Carryable>(
                 entity_to_merge,
                 grid_tile.x,

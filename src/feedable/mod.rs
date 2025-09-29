@@ -120,7 +120,7 @@ fn process_consumed_food(
             } else {
                 amount_consumed -= carryable.amount;
 
-                commands.entity(entity).despawn_recursive();
+                commands.entity(entity).despawn();
                 let grid_tile = transform.world_pos_to_grid();
                 arc_navmesh
                     .write()

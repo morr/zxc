@@ -44,7 +44,7 @@ fn update_ui_on_user_select_event(
 
         let selected_root_ui_id = user_selected_root_ui_query.single().unwrap();
         let mut user_selected_root_ui_commands = commands.entity(selected_root_ui_id);
-        user_selected_root_ui_commands.despawn_descendants();
+        user_selected_root_ui_commands.despawn_related::<Children>();
 
         if let Some(UserSelectionData { entity: id, kind }) = &user_selection.0 {
             match kind {

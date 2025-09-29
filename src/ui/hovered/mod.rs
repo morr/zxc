@@ -68,7 +68,7 @@ fn update_ui_on_hover_event(
 
     let hovered_root_ui_id = hovered_root_ui_query.single().unwrap();
     let mut hovered_root_ui_commands = commands.entity(hovered_root_ui_id);
-    hovered_root_ui_commands.despawn_descendants();
+    hovered_root_ui_commands.despawn_related::<Children>();
 
     let navmesh = arc_navmesh.read();
 
