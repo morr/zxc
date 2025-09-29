@@ -21,7 +21,7 @@ pub enum NoiseDistortion {
     RawValue,
     EdgeShape,
     Distortion,
-    Skewed
+    Skewed,
 }
 
 #[derive(Resource)]
@@ -151,12 +151,7 @@ pub fn generate_noise(seed: u32, generator_config: &Res<PerlinNoiseConfig>) -> V
                         generator_config,
                     )
                 }
-                NoiseDistortion::Skewed => noise_value(
-                    x,
-                    y * 2,
-                    &noise,
-                    generator_config,
-                )
+                NoiseDistortion::Skewed => noise_value(x, y * 2, &noise, generator_config),
             };
 
             data[index] = normalized_value;
