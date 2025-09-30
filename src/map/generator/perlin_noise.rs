@@ -73,7 +73,7 @@ pub fn generate(generator_config: &Res<PerlinNoiseConfig>) -> Vec<Vec<Tile>> {
     };
     let seed: u32 = rng.random();
 
-    let noise = generate_noise(seed, generator_config);
+    let noise = generate_noise(seed, generator_config.as_ref());
 
     let mut grid = vec![
         vec![
@@ -118,7 +118,7 @@ pub fn generate(generator_config: &Res<PerlinNoiseConfig>) -> Vec<Vec<Tile>> {
     grid
 }
 
-pub fn generate_noise(seed: u32, generator_config: &Res<PerlinNoiseConfig>) -> Vec<f32> {
+pub fn generate_noise(seed: u32, generator_config: &PerlinNoiseConfig) -> Vec<f32> {
     // let noise = Perlin::new(seed);
     let noise = noise::Simplex::new(seed);
 
@@ -165,7 +165,7 @@ fn noise_value(
     x: usize,
     y: usize,
     noise: &noise::Simplex,
-    generator_config: &Res<PerlinNoiseConfig>,
+    generator_config: &PerlinNoiseConfig,
 ) -> f32 {
     let offseted_x = x as i32 + generator_config.offset_x;
     let offseted_y = y as i32 + generator_config.offset_y;
