@@ -16,7 +16,7 @@ RootConfig(
     starting_scene: StartingSceneConfig(
         pawns: 4,
         day_hour: 8,
-        farms: 0,
+        farms: 4,
         beds: 0,
         storages: 1,
         time_scale: 1.0,
