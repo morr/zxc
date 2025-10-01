@@ -9,6 +9,7 @@ impl Plugin for StoragePlugin {
 }
 
 #[derive(Component, Reflect, Default)]
+#[require(Name, Sprite, Transform)]
 pub struct Storage;
 
 impl Storage {
