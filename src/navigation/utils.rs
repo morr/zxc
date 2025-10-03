@@ -52,6 +52,8 @@ pub fn find_empty_grid_tile(
             .iter()
             .map(|offset| end_tile + *offset)
             .find(|&tile| navmesh.is_passable(tile.x, tile.y))
-            .unwrap_or_else(|| find_empty_grid_tile(start_world_pos, navmesh, rng, recursion_depth + 1))
+            .unwrap_or_else(|| {
+                find_empty_grid_tile(start_world_pos, navmesh, rng, recursion_depth + 1)
+            })
     }
 }

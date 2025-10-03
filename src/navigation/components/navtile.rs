@@ -57,9 +57,9 @@ impl Navtile {
     }
 
     pub fn has_occupants_except_of<T: 'static>(&self) -> bool {
-        self.occupied_by.iter().any(|(&type_id, entities)| {
-            type_id != TypeId::of::<T>() && !entities.is_empty()
-        })
+        self.occupied_by
+            .iter()
+            .any(|(&type_id, entities)| type_id != TypeId::of::<T>() && !entities.is_empty())
     }
 
     pub fn config_cost_to_pathfinding_cost(config_cost: f32) -> Option<i32> {

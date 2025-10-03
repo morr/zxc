@@ -40,10 +40,14 @@ pub fn render_storage_ui(
 ) {
     container_ui_commands.with_children(|parent| {
         parent
-            .spawn(render_entity_node_bunlde::<StorageUIMarker>(storage_id, opacity))
+            .spawn(render_entity_node_bunlde::<StorageUIMarker>(
+                storage_id, opacity,
+            ))
             .with_children(|parent| {
                 parent
-                    .spawn(render_entity_component_node_bunlde::<StorageComponentUIMarker>())
+                    .spawn(render_entity_component_node_bunlde::<
+                        StorageComponentUIMarker,
+                    >())
                     .with_children(|parent| {
                         parent.spawn(headline_text_bundle(
                             format!("Storage {:?}", storage_id),

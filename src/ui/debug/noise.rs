@@ -78,7 +78,10 @@ fn extract_tile_noise_map(tile_query: &Query<&Tile>) -> HashMap<(usize, usize), 
 fn render_noise_to_texture(noise_map: &HashMap<(usize, usize), f32>) -> Image {
     let size = config().grid.size as usize;
     let mut texture = create_blank_texture(size as u32, size as u32);
-    let data = texture.data.as_mut().expect("Texture data should be initialized");
+    let data = texture
+        .data
+        .as_mut()
+        .expect("Texture data should be initialized");
 
     // Fill the texture using the noise values from tiles
     for y in 0..size {

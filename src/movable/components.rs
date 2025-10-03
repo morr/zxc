@@ -46,7 +46,8 @@ impl Movable {
             if let MovableState::Moving(end_tile) | MovableState::Pathfinding(end_tile) = self.state
             {
                 if let Some(event_writer) = maybe_event_writer {
-                    event_writer.write(log_event!(MovableReachedDestinationEvent(entity, end_tile)));
+                    event_writer
+                        .write(log_event!(MovableReachedDestinationEvent(entity, end_tile)));
                 }
             }
         }

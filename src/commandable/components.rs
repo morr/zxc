@@ -69,7 +69,10 @@ impl Commandable {
     ) {
         trace!("Commandable({:?}) clear_queue", entity);
 
-        self.drain_queue(commandable_interrupt_writer, commandable_release_resources_writer);
+        self.drain_queue(
+            commandable_interrupt_writer,
+            commandable_release_resources_writer,
+        );
         self.change_state(CommandableState::Idle, entity, commands);
     }
 
@@ -86,7 +89,10 @@ impl Commandable {
         let new_queue = command_or_commands.into_iter().collect();
         trace!("Commandable({:?}) set_queue {:?}", entity, new_queue);
 
-        self.drain_queue(commandable_interrupt_writer, commandable_release_resources_writer);
+        self.drain_queue(
+            commandable_interrupt_writer,
+            commandable_release_resources_writer,
+        );
         self.queue = new_queue;
         self.change_state(CommandableState::PendingExecution, entity, commands);
     }
@@ -100,7 +106,11 @@ impl Commandable {
         I: IntoIterator<Item = CommandType>,
     {
         let additional_queue = command_or_commands.into_iter().collect::<Vec<_>>();
-        trace!("Commandable({:?}) extend_queue {:?}", entity, additional_queue);
+        trace!(
+            "Commandable({:?}) extend_queue {:?}",
+            entity,
+            additional_queue
+        );
 
         self.queue.extend(additional_queue);
         if self.state == CommandableState::Idle {
@@ -146,10 +156,14 @@ impl Commandable {
         );
 
         if let Some(command_type) = self.executing.take() {
-            commandable_interrupt_writer.write(log_event!(InternalCommandInterruptEvent(command_type)));
+            commandable_interrupt_writer
+                .write(log_event!(InternalCommandInterruptEvent(command_type)));
         }
 
-        self.drain_queue(commandable_interrupt_writer, commandable_release_resources_writer);
+        self.drain_queue(
+            commandable_interrupt_writer,
+            commandable_release_resources_writer,
+        );
         self.change_state(CommandableState::Idle, entity, commands);
         // this sync pawn state
         commandable_event_writer.write(log_event!(CommandCompleteEvent(entity)));

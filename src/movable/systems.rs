@@ -2,7 +2,10 @@ use super::*;
 
 pub fn move_moving_entities(
     mut commands: Commands,
-    mut query_movable: Query<(Entity, &mut Movable, &mut Transform, Option<&Pawn>), With<MovableStateMovinTag>>,
+    mut query_movable: Query<
+        (Entity, &mut Movable, &mut Transform, Option<&Pawn>),
+        With<MovableStateMovinTag>,
+    >,
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     arc_navmesh: Res<ArcNavmesh>,

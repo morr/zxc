@@ -53,7 +53,9 @@ fn handle_release_resources(
     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
 ) {
     for ReleaseCommandResourcesEvent(interrupted_command_type) in event_reader.read() {
-        if let CommandType::CompleteTask(CompleteTaskCommand { task, .. }) = interrupted_command_type {
+        if let CommandType::CompleteTask(CompleteTaskCommand { task, .. }) =
+            interrupted_command_type
+        {
             tasks_scheduler.write(ScheduleTaskEvent::push_front(task.clone()));
         }
     }

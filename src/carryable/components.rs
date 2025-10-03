@@ -24,9 +24,7 @@ impl Carryable {
         (
             Mesh2d(meshes_collection.food.clone()),
             MeshMaterial2d(assets_collection.food.clone()),
-            Transform::from_translation(
-                grid_tile.grid_tile_center_to_world().extend(ITEM_Z_INDEX),
-            )
+            Transform::from_translation(grid_tile.grid_tile_center_to_world().extend(ITEM_Z_INDEX)),
         )
     }
 
@@ -39,7 +37,12 @@ impl Carryable {
         self.amount = 0;
     }
 
-    pub fn from_inventory(&mut self, kind: CarryableKind,  amount: u32, food_stock: &mut ResMut<FoodStock>) {
+    pub fn from_inventory(
+        &mut self,
+        kind: CarryableKind,
+        amount: u32,
+        food_stock: &mut ResMut<FoodStock>,
+    ) {
         self.kind = kind;
         self.amount = amount;
 

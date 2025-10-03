@@ -6,8 +6,7 @@ pub struct WorkablePlugin;
 
 impl Plugin for WorkablePlugin {
     fn build(&self, app: &mut App) {
-        app
-            .register_type::<Workable>()
+        app.register_type::<Workable>()
             .add_event::<WorkCompleteEvent>()
             // .add_event::<WorkStartEvent>()
             .add_systems(
