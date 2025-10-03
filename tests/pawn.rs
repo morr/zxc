@@ -1,14 +1,14 @@
 mod apply_default_global_config;
 
 mod pawn {
-    use bevy::time::TimePlugin;
+    use bevy::{state::app::StatesPlugin, time::TimePlugin};
     use zxc::*;
 
     #[test]
     fn lifetime_loss_to_zero_leads_to_death_event() {
         let mut app = App::new();
 
-        app.add_plugins((TimePlugin, StoryTimePlugin))
+        app.add_plugins((TimePlugin, StatesPlugin, StoryTimePlugin))
             .add_event::<PawnDeathEvent>()
             .add_systems(Update, progress_pawn_dying);
 
@@ -39,7 +39,7 @@ mod pawn {
         let mut reader = app
             .world_mut()
             .resource_mut::<Events<PawnDeathEvent>>()
-            .get_reader();
+            .get_cursor();
         let maybe_event = reader
             .read(app.world_mut().resource::<Events<PawnDeathEvent>>())
             .next();
