@@ -55,54 +55,51 @@ pub fn render_farm_ui(
     opacity: UiOpacity,
 ) {
     container_ui_commands.with_children(|parent| {
-        parent
-            .spawn(render_entity_node_bunlde::<FarmUIMarker>(farm_id, opacity))
-            .with_children(|parent| {
-                parent
-                    .spawn(render_entity_component_node_bunlde::<FarmComponentUIMarker>())
-                    .with_children(|parent| {
-                        parent.spawn(headline_text_bundle(
-                            format!("Farm {:?}", farm_id),
-                            font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<FarmStateTextUIMarker>(
+        parent.spawn((
+            render_entity_node_bunlde::<FarmUIMarker>(farm_id, opacity),
+            children![
+                (
+                    render_entity_component_node_bunlde::<FarmComponentUIMarker>(),
+                    children![
+                        headline_text_bundle(format!("Farm {:?}", farm_id), font_assets,),
+                        property_text_bundle::<FarmStateTextUIMarker>(
                             farm_state_text(farm),
                             font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<FarmYieldTextUIMarker>(
+                        ),
+                        property_text_bundle::<FarmYieldTextUIMarker>(
                             farm_yield_text(farm),
                             font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<FarmTendingsTextUIMarker>(
+                        ),
+                        property_text_bundle::<FarmTendingsTextUIMarker>(
                             farm_tendings_text(farm),
                             font_assets,
-                        ));
-                    });
-
-                parent
-                    .spawn(render_entity_component_node_bunlde::<
-                        WorkableComponentUIMarker,
-                    >())
-                    .with_children(|parent| {
-                        parent.spawn(headline_text_bundle("Workable".into(), font_assets));
-                        parent.spawn(property_text_bundle::<WorkableStateTextUIMarker>(
+                        ),
+                    ],
+                ),
+                (
+                    render_entity_component_node_bunlde::<WorkableComponentUIMarker>(),
+                    children![
+                        headline_text_bundle("Workable".into(), font_assets),
+                        property_text_bundle::<WorkableStateTextUIMarker>(
                             workable_state_text(workable),
                             font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<WorkableWorkKindTextUIMarker>(
+                        ),
+                        property_text_bundle::<WorkableWorkKindTextUIMarker>(
                             workable_work_kind_text(workable),
                             font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<WorkableWorkAmountDoneTextUIMarker>(
+                        ),
+                        property_text_bundle::<WorkableWorkAmountDoneTextUIMarker>(
                             workable_amount_done_text(workable),
                             font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<WorkableWorkAmountTotalTextUIMarker>(
+                        ),
+                        property_text_bundle::<WorkableWorkAmountTotalTextUIMarker>(
                             workable_amount_total_text(workable),
                             font_assets,
-                        ));
-                    });
-            });
+                        ),
+                    ],
+                ),
+            ],
+        ));
     });
 }
 

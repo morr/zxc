@@ -63,8 +63,8 @@ fn spawn_item<T: Component>(
     image: Handle<Image>,
 ) {
     root.with_children(|parent| {
-        parent
-            .spawn((
+        parent.spawn((
+            (
                 Node {
                     display: Display::Flex,
                     flex_direction: FlexDirection::Row,
@@ -78,11 +78,10 @@ fn spawn_item<T: Component>(
                     ..default()
                 },
                 BackgroundColor(ui_color(UiOpacity::Heavy)),
-            ))
-            .with_children(|parent| {
-                parent.spawn((
+            ),
+            children![
+                (
                     ImageNode::new(image),
-                    // material: materials.add(texture_handle.into()),
                     Node {
                         width: Val::Px(28.),
                         height: Val::Px(28.),
@@ -93,11 +92,9 @@ fn spawn_item<T: Component>(
                             left: Val::Px(0.),
                         },
                         ..default()
-                        // size: Size::new(Val::Percent(100.0), Val::Percent(100.0)), // Image will fill the node
                     },
-                ));
-
-                parent.spawn((
+                ),
+                (
                     Text(format_item_text(amount)),
                     TextFont {
                         font,
@@ -106,8 +103,9 @@ fn spawn_item<T: Component>(
                     },
                     TextColor(Color::WHITE),
                     marker_component,
-                ));
-            });
+                ),
+            ],
+        ));
     });
 }
 

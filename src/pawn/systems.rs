@@ -48,23 +48,20 @@ pub fn spawn_pawns(
 
         let pawn_id = commands
             .spawn((
-                pawn,
-                pawn_state::PawnStateIdleTag,
-                Commandable::default(),
-                Name::new("Pawn"),
-                // state: PawnState::Idle,
-                Mesh2d(meshes_collection.pawn.clone()),
-                MeshMaterial2d(assets_collection.pawn_idle.clone()),
-                Transform::from_translation(position),
-                Movable::new(config().pawn.speed * config().tile.size),
-                Restable::default(),
-                Feedable::default(),
-            ))
-            // .insert(ShowAabbGizmo {
-            //     color: Some(Color::srgba(1.0, 1.0, 1.0, 0.25)),
-            // })
-            .with_children(|parent| {
-                parent.spawn((
+                (
+                    pawn,
+                    pawn_state::PawnStateIdleTag,
+                    Commandable::default(),
+                    Name::new("Pawn"),
+                    // state: PawnState::Idle,
+                    Mesh2d(meshes_collection.pawn.clone()),
+                    MeshMaterial2d(assets_collection.pawn_idle.clone()),
+                    Transform::from_translation(position),
+                    Movable::new(config().pawn.speed * config().tile.size),
+                    Restable::default(),
+                    Feedable::default(),
+                ),
+                children![(
                     Text2d::new(""),
                     TextFont {
                         font: font_assets.fira.clone(),
@@ -74,8 +71,11 @@ pub fn spawn_pawns(
                     TextColor(Color::WHITE),
                     Transform::from_xyz(0.0, 21.0, PAWN_Z_INDEX),
                     PawnStateText,
-                ));
-            })
+                )],
+            ))
+            // .insert(ShowAabbGizmo {
+            //     color: Some(Color::srgba(1.0, 1.0, 1.0, 0.25)),
+            // })
             .id();
 
         let grid_tile = position.truncate().world_pos_to_grid();

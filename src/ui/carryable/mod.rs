@@ -42,31 +42,23 @@ pub fn render_carryable_ui(
     opacity: UiOpacity,
 ) {
     container_ui_commands.with_children(|parent| {
-        parent
-            .spawn(render_entity_node_bunlde::<CarryableUIMarker>(
-                carryable_id,
-                opacity,
-            ))
-            .with_children(|parent| {
-                parent
-                    .spawn(render_entity_component_node_bunlde::<
-                        CarryableComponentUIMarker,
-                    >())
-                    .with_children(|parent| {
-                        parent.spawn(headline_text_bundle(
-                            format!("Carryable {:?}", carryable_id),
-                            font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<CarryableKindUIMarker>(
-                            carryable_kind_text(carryable),
-                            font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<CarryableAmountUIMarker>(
-                            carryable_amount_text(carryable),
-                            font_assets,
-                        ));
-                    });
-            });
+        parent.spawn((
+            render_entity_node_bunlde::<CarryableUIMarker>(carryable_id, opacity),
+            children![(
+                render_entity_component_node_bunlde::<CarryableComponentUIMarker>(),
+                children![
+                    headline_text_bundle(format!("Carryable {:?}", carryable_id), font_assets,),
+                    property_text_bundle::<CarryableKindUIMarker>(
+                        carryable_kind_text(carryable),
+                        font_assets,
+                    ),
+                    property_text_bundle::<CarryableAmountUIMarker>(
+                        carryable_amount_text(carryable),
+                        font_assets,
+                    ),
+                ],
+            ),],
+        ));
     });
 }
 
@@ -88,7 +80,13 @@ fn update_carryable_ui(
         if let Ok(carryable) = components_query.get(ui_marker.carryable_id) {
             if let Ok(children) = children_query.get(ui_id) {
                 for child in children.iter() {
-                    update_text_markers_recursive(child, carryable, &texts_query, &children_query, &mut writer);
+                    update_text_markers_recursive(
+                        child,
+                        carryable,
+                        &texts_query,
+                        &children_query,
+                        &mut writer,
+                    );
                 }
             }
         }
@@ -109,7 +107,9 @@ fn update_text_markers_recursive(
     children_query: &Query<&Children>,
     writer: &mut TextUiWriter,
 ) {
-    if let Ok((text_entity, carryable_kind_marker, carryable_amount_marker)) = texts_query.get(entity) {
+    if let Ok((text_entity, carryable_kind_marker, carryable_amount_marker)) =
+        texts_query.get(entity)
+    {
         if carryable_kind_marker.is_some() {
             *writer.text(text_entity, 0) = carryable_kind_text(carryable);
         }

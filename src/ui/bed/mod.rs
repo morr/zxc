@@ -39,22 +39,16 @@ pub fn render_bed_ui(
     opacity: UiOpacity,
 ) {
     container_ui_commands.with_children(|parent| {
-        parent
-            .spawn(render_entity_node_bunlde::<BedUIMarker>(bed_id, opacity))
-            .with_children(|parent| {
-                parent
-                    .spawn(render_entity_component_node_bunlde::<BedComponentUIMarker>())
-                    .with_children(|parent| {
-                        parent.spawn(headline_text_bundle(
-                            format!("Bed {:?}", bed_id),
-                            font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<BedOwnerUIMarker>(
-                            bed_owner_text(bed),
-                            font_assets,
-                        ));
-                    });
-            });
+        parent.spawn((
+            render_entity_node_bunlde::<BedUIMarker>(bed_id, opacity),
+            children![(
+                render_entity_component_node_bunlde::<BedComponentUIMarker>(),
+                children![
+                    headline_text_bundle(format!("Bed {:?}", bed_id), font_assets,),
+                    property_text_bundle::<BedOwnerUIMarker>(bed_owner_text(bed), font_assets,),
+                ],
+            ),],
+        ));
     });
 }
 
@@ -69,7 +63,13 @@ fn update_bed_ui(
         if let Ok(bed) = components_query.get(ui_marker.bed_id) {
             if let Ok(children) = children_query.get(ui_id) {
                 for child in children.iter() {
-                    update_text_markers_recursive(child, bed, &mut writer, &texts_query, &children_query);
+                    update_text_markers_recursive(
+                        child,
+                        bed,
+                        &mut writer,
+                        &texts_query,
+                        &children_query,
+                    );
                 }
             }
         }

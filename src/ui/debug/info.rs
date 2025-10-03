@@ -39,15 +39,14 @@ pub fn render_debug_ui_info(
     let mut root_ui_commands = commands.entity(root_ui_id);
 
     root_ui_commands.with_children(|parent| {
-        parent
-            .spawn(render_debug_ui_window_node_bundle::<DebugInfoUIMarker>())
-            .with_children(|container_parent| {
-                container_parent.spawn((
+        parent.spawn((
+            (render_debug_ui_window_node_bundle::<DebugInfoUIMarker>()),
+            children![
+                (
                     headline_text_bundle(format_headline(&async_queue_counter), &font_assets),
                     DebugUiHeadlineUIMarker::default(),
-                ));
-
-                container_parent.spawn((
+                ),
+                (
                     Text::new(
                         // \"r\" - rebuild map
                         "\"space\" - pause
@@ -74,8 +73,9 @@ pub fn render_debug_ui_info(
                         ..default()
                     },
                     DebugHelpBlockUIMarker::default(),
-                ));
-            });
+                )
+            ],
+        ));
     });
 }
 

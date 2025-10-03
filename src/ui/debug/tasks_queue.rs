@@ -21,15 +21,14 @@ pub fn render_tasks_ui(
     let mut root_ui_commands = commands.entity(root_ui_id);
 
     root_ui_commands.with_children(|parent| {
-        parent
-            .spawn(render_debug_ui_window_node_bundle::<DebugTasksUIMarker>())
-            .with_children(|container_parent| {
-                container_parent.spawn((
+        parent.spawn((
+            render_debug_ui_window_node_bundle::<DebugTasksUIMarker>(),
+            children![
+                (
                     headline_text_bundle(format_headline(&tasks_queue), &font_assets),
                     DebugTasksQueueHeadlineUIMarker::default(),
-                ));
-
-                container_parent.spawn((
+                ),
+                (
                     Text(format_details(&tasks_queue)),
                     TextFont {
                         font: font_assets.fira.clone(),
@@ -47,8 +46,9 @@ pub fn render_tasks_ui(
                         ..default()
                     },
                     DebugTasksQueueDetailsUIMarker::default(),
-                ));
-            });
+                ),
+            ],
+        ));
     });
 }
 
@@ -73,7 +73,13 @@ pub fn update_debug_tasks_queue(
 
     if let Ok(children) = children_query.get(ui_id) {
         for child in children.iter() {
-            update_text_markers_recursive(child, &tasks_queue, &texts_query, &children_query, &mut writer);
+            update_text_markers_recursive(
+                child,
+                &tasks_queue,
+                &texts_query,
+                &children_query,
+                &mut writer,
+            );
         }
     }
 }

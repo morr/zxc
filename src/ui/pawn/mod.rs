@@ -77,7 +77,6 @@ fn update_pawn_ui(
     texts_query: Query<
         (
             Entity,
-
             Option<&PawnAgeTextUIMarker>,
             Option<&PawnLifetimeTextUIMarker>,
             Option<&PawnBirthdayTextUIMarker>,
@@ -256,7 +255,7 @@ fn update_text_markers_recursive(
                 commandable,
                 texts_query,
                 children_query,
-                writer
+                writer,
             );
         }
     }
@@ -275,106 +274,97 @@ pub fn render_pawn_ui(
     opacity: UiOpacity,
 ) {
     container_ui_commands.with_children(|parent| {
-        parent
-            .spawn(render_entity_node_bunlde::<PawnUIMarker>(pawn_id, opacity))
-            .with_children(|parent| {
-                parent
-                    .spawn(render_entity_component_node_bunlde::<PawnComponentUIMarker>())
-                    .with_children(|parent| {
-                        parent.spawn(headline_text_bundle(
-                            format!("Pawn {:?}", pawn_id),
-                            font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<PawnStateTextUIMarker>(
+        parent.spawn((
+            render_entity_node_bunlde::<PawnUIMarker>(pawn_id, opacity),
+            children![
+                (
+                    render_entity_component_node_bunlde::<PawnComponentUIMarker>(),
+                    children![
+                        headline_text_bundle(format!("Pawn {:?}", pawn_id), font_assets,),
+                        property_text_bundle::<PawnStateTextUIMarker>(
                             pawn_state_text(pawn),
                             font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<PawnAgeTextUIMarker>(
+                        ),
+                        property_text_bundle::<PawnAgeTextUIMarker>(
                             pawn_age_text(pawn),
                             font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<PawnLifetimeTextUIMarker>(
+                        ),
+                        property_text_bundle::<PawnLifetimeTextUIMarker>(
                             pawn_lifetime_text(pawn),
                             font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<PawnBirthdayTextUIMarker>(
+                        ),
+                        property_text_bundle::<PawnBirthdayTextUIMarker>(
                             pawn_birthday_text(pawn),
                             font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<PawnInventoryTextUIMarker>(
+                        ),
+                        property_text_bundle::<PawnInventoryTextUIMarker>(
                             pawn_inventory_text(pawn),
                             font_assets,
-                        ));
-                    });
-
-                parent
-                    .spawn(render_entity_component_node_bunlde::<
-                        MovableComponentUIMarker,
-                    >())
-                    .with_children(|parent| {
-                        parent.spawn(headline_text_bundle("Movable".into(), font_assets));
-                        parent.spawn(property_text_bundle::<MovableStateTextUIMarker>(
+                        ),
+                    ],
+                ),
+                (
+                    render_entity_component_node_bunlde::<MovableComponentUIMarker>(),
+                    children![
+                        headline_text_bundle("Movable".into(), font_assets),
+                        property_text_bundle::<MovableStateTextUIMarker>(
                             movable_state_text(movable),
                             font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<MovableSpeedTextUIMarker>(
+                        ),
+                        property_text_bundle::<MovableSpeedTextUIMarker>(
                             movable_speed_text(movable),
                             font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<MovablePathTextUIMarker>(
+                        ),
+                        property_text_bundle::<MovablePathTextUIMarker>(
                             movable_path_text(movable),
                             font_assets,
-                        ));
-                    });
-
-                parent
-                    .spawn(render_entity_component_node_bunlde::<
-                        RestableComponentUIMarker,
-                    >())
-                    .with_children(|parent| {
-                        parent.spawn(headline_text_bundle("Restable".into(), font_assets));
-                        parent.spawn(property_text_bundle::<RestableStateTextUIMarker>(
+                        ),
+                    ],
+                ),
+                (
+                    render_entity_component_node_bunlde::<RestableComponentUIMarker>(),
+                    children![
+                        headline_text_bundle("Restable".into(), font_assets),
+                        property_text_bundle::<RestableStateTextUIMarker>(
                             restable_state_text(restable),
                             font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<RestableFatigueTextUIMarker>(
+                        ),
+                        property_text_bundle::<RestableFatigueTextUIMarker>(
                             restable_fatigue_text(restable),
                             font_assets,
-                        ));
-                    });
-
-                parent
-                    .spawn(render_entity_component_node_bunlde::<
-                        FeedableComponentUIMarker,
-                    >())
-                    .with_children(|parent| {
-                        parent.spawn(headline_text_bundle("Feedable".into(), font_assets));
-                        parent.spawn(property_text_bundle::<FeedableHungerTextUIMarker>(
+                        ),
+                    ],
+                ),
+                (
+                    render_entity_component_node_bunlde::<FeedableComponentUIMarker>(),
+                    children![
+                        headline_text_bundle("Feedable".into(), font_assets),
+                        property_text_bundle::<FeedableHungerTextUIMarker>(
                             feedable_hunger_text(feedable),
                             font_assets,
-                        ));
-                    });
-
-                parent
-                    .spawn(render_entity_component_node_bunlde::<
-                        CommandableComponentUIMarker,
-                    >())
-                    .with_children(|parent| {
-                        parent.spawn(headline_text_bundle("Commandable".into(), font_assets));
-                        parent.spawn(property_text_bundle::<CommandableStateTextUIMarker>(
+                        ),
+                    ],
+                ),
+                (
+                    render_entity_component_node_bunlde::<CommandableComponentUIMarker>(),
+                    children![
+                        headline_text_bundle("Commandable".into(), font_assets),
+                        property_text_bundle::<CommandableStateTextUIMarker>(
                             commandable_state_text(commandable),
                             font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<CommandableExecutingTextUIMarker>(
+                        ),
+                        property_text_bundle::<CommandableExecutingTextUIMarker>(
                             commandable_executing_text(commandable),
                             font_assets,
-                        ));
-                        parent.spawn(property_text_bundle::<CommandableQueueTextUIMarker>(
+                        ),
+                        property_text_bundle::<CommandableQueueTextUIMarker>(
                             commandable_queue_text(commandable),
                             font_assets,
-                        ));
-                    });
-            });
+                        ),
+                    ],
+                ),
+            ],
+        ));
     });
 }
 
