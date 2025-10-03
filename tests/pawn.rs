@@ -1,6 +1,8 @@
 mod apply_default_global_config;
 
 mod pawn {
+    use std::time::Duration;
+
     use bevy::{state::app::StatesPlugin, time::TimePlugin};
     use zxc::*;
 
@@ -25,7 +27,11 @@ mod pawn {
             .id();
 
         app.update();
-        // second update needs so some nanoseconds pass
+        // second update needs so some time passes
+        // advance time by 5 seconds
+        app.world_mut()
+            .resource_mut::<Time<Virtual>>()
+            .advance_by(Duration::from_secs(5));
         app.update();
 
         // lifetime is changed
