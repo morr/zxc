@@ -51,10 +51,11 @@ pub fn spawn_farm(
     let mut navmesh = arc_navmesh.write();
 
     let mut farms_spawned = 0;
-    let half_size = (config().starting_scene.farms as f32 / 2.0).ceil() as i32;
+    let half_size = (config().starting_scene.farms as f32).sqrt().ceil() as i32;
 
-    for x in 1..half_size {
-        for y in 1..half_size {
+    for x in 0..half_size {
+        for y in 0..half_size {
+            error!("{:?}x{:?}", x, y);
             if farms_spawned == config().starting_scene.farms {
                 continue;
             }
