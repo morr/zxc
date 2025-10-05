@@ -18,7 +18,7 @@ bevy_pancam = { version = "0.19", features = ["bevy_egui"] }
 # bevy_framepace = "0.19"
 bevy_framepace = { git = "https://github.com/aevyrie/bevy_framepace.git", branch = "main" }
 pathfinding = "4.9.1"
-bevy_asset_loader = "0.23"
+bevy_asset_loader = "0.24.0-rc.1"
 bevy-inspector-egui = "0.34"
 # bevy_magic_light_2d = { git = "https://github.com/zaycev/bevy-magic-light-2d.git", branch = "main" }
 rand = "0.9"
