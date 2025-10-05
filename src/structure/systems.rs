@@ -55,7 +55,6 @@ pub fn spawn_farm(
 
     for x in 0..half_size {
         for y in 0..half_size {
-            error!("{:?}x{:?}", x, y);
             if farms_spawned == config().starting_scene.farms {
                 continue;
             }
