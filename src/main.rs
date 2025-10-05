@@ -16,11 +16,7 @@ fn main() {
                         mode: bevy::window::WindowMode::Windowed,
                         // present_mode: bevy::window::PresentMode::AutoNoVsync,
                         present_mode: bevy::window::PresentMode::AutoVsync,
-                        resolution: (
-                            config().app.resolution.0 as f32,
-                            config().app.resolution.1 as f32,
-                        )
-                            .into(),
+                        resolution: (config().app.resolution.0, config().app.resolution.1).into(),
                         ..default()
                     }),
                     ..default()

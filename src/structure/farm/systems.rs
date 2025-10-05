@@ -65,14 +65,14 @@ pub fn progress_planted_and_tending_rest_timers(
         let delta = time_scale.scale_to_duration(time.delta_secs());
         planted_state.growth_timer.tick(delta);
 
-        if planted_state.growth_timer.finished() {
+        if planted_state.growth_timer.is_finished() {
             farm_progress_event_writer.write(log_event!(FarmProgressEvent(workable_entity)));
         }
 
-        if !planted_state.tending_rest_timer.finished() {
+        if !planted_state.tending_rest_timer.is_finished() {
             planted_state.tending_rest_timer.tick(delta);
 
-            if planted_state.tending_rest_timer.finished() {
+            if planted_state.tending_rest_timer.is_finished() {
                 // println!(
                 //     "tending_timer finished. tending_rest_started_day:{} game_day:{}",
                 //     planted_state.tending_rest_started_day,
@@ -107,7 +107,7 @@ pub fn progress_harvested_timer(
         let delta = time_scale.scale_to_duration(time.delta_secs());
         state.rest_timer.tick(delta);
 
-        if state.rest_timer.finished() {
+        if state.rest_timer.is_finished() {
             farm_progress_event_writer.write(log_event!(FarmProgressEvent(entity)));
         }
     }
