@@ -1,8 +1,8 @@
 use super::*;
 
 pub fn spawn_on_event(
-    mut spawn_event_reader: EventReader<SpawnCarryableEvent>,
-    mut store_event_writer: EventWriter<StoreCarryableEvent>,
+    mut spawn_event_reader: MessageReader<SpawnCarryableEvent>,
+    mut store_event_writer: MessageWriter<StoreCarryableEvent>,
     mut commands: Commands,
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
@@ -52,7 +52,7 @@ pub fn spawn_on_event(
     }
 }
 
-pub fn spawn_initial_items(mut event_writer: EventWriter<SpawnCarryableEvent>) {
+pub fn spawn_initial_items(mut event_writer: MessageWriter<SpawnCarryableEvent>) {
     let amount = config().starting_scene.food;
 
     if amount > 0 {
@@ -71,7 +71,7 @@ pub fn spawn_initial_items(mut event_writer: EventWriter<SpawnCarryableEvent>) {
 }
 
 pub fn store_on_event(
-    mut event_reader: EventReader<StoreCarryableEvent>,
+    mut event_reader: MessageReader<StoreCarryableEvent>,
     carryable_query: Query<&Transform>,
     storages_query: Query<(Entity, &Storage, &Transform)>,
     mut tasks_queue: ResMut<TasksQueue>,
@@ -103,7 +103,7 @@ pub fn store_on_event(
 
 pub fn merge_on_event(
     mut commands: Commands,
-    mut event_reader: EventReader<MergeCarryablesEvent>,
+    mut event_reader: MessageReader<MergeCarryablesEvent>,
     mut carryables_query: Query<&mut Carryable>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {

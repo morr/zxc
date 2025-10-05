@@ -4,7 +4,7 @@ pub fn track_time(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut elapsed_time: ResMut<ElapsedTime>,
-    mut event_writer: EventWriter<NewDayEvent>,
+    mut event_writer: MessageWriter<NewDayEvent>,
 ) {
     let prev_day = elapsed_time.total_days();
     elapsed_time.0 += time_scale.scale_to_seconds(time.delta_secs());

@@ -104,15 +104,15 @@ pub fn handle_debug_info_keys(
 
     debug_navmesh_state: Res<State<DebugNavmeshState>>,
     mut next_debug_navmesh_state: ResMut<NextState<DebugNavmeshState>>,
-    mut debug_navmesh_state_change_event_writer: EventWriter<StateChangeEvent<DebugNavmeshState>>,
+    mut debug_navmesh_state_change_event_writer: MessageWriter<StateChangeEvent<DebugNavmeshState>>,
 
     debug_noise_state: Res<State<DebugNoiseState>>,
     mut next_debug_noise_state: ResMut<NextState<DebugNoiseState>>,
-    mut debug_noise_state_change_event_writer: EventWriter<StateChangeEvent<DebugNoiseState>>,
+    mut debug_noise_state_change_event_writer: MessageWriter<StateChangeEvent<DebugNoiseState>>,
 
     debug_movepath_state: Res<State<DebugMovepathState>>,
     mut next_debug_movepath_state: ResMut<NextState<DebugMovepathState>>,
-    // mut rebuild_map_event_writer: EventWriter<RebuildMapEvent>,
+    // mut rebuild_map_event_writer: MessageWriter<RebuildMapEvent>,
 ) {
     if keys.just_pressed(KeyCode::KeyH) {
         let (mut visibility, mut style) = query.single_mut().unwrap();

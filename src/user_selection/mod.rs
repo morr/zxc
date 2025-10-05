@@ -6,7 +6,7 @@ pub struct UserSelectPlugin;
 
 impl Plugin for UserSelectPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<UserSelectionChangeEvent>()
+        app.add_message::<UserSelectionChangeEvent>()
             .init_resource::<CurrentUserSelection>()
             .add_systems(
                 Update,

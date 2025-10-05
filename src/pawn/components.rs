@@ -87,7 +87,7 @@ impl Pawn {
         assets_collection: &Res<AssetsCollection>,
         meshes_collection: &Res<MeshesCollection>,
         navmesh: &mut Navmesh,
-        merge_carryables_event_writer: &mut EventWriter<MergeCarryablesEvent>,
+        merge_carryables_event_writer: &mut MessageWriter<MergeCarryablesEvent>,
         food_stock: &mut ResMut<FoodStock>,
     ) {
         // it can be not in inventory if command chain is interrupted before
@@ -147,7 +147,7 @@ macro_rules! pawn_states {
                 new_state: PawnState,
                 entity: Entity,
                 commands: &mut Commands,
-                state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<PawnState>>,
+                state_change_event_writer: &mut MessageWriter<EntityStateChangeEvent<PawnState>>,
             ) -> PawnState {
                 use std::mem;
                 log_state_change!("Pawn({:?}).state {:?} => {:?}", entity, self.state, new_state);
@@ -189,7 +189,7 @@ pawn_states!(
 #[derive(Component)]
 pub struct PawnStateText;
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 pub struct PawnDeathEvent {
     pub entity: Entity,
     pub reason: PawnDeathReason,

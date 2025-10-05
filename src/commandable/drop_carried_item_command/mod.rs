@@ -4,7 +4,7 @@ pub struct DropCarriedItemCommandPlugin;
 
 impl Plugin for DropCarriedItemCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<DropCarriedItemCommand>().add_systems(
+        app.add_message::<DropCarriedItemCommand>().add_systems(
             Update,
             (execute_command, handle_release_resources)
                 .chain()
@@ -13,7 +13,7 @@ impl Plugin for DropCarriedItemCommandPlugin {
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(Message, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct DropCarriedItemCommand {
     pub commandable_entity: Entity,
     pub carryable_entity: Entity,
@@ -22,12 +22,12 @@ pub struct DropCarriedItemCommand {
 #[allow(clippy::too_many_arguments)]
 fn execute_command(
     mut commands: Commands,
-    mut command_reader: EventReader<DropCarriedItemCommand>,
+    mut command_reader: MessageReader<DropCarriedItemCommand>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
     mut carryable_query: Query<&mut Carryable>,
-    mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
-    mut commandable_interrupt_writer: EventWriter<ExternalCommandInterruptEvent>,
-    mut merge_carryables_event_writer: EventWriter<MergeCarryablesEvent>,
+    mut commandable_event_writer: MessageWriter<CommandCompleteEvent>,
+    mut commandable_interrupt_writer: MessageWriter<ExternalCommandInterruptEvent>,
+    mut merge_carryables_event_writer: MessageWriter<MergeCarryablesEvent>,
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
     arc_navmesh: ResMut<ArcNavmesh>,
@@ -89,20 +89,20 @@ fn execute_command(
 // so there won't be any interruption to handle.
 // fn handle_internal_interrupts(
 //     mut commands: Commands,
-//     mut event_reader: EventReader<InternalCommandInterruptEvent>,
+//     mut event_reader: MessageReader<InternalCommandInterruptEvent>,
 // ) {
 // }
 
 #[allow(clippy::too_many_arguments)]
 fn handle_release_resources(
     mut commands: Commands,
-    mut event_reader: EventReader<ReleaseCommandResourcesEvent>,
+    mut event_reader: MessageReader<ReleaseCommandResourcesEvent>,
     mut commandable_query: Query<(&mut Pawn, &Transform)>,
     mut carryable_query: Query<&mut Carryable>,
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
     arc_navmesh: ResMut<ArcNavmesh>,
-    mut merge_carryables_event_writer: EventWriter<MergeCarryablesEvent>,
+    mut merge_carryables_event_writer: MessageWriter<MergeCarryablesEvent>,
     mut food_stock: ResMut<FoodStock>,
 ) {
     for ReleaseCommandResourcesEvent(interrupted_command_type) in event_reader.read() {

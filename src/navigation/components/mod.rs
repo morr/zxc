@@ -30,14 +30,14 @@ impl PathfindingTask {
     }
 }
 
-#[derive(Debug, Event)]
+#[derive(Message, Debug)]
 pub struct PathfindRequestEvent {
     pub entity: Entity,
     pub start_tile: IVec2,
     pub end_tile: IVec2,
 }
 
-#[derive(Debug, Event)]
+#[derive(Message, Debug)]
 pub struct PathfindAnswerEvent {
     pub entity: Entity,
     pub start_tile: IVec2,
@@ -45,7 +45,7 @@ pub struct PathfindAnswerEvent {
     pub path: Option<Vec<IVec2>>,
 }
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 pub struct OccupationChangeEvent(pub Vec<IVec2>);
 
 impl OccupationChangeEvent {

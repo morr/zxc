@@ -4,7 +4,7 @@ use super::*;
 
 pub fn move_user_selected_pawn_on_click_stage_1(
     mut commands: Commands,
-    mut click_event_reader: EventReader<ClickEventStage1>,
+    mut click_event_reader: MessageReader<ClickEventStage1>,
     user_selection: Res<CurrentUserSelection>,
     mut pawn_query: Query<
         &mut Commandable,
@@ -13,8 +13,8 @@ pub fn move_user_selected_pawn_on_click_stage_1(
             With<pawn_state::PawnStateExecutingCommandTag>,
         )>,
     >,
-    mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
-    mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
+    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptEvent>,
+    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesEvent>,
 ) {
     for ClickEventStage1(grid_tile) in click_event_reader.read() {
         // println!("click {:?}", grid_tile);
@@ -43,10 +43,10 @@ pub fn move_user_selected_pawn_on_click_stage_1(
 
 // pub fn pathfinding_on_click(
 //     mut commands: Commands,
-//     mut click_event_reader: EventReader<ClickTileEvent>,
+//     mut click_event_reader: MessageReader<ClickTileEvent>,
 //     mut query_pawns: Query<(Entity, &Transform, &mut Movable), With<Movable>>,
-//     mut pathfind_event_writer: EventWriter<PathfindRequestEvent>,
-//     mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
+//     mut pathfind_event_writer: MessageWriter<PathfindRequestEvent>,
+//     mut movable_state_event_writer: MessageWriter<EntityStateChangeEvent<MovableState>>,
 // ) {
 //     for click_event in click_event_reader.read() {
 //         for (entity, transform, mut movable) in &mut query_pawns {
@@ -64,8 +64,8 @@ pub fn move_user_selected_pawn_on_click_stage_1(
 
 pub fn listen_for_pathfinding_requests(
     arc_navmesh: Res<ArcNavmesh>,
-    mut pathfind_event_reader: EventReader<PathfindRequestEvent>,
-    mut pathfind_event_writer: EventWriter<PathfindAnswerEvent>,
+    mut pathfind_event_reader: MessageReader<PathfindRequestEvent>,
+    mut pathfind_event_writer: MessageWriter<PathfindAnswerEvent>,
 ) {
     for event in pathfind_event_reader.read() {
         // println!("{:?}", event);
@@ -88,8 +88,8 @@ pub fn listen_for_pathfinding_requests(
 pub fn listen_for_pathfinding_async_tasks(
     mut commands: Commands,
     mut tasks: Query<(Entity, &mut Movable, &mut PathfindingTask), With<PathfindingTask>>,
-    mut event_writer: EventWriter<MovableReachedDestinationEvent>,
-    // mut event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
+    mut event_writer: MessageWriter<MovableReachedDestinationEvent>,
+    // mut event_writer: MessageWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     for (entity, mut movable, mut pathfinding_tasks) in &mut tasks {
         pathfinding_tasks.0.retain_mut(|task| {
@@ -107,7 +107,7 @@ pub fn listen_for_pathfinding_async_tasks(
                         // then it means that we are pathfinding path to our
                         // current location. no movement needed
                         if path.len() == 1 {
-                            // println!("EventWriter<MovableReachedDestinationEvent> from listen_for_pathfinding_async_tasks");
+                            // println!("MessageWriter<MovableReachedDestinationEvent> from listen_for_pathfinding_async_tasks");
                             movable.to_idle(entity, &mut commands, Some(&mut event_writer));
                         } else {
                             movable.to_moving(
@@ -145,10 +145,10 @@ pub fn listen_for_pathfinding_async_tasks(
 
 pub fn listen_for_pathfinding_answers(
     mut commands: Commands,
-    mut pathfind_event_reader: EventReader<PathfindAnswerEvent>,
+    mut pathfind_event_reader: MessageReader<PathfindAnswerEvent>,
     mut query_movable: Query<(Entity, &mut Movable), With<Movable>>,
-    mut event_writer: EventWriter<MovableReachedDestinationEvent>,
-    // mut event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
+    mut event_writer: MessageWriter<MovableReachedDestinationEvent>,
+    // mut event_writer: MessageWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     for event in pathfind_event_reader.read() {
         // println!("{:?}", event);
@@ -172,7 +172,7 @@ pub fn listen_for_pathfinding_answers(
                 // then it means that we are pathfinding path to our
                 // current location. no movement needed
                 if path.len() == 1 {
-                    // println!("EventWriter<MovableReachedDestinationEvent> from listen_for_pathfinding_answers");
+                    // println!("MessageWriter<MovableReachedDestinationEvent> from listen_for_pathfinding_answers");
                     movable.to_idle(entity, &mut commands, Some(&mut event_writer));
                 } else {
                     movable.to_moving(

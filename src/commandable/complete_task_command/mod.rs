@@ -4,7 +4,7 @@ pub struct CompleteTaskCommandPlugin;
 
 impl Plugin for CompleteTaskCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<CompleteTaskCommand>().add_systems(
+        app.add_message::<CompleteTaskCommand>().add_systems(
             Update,
             (execute_command, handle_release_resources)
                 .chain()
@@ -13,7 +13,7 @@ impl Plugin for CompleteTaskCommandPlugin {
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(Message, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct CompleteTaskCommand {
     pub commandable_entity: Entity,
     pub task: Task,
@@ -21,9 +21,9 @@ pub struct CompleteTaskCommand {
 
 fn execute_command(
     mut commands: Commands,
-    mut command_reader: EventReader<CompleteTaskCommand>,
+    mut command_reader: MessageReader<CompleteTaskCommand>,
     mut commandable_query: Query<&mut Commandable>,
-    mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
+    mut commandable_event_writer: MessageWriter<CommandCompleteEvent>,
 ) {
     for CompleteTaskCommand {
         commandable_entity, ..
@@ -49,8 +49,8 @@ fn execute_command(
 }
 
 fn handle_release_resources(
-    mut event_reader: EventReader<ReleaseCommandResourcesEvent>,
-    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
+    mut event_reader: MessageReader<ReleaseCommandResourcesEvent>,
+    mut tasks_scheduler: MessageWriter<ScheduleTaskEvent>,
 ) {
     for ReleaseCommandResourcesEvent(interrupted_command_type) in event_reader.read() {
         if let CommandType::CompleteTask(CompleteTaskCommand { task, .. }) =

@@ -1,11 +1,11 @@
 use super::*;
 
 pub fn find_new_selection_on_click(
-    mut click_event_reader: EventReader<ClickEventStage0>,
-    mut click_event_writer: EventWriter<ClickEventStage1>,
+    mut click_event_reader: MessageReader<ClickEventStage0>,
+    mut click_event_writer: MessageWriter<ClickEventStage1>,
     arc_navmesh: ResMut<ArcNavmesh>,
     current_user_selection: Res<CurrentUserSelection>,
-    mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
+    mut user_selection_command_writer: MessageWriter<UserSelectionCommand>,
 ) {
     for ClickEventStage0(grid_tile) in click_event_reader.read() {
         let navmesh = arc_navmesh.read();

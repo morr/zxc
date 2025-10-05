@@ -6,7 +6,7 @@ pub struct RestablePlugin;
 impl Plugin for RestablePlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Restable>()
-            .add_event::<RestCompleteEvent>()
+            .add_message::<RestCompleteEvent>()
             .add_systems(
                 Update,
                 progress_fatigue
@@ -23,7 +23,7 @@ pub struct Restable {
     pub state: RestableState,
 }
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 pub struct RestCompleteEvent {
     pub commandable_entity: Entity,
 }
@@ -91,10 +91,10 @@ fn progress_fatigue(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Restable, &mut Commandable)>,
-    mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
-    mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
-    // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
-    mut event_writer: EventWriter<RestCompleteEvent>,
+    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptEvent>,
+    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesEvent>,
+    // mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeEvent<PawnState>>,
+    mut event_writer: MessageWriter<RestCompleteEvent>,
 ) {
     let time_amount = time_scale.scale_to_seconds(time.delta_secs());
 

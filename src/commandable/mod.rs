@@ -18,10 +18,10 @@ pub struct CommandablePlugin;
 
 impl Plugin for CommandablePlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<CommandCompleteEvent>()
-            .add_event::<ExternalCommandInterruptEvent>()
-            .add_event::<InternalCommandInterruptEvent>()
-            .add_event::<ReleaseCommandResourcesEvent>()
+        app.add_message::<CommandCompleteEvent>()
+            .add_message::<ExternalCommandInterruptEvent>()
+            .add_message::<InternalCommandInterruptEvent>()
+            .add_message::<ReleaseCommandResourcesEvent>()
             .register_type::<Commandable>()
             .add_plugins((
                 CompleteTaskCommandPlugin,

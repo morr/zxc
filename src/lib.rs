@@ -46,10 +46,10 @@ use_modules!(
     workable
 );
 
-#[derive(Debug, Event)]
+#[derive(Message, Debug)]
 pub struct StateChangeEvent<T>(pub T);
 
-#[derive(Debug, Event)]
+#[derive(Message, Debug)]
 pub struct EntityStateChangeEvent<T>(pub Entity, pub T);
 
 #[derive(States, Default, Clone, Eq, PartialEq, Hash, Debug)]

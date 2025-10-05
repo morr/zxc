@@ -171,11 +171,11 @@ impl ElapsedTime {
     }
 }
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 pub struct NewDayEvent(pub u32);
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 pub struct NewSeasonEvent(pub YearSeason);
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 pub struct NewYearEvent(pub u32);

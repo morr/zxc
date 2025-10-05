@@ -44,18 +44,18 @@ impl Default for Commandable {
     }
 }
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 pub struct CommandCompleteEvent(pub Entity);
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 /// Event to interrupt command initiated by an external entity
 pub struct ExternalCommandInterruptEvent(pub Entity);
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 /// Event to interrupt command initiated by the Commandable itself
 pub struct InternalCommandInterruptEvent(pub CommandType);
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 /// Event to restore world resources claimed by the command
 pub struct ReleaseCommandResourcesEvent(pub CommandType);
 
@@ -64,8 +64,8 @@ impl Commandable {
         &mut self,
         entity: Entity,
         commands: &mut Commands,
-        commandable_interrupt_writer: &mut EventWriter<InternalCommandInterruptEvent>,
-        commandable_release_resources_writer: &mut EventWriter<ReleaseCommandResourcesEvent>,
+        commandable_interrupt_writer: &mut MessageWriter<InternalCommandInterruptEvent>,
+        commandable_release_resources_writer: &mut MessageWriter<ReleaseCommandResourcesEvent>,
     ) {
         trace!("Commandable({:?}) clear_queue", entity);
 
@@ -81,8 +81,8 @@ impl Commandable {
         command_or_commands: I,
         entity: Entity,
         commands: &mut Commands,
-        commandable_interrupt_writer: &mut EventWriter<InternalCommandInterruptEvent>,
-        commandable_release_resources_writer: &mut EventWriter<ReleaseCommandResourcesEvent>,
+        commandable_interrupt_writer: &mut MessageWriter<InternalCommandInterruptEvent>,
+        commandable_release_resources_writer: &mut MessageWriter<ReleaseCommandResourcesEvent>,
     ) where
         I: IntoIterator<Item = CommandType>,
     {
@@ -145,9 +145,9 @@ impl Commandable {
         &mut self,
         entity: Entity,
         commands: &mut Commands,
-        commandable_interrupt_writer: &mut EventWriter<InternalCommandInterruptEvent>,
-        commandable_release_resources_writer: &mut EventWriter<ReleaseCommandResourcesEvent>,
-        commandable_event_writer: &mut EventWriter<CommandCompleteEvent>,
+        commandable_interrupt_writer: &mut MessageWriter<InternalCommandInterruptEvent>,
+        commandable_release_resources_writer: &mut MessageWriter<ReleaseCommandResourcesEvent>,
+        commandable_event_writer: &mut MessageWriter<CommandCompleteEvent>,
     ) {
         trace!(
             "Commandable({:?}) abort_executing {:?}",
@@ -173,7 +173,7 @@ impl Commandable {
         &mut self,
         entity: Entity,
         commands: &mut Commands,
-        commandable_event_writer: &mut EventWriter<CommandCompleteEvent>,
+        commandable_event_writer: &mut MessageWriter<CommandCompleteEvent>,
     ) {
         trace!(
             "Commandable({:?}) complete_executing {:?}",
@@ -223,9 +223,9 @@ impl Commandable {
 
     fn drain_queue(
         &mut self,
-        commandable_interrupt_writer: &mut EventWriter<InternalCommandInterruptEvent>,
-        commandable_release_resources_writer: &mut EventWriter<ReleaseCommandResourcesEvent>,
-        // tasks_scheduler: &mut EventWriter<ScheduleTaskEvent>,
+        commandable_interrupt_writer: &mut MessageWriter<InternalCommandInterruptEvent>,
+        commandable_release_resources_writer: &mut MessageWriter<ReleaseCommandResourcesEvent>,
+        // tasks_scheduler: &mut MessageWriter<ScheduleTaskEvent>,
     ) {
         if let Some(command_type) = self.executing.take() {
             commandable_interrupt_writer

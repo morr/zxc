@@ -4,7 +4,7 @@ pub struct SleepCommandPlugin;
 
 impl Plugin for SleepCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<SleepCommand>().add_systems(
+        app.add_message::<SleepCommand>().add_systems(
             Update,
             (
                 execute_command,
@@ -17,13 +17,13 @@ impl Plugin for SleepCommandPlugin {
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(Message, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct SleepCommand {
     pub commandable_entity: Entity,
     pub is_sleep_in_bed: bool,
 }
 
-fn execute_command(mut command_reader: EventReader<SleepCommand>, mut query: Query<&mut Restable>) {
+fn execute_command(mut command_reader: MessageReader<SleepCommand>, mut query: Query<&mut Restable>) {
     for SleepCommand {
         commandable_entity,
         is_sleep_in_bed,
@@ -43,8 +43,8 @@ fn execute_command(mut command_reader: EventReader<SleepCommand>, mut query: Que
 fn monitor_completion(
     mut commands: Commands,
     mut query: Query<(&mut Commandable, &mut Restable)>,
-    mut command_complete_event_reader: EventReader<RestCompleteEvent>,
-    mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
+    mut command_complete_event_reader: MessageReader<RestCompleteEvent>,
+    mut commandable_event_writer: MessageWriter<CommandCompleteEvent>,
 ) {
     for RestCompleteEvent { commandable_entity } in command_complete_event_reader.read() {
         let Ok((mut commandable, mut restable)) = query.get_mut(*commandable_entity) else {
@@ -74,7 +74,7 @@ fn monitor_completion(
 }
 
 fn handle_internal_interrupts(
-    mut event_reader: EventReader<InternalCommandInterruptEvent>,
+    mut event_reader: MessageReader<InternalCommandInterruptEvent>,
     mut query: Query<&mut Restable>,
 ) {
     for InternalCommandInterruptEvent(interrupted_command) in event_reader.read() {

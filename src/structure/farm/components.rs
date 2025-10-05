@@ -46,7 +46,7 @@ macro_rules! farm_states {
                 new_state: FarmState,
                 entity: Entity,
                 commands: &mut Commands,
-                state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmState>>,
+                state_change_event_writer: &mut MessageWriter<EntityStateChangeEvent<FarmState>>,
             ) {
                 self.remove_old_state_component(commands, entity);
                 self.state = new_state;
@@ -119,7 +119,7 @@ impl Farm {
         commands: &mut Commands,
         assets: &Res<FarmAssets>,
         navmesh: &mut Navmesh,
-        state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmState>>,
+        state_change_event_writer: &mut MessageWriter<EntityStateChangeEvent<FarmState>>,
     ) {
         let farm = Self::default();
         let farm_state = farm.state.clone(); // Clone the state here
@@ -178,9 +178,9 @@ impl Farm {
         grid_tile: IVec2,
         simulation_day: u32,
         assets: &Res<FarmAssets>,
-        state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<FarmState>>,
-        // commandable_interrupt_writer: &mut EventWriter<InterruptCommandEvent>,
-        commandable_interrupt_writer: &mut EventWriter<ExternalCommandInterruptEvent>,
+        state_change_event_writer: &mut MessageWriter<EntityStateChangeEvent<FarmState>>,
+        // commandable_interrupt_writer: &mut MessageWriter<InterruptCommandEvent>,
+        commandable_interrupt_writer: &mut MessageWriter<ExternalCommandInterruptEvent>,
     ) {
         let new_state = match &self.state {
             FarmState::NotPlanted => FarmState::Planted(PlantedState {
@@ -258,8 +258,8 @@ fn workable_props(farm_state: &FarmState) -> (Option<WorkKind>, f32) {
     }
 }
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 pub struct FarmProgressEvent(pub Entity);
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 pub struct FarmTendedEvent(pub Entity);

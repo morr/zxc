@@ -12,7 +12,7 @@ pub struct DebugNoisePlugin;
 impl Plugin for DebugNoisePlugin {
     fn build(&self, app: &mut App) {
         app.insert_state(DebugNoiseState::Hidden)
-            .add_event::<StateChangeEvent<DebugNoiseState>>()
+            .add_message::<StateChangeEvent<DebugNoiseState>>()
             .add_systems(
                 OnExit(AppState::Loading),
                 initialize_noise_texture.after(generate_map),
@@ -30,7 +30,7 @@ impl Plugin for DebugNoisePlugin {
             app.add_systems(
                 OnExit(AppState::Loading),
                 (|mut next_state: ResMut<NextState<DebugNoiseState>>,
-                  mut debug_noise_state_change_event_writer: EventWriter<
+                  mut debug_noise_state_change_event_writer: MessageWriter<
                     StateChangeEvent<DebugNoiseState>,
                 >| {
                     next_state.set(DebugNoiseState::Visible);
@@ -149,7 +149,7 @@ fn initialize_noise_texture(
 
 #[allow(clippy::too_many_arguments)]
 fn refresh_on_map_rebuild(
-    mut event_reader: EventReader<RebuildMapEvent>,
+    mut event_reader: MessageReader<RebuildMapEvent>,
     mut images: ResMut<Assets<Image>>,
     tile_query: Query<&Tile>,
     noise_texture: Option<Res<NoiseTextureHandle>>,
@@ -199,7 +199,7 @@ fn refresh_on_map_rebuild(
 
 fn toggle_noise_visibility(
     mut commands: Commands,
-    mut event_reader: EventReader<StateChangeEvent<DebugNoiseState>>,
+    mut event_reader: MessageReader<StateChangeEvent<DebugNoiseState>>,
     query_mesh: Query<Entity, With<DebugNoise>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,

@@ -7,8 +7,8 @@ pub struct MovablePlugin;
 impl Plugin for MovablePlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Movable>()
-            .add_event::<MovableReachedDestinationEvent>()
-            // .add_event::<EntityStateChangeEvent<MovableState>>()
+            .add_message::<MovableReachedDestinationEvent>()
+            // .add_message::<EntityStateChangeEvent<MovableState>>()
             .add_systems(
                 Update,
                 move_moving_entities

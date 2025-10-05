@@ -11,7 +11,7 @@ pub struct Workable {
     pub amount_total: f32,
 }
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 pub struct WorkCompleteEvent {
     pub commandable_entity: Entity,
     pub workable_entity: Entity,
@@ -45,8 +45,8 @@ impl Workable {
         props: (Option<WorkKind>, f32),
         entity: Entity,
         commands: &mut Commands,
-        // commandable_interrupt_writer: &mut EventWriter<InterruptCommandEvent>,
-        commandable_interrupt_writer: &mut EventWriter<ExternalCommandInterruptEvent>,
+        // commandable_interrupt_writer: &mut MessageWriter<InterruptCommandEvent>,
+        commandable_interrupt_writer: &mut MessageWriter<ExternalCommandInterruptEvent>,
     ) {
         self.work_kind = props.0;
         self.amount_total = props.1;
@@ -99,7 +99,7 @@ macro_rules! workable_states {
                 new_state: WorkableState,
                 entity: Entity,
                 commands: &mut Commands,
-                // state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<WorkableState>>,
+                // state_change_event_writer: &mut MessageWriter<EntityStateChangeEvent<WorkableState>>,
             ) -> WorkableState {
                 use std::mem;
                 log_state_change!("Workable({:?}).state {:?} => {:?}", entity, self.state, new_state);

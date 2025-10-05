@@ -9,9 +9,9 @@ pub fn move_moving_entities(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     arc_navmesh: Res<ArcNavmesh>,
-    // mut movable_state_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
-    mut destination_reached_event_writer: EventWriter<MovableReachedDestinationEvent>,
-    mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
+    // mut movable_state_event_writer: MessageWriter<EntityStateChangeEvent<MovableState>>,
+    mut destination_reached_event_writer: MessageWriter<MovableReachedDestinationEvent>,
+    mut occupation_change_event_writer: MessageWriter<OccupationChangeEvent>,
 ) {
     for (entity, mut movable, mut transform, maybe_pawn) in &mut query_movable {
         match movable.state {
@@ -54,8 +54,8 @@ fn move_to_target_location(
     remaining_time: f32,
     arc_navmesh: &ArcNavmesh,
     commands: &mut Commands,
-    event_writer: &mut EventWriter<MovableReachedDestinationEvent>,
-    // event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
+    event_writer: &mut MessageWriter<MovableReachedDestinationEvent>,
+    // event_writer: &mut MessageWriter<EntityStateChangeEvent<MovableState>>,
 ) -> IVec2 {
     if movable.path.is_empty() {
         let current_tile = transform.translation.truncate().world_pos_to_grid();
@@ -70,7 +70,7 @@ fn move_to_target_location(
             _ => None,
         };
         // println!(
-        //     "EventWriter<MovableReachedDestinationEvent> current_tile:{:?}, target_tile:{:?}",
+        //     "MessageWriter<MovableReachedDestinationEvent> current_tile:{:?}, target_tile:{:?}",
         //     current_tile,
         //     match movable.state {
         //         MovableState::Moving(target_tile) => Some(target_tile),
@@ -125,7 +125,7 @@ fn move_to_target_location(
 
 pub fn stop_movable_on_death(
     mut commands: Commands,
-    mut event_reader: EventReader<PawnDeathEvent>,
+    mut event_reader: MessageReader<PawnDeathEvent>,
     mut query: Query<&mut Movable>,
 ) {
     for PawnDeathEvent { entity, .. } in event_reader.read() {

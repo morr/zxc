@@ -5,7 +5,7 @@ pub struct FeedablePlugin;
 impl Plugin for FeedablePlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Feedable>()
-            .add_event::<FoodConsumedEvent>()
+            .add_message::<FoodConsumedEvent>()
             .add_systems(
                 Update,
                 (progress_hunger, process_consumed_food)
@@ -33,7 +33,7 @@ impl Default for Feedable {
     }
 }
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 pub struct FoodConsumedEvent {
     pub amount: u32,
 }
@@ -70,9 +70,9 @@ fn progress_hunger(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Feedable, &mut Commandable)>,
-    mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
-    mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
-    mut pawn_death_event_writer: EventWriter<PawnDeathEvent>,
+    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptEvent>,
+    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesEvent>,
+    mut pawn_death_event_writer: MessageWriter<PawnDeathEvent>,
     food_stock: Res<FoodStock>,
 ) {
     let time_amount = time_scale.scale_to_seconds(time.delta_secs());
@@ -104,7 +104,7 @@ fn progress_hunger(
 
 fn process_consumed_food(
     mut commands: Commands,
-    mut event_reader: EventReader<FoodConsumedEvent>,
+    mut event_reader: MessageReader<FoodConsumedEvent>,
     mut carryable_query: Query<(Entity, &mut Carryable, &Transform), With<CarryableFoodMarker>>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {

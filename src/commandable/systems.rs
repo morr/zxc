@@ -3,21 +3,21 @@ use super::*;
 #[allow(clippy::too_many_arguments)]
 pub fn process_pending_commands(
     mut commands: Commands,
-    mut complete_task_command_writer: EventWriter<CompleteTaskCommand>,
-    mut drop_carried_item_command_writer: EventWriter<DropCarriedItemCommand>,
-    mut feed_command_writer: EventWriter<FeedCommand>,
-    mut move_to_command_writer: EventWriter<MoveToCommand>,
-    mut pick_up_item_command_writer: EventWriter<PickUpItemCommand>,
-    mut sleep_command_writer: EventWriter<SleepCommand>,
-    mut to_rest_command_writer: EventWriter<ToRestCommand>,
-    mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
-    mut work_on_command_writer: EventWriter<WorkOnCommand>,
+    mut complete_task_command_writer: MessageWriter<CompleteTaskCommand>,
+    mut drop_carried_item_command_writer: MessageWriter<DropCarriedItemCommand>,
+    mut feed_command_writer: MessageWriter<FeedCommand>,
+    mut move_to_command_writer: MessageWriter<MoveToCommand>,
+    mut pick_up_item_command_writer: MessageWriter<PickUpItemCommand>,
+    mut sleep_command_writer: MessageWriter<SleepCommand>,
+    mut to_rest_command_writer: MessageWriter<ToRestCommand>,
+    mut user_selection_command_writer: MessageWriter<UserSelectionCommand>,
+    mut work_on_command_writer: MessageWriter<WorkOnCommand>,
     mut commandable_query: Query<
         (Entity, &mut Commandable, Option<&mut Pawn>),
         // component tags seems to be working unreliable
         // With<commandable_state::CommandableStatePendingExecutionTag>,
     >,
-    mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for (entity, mut commandable, maybe_pawn) in &mut commandable_query {
         continue_unless!(CommandableState::PendingExecution, commandable.state);
@@ -67,7 +67,7 @@ pub fn process_pending_commands(
 
 pub fn process_complete_commands(
     mut commands: Commands,
-    mut commandable_event_reader: EventReader<CommandCompleteEvent>,
+    mut commandable_event_reader: MessageReader<CommandCompleteEvent>,
     mut pawn_query: Query<(Option<&mut Pawn>, &Commandable)>,
     // component tags seems to be working unreliable
     // mut pawn_query: Query<
@@ -77,7 +77,7 @@ pub fn process_complete_commands(
     //         With<pawn_state::PawnStateExecutingCommandTag>,
     //     ),
     // >,
-    mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for CommandCompleteEvent(entity) in commandable_event_reader.read() {
         // println!("{:?}", CommandCompleteEvent(*entity));
@@ -97,11 +97,11 @@ pub fn process_complete_commands(
 
 pub fn process_interrupt_commands(
     mut commands: Commands,
-    mut commandable_event_reader: EventReader<ExternalCommandInterruptEvent>,
+    mut commandable_event_reader: MessageReader<ExternalCommandInterruptEvent>,
     mut pawn_query: Query<(Option<&Pawn>, &mut Commandable)>,
-    mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
-    mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
-    mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
+    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptEvent>,
+    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesEvent>,
+    mut commandable_event_writer: MessageWriter<CommandCompleteEvent>,
     // component tags seems to be working unreliable
     // mut pawn_query: Query<
     //     (Option<&Pawn>, &mut Commandable),
@@ -110,7 +110,7 @@ pub fn process_interrupt_commands(
     //         With<pawn_state::PawnStateExecutingCommandTag>,
     //     ),
     // >,
-    // mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    // mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for ExternalCommandInterruptEvent(commandable_entity) in commandable_event_reader.read() {
         // println!("{:?}", InterruptCommandEvent(*entity));

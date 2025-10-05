@@ -4,12 +4,12 @@ pub struct ToRestCommandPlugin;
 
 impl Plugin for ToRestCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<ToRestCommand>()
+        app.add_message::<ToRestCommand>()
             .add_systems(Update, execute_command.run_if(in_state(AppState::Playing)));
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(Message, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct ToRestCommand {
     pub commandable_entity: Entity,
 }
@@ -19,11 +19,11 @@ fn execute_command(
     mut commands: Commands,
     mut bed_query: Query<(Entity, &Transform, &mut Bed)>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
-    mut command_reader: EventReader<ToRestCommand>,
-    mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
+    mut command_reader: MessageReader<ToRestCommand>,
+    mut commandable_event_writer: MessageWriter<CommandCompleteEvent>,
     mut available_beds: ResMut<AvailableBeds>,
-    mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
-    mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
+    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptEvent>,
+    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesEvent>,
     arc_navmesh: Res<ArcNavmesh>,
 ) {
     for ToRestCommand { commandable_entity } in command_reader.read() {
@@ -113,6 +113,6 @@ fn execute_command(
 // so there won't be any interruption to handle.
 // fn handle_internal_interrupts(
 //     mut commands: Commands,
-//     mut event_reader: EventReader<InternalCommandInterruptEvent>,
+//     mut event_reader: MessageReader<InternalCommandInterruptEvent>,
 // ) {
 // }

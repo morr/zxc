@@ -4,19 +4,19 @@ pub struct UserSelectionCommandPlugin;
 
 impl Plugin for UserSelectionCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<UserSelectionCommand>()
+        app.add_message::<UserSelectionCommand>()
             .add_systems(Update, execute_command.run_if(in_state(AppState::Playing)));
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(Message, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct UserSelectionCommand(pub Option<UserSelectionData>);
 
 fn execute_command(
     mut commands: Commands,
     mut current_user_selection: ResMut<CurrentUserSelection>,
-    mut user_selection_command_reader: EventReader<UserSelectionCommand>,
-    mut user_selection_change_event_writer: EventWriter<UserSelectionChangeEvent>,
+    mut user_selection_command_reader: MessageReader<UserSelectionCommand>,
+    mut user_selection_change_event_writer: MessageWriter<UserSelectionChangeEvent>,
 ) {
     for command in user_selection_command_reader.read() {
         // println!("{:?", event);

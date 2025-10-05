@@ -4,7 +4,7 @@ pub struct WorkOnCommandPlugin;
 
 impl Plugin for WorkOnCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<WorkOnCommand>().add_systems(
+        app.add_message::<WorkOnCommand>().add_systems(
             Update,
             (
                 execute_command,
@@ -18,7 +18,7 @@ impl Plugin for WorkOnCommandPlugin {
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(Message, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct WorkOnCommand {
     pub commandable_entity: Entity,
     pub workable_entity: Entity,
@@ -27,7 +27,7 @@ pub struct WorkOnCommand {
 
 fn execute_command(
     mut commands: Commands,
-    mut command_reader: EventReader<WorkOnCommand>,
+    mut command_reader: MessageReader<WorkOnCommand>,
     mut workable_query: Query<&mut Workable>,
 ) {
     for command in command_reader.read() {
@@ -50,8 +50,8 @@ fn execute_command(
 fn monitor_completion(
     mut commands: Commands,
     mut query: Query<&mut Commandable>,
-    mut command_complete_event_reader: EventReader<WorkCompleteEvent>,
-    mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
+    mut command_complete_event_reader: MessageReader<WorkCompleteEvent>,
+    mut commandable_event_writer: MessageWriter<CommandCompleteEvent>,
 ) {
     for WorkCompleteEvent {
         commandable_entity,
@@ -85,11 +85,11 @@ fn monitor_completion(
 
 fn handle_internal_interrupts(
     mut commands: Commands,
-    mut event_reader: EventReader<InternalCommandInterruptEvent>,
+    mut event_reader: MessageReader<InternalCommandInterruptEvent>,
     // mut commandable_query: Query<&mut Commandable>,
     mut workable_query: Query<&mut Workable>,
-    // mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
-    // mut work_complete_event_writer: EventWriter<WorkCompleteEvent>,
+    // mut tasks_scheduler: MessageWriter<ScheduleTaskEvent>,
+    // mut work_complete_event_writer: MessageWriter<WorkCompleteEvent>,
 ) {
     for InternalCommandInterruptEvent(interrupted_command_type) in event_reader.read() {
         if let CommandType::WorkOn(interrupted_command) = interrupted_command_type {
@@ -118,8 +118,8 @@ fn handle_internal_interrupts(
 }
 
 // fn handle_release_resources(
-//     mut event_reader: EventReader<ReleaseCommandResourcesEvent>,
-//     mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
+//     mut event_reader: MessageReader<ReleaseCommandResourcesEvent>,
+//     mut tasks_scheduler: MessageWriter<ScheduleTaskEvent>,
 // ) {
 //     for ReleaseCommandResourcesEvent(interrupted_command_type) in event_reader.read() {
 //         if let CommandType::WorkOn(WorkOnCommand { task, .. }) = interrupted_command_type {

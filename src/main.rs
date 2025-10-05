@@ -93,7 +93,7 @@ pub fn close_on_esc(
     )>,
     farms_query: Query<(Entity, &Farm, &Workable)>,
     mut next_state: ResMut<NextState<AppState>>,
-    mut event_writer: EventWriter<AppExit>,
+    mut event_writer: MessageWriter<AppExit>,
 ) {
     let mut is_quiting = false;
 

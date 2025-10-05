@@ -4,12 +4,12 @@ pub struct PickUpItemCommandPlugin;
 
 impl Plugin for PickUpItemCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<PickUpItemCommand>()
+        app.add_message::<PickUpItemCommand>()
             .add_systems(Update, execute_command.run_if(in_state(AppState::Playing)));
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(Message, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct PickUpItemCommand {
     pub commandable_entity: Entity,
     pub carryable_entity: Entity,
@@ -18,11 +18,11 @@ pub struct PickUpItemCommand {
 #[allow(clippy::too_many_arguments)]
 fn execute_command(
     mut commands: Commands,
-    mut command_reader: EventReader<PickUpItemCommand>,
+    mut command_reader: MessageReader<PickUpItemCommand>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
     mut carryable_query: Query<(&mut Carryable, &Transform)>,
-    mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
-    mut commandable_interrupt_writer: EventWriter<ExternalCommandInterruptEvent>,
+    mut commandable_event_writer: MessageWriter<CommandCompleteEvent>,
+    mut commandable_interrupt_writer: MessageWriter<ExternalCommandInterruptEvent>,
     arc_navmesh: ResMut<ArcNavmesh>,
     mut food_stock: ResMut<FoodStock>,
 ) {
@@ -92,6 +92,6 @@ fn execute_command(
 // so there won't be any interruption to handle.
 // fn handle_internal_interrupts(
 //     mut commands: Commands,
-//     mut event_reader: EventReader<InternalCommandInterruptEvent>,
+//     mut event_reader: MessageReader<InternalCommandInterruptEvent>,
 // ) {
 // }

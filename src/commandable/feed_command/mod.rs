@@ -6,23 +6,23 @@ pub struct FeedCommandPlugin;
 
 impl Plugin for FeedCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<FeedCommand>()
+        app.add_message::<FeedCommand>()
             .add_systems(Update, execute_command.run_if(in_state(AppState::Playing)));
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(Message, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct FeedCommand {
     pub commandable_entity: Entity,
 }
 
 fn execute_command(
     mut commands: Commands,
-    mut command_reader: EventReader<FeedCommand>,
+    mut command_reader: MessageReader<FeedCommand>,
     mut commandable_query: Query<(&mut Commandable, &mut Feedable)>,
     mut food_stock: ResMut<FoodStock>,
-    mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
-    mut food_consumed_event_writer: EventWriter<FoodConsumedEvent>,
+    mut commandable_event_writer: MessageWriter<CommandCompleteEvent>,
+    mut food_consumed_event_writer: MessageWriter<FoodConsumedEvent>,
 ) {
     let amount_before = food_stock.amount;
 

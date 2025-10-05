@@ -194,7 +194,7 @@ fn noise_value(
 fn ui_system(
     mut egui_contexts: bevy_inspector_egui::bevy_egui::EguiContexts,
     mut generator_config: ResMut<PerlinNoiseConfig>,
-    mut rebuild_map_event_writer: EventWriter<RebuildMapEvent>,
+    mut rebuild_map_event_writer: MessageWriter<RebuildMapEvent>,
 ) {
     let ctx = egui_contexts.ctx_mut().unwrap();
 

@@ -23,7 +23,7 @@ pub struct Movable {
     pub state: MovableState,
 }
 
-#[derive(Event, Debug, Clone)]
+#[derive(Message, Debug, Clone)]
 pub struct MovableReachedDestinationEvent(pub Entity, pub IVec2);
 
 impl Movable {
@@ -39,8 +39,8 @@ impl Movable {
         &mut self,
         entity: Entity,
         commands: &mut Commands,
-        maybe_event_writer: Option<&mut EventWriter<MovableReachedDestinationEvent>>,
-        // maybe_movable_state_change_event_writer: Option<&mut EventWriter<EntityStateChangeEvent<MovableState>>>,
+        maybe_event_writer: Option<&mut MessageWriter<MovableReachedDestinationEvent>>,
+        // maybe_movable_state_change_event_writer: Option<&mut MessageWriter<EntityStateChangeEvent<MovableState>>>,
     ) {
         if self.path.is_empty()
             && let MovableState::Moving(end_tile) | MovableState::Pathfinding(end_tile) = self.state
@@ -63,7 +63,7 @@ impl Movable {
         path: VecDeque<IVec2>,
         entity: Entity,
         commands: &mut Commands,
-        // movable_state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
+        // movable_state_change_event_writer: &mut MessageWriter<EntityStateChangeEvent<MovableState>>,
     ) {
         self.state = MovableState::Moving(end_tile);
         self.path = path;
@@ -81,7 +81,7 @@ impl Movable {
         queue_counter: &Res<AsyncQueueCounter>,
         maybe_pathfinding_task: Option<&mut PathfindingTask>,
         commands: &mut Commands,
-        // movable_state_change_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
+        // movable_state_change_event_writer: &mut MessageWriter<EntityStateChangeEvent<MovableState>>,
     ) {
         // println!("MovableState {:?}=>{:?}", self.state, MovableState::Pathfinding(end_tile));
         self.stop_moving(entity, commands);
@@ -112,8 +112,8 @@ impl Movable {
     //     start_tile: IVec2,
     //     end_tile: IVec2,
     //     commands: &mut Commands,
-    //     pathfind_event_writer: &mut EventWriter<PathfindRequestEvent>,
-    //     movable_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
+    //     pathfind_event_writer: &mut MessageWriter<PathfindRequestEvent>,
+    //     movable_state_event_writer: &mut MessageWriter<EntityStateChangeEvent<MovableState>>,
     // ) {
     //     if self.state == MovableState::Moving {
     //         self.stop_moving(entity, commands);
@@ -133,7 +133,7 @@ impl Movable {
         entity: Entity,
         end_tile: IVec2,
         commands: &mut Commands,
-        // movable_state_event_writer: &mut EventWriter<EntityStateChangeEvent<MovableState>>,
+        // movable_state_event_writer: &mut MessageWriter<EntityStateChangeEvent<MovableState>>,
     ) {
         // println!("MovableState {:?}=>{:?}", self.state, MovableState::PathfindingError(end_tile));
         self.stop_moving(entity, commands);

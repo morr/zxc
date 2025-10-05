@@ -14,7 +14,7 @@ pub struct DebugNavmeshPlugin;
 impl Plugin for DebugNavmeshPlugin {
     fn build(&self, app: &mut App) {
         app.insert_state(DebugNavmeshState::Hidden)
-            .add_event::<StateChangeEvent<DebugNavmeshState>>()
+            .add_message::<StateChangeEvent<DebugNavmeshState>>()
             .add_systems(
                 FixedUpdate,
                 handle_state_changes.run_if(in_state(AppState::Playing)),
@@ -24,7 +24,7 @@ impl Plugin for DebugNavmeshPlugin {
             app.add_systems(
                 OnExit(AppState::Loading),
                 (|mut next_state: ResMut<NextState<DebugNavmeshState>>,
-                  mut debug_navmesh_state_change_event_writer: EventWriter<
+                  mut debug_navmesh_state_change_event_writer: MessageWriter<
                     StateChangeEvent<DebugNavmeshState>,
                 >| {
                     next_state.set(DebugNavmeshState::Visible);
@@ -42,7 +42,7 @@ fn handle_state_changes(
     arc_navmesh: Res<ArcNavmesh>,
     mut meshes: ResMut<Assets<Mesh>>,
     assets: Res<AssetsCollection>,
-    mut event_reader: EventReader<StateChangeEvent<DebugNavmeshState>>,
+    mut event_reader: MessageReader<StateChangeEvent<DebugNavmeshState>>,
     query_tiles: Query<Entity, With<DebugNavmeshTile>>,
 ) {
     for StateChangeEvent(state) in event_reader.read() {

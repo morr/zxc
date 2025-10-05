@@ -11,7 +11,7 @@ mod pawn {
         let mut app = App::new();
 
         app.add_plugins((TimePlugin, StatesPlugin, StoryTimePlugin))
-            .add_event::<PawnDeathEvent>()
+            .add_message::<PawnDeathEvent>()
             .add_systems(Update, progress_pawn_dying);
 
         let pawn_id = app
@@ -61,9 +61,9 @@ mod pawn {
         let mut app = App::new();
 
         app.add_plugins((BedPlugin, WorkablePlugin, RestablePlugin, CommandablePlugin))
-            // .add_event::<EntityStateChangeEvent<PawnState>>()
-            .add_event::<PawnDeathEvent>()
-            .add_event::<EntityStateChangeEvent<PawnState>>()
+            // .add_message::<EntityStateChangeEvent<PawnState>>()
+            .add_message::<PawnDeathEvent>()
+            .add_message::<EntityStateChangeEvent<PawnState>>()
             .add_systems(Update, progress_pawn_death);
 
         let pawn_id = app

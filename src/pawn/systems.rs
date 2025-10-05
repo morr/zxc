@@ -12,8 +12,8 @@ pub fn spawn_pawns(
     // warehouse_query: Query<&Transform, With<Warehouse>>,
     farm_query: Query<&Transform, With<Farm>>,
     arc_navmesh: ResMut<ArcNavmesh>,
-    mut occupation_change_event_writer: EventWriter<OccupationChangeEvent>,
-    // mut user_selection_command_writer: EventWriter<UserSelectionCommand>,
+    mut occupation_change_event_writer: MessageWriter<OccupationChangeEvent>,
+    // mut user_selection_command_writer: MessageWriter<UserSelectionCommand>,
 ) {
     let mut rng = rand::rng();
     let radius = config().tile.size * i32::max(BASE_WIDTH, BASE_HEIGHT) as f32;
@@ -96,8 +96,8 @@ pub fn spawn_pawns(
 }
 
 // pub fn update_pawn_color(// assets_collection: Res<AssetsCollection>,
-//     // mut movable_event_reader: EventReader<EntityStateChangeEvent<MovableState>>,
-//     // mut pawn_event_reader: EventReader<EntityStateChangeEvent<PawnState>>,
+//     // mut movable_event_reader: MessageReader<EntityStateChangeEvent<MovableState>>,
+//     // mut pawn_event_reader: MessageReader<EntityStateChangeEvent<PawnState>>,
 //     // mut query: Query<&mut Handle<ColorMaterial>>,
 // ) {
 //     // for event in movable_event_reader.read() {
@@ -123,7 +123,7 @@ pub fn spawn_pawns(
 // }
 
 pub fn update_pawn_state_text(
-    mut event_reader: EventReader<EntityStateChangeEvent<PawnState>>,
+    mut event_reader: MessageReader<EntityStateChangeEvent<PawnState>>,
     children_query: Query<&Children>,
     // mut state_text_query: Query<(&mut Text, &mut Visibility), With<PawnStateText>>,
     // mut state_text_query: Query<&mut Text, With<PawnStateText>>,
@@ -165,8 +165,8 @@ pub fn update_pawn_state_text(
 
 pub fn progress_pawn_daily(
     mut commands: Commands,
-    mut event_reader: EventReader<NewDayEvent>,
-    // mut event_writer: EventWriter<PawnBirthdayEvent>,
+    mut event_reader: MessageReader<NewDayEvent>,
+    // mut event_writer: MessageWriter<PawnBirthdayEvent>,
     mut query: Query<(Entity, &mut Pawn), Without<pawn_state::PawnStateDeadTag>>,
 ) {
     for event in event_reader.read() {
@@ -189,7 +189,7 @@ pub fn progress_pawn_dying(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Pawn), With<DyingMarker>>,
-    mut event_writer: EventWriter<PawnDeathEvent>,
+    mut event_writer: MessageWriter<PawnDeathEvent>,
 ) {
     for (entity, mut pawn) in query.iter_mut() {
         pawn.decrease_lifetime(time_scale.scale_to_seconds(time.delta_secs()));
@@ -207,13 +207,13 @@ pub fn progress_pawn_dying(
 #[allow(clippy::too_many_arguments)]
 pub fn progress_pawn_death(
     mut commands: Commands,
-    mut event_reader: EventReader<PawnDeathEvent>,
+    mut event_reader: MessageReader<PawnDeathEvent>,
     mut pawn_query: Query<(&mut Pawn, &mut Restable, &mut Commandable)>,
     mut bed_query: Query<&mut Bed>,
-    mut commandable_interrupt_writer: EventWriter<InternalCommandInterruptEvent>,
-    mut commandable_release_resources_writer: EventWriter<ReleaseCommandResourcesEvent>,
+    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptEvent>,
+    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesEvent>,
     mut available_beds: ResMut<AvailableBeds>,
-    mut pawn_state_change_event_writer: EventWriter<EntityStateChangeEvent<PawnState>>,
+    mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeEvent<PawnState>>,
 ) {
     for PawnDeathEvent { entity, .. } in event_reader.read() {
         match pawn_query.get_mut(*entity) {

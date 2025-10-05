@@ -7,9 +7,9 @@ pub struct InputPlugin;
 impl Plugin for InputPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<HoveredGridTile>()
-            .add_event::<HoverEvent>()
-            .add_event::<ClickEventStage0>()
-            .add_event::<ClickEventStage1>();
+            .add_message::<HoverEvent>()
+            .add_message::<ClickEventStage0>()
+            .add_message::<ClickEventStage1>();
 
         #[cfg(feature = "bevy_egui")]
         {
@@ -34,13 +34,13 @@ pub struct HoveredGridTile(pub Option<IVec2>);
 #[derive(Component, Default)]
 pub struct HoverMarker;
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 pub struct HoverEvent(pub IVec2);
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 pub struct ClickEventStage0(pub IVec2);
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 pub struct ClickEventStage1(pub IVec2);
 
 #[derive(Resource, Deref, DerefMut, PartialEq, Eq, Default)]
@@ -65,14 +65,14 @@ fn check_egui_wants_focus(
 
 pub fn mouse_input(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
-    // mut mouse_motion_evr: EventReader<MouseMotion>,
+    // mut mouse_motion_evr: MessageReader<MouseMotion>,
     // query to get the window (so we can read the current cursor position)
     // hovered_tile_pos: &mut ResMut<HoverMarkerTilePos>,
     q_window: Query<&Window, With<PrimaryWindow>>,
     // query to get camera transform
     q_camera: Query<(&Camera, &GlobalTransform), With<FloorCamera>>,
-    mut hover_event_writer: EventWriter<HoverEvent>,
-    mut click_event_writer: EventWriter<ClickEventStage0>,
+    mut hover_event_writer: MessageWriter<HoverEvent>,
+    mut click_event_writer: MessageWriter<ClickEventStage0>,
     mut prev_hovered_grid_tile: ResMut<HoveredGridTile>,
 ) {
     let (camera, camera_transform) = q_camera.single().unwrap();

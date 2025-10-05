@@ -4,7 +4,7 @@ pub struct MoveToCommandPlugin;
 
 impl Plugin for MoveToCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<MoveToCommand>().add_systems(
+        app.add_message::<MoveToCommand>().add_systems(
             Update,
             (
                 execute_command,
@@ -17,7 +17,7 @@ impl Plugin for MoveToCommandPlugin {
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(Message, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct MoveToCommand {
     pub commandable_entity: Entity,
     pub grid_tile: IVec2,
@@ -25,11 +25,11 @@ pub struct MoveToCommand {
 
 fn execute_command(
     mut commands: Commands,
-    mut command_reader: EventReader<MoveToCommand>,
+    mut command_reader: MessageReader<MoveToCommand>,
     mut query: Query<(&Transform, &mut Movable, Option<&mut PathfindingTask>)>,
     arc_navmesh: Res<ArcNavmesh>,
     queue_counter: Res<AsyncQueueCounter>,
-    // mut movable_state_change_event_writer: EventWriter<EntityStateChangeEvent<MovableState>>,
+    // mut movable_state_change_event_writer: MessageWriter<EntityStateChangeEvent<MovableState>>,
 ) {
     for MoveToCommand {
         commandable_entity,
@@ -62,8 +62,8 @@ fn execute_command(
 fn monitor_completion(
     mut commands: Commands,
     mut query: Query<&mut Commandable>,
-    mut command_complete_event_reader: EventReader<MovableReachedDestinationEvent>,
-    mut commandable_event_writer: EventWriter<CommandCompleteEvent>,
+    mut command_complete_event_reader: MessageReader<MovableReachedDestinationEvent>,
+    mut commandable_event_writer: MessageWriter<CommandCompleteEvent>,
 ) {
     for MovableReachedDestinationEvent(entity, destination_tile) in
         command_complete_event_reader.read()
@@ -92,7 +92,7 @@ fn monitor_completion(
 
 fn handle_internal_interrupts(
     mut commands: Commands,
-    mut event_reader: EventReader<InternalCommandInterruptEvent>,
+    mut event_reader: MessageReader<InternalCommandInterruptEvent>,
     mut query: Query<&mut Movable>,
 ) {
     for InternalCommandInterruptEvent(interrupted_command) in event_reader.read() {

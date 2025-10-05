@@ -45,7 +45,7 @@ fn spawn_tiles(
 
 pub fn track_hover(
     mut commands: Commands,
-    mut event_reader: EventReader<HoverEvent>,
+    mut event_reader: MessageReader<HoverEvent>,
     arc_navmesh: Res<ArcNavmesh>,
     q_hover_markers: Query<(Entity, &Tile), With<HoverMarker>>,
     // q_tiles: Query<(Entity, &Tile)>,
@@ -78,7 +78,7 @@ pub fn track_hover(
 }
 
 pub fn rebuild_map(
-    mut event_reader: EventReader<RebuildMapEvent>,
+    mut event_reader: MessageReader<RebuildMapEvent>,
     mut commands: Commands,
     pn_config: Res<generator::perlin_noise::PerlinNoiseConfig>,
     assets: Res<TextureAssets>,

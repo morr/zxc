@@ -2,12 +2,12 @@ use super::*;
 
 pub fn progress_on_farm_progress_event(
     elapsed_time: Res<ElapsedTime>,
-    mut event_reader: EventReader<FarmProgressEvent>,
+    mut event_reader: MessageReader<FarmProgressEvent>,
     mut query: Query<(&mut Farm, &mut Workable, &Transform)>,
     mut commands: Commands,
     assets: Res<FarmAssets>,
-    mut state_change_event_writer: EventWriter<EntityStateChangeEvent<FarmState>>,
-    mut commandable_interrupt_writer: EventWriter<ExternalCommandInterruptEvent>,
+    mut state_change_event_writer: MessageWriter<EntityStateChangeEvent<FarmState>>,
+    mut commandable_interrupt_writer: MessageWriter<ExternalCommandInterruptEvent>,
 ) {
     for FarmProgressEvent(entity) in event_reader.read() {
         // println!("{:?}", FarmProgressEvent(entity));
@@ -28,7 +28,7 @@ pub fn progress_on_farm_progress_event(
 
 pub fn progress_on_farm_tended_event(
     elapsed_time: Res<ElapsedTime>,
-    mut event_reader: EventReader<FarmTendedEvent>,
+    mut event_reader: MessageReader<FarmTendedEvent>,
     mut query: Query<&mut Farm>,
     // component tags seems to be working unreliable
     // mut query: Query<&mut Farm, With<farm_state::Planted>>,
@@ -53,8 +53,8 @@ pub fn progress_planted_and_tending_rest_timers(
     time_scale: Res<TimeScale>,
     elapsed_time: Res<ElapsedTime>,
     mut query: Query<(Entity, &mut Farm), With<farm_state::Planted>>,
-    mut farm_progress_event_writer: EventWriter<FarmProgressEvent>,
-    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
+    mut farm_progress_event_writer: MessageWriter<FarmProgressEvent>,
+    mut tasks_scheduler: MessageWriter<ScheduleTaskEvent>,
 ) {
     for (workable_entity, mut farm) in query.iter_mut() {
         let planted_state = match &mut farm.state {
@@ -96,7 +96,7 @@ pub fn progress_harvested_timer(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Farm), With<farm_state::Harvested>>,
-    mut farm_progress_event_writer: EventWriter<FarmProgressEvent>,
+    mut farm_progress_event_writer: MessageWriter<FarmProgressEvent>,
 ) {
     for (entity, mut farm) in query.iter_mut() {
         let state = match &mut farm.state {
@@ -114,10 +114,10 @@ pub fn progress_harvested_timer(
 }
 
 pub fn progress_on_state_changed(
-    mut event_reader: EventReader<EntityStateChangeEvent<FarmState>>,
+    mut event_reader: MessageReader<EntityStateChangeEvent<FarmState>>,
     query: Query<(&Farm, &Transform)>,
-    mut spawn_food_event_writer: EventWriter<SpawnCarryableEvent>,
-    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
+    mut spawn_food_event_writer: MessageWriter<SpawnCarryableEvent>,
+    mut tasks_scheduler: MessageWriter<ScheduleTaskEvent>,
 ) {
     for EntityStateChangeEvent(workable_entity, state) in event_reader.read() {
         // println!("{:?}", event);
@@ -152,9 +152,9 @@ pub fn progress_on_state_changed(
 }
 
 pub fn progress_on_new_day(
-    mut event_reader: EventReader<NewDayEvent>,
+    mut event_reader: MessageReader<NewDayEvent>,
     mut query: Query<(Entity, &mut Farm), With<farm_state::Planted>>,
-    mut tasks_scheduler: EventWriter<ScheduleTaskEvent>,
+    mut tasks_scheduler: MessageWriter<ScheduleTaskEvent>,
 ) {
     for _event in event_reader.read() {
         for (workable_entity, mut farm) in query.iter_mut() {

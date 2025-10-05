@@ -6,7 +6,7 @@ pub struct TasksQueuePlugin;
 impl Plugin for TasksQueuePlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<TasksQueue>()
-            .add_event::<ScheduleTaskEvent>()
+            .add_message::<ScheduleTaskEvent>()
             .add_systems(
                 FixedUpdate,
                 schedule_task.run_if(in_state(AppState::Playing)),
@@ -62,7 +62,7 @@ pub enum QueuingType {
     PushFront,
 }
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 pub struct ScheduleTaskEvent(pub Task, pub QueuingType);
 
 impl ScheduleTaskEvent {
@@ -76,7 +76,7 @@ impl ScheduleTaskEvent {
 }
 
 fn schedule_task(
-    mut event_reader: EventReader<ScheduleTaskEvent>,
+    mut event_reader: MessageReader<ScheduleTaskEvent>,
     mut tasks_queue: ResMut<TasksQueue>,
 ) {
     for ScheduleTaskEvent(task, queuing_type) in event_reader.read() {

@@ -3,7 +3,7 @@ use super::*;
 #[derive(Component, Default)]
 pub struct UserSelectionMarker;
 
-#[derive(Event, Debug, Default)]
+#[derive(Message, Debug, Default)]
 pub struct UserSelectionChangeEvent;
 
 #[derive(Resource, Debug, Deref, DerefMut, Default)]
