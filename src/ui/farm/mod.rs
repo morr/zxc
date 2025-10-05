@@ -131,18 +131,18 @@ fn update_farm_ui(
     mut writer: TextUiWriter,
 ) {
     for (ui_id, ui_marker) in ui_query.iter() {
-        if let Ok((farm, workable)) = components_query.get(ui_marker.farm_id) {
-            if let Ok(children) = children_query.get(ui_id) {
-                for child in children.iter() {
-                    update_text_markers_recursive(
-                        child,
-                        farm,
-                        workable,
-                        &texts_query,
-                        &children_query,
-                        &mut writer,
-                    );
-                }
+        if let Ok((farm, workable)) = components_query.get(ui_marker.farm_id)
+            && let Ok(children) = children_query.get(ui_id)
+        {
+            for child in children.iter() {
+                update_text_markers_recursive(
+                    child,
+                    farm,
+                    workable,
+                    &texts_query,
+                    &children_query,
+                    &mut writer,
+                );
             }
         }
     }

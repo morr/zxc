@@ -42,14 +42,11 @@ impl Movable {
         maybe_event_writer: Option<&mut EventWriter<MovableReachedDestinationEvent>>,
         // maybe_movable_state_change_event_writer: Option<&mut EventWriter<EntityStateChangeEvent<MovableState>>>,
     ) {
-        if self.path.is_empty() {
-            if let MovableState::Moving(end_tile) | MovableState::Pathfinding(end_tile) = self.state
-            {
-                if let Some(event_writer) = maybe_event_writer {
-                    event_writer
-                        .write(log_event!(MovableReachedDestinationEvent(entity, end_tile)));
-                }
-            }
+        if self.path.is_empty()
+            && let MovableState::Moving(end_tile) | MovableState::Pathfinding(end_tile) = self.state
+            && let Some(event_writer) = maybe_event_writer
+        {
+            event_writer.write(log_event!(MovableReachedDestinationEvent(entity, end_tile)));
         }
 
         self.stop_moving(entity, commands);

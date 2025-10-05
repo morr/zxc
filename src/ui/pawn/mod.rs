@@ -116,21 +116,20 @@ fn update_pawn_ui(
     for (ui_id, ui_marker) in ui_query.iter() {
         if let Ok((pawn, movable, restable, feedable, commandable)) =
             components_query.get(ui_marker.pawn_id)
+            && let Ok(children) = children_query.get(ui_id)
         {
-            if let Ok(children) = children_query.get(ui_id) {
-                for child in children.iter() {
-                    update_text_markers_recursive(
-                        child,
-                        pawn,
-                        movable,
-                        restable,
-                        feedable,
-                        commandable,
-                        &texts_query,
-                        &children_query,
-                        &mut writer,
-                    );
-                }
+            for child in children.iter() {
+                update_text_markers_recursive(
+                    child,
+                    pawn,
+                    movable,
+                    restable,
+                    feedable,
+                    commandable,
+                    &texts_query,
+                    &children_query,
+                    &mut writer,
+                );
             }
         }
     }

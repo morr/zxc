@@ -81,10 +81,9 @@ fn handle_internal_interrupts(
         if let CommandType::Sleep(SleepCommand {
             commandable_entity, ..
         }) = interrupted_command
+            && let Ok(mut restable) = query.get_mut(*commandable_entity)
         {
-            if let Ok(mut restable) = query.get_mut(*commandable_entity) {
-                restable.change_state(RestableState::Activity, *commandable_entity);
-            }
+            restable.change_state(RestableState::Activity, *commandable_entity);
         }
     }
 }

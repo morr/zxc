@@ -55,10 +55,10 @@ fn update_ui_on_hover_event(
 
     // or if occupation has changed in navmesh
     for event in occupation_change_event_reader.read() {
-        if let Some(grid_tile) = hovered_grid_tile.0 {
-            if event.0.contains(&grid_tile) {
-                possibly_hovered_grid_tiles.push(grid_tile);
-            }
+        if let Some(grid_tile) = hovered_grid_tile.0
+            && event.0.contains(&grid_tile)
+        {
+            possibly_hovered_grid_tiles.push(grid_tile);
         }
     }
 

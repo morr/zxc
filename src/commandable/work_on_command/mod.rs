@@ -101,18 +101,17 @@ fn handle_internal_interrupts(
             // };
 
             // Handle the workable entity
-            if let Ok(mut workable) = workable_query.get_mut(interrupted_command.workable_entity) {
-                if let WorkableState::BeingWorked(ref worked_command) = workable.state {
-                    if interrupted_command == worked_command {
-                        // tasks_scheduler
-                        //     .send(ScheduleTaskEvent::push_front(worked_command.task.clone()));
-                        workable.change_state(
-                            WorkableState::Idle,
-                            interrupted_command.workable_entity,
-                            &mut commands,
-                        );
-                    }
-                }
+            if let Ok(mut workable) = workable_query.get_mut(interrupted_command.workable_entity)
+                && let WorkableState::BeingWorked(ref worked_command) = workable.state
+                && interrupted_command == worked_command
+            {
+                // tasks_scheduler
+                //     .send(ScheduleTaskEvent::push_front(worked_command.task.clone()));
+                workable.change_state(
+                    WorkableState::Idle,
+                    interrupted_command.workable_entity,
+                    &mut commands,
+                );
             }
         }
     }

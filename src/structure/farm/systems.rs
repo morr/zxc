@@ -128,25 +128,25 @@ pub fn progress_on_state_changed(
             _ => None,
         };
 
-        if maybe_task_kind.is_some() || matches!(state, FarmState::Harvested(_)) {
-            if let Ok((farm, transform)) = query.get(*workable_entity) {
-                let grid_tile = transform.world_pos_to_grid();
+        if (maybe_task_kind.is_some() || matches!(state, FarmState::Harvested(_)))
+            && let Ok((farm, transform)) = query.get(*workable_entity)
+        {
+            let grid_tile = transform.world_pos_to_grid();
 
-                if let Some(work_kind) = maybe_task_kind {
-                    tasks_scheduler.write(ScheduleTaskEvent::push_back(Task(TaskKind::Work {
-                        workable_entity: *workable_entity,
-                        work_kind,
-                    })));
-                }
-
-                if let FarmState::Harvested(_) = state {
-                    spawn_food_event_writer.write(log_event!(SpawnCarryableEvent {
-                        kind: CarryableKind::Food,
-                        amount: farm.yield_amount(),
-                        grid_tile,
-                    }));
-                };
+            if let Some(work_kind) = maybe_task_kind {
+                tasks_scheduler.write(ScheduleTaskEvent::push_back(Task(TaskKind::Work {
+                    workable_entity: *workable_entity,
+                    work_kind,
+                })));
             }
+
+            if let FarmState::Harvested(_) = state {
+                spawn_food_event_writer.write(log_event!(SpawnCarryableEvent {
+                    kind: CarryableKind::Food,
+                    amount: farm.yield_amount(),
+                    grid_tile,
+                }));
+            };
         }
     }
 }
@@ -158,15 +158,15 @@ pub fn progress_on_new_day(
 ) {
     for _event in event_reader.read() {
         for (workable_entity, mut farm) in query.iter_mut() {
-            if let FarmState::Planted(planted_state) = &mut farm.state {
-                if planted_state.is_tending_pending_for_next_day {
-                    tasks_scheduler.write(ScheduleTaskEvent::push_back(Task(TaskKind::Work {
-                        workable_entity,
-                        work_kind: WorkKind::FarmTending,
-                    })));
+            if let FarmState::Planted(planted_state) = &mut farm.state
+                && planted_state.is_tending_pending_for_next_day
+            {
+                tasks_scheduler.write(ScheduleTaskEvent::push_back(Task(TaskKind::Work {
+                    workable_entity,
+                    work_kind: WorkKind::FarmTending,
+                })));
 
-                    planted_state.is_tending_pending_for_next_day = false;
-                }
+                planted_state.is_tending_pending_for_next_day = false;
             };
         }
     }

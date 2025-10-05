@@ -60,17 +60,17 @@ fn update_bed_ui(
     children_query: Query<&Children>,
 ) {
     for (ui_id, ui_marker) in ui_query.iter() {
-        if let Ok(bed) = components_query.get(ui_marker.bed_id) {
-            if let Ok(children) = children_query.get(ui_id) {
-                for child in children.iter() {
-                    update_text_markers_recursive(
-                        child,
-                        bed,
-                        &mut writer,
-                        &texts_query,
-                        &children_query,
-                    );
-                }
+        if let Ok(bed) = components_query.get(ui_marker.bed_id)
+            && let Ok(children) = children_query.get(ui_id)
+        {
+            for child in children.iter() {
+                update_text_markers_recursive(
+                    child,
+                    bed,
+                    &mut writer,
+                    &texts_query,
+                    &children_query,
+                );
             }
         }
     }
@@ -83,10 +83,10 @@ fn update_text_markers_recursive(
     texts_query: &Query<(Entity, Option<&BedOwnerUIMarker>), Or<(With<BedOwnerUIMarker>,)>>,
     children_query: &Query<&Children>,
 ) {
-    if let Ok((bed_entity, bed_owner_marker)) = texts_query.get(entity) {
-        if bed_owner_marker.is_some() {
-            *writer.text(bed_entity, 0) = bed_owner_text(bed);
-        }
+    if let Ok((bed_entity, bed_owner_marker)) = texts_query.get(entity)
+        && bed_owner_marker.is_some()
+    {
+        *writer.text(bed_entity, 0) = bed_owner_text(bed);
     }
 
     if let Ok(children) = children_query.get(entity) {

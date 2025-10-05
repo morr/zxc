@@ -63,9 +63,9 @@ pub fn decrease_time_scale(
     next_state: &mut ResMut<NextState<SimulationState>>,
     time_scale: &mut ResMut<TimeScale>,
 ) {
-    if !time_scale.decrease() {
-        if let SimulationState::Running = time_state.get() {
-            next_state.set(SimulationState::Paused);
-        }
+    if !time_scale.decrease()
+        && let SimulationState::Running = time_state.get()
+    {
+        next_state.set(SimulationState::Paused);
     }
 }
