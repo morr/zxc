@@ -51,7 +51,6 @@ fn spawn_camera(mut commands: Commands) {
         //     camera
         // })
         .insert(PanCam {
-            enabled: true,
             grab_buttons: vec![MouseButton::Left, MouseButton::Middle],
             move_keys: bevy_pancam::DirectionKeys {
                 up: vec![KeyCode::KeyW],
@@ -61,11 +60,7 @@ fn spawn_camera(mut commands: Commands) {
             },
             speed: 600.,
             max_scale: 20.0,
-            max_x: f32::INFINITY,
-            max_y: f32::INFINITY,
             min_scale: 0.1, // 0.5,
-            min_x: f32::NEG_INFINITY,
-            min_y: f32::NEG_INFINITY,
-            zoom_to_cursor: true,
+            ..PanCam::default()
         });
 }
