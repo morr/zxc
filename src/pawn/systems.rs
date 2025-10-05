@@ -25,21 +25,22 @@ pub fn spawn_pawns(
     for i in 0..config().starting_scene.pawns {
         let random_angle: f32 = rng.random_range(0.0..360.0);
 
-        let position = if i >= 4 || maybe_farm_transform.is_none() {
-            Vec3::new(
-                random_angle.cos() * radius,
-                random_angle.sin() * radius,
-                // warehouse_transform.translation.x + random_angle.cos() * radius,
-                // warehouse_transform.translation.y + random_angle.sin() * radius,
-                PAWN_Z_INDEX,
-            )
-        } else {
-            let farm_transform = maybe_farm_transform.unwrap();
+        let position = if i < 4
+            && let Some(farm_transform) = maybe_farm_transform
+        {
             Vec3::new(
                 farm_transform.translation.x
                     + random_angle.cos() * 5.0 * FARM_TILE_SIZE as f32 * config().tile.size,
                 farm_transform.translation.y
                     + random_angle.sin() * 5.0 * FARM_TILE_SIZE as f32 * config().tile.size,
+                PAWN_Z_INDEX,
+            )
+        } else {
+            Vec3::new(
+                random_angle.cos() * radius,
+                random_angle.sin() * radius,
+                // warehouse_transform.translation.x + random_angle.cos() * radius,
+                // warehouse_transform.translation.y + random_angle.sin() * radius,
                 PAWN_Z_INDEX,
             )
         };
