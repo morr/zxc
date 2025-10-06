@@ -4,16 +4,17 @@ pub struct SleepCommandPlugin;
 
 impl Plugin for SleepCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_message::<SleepCommand>().add_systems(
-            Update,
-            (
-                execute_command,
-                monitor_completion,
-                handle_internal_interrupts,
-            )
-                .chain()
-                .run_if(in_state(AppState::Playing)),
-        );
+        app.add_message::<SleepCommand>()
+            .add_observer(on_rest_complete)
+            .add_systems(
+                Update,
+                (
+                    execute_command,
+                    handle_internal_interrupts,
+                )
+                    .chain()
+                    .run_if(in_state(AppState::Playing)),
+            );
     }
 }
 
@@ -23,7 +24,10 @@ pub struct SleepCommand {
     pub is_sleep_in_bed: bool,
 }
 
-fn execute_command(mut command_reader: MessageReader<SleepCommand>, mut query: Query<&mut Restable>) {
+fn execute_command(
+    mut command_reader: MessageReader<SleepCommand>,
+    mut query: Query<&mut Restable>,
+) {
     for SleepCommand {
         commandable_entity,
         is_sleep_in_bed,
@@ -40,37 +44,38 @@ fn execute_command(mut command_reader: MessageReader<SleepCommand>, mut query: Q
     }
 }
 
-fn monitor_completion(
+fn on_rest_complete(
+    event: On<RestCompleteEvent>,
     mut commands: Commands,
     mut query: Query<(&mut Commandable, &mut Restable)>,
-    mut command_complete_event_reader: MessageReader<RestCompleteMessage>,
     mut commandable_event_writer: MessageWriter<CommandCompleteMessage>,
 ) {
-    for RestCompleteMessage { commandable_entity } in command_complete_event_reader.read() {
-        let Ok((mut commandable, mut restable)) = query.get_mut(*commandable_entity) else {
-            continue;
-        };
-        let Some(ref command_type) = commandable.executing else {
-            continue;
-        };
-        let CommandType::Sleep(SleepCommand {
-            commandable_entity: command_commandable_entity,
-            ..
-        }) = command_type
-        else {
-            continue;
-        };
-        if commandable_entity != command_commandable_entity {
-            continue;
-        }
+    let commandable_entity = event.commandable_entity;
 
-        commandable.complete_executing(
-            *commandable_entity,
-            &mut commands,
-            &mut commandable_event_writer,
-        );
-        restable.change_state(RestableState::Activity, *commandable_entity);
+    // for RestCompleteEvent { commandable_entity } in command_complete_event_reader.read() {
+    let Ok((mut commandable, mut restable)) = query.get_mut(commandable_entity) else {
+        return;
+    };
+    let Some(ref command_type) = commandable.executing else {
+        return;
+    };
+    let CommandType::Sleep(SleepCommand {
+        commandable_entity: command_commandable_entity,
+        ..
+    }) = command_type
+    else {
+        return;
+    };
+    if commandable_entity != *command_commandable_entity {
+        return;
     }
+
+    commandable.complete_executing(
+        commandable_entity,
+        &mut commands,
+        &mut commandable_event_writer,
+    );
+    restable.change_state(RestableState::Activity, commandable_entity);
 }
 
 fn handle_internal_interrupts(
