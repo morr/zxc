@@ -38,10 +38,10 @@ pub fn render_tasks_ui(
                     TextColor(Color::WHITE),
                     Node {
                         margin: UiRect {
-                            top: Val::Px(8.0),
-                            right: Val::Px(0.0),
-                            bottom: Val::Px(0.0),
-                            left: Val::Px(0.0),
+                            top: px(8.0),
+                            right: px(0.0),
+                            bottom: px(0.0),
+                            left: px(0.0),
                         },
                         ..default()
                     },

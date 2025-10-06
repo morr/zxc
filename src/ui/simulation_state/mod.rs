@@ -34,17 +34,17 @@ fn render_simulation_speed_ui(
         .spawn((
             Node {
                 position_type: PositionType::Absolute,
-                top: Val::Px(0.),
-                right: Val::Px(0.),
+                top: px(0.),
+                right: px(0.),
                 display: Display::Flex,
                 flex_direction: FlexDirection::Column,
-                min_width: Val::Px(270.),
-                row_gap: Val::Px(3.),
+                min_width: px(270.),
+                row_gap: px(3.),
                 padding: UiRect {
-                    top: Val::Px(25.),
-                    right: Val::Px(25.),
-                    bottom: Val::Px(10.),
-                    left: Val::Px(10.),
+                    top: px(25.),
+                    right: px(25.),
+                    bottom: px(10.),
+                    left: px(10.),
                 },
                 ..default()
             },

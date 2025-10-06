@@ -69,15 +69,15 @@ fn render_entity_node_bunlde<T: TargetEntityUiMarker>(
         Node {
             display: Display::Flex,
             flex_direction: FlexDirection::Column,
-            row_gap: Val::Px(10.),
+            row_gap: px(10.),
             padding: UiRect {
-                top: Val::Px(10.),
-                right: Val::Px(10.),
-                bottom: Val::Px(10.),
-                left: Val::Px(10.),
+                top: px(10.),
+                right: px(10.),
+                bottom: px(10.),
+                left: px(10.),
             },
-            // max_width: Val::Percent(25.0),
-            width: Val::Px(300.),
+            // max_width: percent(25.0),
+            width: px(300.),
             ..default()
         },
         BackgroundColor(ui_color(opacity)),

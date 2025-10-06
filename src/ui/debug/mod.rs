@@ -36,10 +36,10 @@ pub fn render_debug_ui_window_node_bundle<T: Default>() -> (Node, BackgroundColo
             display: Display::Flex,
             flex_direction: FlexDirection::Column,
             padding: UiRect {
-                top: Val::Px(10.0),
-                right: Val::Px(10.0),
-                bottom: Val::Px(10.0),
-                left: Val::Px(10.0),
+                top: px(10.0),
+                right: px(10.0),
+                bottom: px(10.0),
+                left: px(10.0),
             },
             ..default()
         },

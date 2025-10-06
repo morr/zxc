@@ -32,7 +32,7 @@ fn render_items_stock_ui(
         position_type: PositionType::Absolute,
         display: Display::Flex,
         flex_direction: FlexDirection::Column,
-        row_gap: Val::Px(8.),
+        row_gap: px(8.),
         top: UI_SCREEN_EDGE_PX_OFFSET,
         left: UI_SCREEN_EDGE_PX_OFFSET,
         ..default()
@@ -70,10 +70,10 @@ fn spawn_item<T: Component>(
                     flex_direction: FlexDirection::Row,
                     align_items: AlignItems::Center,
                     padding: UiRect {
-                        top: Val::Px(3.),
-                        right: Val::Px(10.),
-                        bottom: Val::Px(3.),
-                        left: Val::Px(10.),
+                        top: px(3.),
+                        right: px(10.),
+                        bottom: px(3.),
+                        left: px(10.),
                     },
                     ..default()
                 },
@@ -83,13 +83,13 @@ fn spawn_item<T: Component>(
                 (
                     ImageNode::new(image),
                     Node {
-                        width: Val::Px(28.),
-                        height: Val::Px(28.),
+                        width: px(28.),
+                        height: px(28.),
                         margin: UiRect {
-                            top: Val::Px(0.),
-                            right: Val::Px(8.),
-                            bottom: Val::Px(0.),
-                            left: Val::Px(0.),
+                            top: px(0.),
+                            right: px(8.),
+                            bottom: px(0.),
+                            left: px(0.),
                         },
                         ..default()
                     },

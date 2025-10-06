@@ -21,8 +21,8 @@ pub fn render_debug_ui_container(mut commands: Commands) {
             display: Display::Flex,
             flex_direction: FlexDirection::Column,
             row_gap: UI_WINDOWS_GAP,
-            bottom: Val::Px(0.0),
-            right: Val::Px(0.0),
+            bottom: px(0.0),
+            right: px(0.0),
             ..default()
         },
         DebugUiContainerarker::default(),
@@ -65,10 +65,10 @@ pub fn render_debug_ui_info(
                     TextColor(Color::WHITE),
                     Node {
                         margin: UiRect {
-                            top: Val::Px(8.0),
-                            right: Val::Px(0.0),
-                            bottom: Val::Px(0.0),
-                            left: Val::Px(0.0),
+                            top: px(8.0),
+                            right: px(0.0),
+                            bottom: px(0.0),
+                            left: px(0.0),
                         },
                         ..default()
                     },

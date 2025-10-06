@@ -21,9 +21,9 @@ fn render_selected_ui(mut commands: Commands) {
             position_type: PositionType::Absolute,
             display: Display::Flex,
             flex_direction: FlexDirection::Row,
-            column_gap: Val::Px(25.),
+            column_gap: px(25.),
             top: UI_SCREEN_EDGE_PX_OFFSET,
-            left: Val::Px(100.),
+            left: px(100.),
             ..default()
         },
         UserSelectedRootUIMarker::default(),
