@@ -7,9 +7,9 @@ pub struct InputPlugin;
 impl Plugin for InputPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<HoveredGridTile>()
-            .add_message::<HoverEvent>()
-            .add_message::<ClickEventStage0>()
-            .add_message::<ClickEventStage1>();
+            .add_message::<HoverMessage>()
+            .add_message::<ClickMessageStage0>()
+            .add_message::<ClickMessageStage1>();
 
         #[cfg(feature = "bevy_egui")]
         {
@@ -35,13 +35,13 @@ pub struct HoveredGridTile(pub Option<IVec2>);
 pub struct HoverMarker;
 
 #[derive(Message, Debug)]
-pub struct HoverEvent(pub IVec2);
+pub struct HoverMessage(pub IVec2);
 
 #[derive(Message, Debug)]
-pub struct ClickEventStage0(pub IVec2);
+pub struct ClickMessageStage0(pub IVec2);
 
 #[derive(Message, Debug)]
-pub struct ClickEventStage1(pub IVec2);
+pub struct ClickMessageStage1(pub IVec2);
 
 #[derive(Resource, Deref, DerefMut, PartialEq, Eq, Default)]
 #[cfg(feature = "bevy_egui")]
@@ -71,8 +71,8 @@ pub fn mouse_input(
     q_window: Query<&Window, With<PrimaryWindow>>,
     // query to get camera transform
     q_camera: Query<(&Camera, &GlobalTransform), With<FloorCamera>>,
-    mut hover_event_writer: MessageWriter<HoverEvent>,
-    mut click_event_writer: MessageWriter<ClickEventStage0>,
+    mut hover_event_writer: MessageWriter<HoverMessage>,
+    mut click_event_writer: MessageWriter<ClickMessageStage0>,
     mut prev_hovered_grid_tile: ResMut<HoveredGridTile>,
 ) {
     let (camera, camera_transform) = q_camera.single().unwrap();
@@ -87,7 +87,7 @@ pub fn mouse_input(
             return;
         };
 
-        let event = HoverEvent(grid_tile);
+        let event = HoverMessage(grid_tile);
         // println!("{:?}", event);
 
         let is_new_hover = match prev_hovered_grid_tile.0 {
@@ -112,7 +112,7 @@ pub fn mouse_input(
             .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor).ok())
             .map(|ray| ray.origin.truncate())
         {
-            let event = ClickEventStage0(world_position.world_pos_to_grid());
+            let event = ClickMessageStage0(world_position.world_pos_to_grid());
             // println!("{:?}", event);
             click_event_writer.write(log_event!(event));
         }

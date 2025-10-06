@@ -4,7 +4,7 @@ pub fn track_time(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut elapsed_time: ResMut<ElapsedTime>,
-    mut event_writer: MessageWriter<NewDayEvent>,
+    mut event_writer: MessageWriter<NewDayMessage>,
 ) {
     let prev_day = elapsed_time.total_days();
     elapsed_time.0 += time_scale.scale_to_seconds(time.delta_secs());
@@ -13,7 +13,7 @@ pub fn track_time(
     if new_day != prev_day {
         // in may pass many days in one tick under very high time scale
         for total_day in (prev_day + 1)..=new_day {
-            event_writer.write(log_event!(NewDayEvent(total_day)));
+            event_writer.write(log_event!(NewDayMessage(total_day)));
         }
     }
 }

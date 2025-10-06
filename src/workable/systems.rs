@@ -9,7 +9,7 @@ pub fn progress_work(
     >,
     time: Res<Time>,
     time_scale: Res<TimeScale>,
-    mut event_writer: MessageWriter<WorkCompleteEvent>,
+    mut event_writer: MessageWriter<WorkCompleteMessage>,
 ) {
     let elapsed_time = time_scale.scale_to_seconds(time.delta_secs());
 
@@ -32,7 +32,7 @@ pub fn progress_work(
                 panic!()
             };
 
-            event_writer.write(log_event!(WorkCompleteEvent {
+            event_writer.write(log_event!(WorkCompleteMessage {
                 commandable_entity,
                 workable_entity,
                 work_kind
@@ -42,11 +42,11 @@ pub fn progress_work(
 }
 
 pub fn complete_work(
-    mut event_reader: MessageReader<WorkCompleteEvent>,
-    mut farm_progress_event_writer: MessageWriter<FarmProgressEvent>,
-    mut farm_tending_event_writer: MessageWriter<FarmTendedEvent>,
+    mut event_reader: MessageReader<WorkCompleteMessage>,
+    mut farm_progress_event_writer: MessageWriter<FarmProgressMessage>,
+    mut farm_tending_event_writer: MessageWriter<FarmTendedMessage>,
 ) {
-    for WorkCompleteEvent {
+    for WorkCompleteMessage {
         workable_entity,
         work_kind,
         ..
@@ -55,10 +55,10 @@ pub fn complete_work(
         match work_kind {
             // event.workable_entity the same is task.entity
             WorkKind::FarmPlanting | WorkKind::FarmHarvest => {
-                farm_progress_event_writer.write(log_event!(FarmProgressEvent(*workable_entity)));
+                farm_progress_event_writer.write(log_event!(FarmProgressMessage(*workable_entity)));
             }
             WorkKind::FarmTending => {
-                farm_tending_event_writer.write(log_event!(FarmTendedEvent(*workable_entity)));
+                farm_tending_event_writer.write(log_event!(FarmTendedMessage(*workable_entity)));
             }
         }
     }
@@ -68,7 +68,7 @@ pub fn complete_work(
 //     mut commands: Commands,
 //     mut event_reader: MessageReader<WorkStartEvent>,
 //     mut query: Query<&mut Pawn>,
-//     // mut state_change_event_writer: MessageWriter<EntityStateChangeEvent<PawnState>>,
+//     // mut state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
 // ) {
 //     for event in event_reader.read() {
 //         let mut pawn = query.get_mut(event.pawn_entity).unwrap();
@@ -113,7 +113,7 @@ pub fn complete_work(
 //     mut commands: Commands,
 //     mut event_reader: MessageReader<WorkCompleteEvent>,
 //     mut query: Query<&mut Pawn>,
-//     // mut state_change_event_writer: MessageWriter<EntityStateChangeEvent<PawnState>>,
+//     // mut state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
 //     mut farm_progress_event_writer: MessageWriter<FarmProgressEvent>,
 //     mut farm_tending_event_writer: MessageWriter<FarmTendedEvent>,
 // ) {

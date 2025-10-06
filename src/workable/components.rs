@@ -12,7 +12,7 @@ pub struct Workable {
 }
 
 #[derive(Message, Debug)]
-pub struct WorkCompleteEvent {
+pub struct WorkCompleteMessage {
     pub commandable_entity: Entity,
     pub workable_entity: Entity,
     pub work_kind: WorkKind,
@@ -46,7 +46,7 @@ impl Workable {
         entity: Entity,
         commands: &mut Commands,
         // commandable_interrupt_writer: &mut MessageWriter<InterruptCommandEvent>,
-        commandable_interrupt_writer: &mut MessageWriter<ExternalCommandInterruptEvent>,
+        commandable_interrupt_writer: &mut MessageWriter<ExternalCommandInterruptMessage>,
     ) {
         self.work_kind = props.0;
         self.amount_total = props.1;
@@ -61,7 +61,7 @@ impl Workable {
         if let WorkableState::BeingWorked(command) = prev_state {
             // println!("{:?}", ExternalCommandInterruptEvent(command.commandable_entity));
             // println!("reseting workable in WorkableState::BeingWorked state");
-            commandable_interrupt_writer.write(log_event!(ExternalCommandInterruptEvent(
+            commandable_interrupt_writer.write(log_event!(ExternalCommandInterruptMessage(
                 command.commandable_entity
             )));
         }
@@ -99,7 +99,7 @@ macro_rules! workable_states {
                 new_state: WorkableState,
                 entity: Entity,
                 commands: &mut Commands,
-                // state_change_event_writer: &mut MessageWriter<EntityStateChangeEvent<WorkableState>>,
+                // state_change_event_writer: &mut MessageWriter<EntityStateChangeMessage<WorkableState>>,
             ) -> WorkableState {
                 use std::mem;
                 log_state_change!("Workable({:?}).state {:?} => {:?}", entity, self.state, new_state);
@@ -107,7 +107,7 @@ macro_rules! workable_states {
                 self.remove_old_state_component(commands, entity);
                 let prev_state = mem::replace(&mut self.state, new_state);
                 self.add_new_state_component(commands, entity);
-                // state_change_event_writer.write(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
+                // state_change_event_writer.write(log_event!(EntityStateChangeMessage(entity, self.state.clone())));
 
                 prev_state
             }

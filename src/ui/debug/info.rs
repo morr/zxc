@@ -104,11 +104,11 @@ pub fn handle_debug_info_keys(
 
     debug_navmesh_state: Res<State<DebugNavmeshState>>,
     mut next_debug_navmesh_state: ResMut<NextState<DebugNavmeshState>>,
-    mut debug_navmesh_state_change_event_writer: MessageWriter<StateChangeEvent<DebugNavmeshState>>,
+    mut debug_navmesh_state_change_event_writer: MessageWriter<StateChangeMessage<DebugNavmeshState>>,
 
     debug_noise_state: Res<State<DebugNoiseState>>,
     mut next_debug_noise_state: ResMut<NextState<DebugNoiseState>>,
-    mut debug_noise_state_change_event_writer: MessageWriter<StateChangeEvent<DebugNoiseState>>,
+    mut debug_noise_state_change_event_writer: MessageWriter<StateChangeMessage<DebugNoiseState>>,
 
     debug_movepath_state: Res<State<DebugMovepathState>>,
     mut next_debug_movepath_state: ResMut<NextState<DebugMovepathState>>,
@@ -142,7 +142,7 @@ pub fn handle_debug_info_keys(
             DebugNavmeshState::Hidden => DebugNavmeshState::Visible,
         };
         next_debug_navmesh_state.set(new_state.clone());
-        debug_navmesh_state_change_event_writer.write(log_event!(StateChangeEvent(new_state)));
+        debug_navmesh_state_change_event_writer.write(log_event!(StateChangeMessage(new_state)));
     }
 
     if keys.just_pressed(KeyCode::KeyP) {
@@ -151,7 +151,7 @@ pub fn handle_debug_info_keys(
             DebugNoiseState::Hidden => DebugNoiseState::Visible,
         };
         next_debug_noise_state.set(new_state.clone());
-        debug_noise_state_change_event_writer.write(log_event!(StateChangeEvent(new_state)));
+        debug_noise_state_change_event_writer.write(log_event!(StateChangeMessage(new_state)));
     }
 
     // if keys.just_pressed(KeyCode::KeyR) {

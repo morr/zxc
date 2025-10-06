@@ -32,7 +32,7 @@ fn render_selected_ui(mut commands: Commands) {
 
 fn update_ui_on_user_select_event(
     mut commands: Commands,
-    mut user_select_event_reader: MessageReader<UserSelectionChangeEvent>,
+    mut user_select_event_reader: MessageReader<UserSelectionChangeMessage>,
     user_selected_root_ui_query: Query<Entity, With<UserSelectedRootUIMarker>>,
     user_selection: Res<CurrentUserSelection>,
     pawn_query: Query<(&Pawn, &Movable, &Restable, &Feedable, &Commandable)>,

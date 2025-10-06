@@ -7,9 +7,9 @@ pub struct PawnPlugin;
 impl Plugin for PawnPlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Pawn>()
-            .add_message::<EntityStateChangeEvent<PawnState>>()
+            .add_message::<EntityStateChangeMessage<PawnState>>()
             // .add_message::<PawnBirthdayEvent>()
-            .add_message::<PawnDeathEvent>()
+            .add_message::<PawnDeathMessage>()
             .add_systems(OnExit(AppState::Loading), spawn_pawns.after(spawn_base))
             .add_systems(
                 FixedUpdate,

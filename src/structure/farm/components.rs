@@ -46,12 +46,12 @@ macro_rules! farm_states {
                 new_state: FarmState,
                 entity: Entity,
                 commands: &mut Commands,
-                state_change_event_writer: &mut MessageWriter<EntityStateChangeEvent<FarmState>>,
+                state_change_event_writer: &mut MessageWriter<EntityStateChangeMessage<FarmState>>,
             ) {
                 self.remove_old_state_component(commands, entity);
                 self.state = new_state;
                 self.add_new_state_component(commands, entity);
-                state_change_event_writer.write(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
+                state_change_event_writer.write(log_event!(EntityStateChangeMessage(entity, self.state.clone())));
             }
         }
 
@@ -119,7 +119,7 @@ impl Farm {
         commands: &mut Commands,
         assets: &Res<FarmAssets>,
         navmesh: &mut Navmesh,
-        state_change_event_writer: &mut MessageWriter<EntityStateChangeEvent<FarmState>>,
+        state_change_event_writer: &mut MessageWriter<EntityStateChangeMessage<FarmState>>,
     ) {
         let farm = Self::default();
         let farm_state = farm.state.clone(); // Clone the state here
@@ -139,7 +139,7 @@ impl Farm {
         );
         navmesh.add_occupant::<Farm>(&entity, grid_tile.x, grid_tile.y);
 
-        state_change_event_writer.write(log_event!(EntityStateChangeEvent(entity, farm_state)));
+        state_change_event_writer.write(log_event!(EntityStateChangeMessage(entity, farm_state)));
     }
 
     pub fn sync_sprite_bundle(
@@ -178,9 +178,9 @@ impl Farm {
         grid_tile: IVec2,
         simulation_day: u32,
         assets: &Res<FarmAssets>,
-        state_change_event_writer: &mut MessageWriter<EntityStateChangeEvent<FarmState>>,
+        state_change_event_writer: &mut MessageWriter<EntityStateChangeMessage<FarmState>>,
         // commandable_interrupt_writer: &mut MessageWriter<InterruptCommandEvent>,
-        commandable_interrupt_writer: &mut MessageWriter<ExternalCommandInterruptEvent>,
+        commandable_interrupt_writer: &mut MessageWriter<ExternalCommandInterruptMessage>,
     ) {
         let new_state = match &self.state {
             FarmState::NotPlanted => FarmState::Planted(PlantedState {
@@ -259,7 +259,7 @@ fn workable_props(farm_state: &FarmState) -> (Option<WorkKind>, f32) {
 }
 
 #[derive(Message, Debug)]
-pub struct FarmProgressEvent(pub Entity);
+pub struct FarmProgressMessage(pub Entity);
 
 #[derive(Message, Debug)]
-pub struct FarmTendedEvent(pub Entity);
+pub struct FarmTendedMessage(pub Entity);

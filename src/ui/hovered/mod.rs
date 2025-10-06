@@ -34,9 +34,9 @@ fn render_hovered_ui(mut commands: Commands) {
 #[allow(clippy::too_many_arguments)]
 fn update_ui_on_hover_event(
     mut commands: Commands,
-    mut hover_event_reader: MessageReader<HoverEvent>,
+    mut hover_event_reader: MessageReader<HoverMessage>,
     hovered_grid_tile: Res<HoveredGridTile>,
-    mut occupation_change_event_reader: MessageReader<OccupationChangeEvent>,
+    mut occupation_change_event_reader: MessageReader<OccupationChangeMessage>,
     hovered_root_ui_query: Query<Entity, With<HoveredUIRootMarker>>,
     pawn_query: Query<(&Pawn, &Movable, &Restable, &Feedable, &Commandable)>,
     farm_query: Query<(&Farm, &Workable)>,

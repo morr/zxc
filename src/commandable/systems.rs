@@ -17,7 +17,7 @@ pub fn process_pending_commands(
         // component tags seems to be working unreliable
         // With<commandable_state::CommandableStatePendingExecutionTag>,
     >,
-    mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeEvent<PawnState>>,
+    mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
 ) {
     for (entity, mut commandable, maybe_pawn) in &mut commandable_query {
         continue_unless!(CommandableState::PendingExecution, commandable.state);
@@ -67,7 +67,7 @@ pub fn process_pending_commands(
 
 pub fn process_complete_commands(
     mut commands: Commands,
-    mut commandable_event_reader: MessageReader<CommandCompleteEvent>,
+    mut commandable_event_reader: MessageReader<CommandCompleteMessage>,
     mut pawn_query: Query<(Option<&mut Pawn>, &Commandable)>,
     // component tags seems to be working unreliable
     // mut pawn_query: Query<
@@ -77,9 +77,9 @@ pub fn process_complete_commands(
     //         With<pawn_state::PawnStateExecutingCommandTag>,
     //     ),
     // >,
-    mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeEvent<PawnState>>,
+    mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
 ) {
-    for CommandCompleteEvent(entity) in commandable_event_reader.read() {
+    for CommandCompleteMessage(entity) in commandable_event_reader.read() {
         // println!("{:?}", CommandCompleteEvent(*entity));
         if let Ok((Some(mut pawn), commandable)) = pawn_query.get_mut(*entity) {
             ensure_state!(PawnState::ExecutingCommand, pawn.state);
@@ -97,11 +97,11 @@ pub fn process_complete_commands(
 
 pub fn process_interrupt_commands(
     mut commands: Commands,
-    mut commandable_event_reader: MessageReader<ExternalCommandInterruptEvent>,
+    mut commandable_event_reader: MessageReader<ExternalCommandInterruptMessage>,
     mut pawn_query: Query<(Option<&Pawn>, &mut Commandable)>,
-    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptEvent>,
-    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesEvent>,
-    mut commandable_event_writer: MessageWriter<CommandCompleteEvent>,
+    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptMessage>,
+    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesMessage>,
+    mut commandable_event_writer: MessageWriter<CommandCompleteMessage>,
     // component tags seems to be working unreliable
     // mut pawn_query: Query<
     //     (Option<&Pawn>, &mut Commandable),
@@ -110,9 +110,9 @@ pub fn process_interrupt_commands(
     //         With<pawn_state::PawnStateExecutingCommandTag>,
     //     ),
     // >,
-    // mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeEvent<PawnState>>,
+    // mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
 ) {
-    for ExternalCommandInterruptEvent(commandable_entity) in commandable_event_reader.read() {
+    for ExternalCommandInterruptMessage(commandable_entity) in commandable_event_reader.read() {
         // println!("{:?}", InterruptCommandEvent(*entity));
 
         if let Ok((Some(pawn), mut commandable)) = pawn_query.get_mut(*commandable_entity) {

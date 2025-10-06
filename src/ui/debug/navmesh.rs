@@ -14,7 +14,7 @@ pub struct DebugNavmeshPlugin;
 impl Plugin for DebugNavmeshPlugin {
     fn build(&self, app: &mut App) {
         app.insert_state(DebugNavmeshState::Hidden)
-            .add_message::<StateChangeEvent<DebugNavmeshState>>()
+            .add_message::<StateChangeMessage<DebugNavmeshState>>()
             .add_systems(
                 FixedUpdate,
                 handle_state_changes.run_if(in_state(AppState::Playing)),
@@ -25,11 +25,11 @@ impl Plugin for DebugNavmeshPlugin {
                 OnExit(AppState::Loading),
                 (|mut next_state: ResMut<NextState<DebugNavmeshState>>,
                   mut debug_navmesh_state_change_event_writer: MessageWriter<
-                    StateChangeEvent<DebugNavmeshState>,
+                    StateChangeMessage<DebugNavmeshState>,
                 >| {
                     next_state.set(DebugNavmeshState::Visible);
                     debug_navmesh_state_change_event_writer
-                        .write(log_event!(StateChangeEvent(DebugNavmeshState::Visible)));
+                        .write(log_event!(StateChangeMessage(DebugNavmeshState::Visible)));
                 })
                 .after(generate_map),
             );
@@ -42,10 +42,10 @@ fn handle_state_changes(
     arc_navmesh: Res<ArcNavmesh>,
     mut meshes: ResMut<Assets<Mesh>>,
     assets: Res<AssetsCollection>,
-    mut event_reader: MessageReader<StateChangeEvent<DebugNavmeshState>>,
+    mut event_reader: MessageReader<StateChangeMessage<DebugNavmeshState>>,
     query_tiles: Query<Entity, With<DebugNavmeshTile>>,
 ) {
-    for StateChangeEvent(state) in event_reader.read() {
+    for StateChangeMessage(state) in event_reader.read() {
         match state {
             DebugNavmeshState::Visible => {
                 let mesh = Mesh::from(Rectangle::new(config().tile.size, config().tile.size));

@@ -2,14 +2,14 @@ use super::*;
 
 pub fn progress_on_farm_progress_event(
     elapsed_time: Res<ElapsedTime>,
-    mut event_reader: MessageReader<FarmProgressEvent>,
+    mut event_reader: MessageReader<FarmProgressMessage>,
     mut query: Query<(&mut Farm, &mut Workable, &Transform)>,
     mut commands: Commands,
     assets: Res<FarmAssets>,
-    mut state_change_event_writer: MessageWriter<EntityStateChangeEvent<FarmState>>,
-    mut commandable_interrupt_writer: MessageWriter<ExternalCommandInterruptEvent>,
+    mut state_change_event_writer: MessageWriter<EntityStateChangeMessage<FarmState>>,
+    mut commandable_interrupt_writer: MessageWriter<ExternalCommandInterruptMessage>,
 ) {
-    for FarmProgressEvent(entity) in event_reader.read() {
+    for FarmProgressMessage(entity) in event_reader.read() {
         // println!("{:?}", FarmProgressEvent(entity));
         let (mut farm, mut workable, transform) = query.get_mut(*entity).unwrap();
 
@@ -28,12 +28,12 @@ pub fn progress_on_farm_progress_event(
 
 pub fn progress_on_farm_tended_event(
     elapsed_time: Res<ElapsedTime>,
-    mut event_reader: MessageReader<FarmTendedEvent>,
+    mut event_reader: MessageReader<FarmTendedMessage>,
     mut query: Query<&mut Farm>,
     // component tags seems to be working unreliable
     // mut query: Query<&mut Farm, With<farm_state::Planted>>,
 ) {
-    for FarmTendedEvent(entity) in event_reader.read() {
+    for FarmTendedMessage(entity) in event_reader.read() {
         // println!("{:?}", FarmTendedEvent(*entity));
         let Ok(mut farm) = query.get_mut(*entity) else {
             continue;
@@ -53,8 +53,8 @@ pub fn progress_planted_and_tending_rest_timers(
     time_scale: Res<TimeScale>,
     elapsed_time: Res<ElapsedTime>,
     mut query: Query<(Entity, &mut Farm), With<farm_state::Planted>>,
-    mut farm_progress_event_writer: MessageWriter<FarmProgressEvent>,
-    mut tasks_scheduler: MessageWriter<ScheduleTaskEvent>,
+    mut farm_progress_event_writer: MessageWriter<FarmProgressMessage>,
+    mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
 ) {
     for (workable_entity, mut farm) in query.iter_mut() {
         let planted_state = match &mut farm.state {
@@ -66,7 +66,7 @@ pub fn progress_planted_and_tending_rest_timers(
         planted_state.growth_timer.tick(delta);
 
         if planted_state.growth_timer.is_finished() {
-            farm_progress_event_writer.write(log_event!(FarmProgressEvent(workable_entity)));
+            farm_progress_event_writer.write(log_event!(FarmProgressMessage(workable_entity)));
         }
 
         if !planted_state.tending_rest_timer.is_finished() {
@@ -80,7 +80,7 @@ pub fn progress_planted_and_tending_rest_timers(
                 // );
 
                 if planted_state.tending_rest_started_day != elapsed_time.total_days() {
-                    tasks_scheduler.write(ScheduleTaskEvent::push_back(Task(TaskKind::Work {
+                    tasks_scheduler.write(ScheduleTaskMessage::push_back(Task(TaskKind::Work {
                         workable_entity,
                         work_kind: WorkKind::FarmTending,
                     })));
@@ -96,7 +96,7 @@ pub fn progress_harvested_timer(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Farm), With<farm_state::Harvested>>,
-    mut farm_progress_event_writer: MessageWriter<FarmProgressEvent>,
+    mut farm_progress_event_writer: MessageWriter<FarmProgressMessage>,
 ) {
     for (entity, mut farm) in query.iter_mut() {
         let state = match &mut farm.state {
@@ -108,18 +108,18 @@ pub fn progress_harvested_timer(
         state.rest_timer.tick(delta);
 
         if state.rest_timer.is_finished() {
-            farm_progress_event_writer.write(log_event!(FarmProgressEvent(entity)));
+            farm_progress_event_writer.write(log_event!(FarmProgressMessage(entity)));
         }
     }
 }
 
 pub fn progress_on_state_changed(
-    mut event_reader: MessageReader<EntityStateChangeEvent<FarmState>>,
+    mut event_reader: MessageReader<EntityStateChangeMessage<FarmState>>,
     query: Query<(&Farm, &Transform)>,
-    mut spawn_food_event_writer: MessageWriter<SpawnCarryableEvent>,
-    mut tasks_scheduler: MessageWriter<ScheduleTaskEvent>,
+    mut spawn_food_event_writer: MessageWriter<SpawnCarryableMessage>,
+    mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
 ) {
-    for EntityStateChangeEvent(workable_entity, state) in event_reader.read() {
+    for EntityStateChangeMessage(workable_entity, state) in event_reader.read() {
         // println!("{:?}", event);
 
         let maybe_task_kind = match state {
@@ -134,14 +134,14 @@ pub fn progress_on_state_changed(
             let grid_tile = transform.world_pos_to_grid();
 
             if let Some(work_kind) = maybe_task_kind {
-                tasks_scheduler.write(ScheduleTaskEvent::push_back(Task(TaskKind::Work {
+                tasks_scheduler.write(ScheduleTaskMessage::push_back(Task(TaskKind::Work {
                     workable_entity: *workable_entity,
                     work_kind,
                 })));
             }
 
             if let FarmState::Harvested(_) = state {
-                spawn_food_event_writer.write(log_event!(SpawnCarryableEvent {
+                spawn_food_event_writer.write(log_event!(SpawnCarryableMessage {
                     kind: CarryableKind::Food,
                     amount: farm.yield_amount(),
                     grid_tile,
@@ -152,16 +152,16 @@ pub fn progress_on_state_changed(
 }
 
 pub fn progress_on_new_day(
-    mut event_reader: MessageReader<NewDayEvent>,
+    mut event_reader: MessageReader<NewDayMessage>,
     mut query: Query<(Entity, &mut Farm), With<farm_state::Planted>>,
-    mut tasks_scheduler: MessageWriter<ScheduleTaskEvent>,
+    mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
 ) {
     for _event in event_reader.read() {
         for (workable_entity, mut farm) in query.iter_mut() {
             if let FarmState::Planted(planted_state) = &mut farm.state
                 && planted_state.is_tending_pending_for_next_day
             {
-                tasks_scheduler.write(ScheduleTaskEvent::push_back(Task(TaskKind::Work {
+                tasks_scheduler.write(ScheduleTaskMessage::push_back(Task(TaskKind::Work {
                     workable_entity,
                     work_kind: WorkKind::FarmTending,
                 })));

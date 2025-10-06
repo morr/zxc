@@ -1,15 +1,15 @@
 use super::*;
 
 pub fn spawn_on_event(
-    mut spawn_event_reader: MessageReader<SpawnCarryableEvent>,
-    mut store_event_writer: MessageWriter<StoreCarryableEvent>,
+    mut spawn_event_reader: MessageReader<SpawnCarryableMessage>,
+    mut store_event_writer: MessageWriter<StoreCarryableMessage>,
     mut commands: Commands,
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
     mut food_stock: ResMut<FoodStock>,
     arc_navmesh: Res<ArcNavmesh>,
 ) {
-    for SpawnCarryableEvent {
+    for SpawnCarryableMessage {
         kind,
         amount,
         grid_tile,
@@ -46,23 +46,23 @@ pub fn spawn_on_event(
             .write()
             .add_occupant::<Carryable>(&carryable_id, grid_tile.x, grid_tile.y);
 
-        store_event_writer.write(log_event!(StoreCarryableEvent {
+        store_event_writer.write(log_event!(StoreCarryableMessage {
             entity: carryable_id
         }));
     }
 }
 
-pub fn spawn_initial_items(mut event_writer: MessageWriter<SpawnCarryableEvent>) {
+pub fn spawn_initial_items(mut event_writer: MessageWriter<SpawnCarryableMessage>) {
     let amount = config().starting_scene.food;
 
     if amount > 0 {
-        event_writer.write(SpawnCarryableEvent {
+        event_writer.write(SpawnCarryableMessage {
             kind: CarryableKind::Food,
             amount: amount / 2,
             grid_tile: IVec2 { x: -12, y: 4 },
         });
 
-        event_writer.write(SpawnCarryableEvent {
+        event_writer.write(SpawnCarryableMessage {
             kind: CarryableKind::Food,
             amount: amount / 2,
             grid_tile: IVec2 { x: -15, y: 3 },
@@ -71,12 +71,12 @@ pub fn spawn_initial_items(mut event_writer: MessageWriter<SpawnCarryableEvent>)
 }
 
 pub fn store_on_event(
-    mut event_reader: MessageReader<StoreCarryableEvent>,
+    mut event_reader: MessageReader<StoreCarryableMessage>,
     carryable_query: Query<&Transform>,
     storages_query: Query<(Entity, &Storage, &Transform)>,
     mut tasks_queue: ResMut<TasksQueue>,
 ) {
-    for StoreCarryableEvent {
+    for StoreCarryableMessage {
         entity: carryable_entity,
     } in event_reader.read()
     {
@@ -103,11 +103,11 @@ pub fn store_on_event(
 
 pub fn merge_on_event(
     mut commands: Commands,
-    mut event_reader: MessageReader<MergeCarryablesEvent>,
+    mut event_reader: MessageReader<MergeCarryablesMessage>,
     mut carryables_query: Query<&mut Carryable>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
-    for MergeCarryablesEvent {
+    for MergeCarryablesMessage {
         entity_to_merge,
         carryable_to_merge,
         grid_tile,

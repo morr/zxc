@@ -25,9 +25,9 @@ fn execute_command(
     mut command_reader: MessageReader<DropCarriedItemCommand>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
     mut carryable_query: Query<&mut Carryable>,
-    mut commandable_event_writer: MessageWriter<CommandCompleteEvent>,
-    mut commandable_interrupt_writer: MessageWriter<ExternalCommandInterruptEvent>,
-    mut merge_carryables_event_writer: MessageWriter<MergeCarryablesEvent>,
+    mut commandable_event_writer: MessageWriter<CommandCompleteMessage>,
+    mut commandable_interrupt_writer: MessageWriter<ExternalCommandInterruptMessage>,
+    mut merge_carryables_event_writer: MessageWriter<MergeCarryablesMessage>,
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
     arc_navmesh: ResMut<ArcNavmesh>,
@@ -96,16 +96,16 @@ fn execute_command(
 #[allow(clippy::too_many_arguments)]
 fn handle_release_resources(
     mut commands: Commands,
-    mut event_reader: MessageReader<ReleaseCommandResourcesEvent>,
+    mut event_reader: MessageReader<ReleaseCommandResourcesMessage>,
     mut commandable_query: Query<(&mut Pawn, &Transform)>,
     mut carryable_query: Query<&mut Carryable>,
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
     arc_navmesh: ResMut<ArcNavmesh>,
-    mut merge_carryables_event_writer: MessageWriter<MergeCarryablesEvent>,
+    mut merge_carryables_event_writer: MessageWriter<MergeCarryablesMessage>,
     mut food_stock: ResMut<FoodStock>,
 ) {
-    for ReleaseCommandResourcesEvent(interrupted_command_type) in event_reader.read() {
+    for ReleaseCommandResourcesMessage(interrupted_command_type) in event_reader.read() {
         if let CommandType::DropCarriedItem(DropCarriedItemCommand {
             commandable_entity,
             carryable_entity,

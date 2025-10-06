@@ -12,7 +12,7 @@ pub fn spawn_pawns(
     // warehouse_query: Query<&Transform, With<Warehouse>>,
     farm_query: Query<&Transform, With<Farm>>,
     arc_navmesh: ResMut<ArcNavmesh>,
-    mut occupation_change_event_writer: MessageWriter<OccupationChangeEvent>,
+    mut occupation_change_event_writer: MessageWriter<OccupationChangeMessage>,
     // mut user_selection_command_writer: MessageWriter<UserSelectionCommand>,
 ) {
     let mut rng = rand::rng();
@@ -81,7 +81,7 @@ pub fn spawn_pawns(
 
         let grid_tile = position.truncate().world_pos_to_grid();
         navmesh.add_occupant::<Pawn>(&pawn_id, grid_tile.x, grid_tile.y);
-        occupation_change_event_writer.write(log_event!(OccupationChangeEvent::new(grid_tile)));
+        occupation_change_event_writer.write(log_event!(OccupationChangeMessage::new(grid_tile)));
 
         // auto-select first pawn
         // if i.is_zero() {
@@ -96,8 +96,8 @@ pub fn spawn_pawns(
 }
 
 // pub fn update_pawn_color(// assets_collection: Res<AssetsCollection>,
-//     // mut movable_event_reader: MessageReader<EntityStateChangeEvent<MovableState>>,
-//     // mut pawn_event_reader: MessageReader<EntityStateChangeEvent<PawnState>>,
+//     // mut movable_event_reader: MessageReader<EntityStateChangeMessage<MovableState>>,
+//     // mut pawn_event_reader: MessageReader<EntityStateChangeMessage<PawnState>>,
 //     // mut query: Query<&mut Handle<ColorMaterial>>,
 // ) {
 //     // for event in movable_event_reader.read() {
@@ -123,14 +123,14 @@ pub fn spawn_pawns(
 // }
 
 pub fn update_pawn_state_text(
-    mut event_reader: MessageReader<EntityStateChangeEvent<PawnState>>,
+    mut event_reader: MessageReader<EntityStateChangeMessage<PawnState>>,
     children_query: Query<&Children>,
     // mut state_text_query: Query<(&mut Text, &mut Visibility), With<PawnStateText>>,
     // mut state_text_query: Query<&mut Text, With<PawnStateText>>,
     mut text_writer: Text2dWriter,
     commandable_query: Query<&Commandable>,
 ) {
-    for EntityStateChangeEvent(pawn_entity, state) in event_reader.read() {
+    for EntityStateChangeMessage(pawn_entity, state) in event_reader.read() {
         // println!("{:?}", event);
         for text_entity in children_query.iter_descendants(*pawn_entity) {
             // let (mut text, mut visibility) = state_text_query.get_mut(text_entity).unwrap();
@@ -165,7 +165,7 @@ pub fn update_pawn_state_text(
 
 pub fn progress_pawn_daily(
     mut commands: Commands,
-    mut event_reader: MessageReader<NewDayEvent>,
+    mut event_reader: MessageReader<NewDayMessage>,
     // mut event_writer: MessageWriter<PawnBirthdayEvent>,
     mut query: Query<(Entity, &mut Pawn), Without<pawn_state::PawnStateDeadTag>>,
 ) {
@@ -189,13 +189,13 @@ pub fn progress_pawn_dying(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Pawn), With<DyingMarker>>,
-    mut event_writer: MessageWriter<PawnDeathEvent>,
+    mut event_writer: MessageWriter<PawnDeathMessage>,
 ) {
     for (entity, mut pawn) in query.iter_mut() {
         pawn.decrease_lifetime(time_scale.scale_to_seconds(time.delta_secs()));
 
         if pawn.lifetime.is_zero() {
-            event_writer.write(log_event!(PawnDeathEvent {
+            event_writer.write(log_event!(PawnDeathMessage {
                 entity,
                 reason: PawnDeathReason::OldAge
             }));
@@ -207,15 +207,15 @@ pub fn progress_pawn_dying(
 #[allow(clippy::too_many_arguments)]
 pub fn progress_pawn_death(
     mut commands: Commands,
-    mut event_reader: MessageReader<PawnDeathEvent>,
+    mut event_reader: MessageReader<PawnDeathMessage>,
     mut pawn_query: Query<(&mut Pawn, &mut Restable, &mut Commandable)>,
     mut bed_query: Query<&mut Bed>,
-    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptEvent>,
-    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesEvent>,
+    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptMessage>,
+    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesMessage>,
     mut available_beds: ResMut<AvailableBeds>,
-    mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeEvent<PawnState>>,
+    mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
 ) {
-    for PawnDeathEvent { entity, .. } in event_reader.read() {
+    for PawnDeathMessage { entity, .. } in event_reader.read() {
         match pawn_query.get_mut(*entity) {
             Ok((mut pawn, mut restable, mut commandable)) => {
                 pawn.change_state(

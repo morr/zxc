@@ -43,10 +43,10 @@ fn execute_command(mut command_reader: MessageReader<SleepCommand>, mut query: Q
 fn monitor_completion(
     mut commands: Commands,
     mut query: Query<(&mut Commandable, &mut Restable)>,
-    mut command_complete_event_reader: MessageReader<RestCompleteEvent>,
-    mut commandable_event_writer: MessageWriter<CommandCompleteEvent>,
+    mut command_complete_event_reader: MessageReader<RestCompleteMessage>,
+    mut commandable_event_writer: MessageWriter<CommandCompleteMessage>,
 ) {
-    for RestCompleteEvent { commandable_entity } in command_complete_event_reader.read() {
+    for RestCompleteMessage { commandable_entity } in command_complete_event_reader.read() {
         let Ok((mut commandable, mut restable)) = query.get_mut(*commandable_entity) else {
             continue;
         };
@@ -74,10 +74,10 @@ fn monitor_completion(
 }
 
 fn handle_internal_interrupts(
-    mut event_reader: MessageReader<InternalCommandInterruptEvent>,
+    mut event_reader: MessageReader<InternalCommandInterruptMessage>,
     mut query: Query<&mut Restable>,
 ) {
-    for InternalCommandInterruptEvent(interrupted_command) in event_reader.read() {
+    for InternalCommandInterruptMessage(interrupted_command) in event_reader.read() {
         if let CommandType::Sleep(SleepCommand {
             commandable_entity, ..
         }) = interrupted_command

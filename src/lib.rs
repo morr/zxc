@@ -47,10 +47,10 @@ use_modules!(
 );
 
 #[derive(Message, Debug)]
-pub struct StateChangeEvent<T>(pub T);
+pub struct StateChangeMessage<T>(pub T);
 
 #[derive(Message, Debug)]
-pub struct EntityStateChangeEvent<T>(pub Entity, pub T);
+pub struct EntityStateChangeMessage<T>(pub Entity, pub T);
 
 #[derive(States, Default, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum AppState {

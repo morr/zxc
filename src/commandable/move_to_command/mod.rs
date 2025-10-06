@@ -29,7 +29,7 @@ fn execute_command(
     mut query: Query<(&Transform, &mut Movable, Option<&mut PathfindingTask>)>,
     arc_navmesh: Res<ArcNavmesh>,
     queue_counter: Res<AsyncQueueCounter>,
-    // mut movable_state_change_event_writer: MessageWriter<EntityStateChangeEvent<MovableState>>,
+    // mut movable_state_change_event_writer: MessageWriter<EntityStateChangeMessage<MovableState>>,
 ) {
     for MoveToCommand {
         commandable_entity,
@@ -62,10 +62,10 @@ fn execute_command(
 fn monitor_completion(
     mut commands: Commands,
     mut query: Query<&mut Commandable>,
-    mut command_complete_event_reader: MessageReader<MovableReachedDestinationEvent>,
-    mut commandable_event_writer: MessageWriter<CommandCompleteEvent>,
+    mut command_complete_event_reader: MessageReader<MovableReachedDestinationMessage>,
+    mut commandable_event_writer: MessageWriter<CommandCompleteMessage>,
 ) {
-    for MovableReachedDestinationEvent(entity, destination_tile) in
+    for MovableReachedDestinationMessage(entity, destination_tile) in
         command_complete_event_reader.read()
     {
         // println!("{:?}", MovableReachedDestinationEvent(*entity, *destination_tile));
@@ -92,10 +92,10 @@ fn monitor_completion(
 
 fn handle_internal_interrupts(
     mut commands: Commands,
-    mut event_reader: MessageReader<InternalCommandInterruptEvent>,
+    mut event_reader: MessageReader<InternalCommandInterruptMessage>,
     mut query: Query<&mut Movable>,
 ) {
-    for InternalCommandInterruptEvent(interrupted_command) in event_reader.read() {
+    for InternalCommandInterruptMessage(interrupted_command) in event_reader.read() {
         let CommandType::MoveTo(MoveToCommand {
             commandable_entity,
             grid_tile: commanding_to_tile,

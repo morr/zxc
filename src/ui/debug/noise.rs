@@ -6,13 +6,13 @@ use bevy::{
 use bevy_platform::collections::HashMap;
 
 use super::*;
-use crate::map::RebuildMapEvent;
+use crate::map::RebuildMapMessage;
 
 pub struct DebugNoisePlugin;
 impl Plugin for DebugNoisePlugin {
     fn build(&self, app: &mut App) {
         app.insert_state(DebugNoiseState::Hidden)
-            .add_message::<StateChangeEvent<DebugNoiseState>>()
+            .add_message::<StateChangeMessage<DebugNoiseState>>()
             .add_systems(
                 OnExit(AppState::Loading),
                 initialize_noise_texture.after(generate_map),
@@ -31,11 +31,11 @@ impl Plugin for DebugNoisePlugin {
                 OnExit(AppState::Loading),
                 (|mut next_state: ResMut<NextState<DebugNoiseState>>,
                   mut debug_noise_state_change_event_writer: MessageWriter<
-                    StateChangeEvent<DebugNoiseState>,
+                    StateChangeMessage<DebugNoiseState>,
                 >| {
                     next_state.set(DebugNoiseState::Visible);
                     debug_noise_state_change_event_writer
-                        .write(log_event!(StateChangeEvent(DebugNoiseState::Visible)));
+                        .write(log_event!(StateChangeMessage(DebugNoiseState::Visible)));
                 })
                 .after(generate_map)
                 .after(initialize_noise_texture),
@@ -149,7 +149,7 @@ fn initialize_noise_texture(
 
 #[allow(clippy::too_many_arguments)]
 fn refresh_on_map_rebuild(
-    mut event_reader: MessageReader<RebuildMapEvent>,
+    mut event_reader: MessageReader<RebuildMapMessage>,
     mut images: ResMut<Assets<Image>>,
     tile_query: Query<&Tile>,
     noise_texture: Option<Res<NoiseTextureHandle>>,
@@ -199,13 +199,13 @@ fn refresh_on_map_rebuild(
 
 fn toggle_noise_visibility(
     mut commands: Commands,
-    mut event_reader: MessageReader<StateChangeEvent<DebugNoiseState>>,
+    mut event_reader: MessageReader<StateChangeMessage<DebugNoiseState>>,
     query_mesh: Query<Entity, With<DebugNoise>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     noise_texture: Res<NoiseTextureHandle>,
 ) {
-    for StateChangeEvent(state) in event_reader.read() {
+    for StateChangeMessage(state) in event_reader.read() {
         match state {
             DebugNoiseState::Visible => {
                 println!("DebugNoiseState::Hidden => DebugNoiseState::Visible");

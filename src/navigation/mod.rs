@@ -6,9 +6,9 @@ pub struct NavigationPlugin;
 impl Plugin for NavigationPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<ArcNavmesh>()
-            .add_message::<PathfindRequestEvent>()
-            .add_message::<PathfindAnswerEvent>()
-            .add_message::<OccupationChangeEvent>()
+            .add_message::<PathfindRequestMessage>()
+            .add_message::<PathfindAnswerMessage>()
+            .add_message::<OccupationChangeMessage>()
             // .add_systems(
             //     FixedUpdate,
             //     pathfinding_algo::measure_pathfinding.run_if(in_state(WorldState::Playing)),

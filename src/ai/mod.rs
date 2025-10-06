@@ -34,8 +34,8 @@ fn ai_idle_pawns(
     mut workable_query: Query<&Transform>,
     mut carryable_query: Query<&Transform>,
     mut tasks_queue: ResMut<TasksQueue>,
-    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptEvent>,
-    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesEvent>,
+    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptMessage>,
+    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesMessage>,
     arc_navmesh: Res<ArcNavmesh>,
     food_stock: Res<FoodStock>,
 ) {

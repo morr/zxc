@@ -31,14 +31,14 @@ impl PathfindingTask {
 }
 
 #[derive(Message, Debug)]
-pub struct PathfindRequestEvent {
+pub struct PathfindRequestMessage {
     pub entity: Entity,
     pub start_tile: IVec2,
     pub end_tile: IVec2,
 }
 
 #[derive(Message, Debug)]
-pub struct PathfindAnswerEvent {
+pub struct PathfindAnswerMessage {
     pub entity: Entity,
     pub start_tile: IVec2,
     pub end_tile: IVec2,
@@ -46,9 +46,9 @@ pub struct PathfindAnswerEvent {
 }
 
 #[derive(Message, Debug)]
-pub struct OccupationChangeEvent(pub Vec<IVec2>);
+pub struct OccupationChangeMessage(pub Vec<IVec2>);
 
-impl OccupationChangeEvent {
+impl OccupationChangeMessage {
     pub fn new(grid_tile: IVec2) -> Self {
         Self(vec![grid_tile])
     }

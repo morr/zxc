@@ -9,7 +9,7 @@ impl Plugin for StoryTimePlugin {
         app.init_state::<SimulationState>()
             .init_resource::<TimeScale>()
             .init_resource::<ElapsedTime>()
-            .add_message::<NewDayEvent>()
+            .add_message::<NewDayMessage>()
             .add_systems(
                 FixedUpdate,
                 track_time

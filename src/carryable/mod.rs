@@ -8,9 +8,9 @@ impl Plugin for CarryablePlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Carryable>()
             .init_resource::<FoodStock>()
-            .add_message::<SpawnCarryableEvent>()
-            .add_message::<StoreCarryableEvent>()
-            .add_message::<MergeCarryablesEvent>()
+            .add_message::<SpawnCarryableMessage>()
+            .add_message::<StoreCarryableMessage>()
+            .add_message::<MergeCarryablesMessage>()
             .add_systems(OnExit(AppState::Loading), spawn_initial_items)
             .add_systems(
                 FixedUpdate,

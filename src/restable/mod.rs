@@ -6,7 +6,7 @@ pub struct RestablePlugin;
 impl Plugin for RestablePlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Restable>()
-            .add_message::<RestCompleteEvent>()
+            .add_message::<RestCompleteMessage>()
             .add_systems(
                 Update,
                 progress_fatigue
@@ -24,7 +24,7 @@ pub struct Restable {
 }
 
 #[derive(Message, Debug)]
-pub struct RestCompleteEvent {
+pub struct RestCompleteMessage {
     pub commandable_entity: Entity,
 }
 
@@ -91,10 +91,10 @@ fn progress_fatigue(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Restable, &mut Commandable)>,
-    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptEvent>,
-    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesEvent>,
-    // mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeEvent<PawnState>>,
-    mut event_writer: MessageWriter<RestCompleteEvent>,
+    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptMessage>,
+    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesMessage>,
+    // mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
+    mut event_writer: MessageWriter<RestCompleteMessage>,
 ) {
     let time_amount = time_scale.scale_to_seconds(time.delta_secs());
 
@@ -115,7 +115,7 @@ fn progress_fatigue(
         }
 
         if wasnt_fresh && restable.is_fresh() {
-            event_writer.write(log_event!(RestCompleteEvent { commandable_entity }));
+            event_writer.write(log_event!(RestCompleteMessage { commandable_entity }));
         }
     }
 }

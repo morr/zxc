@@ -1,13 +1,13 @@
 use super::*;
 
 pub fn find_new_selection_on_click(
-    mut click_event_reader: MessageReader<ClickEventStage0>,
-    mut click_event_writer: MessageWriter<ClickEventStage1>,
+    mut click_event_reader: MessageReader<ClickMessageStage0>,
+    mut click_event_writer: MessageWriter<ClickMessageStage1>,
     arc_navmesh: ResMut<ArcNavmesh>,
     current_user_selection: Res<CurrentUserSelection>,
     mut user_selection_command_writer: MessageWriter<UserSelectionCommand>,
 ) {
-    for ClickEventStage0(grid_tile) in click_event_reader.read() {
+    for ClickMessageStage0(grid_tile) in click_event_reader.read() {
         let navmesh = arc_navmesh.read();
 
         let mut entities: Vec<UserSelectionData> = vec![];
@@ -31,7 +31,7 @@ pub fn find_new_selection_on_click(
 
         // send next stage click event if not user selection action is to be performed
         if entities.is_empty() {
-            click_event_writer.write(log_event!(ClickEventStage1(*grid_tile)));
+            click_event_writer.write(log_event!(ClickMessageStage1(*grid_tile)));
             return;
         }
 

@@ -50,10 +50,10 @@ fn execute_command(
 fn monitor_completion(
     mut commands: Commands,
     mut query: Query<&mut Commandable>,
-    mut command_complete_event_reader: MessageReader<WorkCompleteEvent>,
-    mut commandable_event_writer: MessageWriter<CommandCompleteEvent>,
+    mut command_complete_event_reader: MessageReader<WorkCompleteMessage>,
+    mut commandable_event_writer: MessageWriter<CommandCompleteMessage>,
 ) {
-    for WorkCompleteEvent {
+    for WorkCompleteMessage {
         commandable_entity,
         workable_entity,
         work_kind,
@@ -85,13 +85,13 @@ fn monitor_completion(
 
 fn handle_internal_interrupts(
     mut commands: Commands,
-    mut event_reader: MessageReader<InternalCommandInterruptEvent>,
+    mut event_reader: MessageReader<InternalCommandInterruptMessage>,
     // mut commandable_query: Query<&mut Commandable>,
     mut workable_query: Query<&mut Workable>,
     // mut tasks_scheduler: MessageWriter<ScheduleTaskEvent>,
     // mut work_complete_event_writer: MessageWriter<WorkCompleteEvent>,
 ) {
-    for InternalCommandInterruptEvent(interrupted_command_type) in event_reader.read() {
+    for InternalCommandInterruptMessage(interrupted_command_type) in event_reader.read() {
         if let CommandType::WorkOn(interrupted_command) = interrupted_command_type {
             // let Task(TaskKind::Work {
             //     workable_entity, ..

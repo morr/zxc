@@ -24,7 +24,7 @@ pub struct Movable {
 }
 
 #[derive(Message, Debug, Clone)]
-pub struct MovableReachedDestinationEvent(pub Entity, pub IVec2);
+pub struct MovableReachedDestinationMessage(pub Entity, pub IVec2);
 
 impl Movable {
     pub fn new(speed: f32) -> Self {
@@ -39,21 +39,21 @@ impl Movable {
         &mut self,
         entity: Entity,
         commands: &mut Commands,
-        maybe_event_writer: Option<&mut MessageWriter<MovableReachedDestinationEvent>>,
-        // maybe_movable_state_change_event_writer: Option<&mut MessageWriter<EntityStateChangeEvent<MovableState>>>,
+        maybe_event_writer: Option<&mut MessageWriter<MovableReachedDestinationMessage>>,
+        // maybe_movable_state_change_event_writer: Option<&mut MessageWriter<EntityStateChangeMessage<MovableState>>>,
     ) {
         if self.path.is_empty()
             && let MovableState::Moving(end_tile) | MovableState::Pathfinding(end_tile) = self.state
             && let Some(event_writer) = maybe_event_writer
         {
-            event_writer.write(log_event!(MovableReachedDestinationEvent(entity, end_tile)));
+            event_writer.write(log_event!(MovableReachedDestinationMessage(entity, end_tile)));
         }
 
         self.stop_moving(entity, commands);
         self.state = MovableState::Idle;
 
         // if let Some(movable_state_change_event_writer) = maybe_movable_state_change_event_writer {
-        //     movable_state_change_event_writer.write(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
+        //     movable_state_change_event_writer.write(log_event!(EntityStateChangeMessage(entity, self.state.clone())));
         // }
     }
 
@@ -63,12 +63,12 @@ impl Movable {
         path: VecDeque<IVec2>,
         entity: Entity,
         commands: &mut Commands,
-        // movable_state_change_event_writer: &mut MessageWriter<EntityStateChangeEvent<MovableState>>,
+        // movable_state_change_event_writer: &mut MessageWriter<EntityStateChangeMessage<MovableState>>,
     ) {
         self.state = MovableState::Moving(end_tile);
         self.path = path;
         commands.entity(entity).insert(MovableStateMovinTag);
-        // movable_state_change_event_writer.write(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
+        // movable_state_change_event_writer.write(log_event!(EntityStateChangeMessage(entity, self.state.clone())));
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -81,12 +81,12 @@ impl Movable {
         queue_counter: &Res<AsyncQueueCounter>,
         maybe_pathfinding_task: Option<&mut PathfindingTask>,
         commands: &mut Commands,
-        // movable_state_change_event_writer: &mut MessageWriter<EntityStateChangeEvent<MovableState>>,
+        // movable_state_change_event_writer: &mut MessageWriter<EntityStateChangeMessage<MovableState>>,
     ) {
         // println!("MovableState {:?}=>{:?}", self.state, MovableState::Pathfinding(end_tile));
         self.stop_moving(entity, commands);
         self.state = MovableState::Pathfinding(end_tile);
-        // movable_state_change_event_writer.write(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
+        // movable_state_change_event_writer.write(log_event!(EntityStateChangeMessage(entity, self.state.clone())));
 
         let navmesh_arc_clone = arc_navmesh.0.clone();
         let task = spawn_async_task(queue_counter, async move {
@@ -113,7 +113,7 @@ impl Movable {
     //     end_tile: IVec2,
     //     commands: &mut Commands,
     //     pathfind_event_writer: &mut MessageWriter<PathfindRequestEvent>,
-    //     movable_state_event_writer: &mut MessageWriter<EntityStateChangeEvent<MovableState>>,
+    //     movable_state_event_writer: &mut MessageWriter<EntityStateChangeMessage<MovableState>>,
     // ) {
     //     if self.state == MovableState::Moving {
     //         self.stop_moving(entity, commands);
@@ -125,7 +125,7 @@ impl Movable {
     //         end_tile,
     //         entity,
     //     }));
-    //     movable_state_event_writer.write(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
+    //     movable_state_event_writer.write(log_event!(EntityStateChangeMessage(entity, self.state.clone())));
     // }
 
     pub fn to_pathfinding_error(
@@ -133,12 +133,12 @@ impl Movable {
         entity: Entity,
         end_tile: IVec2,
         commands: &mut Commands,
-        // movable_state_event_writer: &mut MessageWriter<EntityStateChangeEvent<MovableState>>,
+        // movable_state_event_writer: &mut MessageWriter<EntityStateChangeMessage<MovableState>>,
     ) {
         // println!("MovableState {:?}=>{:?}", self.state, MovableState::PathfindingError(end_tile));
         self.stop_moving(entity, commands);
         self.state = MovableState::PathfindingError(end_tile);
-        // movable_state_event_writer.write(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
+        // movable_state_event_writer.write(log_event!(EntityStateChangeMessage(entity, self.state.clone())));
     }
 
     fn stop_moving(&mut self, entity: Entity, commands: &mut Commands) {

@@ -7,9 +7,9 @@ pub struct FarmPlugin;
 impl Plugin for FarmPlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Farm>()
-            .add_message::<FarmProgressEvent>()
-            .add_message::<FarmTendedEvent>()
-            .add_message::<EntityStateChangeEvent<FarmState>>()
+            .add_message::<FarmProgressMessage>()
+            .add_message::<FarmTendedMessage>()
+            .add_message::<EntityStateChangeMessage<FarmState>>()
             .add_systems(
                 FixedUpdate,
                 (

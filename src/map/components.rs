@@ -37,7 +37,7 @@ impl Tile {
 }
 
 #[derive(Message, Debug)]
-pub struct RebuildMapEvent {
+pub struct RebuildMapMessage {
     pub generator_kind: GeneratorKind,
 }
 

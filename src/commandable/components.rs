@@ -45,27 +45,27 @@ impl Default for Commandable {
 }
 
 #[derive(Message, Debug)]
-pub struct CommandCompleteEvent(pub Entity);
+pub struct CommandCompleteMessage(pub Entity);
 
 #[derive(Message, Debug)]
 /// Event to interrupt command initiated by an external entity
-pub struct ExternalCommandInterruptEvent(pub Entity);
+pub struct ExternalCommandInterruptMessage(pub Entity);
 
 #[derive(Message, Debug)]
 /// Event to interrupt command initiated by the Commandable itself
-pub struct InternalCommandInterruptEvent(pub CommandType);
+pub struct InternalCommandInterruptMessage(pub CommandType);
 
 #[derive(Message, Debug)]
 /// Event to restore world resources claimed by the command
-pub struct ReleaseCommandResourcesEvent(pub CommandType);
+pub struct ReleaseCommandResourcesMessage(pub CommandType);
 
 impl Commandable {
     pub fn clear_queue(
         &mut self,
         entity: Entity,
         commands: &mut Commands,
-        commandable_interrupt_writer: &mut MessageWriter<InternalCommandInterruptEvent>,
-        commandable_release_resources_writer: &mut MessageWriter<ReleaseCommandResourcesEvent>,
+        commandable_interrupt_writer: &mut MessageWriter<InternalCommandInterruptMessage>,
+        commandable_release_resources_writer: &mut MessageWriter<ReleaseCommandResourcesMessage>,
     ) {
         trace!("Commandable({:?}) clear_queue", entity);
 
@@ -81,8 +81,8 @@ impl Commandable {
         command_or_commands: I,
         entity: Entity,
         commands: &mut Commands,
-        commandable_interrupt_writer: &mut MessageWriter<InternalCommandInterruptEvent>,
-        commandable_release_resources_writer: &mut MessageWriter<ReleaseCommandResourcesEvent>,
+        commandable_interrupt_writer: &mut MessageWriter<InternalCommandInterruptMessage>,
+        commandable_release_resources_writer: &mut MessageWriter<ReleaseCommandResourcesMessage>,
     ) where
         I: IntoIterator<Item = CommandType>,
     {
@@ -145,9 +145,9 @@ impl Commandable {
         &mut self,
         entity: Entity,
         commands: &mut Commands,
-        commandable_interrupt_writer: &mut MessageWriter<InternalCommandInterruptEvent>,
-        commandable_release_resources_writer: &mut MessageWriter<ReleaseCommandResourcesEvent>,
-        commandable_event_writer: &mut MessageWriter<CommandCompleteEvent>,
+        commandable_interrupt_writer: &mut MessageWriter<InternalCommandInterruptMessage>,
+        commandable_release_resources_writer: &mut MessageWriter<ReleaseCommandResourcesMessage>,
+        commandable_event_writer: &mut MessageWriter<CommandCompleteMessage>,
     ) {
         trace!(
             "Commandable({:?}) abort_executing {:?}",
@@ -157,7 +157,7 @@ impl Commandable {
 
         if let Some(command_type) = self.executing.take() {
             commandable_interrupt_writer
-                .write(log_event!(InternalCommandInterruptEvent(command_type)));
+                .write(log_event!(InternalCommandInterruptMessage(command_type)));
         }
 
         self.drain_queue(
@@ -166,14 +166,14 @@ impl Commandable {
         );
         self.change_state(CommandableState::Idle, entity, commands);
         // this sync pawn state
-        commandable_event_writer.write(log_event!(CommandCompleteEvent(entity)));
+        commandable_event_writer.write(log_event!(CommandCompleteMessage(entity)));
     }
 
     pub fn complete_executing(
         &mut self,
         entity: Entity,
         commands: &mut Commands,
-        commandable_event_writer: &mut MessageWriter<CommandCompleteEvent>,
+        commandable_event_writer: &mut MessageWriter<CommandCompleteMessage>,
     ) {
         trace!(
             "Commandable({:?}) complete_executing {:?}",
@@ -194,7 +194,7 @@ impl Commandable {
 
         if self.state == CommandableState::Idle {
             // this sync pawn state
-            commandable_event_writer.write(log_event!(CommandCompleteEvent(entity)));
+            commandable_event_writer.write(log_event!(CommandCompleteMessage(entity)));
         }
     }
 
@@ -223,19 +223,19 @@ impl Commandable {
 
     fn drain_queue(
         &mut self,
-        commandable_interrupt_writer: &mut MessageWriter<InternalCommandInterruptEvent>,
-        commandable_release_resources_writer: &mut MessageWriter<ReleaseCommandResourcesEvent>,
+        commandable_interrupt_writer: &mut MessageWriter<InternalCommandInterruptMessage>,
+        commandable_release_resources_writer: &mut MessageWriter<ReleaseCommandResourcesMessage>,
         // tasks_scheduler: &mut MessageWriter<ScheduleTaskEvent>,
     ) {
         if let Some(command_type) = self.executing.take() {
             commandable_interrupt_writer
-                .write(log_event!(InternalCommandInterruptEvent(command_type)));
+                .write(log_event!(InternalCommandInterruptMessage(command_type)));
         }
 
         // cleanup queue and maybe do something with its content
         while let Some(command_type) = self.queue.pop_back() {
             commandable_release_resources_writer
-                .write(log_event!(ReleaseCommandResourcesEvent(command_type)));
+                .write(log_event!(ReleaseCommandResourcesMessage(command_type)));
 
             // #[allow(clippy::single_match)]
             // match command_type {
@@ -284,7 +284,7 @@ macro_rules! commandable_states {
                 // self.remove_old_state_component(commands, entity);
                 let prev_state = mem::replace(&mut self.state, new_state);
                 // self.add_new_state_component(commands, entity);
-                // state_change_event_writer.write(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
+                // state_change_event_writer.write(log_event!(EntityStateChangeMessage(entity, self.state.clone())));
 
                 prev_state
             }

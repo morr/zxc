@@ -194,7 +194,7 @@ fn noise_value(
 fn ui_system(
     mut egui_contexts: bevy_inspector_egui::bevy_egui::EguiContexts,
     mut generator_config: ResMut<PerlinNoiseConfig>,
-    mut rebuild_map_event_writer: MessageWriter<RebuildMapEvent>,
+    mut rebuild_map_event_writer: MessageWriter<RebuildMapMessage>,
 ) {
     let ctx = egui_contexts.ctx_mut().unwrap();
 
@@ -282,7 +282,7 @@ fn ui_system(
         if (maybe_button.is_some() && maybe_button.unwrap().clicked())
             || (generator_config.auto_generate && is_changed)
         {
-            rebuild_map_event_writer.write(log_event!(RebuildMapEvent {
+            rebuild_map_event_writer.write(log_event!(RebuildMapMessage {
                 generator_kind: GeneratorKind::PerlinNoise
             }));
         }

@@ -4,7 +4,7 @@ use super::*;
 pub struct UserSelectionMarker;
 
 #[derive(Message, Debug, Default)]
-pub struct UserSelectionChangeEvent;
+pub struct UserSelectionChangeMessage;
 
 #[derive(Resource, Debug, Deref, DerefMut, Default)]
 pub struct CurrentUserSelection(pub Option<UserSelectionData>);

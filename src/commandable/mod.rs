@@ -18,10 +18,10 @@ pub struct CommandablePlugin;
 
 impl Plugin for CommandablePlugin {
     fn build(&self, app: &mut App) {
-        app.add_message::<CommandCompleteEvent>()
-            .add_message::<ExternalCommandInterruptEvent>()
-            .add_message::<InternalCommandInterruptEvent>()
-            .add_message::<ReleaseCommandResourcesEvent>()
+        app.add_message::<CommandCompleteMessage>()
+            .add_message::<ExternalCommandInterruptMessage>()
+            .add_message::<InternalCommandInterruptMessage>()
+            .add_message::<ReleaseCommandResourcesMessage>()
             .register_type::<Commandable>()
             .add_plugins((
                 CompleteTaskCommandPlugin,
@@ -51,6 +51,6 @@ impl Plugin for CommandablePlugin {
 #[macro_export]
 macro_rules! interrupt_commandable_commands_queue {
     ($writer:expr, $entity:expr) => {
-        $writer.write(log_event!(ExternalCommandInterruptEvent($entity)));
+        $writer.write(log_event!(ExternalCommandInterruptMessage($entity)));
     };
 }

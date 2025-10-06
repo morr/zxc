@@ -53,19 +53,19 @@ impl Carryable {
 }
 
 #[derive(Message, Debug)]
-pub struct SpawnCarryableEvent {
+pub struct SpawnCarryableMessage {
     pub kind: CarryableKind,
     pub amount: u32,
     pub grid_tile: IVec2,
 }
 
 #[derive(Message, Debug)]
-pub struct StoreCarryableEvent {
+pub struct StoreCarryableMessage {
     pub entity: Entity,
 }
 
 #[derive(Message, Debug)]
-pub struct MergeCarryablesEvent {
+pub struct MergeCarryablesMessage {
     pub entity_to_merge: Entity,
     pub carryable_to_merge: Carryable,
     pub grid_tile: IVec2,

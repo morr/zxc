@@ -172,10 +172,10 @@ impl ElapsedTime {
 }
 
 #[derive(Message, Debug)]
-pub struct NewDayEvent(pub u32);
+pub struct NewDayMessage(pub u32);
 
 #[derive(Message, Debug)]
-pub struct NewSeasonEvent(pub YearSeason);
+pub struct NewSeasonMessage(pub YearSeason);
 
 #[derive(Message, Debug)]
-pub struct NewYearEvent(pub u32);
+pub struct NewYearMessage(pub u32);

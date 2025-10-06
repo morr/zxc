@@ -87,7 +87,7 @@ impl Pawn {
         assets_collection: &Res<AssetsCollection>,
         meshes_collection: &Res<MeshesCollection>,
         navmesh: &mut Navmesh,
-        merge_carryables_event_writer: &mut MessageWriter<MergeCarryablesEvent>,
+        merge_carryables_event_writer: &mut MessageWriter<MergeCarryablesMessage>,
         food_stock: &mut ResMut<FoodStock>,
     ) {
         // it can be not in inventory if command chain is interrupted before
@@ -103,7 +103,7 @@ impl Pawn {
             .collect::<Vec<_>>();
 
         if !tile_occupants.is_empty() {
-            merge_carryables_event_writer.write(log_event!(MergeCarryablesEvent {
+            merge_carryables_event_writer.write(log_event!(MergeCarryablesMessage {
                 entity_to_merge: carryable_entity,
                 carryable_to_merge: carryable.clone(),
                 grid_tile,
@@ -147,7 +147,7 @@ macro_rules! pawn_states {
                 new_state: PawnState,
                 entity: Entity,
                 commands: &mut Commands,
-                state_change_event_writer: &mut MessageWriter<EntityStateChangeEvent<PawnState>>,
+                state_change_event_writer: &mut MessageWriter<EntityStateChangeMessage<PawnState>>,
             ) -> PawnState {
                 use std::mem;
                 log_state_change!("Pawn({:?}).state {:?} => {:?}", entity, self.state, new_state);
@@ -155,7 +155,7 @@ macro_rules! pawn_states {
                 self.remove_old_state_component(commands, entity);
                 let prev_state = mem::replace(&mut self.state, new_state);
                 self.add_new_state_component(commands, entity);
-                state_change_event_writer.write(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
+                state_change_event_writer.write(log_event!(EntityStateChangeMessage(entity, self.state.clone())));
 
                 prev_state
             }
@@ -190,7 +190,7 @@ pawn_states!(
 pub struct PawnStateText;
 
 #[derive(Message, Debug)]
-pub struct PawnDeathEvent {
+pub struct PawnDeathMessage {
     pub entity: Entity,
     pub reason: PawnDeathReason,
 }

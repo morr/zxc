@@ -7,7 +7,7 @@ pub struct WorkablePlugin;
 impl Plugin for WorkablePlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Workable>()
-            .add_message::<WorkCompleteEvent>()
+            .add_message::<WorkCompleteMessage>()
             // .add_message::<WorkStartEvent>()
             .add_systems(
                 FixedUpdate,

@@ -20,10 +20,10 @@ fn execute_command(
     mut bed_query: Query<(Entity, &Transform, &mut Bed)>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
     mut command_reader: MessageReader<ToRestCommand>,
-    mut commandable_event_writer: MessageWriter<CommandCompleteEvent>,
+    mut commandable_event_writer: MessageWriter<CommandCompleteMessage>,
     mut available_beds: ResMut<AvailableBeds>,
-    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptEvent>,
-    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesEvent>,
+    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptMessage>,
+    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesMessage>,
     arc_navmesh: Res<ArcNavmesh>,
 ) {
     for ToRestCommand { commandable_entity } in command_reader.read() {

@@ -5,7 +5,7 @@ pub struct FeedablePlugin;
 impl Plugin for FeedablePlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Feedable>()
-            .add_message::<FoodConsumedEvent>()
+            .add_message::<FoodConsumedMessage>()
             .add_systems(
                 Update,
                 (progress_hunger, process_consumed_food)
@@ -34,7 +34,7 @@ impl Default for Feedable {
 }
 
 #[derive(Message, Debug)]
-pub struct FoodConsumedEvent {
+pub struct FoodConsumedMessage {
     pub amount: u32,
 }
 
@@ -70,9 +70,9 @@ fn progress_hunger(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Feedable, &mut Commandable)>,
-    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptEvent>,
-    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesEvent>,
-    mut pawn_death_event_writer: MessageWriter<PawnDeathEvent>,
+    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptMessage>,
+    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesMessage>,
+    mut pawn_death_event_writer: MessageWriter<PawnDeathMessage>,
     food_stock: Res<FoodStock>,
 ) {
     let time_amount = time_scale.scale_to_seconds(time.delta_secs());
@@ -94,7 +94,7 @@ fn progress_hunger(
         }
 
         if wasnt_death_starving && feedable.is_death_starving() {
-            pawn_death_event_writer.write(log_event!(PawnDeathEvent {
+            pawn_death_event_writer.write(log_event!(PawnDeathMessage {
                 entity: commandable_entity,
                 reason: PawnDeathReason::Starvation
             }));
@@ -104,11 +104,11 @@ fn progress_hunger(
 
 fn process_consumed_food(
     mut commands: Commands,
-    mut event_reader: MessageReader<FoodConsumedEvent>,
+    mut event_reader: MessageReader<FoodConsumedMessage>,
     mut carryable_query: Query<(Entity, &mut Carryable, &Transform), With<CarryableFoodMarker>>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
-    for &FoodConsumedEvent { amount } in event_reader.read() {
+    for &FoodConsumedMessage { amount } in event_reader.read() {
         let mut amount_consumed = amount;
 
         for (entity, mut carryable, transform) in carryable_query.iter_mut() {

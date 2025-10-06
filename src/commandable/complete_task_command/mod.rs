@@ -23,7 +23,7 @@ fn execute_command(
     mut commands: Commands,
     mut command_reader: MessageReader<CompleteTaskCommand>,
     mut commandable_query: Query<&mut Commandable>,
-    mut commandable_event_writer: MessageWriter<CommandCompleteEvent>,
+    mut commandable_event_writer: MessageWriter<CommandCompleteMessage>,
 ) {
     for CompleteTaskCommand {
         commandable_entity, ..
@@ -49,14 +49,14 @@ fn execute_command(
 }
 
 fn handle_release_resources(
-    mut event_reader: MessageReader<ReleaseCommandResourcesEvent>,
-    mut tasks_scheduler: MessageWriter<ScheduleTaskEvent>,
+    mut event_reader: MessageReader<ReleaseCommandResourcesMessage>,
+    mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
 ) {
-    for ReleaseCommandResourcesEvent(interrupted_command_type) in event_reader.read() {
+    for ReleaseCommandResourcesMessage(interrupted_command_type) in event_reader.read() {
         if let CommandType::CompleteTask(CompleteTaskCommand { task, .. }) =
             interrupted_command_type
         {
-            tasks_scheduler.write(ScheduleTaskEvent::push_front(task.clone()));
+            tasks_scheduler.write(ScheduleTaskMessage::push_front(task.clone()));
         }
     }
 }
