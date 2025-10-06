@@ -76,7 +76,7 @@ pub fn listen_for_pathfinding_requests(
             &event.end_tile,
         );
 
-        pathfind_event_writer.write(log_event!(PathfindAnswerMessage {
+        pathfind_event_writer.write(log_message!(PathfindAnswerMessage {
             entity: event.entity,
             start_tile: event.start_tile,
             end_tile: event.end_tile,

@@ -112,6 +112,15 @@ macro_rules! log_state_change {
 }
 
 #[macro_export]
+macro_rules! log_message {
+    ($event:expr) => {{
+        let event = $event;
+        debug!("Message {:?}", &event);
+        event
+    }};
+}
+
+#[macro_export]
 macro_rules! log_event {
     ($event:expr) => {{
         let event = $event;

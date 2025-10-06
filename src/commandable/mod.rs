@@ -51,6 +51,6 @@ impl Plugin for CommandablePlugin {
 #[macro_export]
 macro_rules! interrupt_commandable_commands_queue {
     ($writer:expr, $entity:expr) => {
-        $writer.write(log_event!(ExternalCommandInterruptMessage($entity)));
+        $writer.write(log_message!(ExternalCommandInterruptMessage($entity)));
     };
 }

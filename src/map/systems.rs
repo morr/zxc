@@ -38,7 +38,7 @@ fn spawn_tiles(
 
             navmesh.add_occupant::<Tile>(&id, tile.grid_tile.x, tile.grid_tile.y);
             // no need to inform about occupation change for spawned empty map tiles
-            // occupation_change_event_writer.write(log_event!(OccupationChangeEvent::new(grid_tile)));
+            // occupation_change_event_writer.write(log_message!(OccupationChangeEvent::new(grid_tile)));
         }
     }
 }

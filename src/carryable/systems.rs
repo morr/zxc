@@ -46,7 +46,7 @@ pub fn spawn_on_event(
             .write()
             .add_occupant::<Carryable>(&carryable_id, grid_tile.x, grid_tile.y);
 
-        store_event_writer.write(log_event!(StoreCarryableMessage {
+        store_event_writer.write(log_message!(StoreCarryableMessage {
             entity: carryable_id
         }));
     }

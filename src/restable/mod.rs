@@ -117,7 +117,7 @@ fn progress_fatigue(
 
         if wasnt_fresh && restable.is_fresh() {
             commands.trigger(log_event!(RestCompleteEvent { commandable_entity }))
-            // event_writer.write(log_event!(RestCompleteEvent { commandable_entity }));
+            // event_writer.write(log_message!(RestCompleteEvent { commandable_entity }));
         }
     }
 }

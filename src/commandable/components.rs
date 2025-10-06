@@ -157,7 +157,7 @@ impl Commandable {
 
         if let Some(command_type) = self.executing.take() {
             commandable_interrupt_writer
-                .write(log_event!(InternalCommandInterruptMessage(command_type)));
+                .write(log_message!(InternalCommandInterruptMessage(command_type)));
         }
 
         self.drain_queue(
@@ -166,7 +166,7 @@ impl Commandable {
         );
         self.change_state(CommandableState::Idle, entity, commands);
         // this sync pawn state
-        commandable_event_writer.write(log_event!(CommandCompleteMessage(entity)));
+        commandable_event_writer.write(log_message!(CommandCompleteMessage(entity)));
     }
 
     pub fn complete_executing(
@@ -194,7 +194,7 @@ impl Commandable {
 
         if self.state == CommandableState::Idle {
             // this sync pawn state
-            commandable_event_writer.write(log_event!(CommandCompleteMessage(entity)));
+            commandable_event_writer.write(log_message!(CommandCompleteMessage(entity)));
         }
     }
 
@@ -229,13 +229,13 @@ impl Commandable {
     ) {
         if let Some(command_type) = self.executing.take() {
             commandable_interrupt_writer
-                .write(log_event!(InternalCommandInterruptMessage(command_type)));
+                .write(log_message!(InternalCommandInterruptMessage(command_type)));
         }
 
         // cleanup queue and maybe do something with its content
         while let Some(command_type) = self.queue.pop_back() {
             commandable_release_resources_writer
-                .write(log_event!(ReleaseCommandResourcesMessage(command_type)));
+                .write(log_message!(ReleaseCommandResourcesMessage(command_type)));
 
             // #[allow(clippy::single_match)]
             // match command_type {
@@ -284,7 +284,7 @@ macro_rules! commandable_states {
                 // self.remove_old_state_component(commands, entity);
                 let prev_state = mem::replace(&mut self.state, new_state);
                 // self.add_new_state_component(commands, entity);
-                // state_change_event_writer.write(log_event!(EntityStateChangeMessage(entity, self.state.clone())));
+                // state_change_event_writer.write(log_message!(EntityStateChangeMessage(entity, self.state.clone())));
 
                 prev_state
             }

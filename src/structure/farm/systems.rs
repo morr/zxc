@@ -66,7 +66,7 @@ pub fn progress_planted_and_tending_rest_timers(
         planted_state.growth_timer.tick(delta);
 
         if planted_state.growth_timer.is_finished() {
-            farm_progress_event_writer.write(log_event!(FarmProgressMessage(workable_entity)));
+            farm_progress_event_writer.write(log_message!(FarmProgressMessage(workable_entity)));
         }
 
         if !planted_state.tending_rest_timer.is_finished() {
@@ -108,7 +108,7 @@ pub fn progress_harvested_timer(
         state.rest_timer.tick(delta);
 
         if state.rest_timer.is_finished() {
-            farm_progress_event_writer.write(log_event!(FarmProgressMessage(entity)));
+            farm_progress_event_writer.write(log_message!(FarmProgressMessage(entity)));
         }
     }
 }
@@ -141,7 +141,7 @@ pub fn progress_on_state_changed(
             }
 
             if let FarmState::Harvested(_) = state {
-                spawn_food_event_writer.write(log_event!(SpawnCarryableMessage {
+                spawn_food_event_writer.write(log_message!(SpawnCarryableMessage {
                     kind: CarryableKind::Food,
                     amount: farm.yield_amount(),
                     grid_tile,

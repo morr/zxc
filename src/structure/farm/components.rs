@@ -51,7 +51,7 @@ macro_rules! farm_states {
                 self.remove_old_state_component(commands, entity);
                 self.state = new_state;
                 self.add_new_state_component(commands, entity);
-                state_change_event_writer.write(log_event!(EntityStateChangeMessage(entity, self.state.clone())));
+                state_change_event_writer.write(log_message!(EntityStateChangeMessage(entity, self.state.clone())));
             }
         }
 
@@ -139,7 +139,7 @@ impl Farm {
         );
         navmesh.add_occupant::<Farm>(&entity, grid_tile.x, grid_tile.y);
 
-        state_change_event_writer.write(log_event!(EntityStateChangeMessage(entity, farm_state)));
+        state_change_event_writer.write(log_message!(EntityStateChangeMessage(entity, farm_state)));
     }
 
     pub fn sync_sprite_bundle(

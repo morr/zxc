@@ -282,7 +282,7 @@ fn ui_system(
         if (maybe_button.is_some() && maybe_button.unwrap().clicked())
             || (generator_config.auto_generate && is_changed)
         {
-            rebuild_map_event_writer.write(log_event!(RebuildMapMessage {
+            rebuild_map_event_writer.write(log_message!(RebuildMapMessage {
                 generator_kind: GeneratorKind::PerlinNoise
             }));
         }

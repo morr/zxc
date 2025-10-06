@@ -142,7 +142,7 @@ pub fn handle_debug_info_keys(
             DebugNavmeshState::Hidden => DebugNavmeshState::Visible,
         };
         next_debug_navmesh_state.set(new_state.clone());
-        debug_navmesh_state_change_event_writer.write(log_event!(StateChangeMessage(new_state)));
+        debug_navmesh_state_change_event_writer.write(log_message!(StateChangeMessage(new_state)));
     }
 
     if keys.just_pressed(KeyCode::KeyP) {
@@ -151,11 +151,11 @@ pub fn handle_debug_info_keys(
             DebugNoiseState::Hidden => DebugNoiseState::Visible,
         };
         next_debug_noise_state.set(new_state.clone());
-        debug_noise_state_change_event_writer.write(log_event!(StateChangeMessage(new_state)));
+        debug_noise_state_change_event_writer.write(log_message!(StateChangeMessage(new_state)));
     }
 
     // if keys.just_pressed(KeyCode::KeyR) {
-    //     rebuild_map_event_writer.write(log_event!(RebuildMapEvent));
+    //     rebuild_map_event_writer.write(log_message!(RebuildMapEvent));
     // }
 
     if keys.just_pressed(KeyCode::KeyM) {
