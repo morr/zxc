@@ -51,7 +51,6 @@ fn monitor_completion(
     mut commands: Commands,
     mut query: Query<&mut Commandable>,
     mut command_complete_event_reader: MessageReader<WorkCompleteMessage>,
-    mut commandable_event_writer: MessageWriter<CommandCompleteMessage>,
 ) {
     for WorkCompleteMessage {
         commandable_entity,
@@ -75,11 +74,7 @@ fn monitor_completion(
             continue;
         }
 
-        commandable.complete_executing(
-            *commandable_entity,
-            &mut commands,
-            &mut commandable_event_writer,
-        );
+        commandable.complete_executing(*commandable_entity, &mut commands);
     }
 }
 

@@ -20,7 +20,6 @@ fn execute_command(
     mut bed_query: Query<(Entity, &Transform, &mut Bed)>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
     mut command_reader: MessageReader<ToRestCommand>,
-    mut commandable_event_writer: MessageWriter<CommandCompleteMessage>,
     mut available_beds: ResMut<AvailableBeds>,
     mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptMessage>,
     mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesMessage>,
@@ -29,11 +28,7 @@ fn execute_command(
     for ToRestCommand { commandable_entity } in command_reader.read() {
         match commandable_query.get_mut(*commandable_entity) {
             Ok((mut pawn, mut commandable, pawn_transform)) => {
-                commandable.complete_executing(
-                    *commandable_entity,
-                    &mut commands,
-                    &mut commandable_event_writer,
-                );
+                commandable.complete_executing(*commandable_entity, &mut commands);
 
                 let (grid_tile, is_sleep_in_bed) = if let Some(bed_entity) = pawn.owned_bed {
                     // move to claimed bed

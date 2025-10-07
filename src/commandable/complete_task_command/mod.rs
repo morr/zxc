@@ -23,7 +23,6 @@ fn execute_command(
     mut commands: Commands,
     mut command_reader: MessageReader<CompleteTaskCommand>,
     mut commandable_query: Query<&mut Commandable>,
-    mut commandable_event_writer: MessageWriter<CommandCompleteMessage>,
 ) {
     for CompleteTaskCommand {
         commandable_entity, ..
@@ -40,11 +39,7 @@ fn execute_command(
             }
         };
 
-        commandable.complete_executing(
-            *commandable_entity,
-            &mut commands,
-            &mut commandable_event_writer,
-        );
+        commandable.complete_executing(*commandable_entity, &mut commands);
     }
 }
 

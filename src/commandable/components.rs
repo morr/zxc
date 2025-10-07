@@ -44,8 +44,10 @@ impl Default for Commandable {
     }
 }
 
-#[derive(Message, Debug)]
-pub struct CommandCompleteMessage(pub Entity);
+#[derive(EntityEvent, Debug)]
+pub struct CommandCompleteEvent {
+    pub entity: Entity,
+}
 
 #[derive(Message, Debug)]
 /// Event to interrupt command initiated by an external entity
@@ -147,7 +149,6 @@ impl Commandable {
         commands: &mut Commands,
         commandable_interrupt_writer: &mut MessageWriter<InternalCommandInterruptMessage>,
         commandable_release_resources_writer: &mut MessageWriter<ReleaseCommandResourcesMessage>,
-        commandable_event_writer: &mut MessageWriter<CommandCompleteMessage>,
     ) {
         trace!(
             "Commandable({:?}) abort_executing {:?}",
@@ -166,14 +167,13 @@ impl Commandable {
         );
         self.change_state(CommandableState::Idle, entity, commands);
         // this sync pawn state
-        commandable_event_writer.write(log_message!(CommandCompleteMessage(entity)));
+        commands.trigger(log_event!(CommandCompleteEvent { entity }));
     }
 
     pub fn complete_executing(
         &mut self,
         entity: Entity,
         commands: &mut Commands,
-        commandable_event_writer: &mut MessageWriter<CommandCompleteMessage>,
     ) {
         trace!(
             "Commandable({:?}) complete_executing {:?}",
@@ -194,7 +194,7 @@ impl Commandable {
 
         if self.state == CommandableState::Idle {
             // this sync pawn state
-            commandable_event_writer.write(log_message!(CommandCompleteMessage(entity)));
+            commands.trigger(log_event!(CommandCompleteEvent { entity } ));
         }
     }
 

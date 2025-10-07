@@ -38,7 +38,7 @@ pub fn progress_on_farm_tended_event(
         let Ok(mut farm) = query.get_mut(*entity) else {
             continue;
         };
-        ensure_state!(FarmState::Planted(_), farm.state);
+        ensure_state!(loop: FarmState::Planted(_), farm.state);
 
         farm.tendings_done += 1;
         if let FarmState::Planted(planted_state) = &mut farm.state {

@@ -21,7 +21,6 @@ fn execute_command(
     mut command_reader: MessageReader<FeedCommand>,
     mut commandable_query: Query<(&mut Commandable, &mut Feedable)>,
     mut food_stock: ResMut<FoodStock>,
-    mut commandable_event_writer: MessageWriter<CommandCompleteMessage>,
     mut food_consumed_event_writer: MessageWriter<FoodConsumedMessage>,
 ) {
     let amount_before = food_stock.amount;
@@ -33,11 +32,7 @@ fn execute_command(
 
         if let Ok((mut commandable, mut feedable)) = commandable_query.get_mut(*commandable_entity)
         {
-            commandable.complete_executing(
-                *commandable_entity,
-                &mut commands,
-                &mut commandable_event_writer,
-            );
+            commandable.complete_executing(*commandable_entity, &mut commands);
 
             while feedable.is_overflowed() && food_stock.amount > 0 {
                 feedable.be_fed();

@@ -18,7 +18,7 @@ pub struct CommandablePlugin;
 
 impl Plugin for CommandablePlugin {
     fn build(&self, app: &mut App) {
-        app.add_message::<CommandCompleteMessage>()
+        app
             .add_message::<ExternalCommandInterruptMessage>()
             .add_message::<InternalCommandInterruptMessage>()
             .add_message::<ReleaseCommandResourcesMessage>()
@@ -34,11 +34,11 @@ impl Plugin for CommandablePlugin {
                 UserSelectionCommandPlugin,
                 WorkOnCommandPlugin,
             ))
+            .add_observer(on_command_complete)
             .add_systems(
                 Update,
                 (
                     process_pending_commands,
-                    process_complete_commands,
                     process_interrupt_commands,
                 )
                     .chain()

@@ -45,7 +45,6 @@ fn on_rest_complete(
     event: On<RestCompleteEvent>,
     mut commands: Commands,
     mut query: Query<(&mut Commandable, &mut Restable)>,
-    mut commandable_event_writer: MessageWriter<CommandCompleteMessage>,
 ) {
     let Ok((mut commandable, mut restable)) = query.get_mut(event.entity) else {
         return;
@@ -64,11 +63,7 @@ fn on_rest_complete(
         panic!("event.entity != *command_commandable_entity");
     }
 
-    commandable.complete_executing(
-        event.entity,
-        &mut commands,
-        &mut commandable_event_writer,
-    );
+    commandable.complete_executing(event.entity, &mut commands);
     restable.change_state(RestableState::Activity, event.entity);
 }
 

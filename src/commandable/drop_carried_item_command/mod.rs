@@ -25,7 +25,6 @@ fn execute_command(
     mut command_reader: MessageReader<DropCarriedItemCommand>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
     mut carryable_query: Query<&mut Carryable>,
-    mut commandable_event_writer: MessageWriter<CommandCompleteMessage>,
     mut commandable_interrupt_writer: MessageWriter<ExternalCommandInterruptMessage>,
     mut merge_carryables_event_writer: MessageWriter<MergeCarryablesMessage>,
     assets_collection: Res<AssetsCollection>,
@@ -80,7 +79,6 @@ fn execute_command(
         commandable.complete_executing(
             *commandable_entity,
             &mut commands,
-            &mut commandable_event_writer,
         );
     }
 }

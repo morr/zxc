@@ -42,7 +42,7 @@ fn ai_idle_pawns(
     for (commandable_entity, pawn, movable, restable, feedable, mut commandable, transform) in
         &mut commandable_query
     {
-        ensure_state!(PawnState::Idle, pawn.state);
+        ensure_state!(loop: PawnState::Idle, pawn.state);
         continue_unless!(CommandableState::Idle, commandable.state);
 
         if feedable.is_overflowed() && food_stock.amount > 0 {

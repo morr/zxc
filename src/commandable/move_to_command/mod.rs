@@ -63,7 +63,6 @@ fn monitor_completion(
     mut commands: Commands,
     mut query: Query<&mut Commandable>,
     mut command_complete_event_reader: MessageReader<MovableReachedDestinationMessage>,
-    mut commandable_event_writer: MessageWriter<CommandCompleteMessage>,
 ) {
     for MovableReachedDestinationMessage(entity, destination_tile) in
         command_complete_event_reader.read()
@@ -86,7 +85,7 @@ fn monitor_completion(
             continue;
         }
 
-        commandable.complete_executing(*entity, &mut commands, &mut commandable_event_writer);
+        commandable.complete_executing(*entity, &mut commands);
     }
 }
 

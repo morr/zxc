@@ -14,7 +14,7 @@ pub fn progress_work(
     let elapsed_time = time_scale.scale_to_seconds(time.delta_secs());
 
     for (workable_entity, mut workable) in workable_query.iter_mut() {
-        ensure_state!(WorkableState::BeingWorked(_), workable.state);
+        ensure_state!(loop: WorkableState::BeingWorked(_), workable.state);
 
         workable.perform_work(elapsed_time);
 

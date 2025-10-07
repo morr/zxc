@@ -21,7 +21,6 @@ fn execute_command(
     mut command_reader: MessageReader<PickUpItemCommand>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
     mut carryable_query: Query<(&mut Carryable, &Transform)>,
-    mut commandable_event_writer: MessageWriter<CommandCompleteMessage>,
     mut commandable_interrupt_writer: MessageWriter<ExternalCommandInterruptMessage>,
     arc_navmesh: ResMut<ArcNavmesh>,
     mut food_stock: ResMut<FoodStock>,
@@ -80,11 +79,7 @@ fn execute_command(
             &mut food_stock,
         );
 
-        commandable.complete_executing(
-            *commandable_entity,
-            &mut commands,
-            &mut commandable_event_writer,
-        );
+        commandable.complete_executing(*commandable_entity, &mut commands);
     }
 }
 
