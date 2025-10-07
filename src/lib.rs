@@ -62,7 +62,8 @@ pub enum AppState {
 
 #[macro_export]
 macro_rules! ensure_state {
-    ($expected_pattern:pat, $current_state:expr) => {
+    // For loops - uses continue
+    (loop: $expected_pattern:pat, $current_state:expr) => {
         match $current_state {
             $expected_pattern => {}
             _ => {
@@ -75,7 +76,7 @@ macro_rules! ensure_state {
             }
         }
     };
-    ($expected_state:expr, $current_state:expr) => {
+    (loop: $expected_state:expr, $current_state:expr) => {
         if $current_state != $expected_state {
             trace!(
                 "Got {:?} while expected {:?} by Query<With<_>> param",
@@ -84,7 +85,32 @@ macro_rules! ensure_state {
             );
             continue;
         }
-   # };
+    };
+    
+    // For functions - uses return
+    (fn: $expected_pattern:pat, $current_state:expr) => {
+        match $current_state {
+            $expected_pattern => {}
+            _ => {
+                trace!(
+                    "Got {:?} while expected pattern {:?} by Query<With<_>> param",
+                    $current_state,
+                    stringify!($expected_pattern),
+                );
+                return;
+            }
+        }
+    };
+    (fn: $expected_state:expr, $current_state:expr) => {
+        if $current_state != $expected_state {
+            trace!(
+                "Got {:?} while expected {:?} by Query<With<_>> param",
+                $current_state,
+                $expected_state,
+            );
+            return;
+        }
+    };
 }
 
 #[macro_export]
@@ -100,6 +126,23 @@ macro_rules! continue_unless {
     ($expected_state:expr, $current_state:expr) => {
         if $current_state != $expected_state {
             continue;
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! return_unless {
+    ($expected_pattern:pat, $current_state:expr) => {
+        match $current_state {
+            $expected_pattern => {}
+            _ => {
+                return;
+            }
+        }
+    };
+    ($expected_state:expr, $current_state:expr) => {
+        if $current_state != $expected_state {
+            return;
         }
     };
 }
