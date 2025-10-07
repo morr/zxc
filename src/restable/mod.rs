@@ -25,8 +25,7 @@ pub struct Restable {
 
 #[derive(EntityEvent, Debug)]
 pub struct RestCompleteEvent {
-    #[event_target]
-    pub commandable_entity: Entity,
+    pub entity: Entity,
 }
 
 #[derive(Debug, Clone, PartialEq, Reflect)]
@@ -116,7 +115,7 @@ fn progress_fatigue(
         }
 
         if wasnt_fresh && restable.is_fresh() {
-            commands.trigger(log_event!(RestCompleteEvent { commandable_entity }))
+            commands.trigger(log_event!(RestCompleteEvent { entity: commandable_entity }))
             // event_writer.write(log_message!(RestCompleteEvent { commandable_entity }));
         }
     }

@@ -8,10 +8,7 @@ impl Plugin for SleepCommandPlugin {
             .add_observer(on_rest_complete)
             .add_systems(
                 Update,
-                (
-                    execute_command,
-                    handle_internal_interrupts,
-                )
+                (execute_command, handle_internal_interrupts)
                     .chain()
                     .run_if(in_state(AppState::Playing)),
             );
@@ -50,10 +47,7 @@ fn on_rest_complete(
     mut query: Query<(&mut Commandable, &mut Restable)>,
     mut commandable_event_writer: MessageWriter<CommandCompleteMessage>,
 ) {
-    let commandable_entity = event.commandable_entity;
-
-    // for RestCompleteEvent { commandable_entity } in command_complete_event_reader.read() {
-    let Ok((mut commandable, mut restable)) = query.get_mut(commandable_entity) else {
+    let Ok((mut commandable, mut restable)) = query.get_mut(event.entity) else {
         return;
     };
     let Some(ref command_type) = commandable.executing else {
@@ -66,16 +60,16 @@ fn on_rest_complete(
     else {
         return;
     };
-    if commandable_entity != *command_commandable_entity {
-        return;
+    if event.entity != *command_commandable_entity {
+        panic!("event.entity != *command_commandable_entity");
     }
 
     commandable.complete_executing(
-        commandable_entity,
+        event.entity,
         &mut commands,
         &mut commandable_event_writer,
     );
-    restable.change_state(RestableState::Activity, commandable_entity);
+    restable.change_state(RestableState::Activity, event.entity);
 }
 
 fn handle_internal_interrupts(
