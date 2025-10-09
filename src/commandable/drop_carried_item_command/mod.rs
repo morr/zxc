@@ -25,7 +25,6 @@ fn execute_command(
     mut command_reader: MessageReader<DropCarriedItemCommand>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
     mut carryable_query: Query<&mut Carryable>,
-    mut commandable_interrupt_writer: MessageWriter<ExternalCommandInterruptMessage>,
     mut merge_carryables_event_writer: MessageWriter<MergeCarryablesMessage>,
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
@@ -56,10 +55,7 @@ fn execute_command(
                     "Failed to get query result for carryable_entity {:?}: {:?}",
                     carryable_entity, err
                 );
-                interrupt_commandable_commands_queue!(
-                    commandable_interrupt_writer,
-                    *commandable_entity
-                );
+                interrupt_commandable_commands_queue!(commands, *commandable_entity);
                 continue;
             }
         };
@@ -76,10 +72,7 @@ fn execute_command(
             &mut food_stock,
         );
 
-        commandable.complete_executing(
-            *commandable_entity,
-            &mut commands,
-        );
+        commandable.complete_executing(*commandable_entity, &mut commands);
     }
 }
 

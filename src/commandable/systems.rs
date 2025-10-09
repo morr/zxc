@@ -94,9 +94,9 @@ pub fn on_command_complete(
     }
 }
 
-pub fn process_interrupt_commands(
+pub fn on_interrupt_command(
+    event: On<ExternalCommandInterruptEvent>,
     mut commands: Commands,
-    mut commandable_event_reader: MessageReader<ExternalCommandInterruptMessage>,
     mut pawn_query: Query<(Option<&Pawn>, &mut Commandable)>,
     mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptMessage>,
     mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesMessage>,
@@ -110,18 +110,16 @@ pub fn process_interrupt_commands(
     // >,
     // mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
 ) {
-    for ExternalCommandInterruptMessage(commandable_entity) in commandable_event_reader.read() {
-        // println!("{:?}", InterruptCommandEvent(*entity));
+    // println!("{:?}", event);
 
-        if let Ok((Some(pawn), mut commandable)) = pawn_query.get_mut(*commandable_entity) {
-            ensure_state!(loop: PawnState::ExecutingCommand, pawn.state);
+    if let Ok((Some(pawn), mut commandable)) = pawn_query.get_mut(event.entity) {
+        ensure_state!(fn: PawnState::ExecutingCommand, pawn.state);
 
-            commandable.abort_executing(
-                *commandable_entity,
-                &mut commands,
-                &mut commandable_interrupt_writer,
-                &mut commandable_release_resources_writer,
-            );
-        }
+        commandable.abort_executing(
+            event.entity,
+            &mut commands,
+            &mut commandable_interrupt_writer,
+            &mut commandable_release_resources_writer,
+        );
     }
 }

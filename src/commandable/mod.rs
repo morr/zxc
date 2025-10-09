@@ -19,7 +19,6 @@ pub struct CommandablePlugin;
 impl Plugin for CommandablePlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_message::<ExternalCommandInterruptMessage>()
             .add_message::<InternalCommandInterruptMessage>()
             .add_message::<ReleaseCommandResourcesMessage>()
             .register_type::<Commandable>()
@@ -35,13 +34,10 @@ impl Plugin for CommandablePlugin {
                 WorkOnCommandPlugin,
             ))
             .add_observer(on_command_complete)
+            .add_observer(on_interrupt_command)
             .add_systems(
                 Update,
-                (
-                    process_pending_commands,
-                    process_interrupt_commands,
-                )
-                    .chain()
+                process_pending_commands
                     .run_if(in_state(AppState::Playing))
                     .run_if(in_state(SimulationState::Running)),
             );
@@ -50,7 +46,9 @@ impl Plugin for CommandablePlugin {
 
 #[macro_export]
 macro_rules! interrupt_commandable_commands_queue {
-    ($writer:expr, $entity:expr) => {
-        $writer.write(log_message!(ExternalCommandInterruptMessage($entity)));
+    ($commands:expr, $entity:expr) => {
+        $commands.trigger(log_event!(ExternalCommandInterruptEvent {
+            entity: $entity
+        }));
     };
 }

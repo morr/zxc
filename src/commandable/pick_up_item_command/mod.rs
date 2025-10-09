@@ -21,7 +21,6 @@ fn execute_command(
     mut command_reader: MessageReader<PickUpItemCommand>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
     mut carryable_query: Query<(&mut Carryable, &Transform)>,
-    mut commandable_interrupt_writer: MessageWriter<ExternalCommandInterruptMessage>,
     arc_navmesh: ResMut<ArcNavmesh>,
     mut food_stock: ResMut<FoodStock>,
 ) {
@@ -50,10 +49,7 @@ fn execute_command(
                     "Failed to get query result for carryable_entity {:?}: {:?}",
                     carryable_entity, err
                 );
-                interrupt_commandable_commands_queue!(
-                    commandable_interrupt_writer,
-                    *commandable_entity
-                );
+                interrupt_commandable_commands_queue!(commands, *commandable_entity);
                 continue;
             }
         };
@@ -63,10 +59,7 @@ fn execute_command(
 
         if commandable_grid_tile != carryable_grid_tile {
             warn!("commandable_grid_tile != carryable_grid_tile");
-            interrupt_commandable_commands_queue!(
-                commandable_interrupt_writer,
-                *commandable_entity
-            );
+            interrupt_commandable_commands_queue!(commands, *commandable_entity);
             continue;
         }
 

@@ -7,7 +7,6 @@ pub fn progress_on_farm_progress_event(
     mut commands: Commands,
     assets: Res<FarmAssets>,
     mut state_change_event_writer: MessageWriter<EntityStateChangeMessage<FarmState>>,
-    mut commandable_interrupt_writer: MessageWriter<ExternalCommandInterruptMessage>,
 ) {
     for FarmProgressMessage(entity) in event_reader.read() {
         // println!("{:?}", FarmProgressEvent(entity));
@@ -21,7 +20,6 @@ pub fn progress_on_farm_progress_event(
             elapsed_time.total_days(),
             &assets,
             &mut state_change_event_writer,
-            &mut commandable_interrupt_writer,
         );
     }
 }

@@ -179,8 +179,6 @@ impl Farm {
         simulation_day: u32,
         assets: &Res<FarmAssets>,
         state_change_event_writer: &mut MessageWriter<EntityStateChangeMessage<FarmState>>,
-        // commandable_interrupt_writer: &mut MessageWriter<InterruptCommandEvent>,
-        commandable_interrupt_writer: &mut MessageWriter<ExternalCommandInterruptMessage>,
     ) {
         let new_state = match &self.state {
             FarmState::NotPlanted => FarmState::Planted(PlantedState {
@@ -208,12 +206,7 @@ impl Farm {
             self.tendings_done = 0;
         }
 
-        workable.reset(
-            workable_props(&self.state),
-            entity,
-            commands,
-            commandable_interrupt_writer,
-        );
+        workable.reset(workable_props(&self.state), entity, commands);
         Self::sync_sprite_bundle(grid_tile, &self.state, &mut commands.entity(entity), assets);
     }
 

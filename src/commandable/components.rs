@@ -49,9 +49,11 @@ pub struct CommandCompleteEvent {
     pub entity: Entity,
 }
 
-#[derive(Message, Debug)]
+#[derive(EntityEvent, Debug)]
 /// Event to interrupt command initiated by an external entity
-pub struct ExternalCommandInterruptMessage(pub Entity);
+pub struct ExternalCommandInterruptEvent {
+    pub entity: Entity,
+}
 
 #[derive(Message, Debug)]
 /// Event to interrupt command initiated by the Commandable itself
