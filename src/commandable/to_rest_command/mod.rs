@@ -108,6 +108,6 @@ fn execute_command(
 // so there won't be any interruption to handle.
 // fn handle_internal_interrupts(
 //     mut commands: Commands,
-//     mut event_reader: MessageReader<InternalCommandInterruptEvent>,
+//     mut event_reader: MessageReader<InternalCommandInterruptMessage>,
 // ) {
 // }
