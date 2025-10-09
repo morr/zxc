@@ -13,7 +13,6 @@ pub fn move_user_selected_pawn_on_click_stage_1(
             With<pawn_state::PawnStateExecutingCommandTag>,
         )>,
     >,
-    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptMessage>,
     mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesMessage>,
 ) {
     for ClickMessageStage1(grid_tile) in click_event_reader.read() {
@@ -35,7 +34,6 @@ pub fn move_user_selected_pawn_on_click_stage_1(
             }),
             *entity,
             &mut commands,
-            &mut commandable_interrupt_writer,
             &mut commandable_release_resources_writer,
         );
     }

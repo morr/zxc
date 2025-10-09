@@ -21,7 +21,6 @@ fn execute_command(
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
     mut command_reader: MessageReader<ToRestCommand>,
     mut available_beds: ResMut<AvailableBeds>,
-    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptMessage>,
     mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesMessage>,
     arc_navmesh: Res<ArcNavmesh>,
 ) {
@@ -92,7 +91,6 @@ fn execute_command(
                     ],
                     *commandable_entity,
                     &mut commands,
-                    &mut commandable_interrupt_writer,
                     &mut commandable_release_resources_writer,
                 );
             }
@@ -107,7 +105,7 @@ fn execute_command(
 // The command is executed and completed within the same system (execute_command),
 // so there won't be any interruption to handle.
 // fn handle_internal_interrupts(
+//     event: On<InternalCommandInterruptEvent>,
 //     mut commands: Commands,
-//     mut event_reader: MessageReader<InternalCommandInterruptMessage>,
 // ) {
 // }

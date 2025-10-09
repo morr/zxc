@@ -4,16 +4,14 @@ pub struct MoveToCommandPlugin;
 
 impl Plugin for MoveToCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_message::<MoveToCommand>().add_systems(
-            Update,
-            (
-                execute_command,
-                monitor_completion,
-                handle_internal_interrupts,
-            )
-                .chain()
-                .run_if(in_state(AppState::Playing)),
-        );
+        app.add_message::<MoveToCommand>()
+            .add_observer(on_internal_interrupt)
+            .add_systems(
+                Update,
+                (execute_command, monitor_completion)
+                    .chain()
+                    .run_if(in_state(AppState::Playing)),
+            );
     }
 }
 
@@ -89,35 +87,33 @@ fn monitor_completion(
     }
 }
 
-fn handle_internal_interrupts(
+fn on_internal_interrupt(
+    event: On<InternalCommandInterruptEvent>,
     mut commands: Commands,
-    mut event_reader: MessageReader<InternalCommandInterruptMessage>,
     mut query: Query<&mut Movable>,
 ) {
-    for InternalCommandInterruptMessage(interrupted_command) in event_reader.read() {
-        let CommandType::MoveTo(MoveToCommand {
-            commandable_entity,
-            grid_tile: commanding_to_tile,
-        }) = interrupted_command
-        else {
-            continue;
-        };
-        let Ok(mut movable) = query.get_mut(*commandable_entity) else {
-            continue;
-        };
+    let CommandType::MoveTo(MoveToCommand {
+        commandable_entity,
+        grid_tile: commanding_to_tile,
+    }) = event.command_type
+    else {
+        return;
+    };
+    let Ok(mut movable) = query.get_mut(commandable_entity) else {
+        return;
+    };
 
-        if let MovableState::Moving(moving_to_tile)
-        | MovableState::Pathfinding(moving_to_tile)
-        | MovableState::PathfindingError(moving_to_tile) = movable.state
-        {
-            if moving_to_tile == *commanding_to_tile {
-                movable.to_idle(*commandable_entity, &mut commands, None);
-            } else {
-                warn!(
-                    "Attempt to interrupt MoveTo({:?}) for Movable({:?})",
-                    commanding_to_tile, moving_to_tile
-                );
-            }
+    if let MovableState::Moving(moving_to_tile)
+    | MovableState::Pathfinding(moving_to_tile)
+    | MovableState::PathfindingError(moving_to_tile) = movable.state
+    {
+        if moving_to_tile == commanding_to_tile {
+            movable.to_idle(commandable_entity, &mut commands, None);
+        } else {
+            warn!(
+                "Attempt to interrupt MoveTo({:?}) for Movable({:?})",
+                commanding_to_tile, moving_to_tile
+            );
         }
     }
 }

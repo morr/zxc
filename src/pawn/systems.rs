@@ -210,7 +210,6 @@ pub fn progress_pawn_death(
     mut event_reader: MessageReader<PawnDeathMessage>,
     mut pawn_query: Query<(&mut Pawn, &mut Restable, &mut Commandable)>,
     mut bed_query: Query<&mut Bed>,
-    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptMessage>,
     mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesMessage>,
     mut available_beds: ResMut<AvailableBeds>,
     mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
@@ -230,7 +229,6 @@ pub fn progress_pawn_death(
                 commandable.clear_queue(
                     *entity,
                     &mut commands,
-                    &mut commandable_interrupt_writer,
                     &mut commandable_release_resources_writer,
                 );
 

@@ -98,7 +98,6 @@ pub fn on_interrupt_command(
     event: On<ExternalCommandInterruptEvent>,
     mut commands: Commands,
     mut pawn_query: Query<(Option<&Pawn>, &mut Commandable)>,
-    mut commandable_interrupt_writer: MessageWriter<InternalCommandInterruptMessage>,
     mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesMessage>,
     // component tags seems to be working unreliable
     // mut pawn_query: Query<
@@ -118,7 +117,6 @@ pub fn on_interrupt_command(
         commandable.abort_executing(
             event.entity,
             &mut commands,
-            &mut commandable_interrupt_writer,
             &mut commandable_release_resources_writer,
         );
     }
