@@ -210,7 +210,6 @@ pub fn progress_pawn_death(
     mut event_reader: MessageReader<PawnDeathMessage>,
     mut pawn_query: Query<(&mut Pawn, &mut Restable, &mut Commandable)>,
     mut bed_query: Query<&mut Bed>,
-    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesMessage>,
     mut available_beds: ResMut<AvailableBeds>,
     mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
 ) {
@@ -226,11 +225,7 @@ pub fn progress_pawn_death(
 
                 restable.change_state(RestableState::Dead, *entity);
 
-                commandable.clear_queue(
-                    *entity,
-                    &mut commands,
-                    &mut commandable_release_resources_writer,
-                );
+                commandable.clear_queue(*entity, &mut commands);
 
                 if let Some(bed_entity) = pawn.owned_bed {
                     let mut bed = bed_query.get_mut(bed_entity).unwrap();

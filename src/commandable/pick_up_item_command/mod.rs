@@ -78,7 +78,7 @@ fn execute_command(
 
 // The command is executed and completed within the same system (execute_command),
 // so there won't be any interruption to handle.
-// fn handle_internal_interrupts(
+// fn on_internal_interrupts(
 //     event: On<InternalCommandInterruptEvent>,
 //     mut commands: Commands,
 // ) {

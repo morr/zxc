@@ -6,12 +6,12 @@ impl Plugin for WorkOnCommandPlugin {
     fn build(&self, app: &mut App) {
         app.add_message::<WorkOnCommand>()
             .add_observer(on_internal_interrupt)
+            // .add_observer(on_release_resources)
             .add_systems(
                 Update,
                 (
                     execute_command,
                     monitor_completion,
-                    // handle_release_resources,
                 )
                     .chain()
                     .run_if(in_state(AppState::Playing)),
@@ -111,8 +111,8 @@ fn on_internal_interrupt(
     }
 }
 
-// fn handle_release_resources(
-//     mut event_reader: MessageReader<ReleaseCommandResourcesEvent>,
+// fn on_release_resources(
+//     event: On<ReleaseCommandResourcesEvent>,
 //     mut tasks_scheduler: MessageWriter<ScheduleTaskEvent>,
 // ) {
 //     for ReleaseCommandResourcesEvent(interrupted_command_type) in event_reader.read() {

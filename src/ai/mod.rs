@@ -34,7 +34,6 @@ fn ai_idle_pawns(
     mut workable_query: Query<&Transform>,
     mut carryable_query: Query<&Transform>,
     mut tasks_queue: ResMut<TasksQueue>,
-    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesMessage>,
     arc_navmesh: Res<ArcNavmesh>,
     food_stock: Res<FoodStock>,
 ) {
@@ -49,14 +48,12 @@ fn ai_idle_pawns(
                 CommandType::Feed(FeedCommand { commandable_entity }),
                 commandable_entity,
                 &mut commands,
-                &mut commandable_release_resources_writer,
             );
         } else if restable.is_overflowed() {
             commandable.set_queue(
                 CommandType::ToRest(ToRestCommand { commandable_entity }),
                 commandable_entity,
                 &mut commands,
-                &mut commandable_release_resources_writer,
             );
         } else if let Some(task) = tasks_queue.get_task() {
             let maybe_commands_sequence = match task.0 {
@@ -123,12 +120,7 @@ fn ai_idle_pawns(
             };
 
             if let Some(commands_sequence) = maybe_commands_sequence {
-                commandable.set_queue(
-                    commands_sequence,
-                    commandable_entity,
-                    &mut commands,
-                    &mut commandable_release_resources_writer,
-                );
+                commandable.set_queue(commands_sequence, commandable_entity, &mut commands);
             }
         } else {
             if !config().pawn.wander_when_idle {
@@ -149,7 +141,6 @@ fn ai_idle_pawns(
                 }),
                 commandable_entity,
                 &mut commands,
-                &mut commandable_release_resources_writer,
             );
         }
     }

@@ -91,7 +91,6 @@ fn progress_fatigue(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Restable, &mut Commandable)>,
-    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesMessage>,
     // mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
     // mut event_writer: MessageWriter<RestCompleteEvent>,
 ) {
@@ -108,7 +107,6 @@ fn progress_fatigue(
                 CommandType::ToRest(ToRestCommand { commandable_entity }),
                 commandable_entity,
                 &mut commands,
-                &mut commandable_release_resources_writer,
             );
         }
 

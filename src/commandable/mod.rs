@@ -19,7 +19,6 @@ pub struct CommandablePlugin;
 impl Plugin for CommandablePlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_message::<ReleaseCommandResourcesMessage>()
             .register_type::<Commandable>()
             .add_plugins((
                 CompleteTaskCommandPlugin,

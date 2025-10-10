@@ -70,7 +70,6 @@ fn progress_hunger(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Feedable, &mut Commandable)>,
-    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesMessage>,
     mut pawn_death_event_writer: MessageWriter<PawnDeathMessage>,
     food_stock: Res<FoodStock>,
 ) {
@@ -87,7 +86,6 @@ fn progress_hunger(
                 CommandType::Feed(FeedCommand { commandable_entity }),
                 commandable_entity,
                 &mut commands,
-                &mut commandable_release_resources_writer,
             );
         }
 

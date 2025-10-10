@@ -98,7 +98,6 @@ pub fn on_interrupt_command(
     event: On<ExternalCommandInterruptEvent>,
     mut commands: Commands,
     mut pawn_query: Query<(Option<&Pawn>, &mut Commandable)>,
-    mut commandable_release_resources_writer: MessageWriter<ReleaseCommandResourcesMessage>,
     // component tags seems to be working unreliable
     // mut pawn_query: Query<
     //     (Option<&Pawn>, &mut Commandable),
@@ -114,10 +113,6 @@ pub fn on_interrupt_command(
     if let Ok((Some(pawn), mut commandable)) = pawn_query.get_mut(event.entity) {
         ensure_state!(fn: PawnState::ExecutingCommand, pawn.state);
 
-        commandable.abort_executing(
-            event.entity,
-            &mut commands,
-            &mut commandable_release_resources_writer,
-        );
+        commandable.abort_executing(event.entity, &mut commands);
     }
 }

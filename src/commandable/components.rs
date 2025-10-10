@@ -61,36 +61,28 @@ pub struct InternalCommandInterruptEvent {
     pub command_type: CommandType,
 }
 
-#[derive(Message, Debug)]
+#[derive(Event, Debug)]
 /// Event to restore world resources claimed by the command
-pub struct ReleaseCommandResourcesMessage(pub CommandType);
+pub struct ReleaseCommandResourcesEvent {
+    pub command_type: CommandType,
+}
 
 impl Commandable {
-    pub fn clear_queue(
-        &mut self,
-        entity: Entity,
-        commands: &mut Commands,
-        commandable_release_resources_writer: &mut MessageWriter<ReleaseCommandResourcesMessage>,
-    ) {
+    pub fn clear_queue(&mut self, entity: Entity, commands: &mut Commands) {
         trace!("Commandable({:?}) clear_queue", entity);
 
-        self.drain_queue(commands, commandable_release_resources_writer);
+        self.drain_queue(commands);
         self.change_state(CommandableState::Idle, entity, commands);
     }
 
-    pub fn set_queue<I>(
-        &mut self,
-        command_or_commands: I,
-        entity: Entity,
-        commands: &mut Commands,
-        commandable_release_resources_writer: &mut MessageWriter<ReleaseCommandResourcesMessage>,
-    ) where
+    pub fn set_queue<I>(&mut self, command_or_commands: I, entity: Entity, commands: &mut Commands)
+    where
         I: IntoIterator<Item = CommandType>,
     {
         let new_queue = command_or_commands.into_iter().collect();
         trace!("Commandable({:?}) set_queue {:?}", entity, new_queue);
 
-        self.drain_queue(commands, commandable_release_resources_writer);
+        self.drain_queue(commands);
         self.queue = new_queue;
         self.change_state(CommandableState::PendingExecution, entity, commands);
     }
@@ -137,12 +129,7 @@ impl Commandable {
         maybe_command_type
     }
 
-    pub fn abort_executing(
-        &mut self,
-        entity: Entity,
-        commands: &mut Commands,
-        commandable_release_resources_writer: &mut MessageWriter<ReleaseCommandResourcesMessage>,
-    ) {
+    pub fn abort_executing(&mut self, entity: Entity, commands: &mut Commands) {
         trace!(
             "Commandable({:?}) abort_executing {:?}",
             entity, self.executing
@@ -152,7 +139,7 @@ impl Commandable {
             commands.trigger(log_event!(InternalCommandInterruptEvent { command_type }));
         }
 
-        self.drain_queue(commands, commandable_release_resources_writer);
+        self.drain_queue(commands);
         self.change_state(CommandableState::Idle, entity, commands);
         // this sync pawn state
         commands.trigger(log_event!(CommandCompleteEvent { entity }));
@@ -207,7 +194,6 @@ impl Commandable {
     fn drain_queue(
         &mut self,
         commands: &mut Commands,
-        commandable_release_resources_writer: &mut MessageWriter<ReleaseCommandResourcesMessage>,
         // tasks_scheduler: &mut MessageWriter<ScheduleTaskEvent>,
     ) {
         if let Some(command_type) = self.executing.take() {
@@ -216,8 +202,7 @@ impl Commandable {
 
         // cleanup queue and maybe do something with its content
         while let Some(command_type) = self.queue.pop_back() {
-            commandable_release_resources_writer
-                .write(log_message!(ReleaseCommandResourcesMessage(command_type)));
+            commands.trigger(log_event!(ReleaseCommandResourcesEvent { command_type }));
 
             // #[allow(clippy::single_match)]
             // match command_type {

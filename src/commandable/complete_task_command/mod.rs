@@ -4,12 +4,9 @@ pub struct CompleteTaskCommandPlugin;
 
 impl Plugin for CompleteTaskCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_message::<CompleteTaskCommand>().add_systems(
-            Update,
-            (execute_command, handle_release_resources)
-                .chain()
-                .run_if(in_state(AppState::Playing)),
-        );
+        app.add_message::<CompleteTaskCommand>()
+            .add_observer(on_release_resources)
+            .add_systems(Update, execute_command.run_if(in_state(AppState::Playing)));
     }
 }
 
@@ -43,15 +40,11 @@ fn execute_command(
     }
 }
 
-fn handle_release_resources(
-    mut event_reader: MessageReader<ReleaseCommandResourcesMessage>,
+fn on_release_resources(
+    event: On<ReleaseCommandResourcesEvent>,
     mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
 ) {
-    for ReleaseCommandResourcesMessage(interrupted_command_type) in event_reader.read() {
-        if let CommandType::CompleteTask(CompleteTaskCommand { task, .. }) =
-            interrupted_command_type
-        {
-            tasks_scheduler.write(ScheduleTaskMessage::push_front(task.clone()));
-        }
+    if let CommandType::CompleteTask(CompleteTaskCommand { task, .. }) = &event.command_type {
+        tasks_scheduler.write(ScheduleTaskMessage::push_front(task.clone()));
     }
 }
