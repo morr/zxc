@@ -87,7 +87,6 @@ impl Pawn {
         assets_collection: &Res<AssetsCollection>,
         meshes_collection: &Res<MeshesCollection>,
         navmesh: &mut Navmesh,
-        merge_carryables_event_writer: &mut MessageWriter<MergeCarryablesMessage>,
         food_stock: &mut ResMut<FoodStock>,
     ) {
         // it can be not in inventory if command chain is interrupted before
@@ -103,7 +102,7 @@ impl Pawn {
             .collect::<Vec<_>>();
 
         if !tile_occupants.is_empty() {
-            merge_carryables_event_writer.write(log_message!(MergeCarryablesMessage {
+            commands.trigger(log_event!(MergeCarryablesEvent {
                 entity_to_merge: carryable_entity,
                 carryable_to_merge: carryable.clone(),
                 grid_tile,

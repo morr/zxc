@@ -22,7 +22,6 @@ fn execute_command(
     mut command_reader: MessageReader<DropCarriedItemCommand>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
     mut carryable_query: Query<&mut Carryable>,
-    mut merge_carryables_event_writer: MessageWriter<MergeCarryablesMessage>,
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
     arc_navmesh: ResMut<ArcNavmesh>,
@@ -65,7 +64,6 @@ fn execute_command(
             &assets_collection,
             &meshes_collection,
             &mut arc_navmesh.write(),
-            &mut merge_carryables_event_writer,
             &mut food_stock,
         );
 
@@ -90,7 +88,6 @@ fn on_release_resources(
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
     arc_navmesh: ResMut<ArcNavmesh>,
-    mut merge_carryables_event_writer: MessageWriter<MergeCarryablesMessage>,
     mut food_stock: ResMut<FoodStock>,
 ) {
     if let CommandType::DropCarriedItem(DropCarriedItemCommand {
@@ -126,7 +123,6 @@ fn on_release_resources(
             &assets_collection,
             &meshes_collection,
             &mut arc_navmesh.write(),
-            &mut merge_carryables_event_writer,
             &mut food_stock,
         );
     }

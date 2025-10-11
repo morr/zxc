@@ -113,8 +113,8 @@ pub fn progress_harvested_timer(
 
 pub fn progress_on_state_changed(
     mut event_reader: MessageReader<EntityStateChangeMessage<FarmState>>,
+    mut commands: Commands,
     query: Query<(&Farm, &Transform)>,
-    mut spawn_food_event_writer: MessageWriter<SpawnCarryableMessage>,
     mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
 ) {
     for EntityStateChangeMessage(workable_entity, state) in event_reader.read() {
@@ -139,7 +139,7 @@ pub fn progress_on_state_changed(
             }
 
             if let FarmState::Harvested(_) = state {
-                spawn_food_event_writer.write(log_message!(SpawnCarryableMessage {
+                commands.trigger(log_event!(SpawnCarryableEvent {
                     kind: CarryableKind::Food,
                     amount: farm.yield_amount(),
                     grid_tile,
