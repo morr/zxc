@@ -5,11 +5,10 @@ pub struct FeedablePlugin;
 impl Plugin for FeedablePlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Feedable>()
-            .add_message::<FoodConsumedMessage>()
+            .add_observer(on_food_consumed)
             .add_systems(
                 Update,
-                (progress_hunger, process_consumed_food)
-                    .chain()
+                progress_hunger
                     .run_if(in_state(AppState::Playing))
                     .run_if(in_state(SimulationState::Running)),
             );
@@ -33,8 +32,8 @@ impl Default for Feedable {
     }
 }
 
-#[derive(Message, Debug)]
-pub struct FoodConsumedMessage {
+#[derive(Event, Debug)]
+pub struct FoodConsumedEvent {
     pub amount: u32,
 }
 
@@ -98,30 +97,29 @@ fn progress_hunger(
     }
 }
 
-fn process_consumed_food(
+fn on_food_consumed(
+    event: On<FoodConsumedEvent>,
     mut commands: Commands,
-    mut event_reader: MessageReader<FoodConsumedMessage>,
     mut carryable_query: Query<(Entity, &mut Carryable, &Transform), With<CarryableFoodMarker>>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
-    for &FoodConsumedMessage { amount } in event_reader.read() {
-        let mut amount_consumed = amount;
+    let FoodConsumedEvent { amount } = *event;
+    let mut amount_consumed = amount;
 
-        for (entity, mut carryable, transform) in carryable_query.iter_mut() {
-            continue_unless!(CarryableKind::Food, carryable.kind);
+    for (entity, mut carryable, transform) in carryable_query.iter_mut() {
+        continue_unless!(CarryableKind::Food, carryable.kind);
 
-            if amount_consumed < carryable.amount {
-                carryable.amount -= amount_consumed;
-                break;
-            } else {
-                amount_consumed -= carryable.amount;
+        if amount_consumed < carryable.amount {
+            carryable.amount -= amount_consumed;
+            break;
+        } else {
+            amount_consumed -= carryable.amount;
 
-                commands.entity(entity).despawn();
-                let grid_tile = transform.world_pos_to_grid();
-                arc_navmesh
-                    .write()
-                    .remove_occupant::<Carryable>(&entity, grid_tile.x, grid_tile.y);
-            }
+            commands.entity(entity).despawn();
+            let grid_tile = transform.world_pos_to_grid();
+            arc_navmesh
+                .write()
+                .remove_occupant::<Carryable>(&entity, grid_tile.x, grid_tile.y);
         }
     }
 }

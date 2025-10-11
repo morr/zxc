@@ -92,7 +92,7 @@ pub fn on_store_carryable(
         }
     } else {
         warn!("Failed to get Carryable: {:?}", carryable_entity);
-        return;
+        // return;
     }
 }
 

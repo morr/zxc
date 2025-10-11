@@ -21,7 +21,6 @@ fn execute_command(
     mut command_reader: MessageReader<FeedCommand>,
     mut commandable_query: Query<(&mut Commandable, &mut Feedable)>,
     mut food_stock: ResMut<FoodStock>,
-    mut food_consumed_event_writer: MessageWriter<FoodConsumedMessage>,
 ) {
     let amount_before = food_stock.amount;
 
@@ -42,7 +41,7 @@ fn execute_command(
     }
 
     if amount_before != food_stock.amount {
-        food_consumed_event_writer.write(log_message!(FoodConsumedMessage {
+        commands.trigger(log_event!(FoodConsumedEvent {
             amount: amount_before - food_stock.amount,
         }));
     }
