@@ -101,7 +101,17 @@ impl Pawn {
             .copied()
             .collect::<Vec<_>>();
 
-        if !tile_occupants.is_empty() {
+        if tile_occupants.is_empty() {
+            commands
+                .entity(carryable_entity)
+                .insert(Carryable::spawn_mesh_bundle(
+                    grid_tile,
+                    assets_collection,
+                    meshes_collection,
+                ));
+
+            navmesh.add_occupant::<Carryable>(&carryable_entity, grid_tile.x, grid_tile.y);
+        } else {
             commands.trigger(log_event!(MergeCarryablesEvent {
                 entity_to_merge: carryable_entity,
                 carryable_to_merge: carryable.clone(),
@@ -109,16 +119,6 @@ impl Pawn {
                 merge_into_entities: tile_occupants,
             }));
         }
-
-        commands
-            .entity(carryable_entity)
-            .insert(Carryable::spawn_mesh_bundle(
-                grid_tile,
-                assets_collection,
-                meshes_collection,
-            ));
-
-        navmesh.add_occupant::<Carryable>(&carryable_entity, grid_tile.x, grid_tile.y);
     }
 }
 
