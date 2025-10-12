@@ -84,7 +84,6 @@ pub fn listen_for_pathfinding_requests(
 pub fn listen_for_pathfinding_async_tasks(
     mut commands: Commands,
     mut tasks: Query<(Entity, &mut Movable, &mut PathfindingTask), With<PathfindingTask>>,
-    mut event_writer: MessageWriter<MovableReachedDestinationMessage>,
     // mut event_writer: MessageWriter<EntityStateChangeMessage<MovableState>>,
 ) {
     for (entity, mut movable, mut pathfinding_tasks) in &mut tasks {
@@ -104,21 +103,20 @@ pub fn listen_for_pathfinding_async_tasks(
                         // current location. no movement needed
                         if path.len() == 1 {
                             // println!("MessageWriter<MovableReachedDestinationEvent> from listen_for_pathfinding_async_tasks");
-                            movable.to_idle(entity, &mut commands, Some(&mut event_writer));
+                            movable.to_idle(entity, &mut commands, true);
                         } else {
                             movable.to_moving(
                                 end_tile,
                                 path.iter().skip(1).cloned().collect(),
                                 entity,
                                 &mut commands,
-                                // &mut event_writer,
                             );
                         }
                     } else {
                         movable.to_pathfinding_error(
                             entity,
                             end_tile,
-                            &mut commands, /*, &mut event_writer*/
+                            &mut commands
                         );
                     }
                 } else {
@@ -143,8 +141,6 @@ pub fn listen_for_pathfinding_answers(
     mut commands: Commands,
     mut pathfind_event_reader: MessageReader<PathfindAnswerMessage>,
     mut query_movable: Query<(Entity, &mut Movable), With<Movable>>,
-    mut event_writer: MessageWriter<MovableReachedDestinationMessage>,
-    // mut event_writer: MessageWriter<EntityStateChangeMessage<MovableState>>,
 ) {
     for event in pathfind_event_reader.read() {
         // println!("{:?}", event);
@@ -169,22 +165,17 @@ pub fn listen_for_pathfinding_answers(
                 // current location. no movement needed
                 if path.len() == 1 {
                     // println!("MessageWriter<MovableReachedDestinationEvent> from listen_for_pathfinding_answers");
-                    movable.to_idle(entity, &mut commands, Some(&mut event_writer));
+                    movable.to_idle(entity, &mut commands, true);
                 } else {
                     movable.to_moving(
                         event.end_tile,
                         path.iter().skip(1).cloned().collect(),
                         entity,
                         &mut commands,
-                        // &mut event_writer,
                     );
                 }
             } else {
-                movable.to_pathfinding_error(
-                    entity,
-                    event.end_tile,
-                    &mut commands, /*, &mut event_writer*/
-                );
+                movable.to_pathfinding_error(entity, event.end_tile, &mut commands);
             }
         } else {
             // println!(

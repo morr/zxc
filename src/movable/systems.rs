@@ -10,7 +10,6 @@ pub fn move_moving_entities(
     time_scale: Res<TimeScale>,
     arc_navmesh: Res<ArcNavmesh>,
     // mut movable_state_event_writer: MessageWriter<EntityStateChangeMessage<MovableState>>,
-    mut destination_reached_event_writer: MessageWriter<MovableReachedDestinationMessage>,
     mut occupation_change_event_writer: MessageWriter<OccupationChangeMessage>,
 ) {
     for (entity, mut movable, mut transform, maybe_pawn) in &mut query_movable {
@@ -24,7 +23,6 @@ pub fn move_moving_entities(
                     time_scale.scale_to_seconds(time.delta_secs()),
                     &arc_navmesh,
                     &mut commands,
-                    &mut destination_reached_event_writer, // &mut movable_state_event_writer,
                 );
 
                 if current_tile != final_tile {
@@ -54,20 +52,19 @@ fn move_to_target_location(
     remaining_time: f32,
     arc_navmesh: &ArcNavmesh,
     commands: &mut Commands,
-    event_writer: &mut MessageWriter<MovableReachedDestinationMessage>,
     // event_writer: &mut MessageWriter<EntityStateChangeMessage<MovableState>>,
 ) -> IVec2 {
     if movable.path.is_empty() {
         let current_tile = transform.translation.truncate().world_pos_to_grid();
-        let maybe_event_writer = match movable.state {
+        let is_destination_reached = match movable.state {
             MovableState::Moving(target_tile)
             // | MovableState::Pathfinding(target_tile)
             // | MovableState::PathfindingError(target_tile)
                 if current_tile == target_tile =>
             {
-                Some(event_writer)
+                true
             }
-            _ => None,
+            _ => false,
         };
         // println!(
         //     "MessageWriter<MovableReachedDestinationEvent> current_tile:{:?}, target_tile:{:?}",
@@ -77,7 +74,7 @@ fn move_to_target_location(
         //         _ => None,
         //     }
         // );
-        movable.to_idle(entity, commands, maybe_event_writer);
+        movable.to_idle(entity, commands, is_destination_reached);
         return current_tile;
     }
 
@@ -113,7 +110,6 @@ fn move_to_target_location(
                 remaining_time,
                 arc_navmesh,
                 commands,
-                event_writer,
             );
         }
     } else {
@@ -134,6 +130,6 @@ pub fn stop_movable_on_death(
             continue;
         };
 
-        movable.to_idle(*entity, &mut commands, None);
+        movable.to_idle(*entity, &mut commands, false);
     }
 }

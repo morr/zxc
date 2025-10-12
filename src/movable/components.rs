@@ -23,8 +23,11 @@ pub struct Movable {
     pub state: MovableState,
 }
 
-#[derive(Message, Debug, Clone)]
-pub struct MovableReachedDestinationMessage(pub Entity, pub IVec2);
+#[derive(Event, Debug, Clone)]
+pub struct MovableReachedDestinationEvent {
+    pub entity: Entity,
+    pub grid_tile: IVec2,
+}
 
 impl Movable {
     pub fn new(speed: f32) -> Self {
@@ -39,14 +42,16 @@ impl Movable {
         &mut self,
         entity: Entity,
         commands: &mut Commands,
-        maybe_event_writer: Option<&mut MessageWriter<MovableReachedDestinationMessage>>,
-        // maybe_movable_state_change_event_writer: Option<&mut MessageWriter<EntityStateChangeMessage<MovableState>>>,
+        is_destination_reached: bool, // maybe_movable_state_change_event_writer: Option<&mut MessageWriter<EntityStateChangeMessage<MovableState>>>,
     ) {
-        if self.path.is_empty()
+        if is_destination_reached
+            && self.path.is_empty()
             && let MovableState::Moving(end_tile) | MovableState::Pathfinding(end_tile) = self.state
-            && let Some(event_writer) = maybe_event_writer
         {
-            event_writer.write(log_message!(MovableReachedDestinationMessage(entity, end_tile)));
+            commands.trigger(log_event!(MovableReachedDestinationEvent {
+                entity,
+                grid_tile: end_tile
+            }));
         }
 
         self.stop_moving(entity, commands);

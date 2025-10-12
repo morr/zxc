@@ -7,7 +7,7 @@ pub struct MovablePlugin;
 impl Plugin for MovablePlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Movable>()
-            .add_message::<MovableReachedDestinationMessage>()
+            // .add_message::<MovableReachedDestinationEvent>()
             // .add_message::<EntityStateChangeMessage<MovableState>>()
             .add_systems(
                 Update,

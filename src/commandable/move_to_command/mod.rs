@@ -6,12 +6,8 @@ impl Plugin for MoveToCommandPlugin {
     fn build(&self, app: &mut App) {
         app.add_message::<MoveToCommand>()
             .add_observer(on_internal_interrupt)
-            .add_systems(
-                Update,
-                (execute_command, monitor_completion)
-                    .chain()
-                    .run_if(in_state(AppState::Playing)),
-            );
+            .add_observer(on_movable_reached_destination)
+            .add_systems(Update, execute_command.run_if(in_state(AppState::Playing)));
     }
 }
 
@@ -57,34 +53,32 @@ fn execute_command(
     }
 }
 
-fn monitor_completion(
+fn on_movable_reached_destination(
+    event: On<MovableReachedDestinationEvent>,
     mut commands: Commands,
     mut query: Query<&mut Commandable>,
-    mut command_complete_event_reader: MessageReader<MovableReachedDestinationMessage>,
 ) {
-    for MovableReachedDestinationMessage(entity, destination_tile) in
-        command_complete_event_reader.read()
-    {
-        // println!("{:?}", MovableReachedDestinationEvent(*entity, *destination_tile));
-        let Ok(mut commandable) = query.get_mut(*entity) else {
-            continue;
-        };
-        let Some(ref command_type) = commandable.executing else {
-            continue;
-        };
-        let CommandType::MoveTo(MoveToCommand {
-            commandable_entity: _,
-            grid_tile: move_to_tile,
-        }) = command_type
-        else {
-            continue;
-        };
-        if destination_tile != move_to_tile {
-            continue;
-        }
+    let MovableReachedDestinationEvent { entity, grid_tile: destination_tile } = *event;
 
-        commandable.complete_executing(*entity, &mut commands);
+    // println!("{:?}", MovableReachedDestinationEvent(*entity, *destination_tile));
+    let Ok(mut commandable) = query.get_mut(entity) else {
+        return;
+    };
+    let Some(ref command_type) = commandable.executing else {
+        return;
+    };
+    let CommandType::MoveTo(MoveToCommand {
+        commandable_entity: _,
+        grid_tile: move_to_tile,
+    }) = command_type
+    else {
+        return;
+    };
+    if destination_tile != *move_to_tile {
+        return;
     }
+
+    commandable.complete_executing(entity, &mut commands);
 }
 
 fn on_internal_interrupt(
@@ -108,7 +102,7 @@ fn on_internal_interrupt(
     | MovableState::PathfindingError(moving_to_tile) = movable.state
     {
         if moving_to_tile == commanding_to_tile {
-            movable.to_idle(commandable_entity, &mut commands, None);
+            movable.to_idle(commandable_entity, &mut commands, false);
         } else {
             warn!(
                 "Attempt to interrupt MoveTo({:?}) for Movable({:?})",
