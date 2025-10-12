@@ -6,7 +6,7 @@ use bevy::{
 use bevy_platform::collections::HashMap;
 
 use super::*;
-use crate::map::RebuildMapMessage;
+use crate::map::RebuildMapEvent;
 
 pub struct DebugNoisePlugin;
 impl Plugin for DebugNoisePlugin {
@@ -17,10 +17,7 @@ impl Plugin for DebugNoisePlugin {
                 OnExit(AppState::Loading),
                 initialize_noise_texture.after(generate_map),
             )
-            .add_systems(
-                Update,
-                refresh_on_map_rebuild.run_if(in_state(AppState::Playing)),
-            )
+            .add_observer(on_rebuild_map)
             .add_systems(
                 FixedUpdate,
                 toggle_noise_visibility.run_if(in_state(AppState::Playing)),
@@ -148,8 +145,8 @@ fn initialize_noise_texture(
 }
 
 #[allow(clippy::too_many_arguments)]
-fn refresh_on_map_rebuild(
-    mut event_reader: MessageReader<RebuildMapMessage>,
+fn on_rebuild_map(
+    _event: On<RebuildMapEvent>,
     mut images: ResMut<Assets<Image>>,
     tile_query: Query<&Tile>,
     noise_texture: Option<Res<NoiseTextureHandle>>,
@@ -159,14 +156,6 @@ fn refresh_on_map_rebuild(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    // Only process if there's a rebuild event
-    if event_reader.is_empty() {
-        return;
-    }
-
-    // Consume all rebuild events (we only need to know they happened)
-    for _ in event_reader.read() {}
-
     // Get noise values from tiles
     let noise_map = extract_tile_noise_map(&tile_query);
 

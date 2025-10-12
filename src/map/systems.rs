@@ -77,26 +77,25 @@ pub fn track_hover(
     }
 }
 
-pub fn rebuild_map(
-    mut event_reader: MessageReader<RebuildMapMessage>,
+pub fn on_rebuild_map(
+    event: On<RebuildMapEvent>,
     mut commands: Commands,
     pn_config: Res<generator::perlin_noise::PerlinNoiseConfig>,
     assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
     tiles_query: Query<(Entity, &Tile)>,
 ) {
-    for RebuildMapMessage { generator_kind } in event_reader.read() {
-        let mut navmesh = arc_navmesh.write();
+    let RebuildMapEvent { generator_kind } = *event;
+    let mut navmesh = arc_navmesh.write();
 
-        for (entity, tile) in tiles_query.iter() {
-            navmesh.remove_occupant::<Tile>(&entity, tile.grid_tile.x, tile.grid_tile.y);
-            commands.entity(entity).despawn();
-        }
-
-        let grid = match generator_kind {
-            GeneratorKind::PerlinNoise => generator::perlin_noise::generate(&pn_config),
-        };
-
-        spawn_tiles(&mut commands, &assets, &mut navmesh, &grid);
+    for (entity, tile) in tiles_query.iter() {
+        navmesh.remove_occupant::<Tile>(&entity, tile.grid_tile.x, tile.grid_tile.y);
+        commands.entity(entity).despawn();
     }
+
+    let grid = match generator_kind {
+        GeneratorKind::PerlinNoise => generator::perlin_noise::generate(&pn_config),
+    };
+
+    spawn_tiles(&mut commands, &assets, &mut navmesh, &grid);
 }
