@@ -44,10 +44,10 @@ mod pawn {
 
         let mut reader = app
             .world_mut()
-            .resource_mut::<Events<PawnDeathMessage>>()
+            .resource_mut::<Messages<PawnDeathMessage>>()
             .get_cursor();
         let maybe_event = reader
-            .read(app.world_mut().resource::<Events<PawnDeathMessage>>())
+            .read(app.world_mut().resource::<Messages<PawnDeathMessage>>())
             .next();
 
         // PawnDeathEvent is sent
@@ -72,8 +72,8 @@ mod pawn {
             .id();
 
         app.world_mut()
-            .resource_mut::<Events<PawnDeathMessage>>()
-            .send(PawnDeathMessage {
+            .resource_mut::<Messages<PawnDeathMessage>>()
+            .write(PawnDeathMessage {
                 entity: pawn_id,
                 reason: PawnDeathReason::OldAge,
             });
