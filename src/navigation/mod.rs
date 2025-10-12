@@ -6,8 +6,8 @@ pub struct NavigationPlugin;
 impl Plugin for NavigationPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<ArcNavmesh>()
-            .add_message::<PathfindRequestMessage>()
-            .add_message::<PathfindAnswerMessage>()
+            .add_observer(on_pathfinding_request)
+            .add_observer(on_pathfinding_answer)
             .add_message::<OccupationChangeMessage>()
             // .add_systems(
             //     FixedUpdate,
@@ -16,9 +16,7 @@ impl Plugin for NavigationPlugin {
             .add_systems(
                 Update,
                 (
-                    listen_for_pathfinding_requests,
                     move_user_selected_pawn_on_click_stage_1,
-                    listen_for_pathfinding_answers,
                     listen_for_pathfinding_async_tasks,
                 )
                     .chain()

@@ -58,27 +58,25 @@ pub fn move_user_selected_pawn_on_click_stage_1(
 //     }
 // }
 
-pub fn listen_for_pathfinding_requests(
+pub fn on_pathfinding_request(
+    event: On<PathfindRequestEvent>,
+    mut commands: Commands,
     arc_navmesh: Res<ArcNavmesh>,
-    mut pathfind_event_reader: MessageReader<PathfindRequestMessage>,
-    mut pathfind_event_writer: MessageWriter<PathfindAnswerMessage>,
 ) {
-    for event in pathfind_event_reader.read() {
-        // println!("{:?}", event);
+    // println!("{:?}", event);
 
-        let path = pathfinding_algo::astar_pathfinding(
-            &arc_navmesh.read(),
-            &event.start_tile,
-            &event.end_tile,
-        );
+    let path = pathfinding_algo::astar_pathfinding(
+        &arc_navmesh.read(),
+        &event.start_tile,
+        &event.end_tile,
+    );
 
-        pathfind_event_writer.write(log_message!(PathfindAnswerMessage {
-            entity: event.entity,
-            start_tile: event.start_tile,
-            end_tile: event.end_tile,
-            path,
-        }));
-    }
+    commands.trigger(log_event!(PathfindAnswerEvent {
+        entity: event.entity,
+        start_tile: event.start_tile,
+        end_tile: event.end_tile,
+        path,
+    }));
 }
 
 pub fn listen_for_pathfinding_async_tasks(
@@ -113,11 +111,7 @@ pub fn listen_for_pathfinding_async_tasks(
                             );
                         }
                     } else {
-                        movable.to_pathfinding_error(
-                            entity,
-                            end_tile,
-                            &mut commands
-                        );
+                        movable.to_pathfinding_error(entity, end_tile, &mut commands);
                     }
                 } else {
                     // println!(
@@ -137,51 +131,49 @@ pub fn listen_for_pathfinding_async_tasks(
     }
 }
 
-pub fn listen_for_pathfinding_answers(
+pub fn on_pathfinding_answer(
+    event: On<PathfindAnswerEvent>,
     mut commands: Commands,
-    mut pathfind_event_reader: MessageReader<PathfindAnswerMessage>,
     mut query_movable: Query<(Entity, &mut Movable), With<Movable>>,
 ) {
-    for event in pathfind_event_reader.read() {
-        // println!("{:?}", event);
+    // println!("{:?}", event);
 
-        let Ok((entity, mut movable)) = query_movable.get_mut(event.entity) else {
-            continue;
-        };
-        if let MovableState::Pathfinding(end_tile) = movable.state {
-            // check if it an is outdated pathfinding answer
-            if end_tile != event.end_tile {
-                // println!(
-                //     "end_tile != event.end, end_tile={}, event.end={}",
-                //     end_tile, event.end
-                // );
-                return;
-            }
+    let Ok((entity, mut movable)) = query_movable.get_mut(event.entity) else {
+        return;
+    };
+    if let MovableState::Pathfinding(end_tile) = movable.state {
+        // check if it an is outdated pathfinding answer
+        if end_tile != event.end_tile {
+            // println!(
+            //     "end_tile != event.end, end_tile={}, event.end={}",
+            //     end_tile, event.end
+            // );
+            return;
+        }
 
-            if let Some(path) = &event.path {
-                // pathfindign always return tile of current location,
-                // so if it has returned only one IVec2,
-                // then it means that we are pathfinding path to our
-                // current location. no movement needed
-                if path.len() == 1 {
-                    // println!("MessageWriter<MovableReachedDestinationEvent> from listen_for_pathfinding_answers");
-                    movable.to_idle(entity, &mut commands, true);
-                } else {
-                    movable.to_moving(
-                        event.end_tile,
-                        path.iter().skip(1).cloned().collect(),
-                        entity,
-                        &mut commands,
-                    );
-                }
+        if let Some(path) = &event.path {
+            // pathfindign always return tile of current location,
+            // so if it has returned only one IVec2,
+            // then it means that we are pathfinding path to our
+            // current location. no movement needed
+            if path.len() == 1 {
+                // println!("MessageWriter<MovableReachedDestinationEvent> from listen_for_pathfinding_answers");
+                movable.to_idle(entity, &mut commands, true);
             } else {
-                movable.to_pathfinding_error(entity, event.end_tile, &mut commands);
+                movable.to_moving(
+                    event.end_tile,
+                    path.iter().skip(1).cloned().collect(),
+                    entity,
+                    &mut commands,
+                );
             }
         } else {
-            // println!(
-            //     "movable.state != MovableState::Pathfinding, movable.state={:?}",
-            //     movable.state
-            // );
+            movable.to_pathfinding_error(entity, event.end_tile, &mut commands);
         }
+    } else {
+        // println!(
+        //     "movable.state != MovableState::Pathfinding, movable.state={:?}",
+        //     movable.state
+        // );
     }
 }
