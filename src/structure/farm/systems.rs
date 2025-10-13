@@ -118,8 +118,6 @@ pub fn progress_on_state_changed(
     mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
 ) {
     for EntityStateChangeMessage(workable_entity, state) in event_reader.read() {
-        // println!("{:?}", event);
-
         let maybe_task_kind = match state {
             FarmState::NotPlanted => Some(WorkKind::FarmPlanting),
             FarmState::Grown => Some(WorkKind::FarmHarvest),

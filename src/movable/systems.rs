@@ -125,7 +125,6 @@ pub fn on_pawn_death(
     mut query: Query<&mut Movable>,
 ) {
     let PawnDeatEvent { entity, .. } = *event;
-    // println!("{:?}", event);
 
     let Ok(mut movable) = query.get_mut(entity) else {
         return;

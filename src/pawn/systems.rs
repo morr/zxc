@@ -131,7 +131,6 @@ pub fn update_pawn_state_text(
     commandable_query: Query<&Commandable>,
 ) {
     for EntityStateChangeMessage(pawn_entity, state) in event_reader.read() {
-        // println!("{:?}", event);
         for text_entity in children_query.iter_descendants(*pawn_entity) {
             // let (mut text, mut visibility) = state_text_query.get_mut(text_entity).unwrap();
             // let mut text = state_text_query.get_mut(text_entity).unwrap();
