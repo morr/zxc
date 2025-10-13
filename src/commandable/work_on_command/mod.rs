@@ -6,13 +6,10 @@ impl Plugin for WorkOnCommandPlugin {
     fn build(&self, app: &mut App) {
         app.add_message::<WorkOnCommand>()
             .add_observer(on_internal_interrupt)
-            // .add_observer(on_release_resources)
+            .add_observer(on_work_complete)
             .add_systems(
                 Update,
-                (
-                    execute_command,
-                    monitor_completion,
-                )
+                (execute_command,)
                     .chain()
                     .run_if(in_state(AppState::Playing)),
             );
@@ -48,35 +45,34 @@ fn execute_command(
     }
 }
 
-fn monitor_completion(
+fn on_work_complete(
+    event: On<WorkCompleteEvent>,
     mut commands: Commands,
     mut query: Query<&mut Commandable>,
-    mut command_complete_event_reader: MessageReader<WorkCompleteMessage>,
 ) {
-    for WorkCompleteMessage {
+    let WorkCompleteEvent {
         commandable_entity,
         workable_entity,
-        work_kind,
-    } in command_complete_event_reader.read()
-    {
-        let Ok(mut commandable) = query.get_mut(*commandable_entity) else {
-            continue;
-        };
-        let Some(ref command_type) = commandable.executing else {
-            continue;
-        };
-        let CommandType::WorkOn(command) = command_type else {
-            continue;
-        };
-        if *commandable_entity != command.commandable_entity
-            || *workable_entity != command.workable_entity
-            || *work_kind != command.work_kind
-        {
-            continue;
-        }
+        ref work_kind,
+    } = *event;
 
-        commandable.complete_executing(*commandable_entity, &mut commands);
+    let Ok(mut commandable) = query.get_mut(commandable_entity) else {
+        return;
+    };
+    let Some(ref command_type) = commandable.executing else {
+        return;
+    };
+    let CommandType::WorkOn(command) = command_type else {
+        return;
+    };
+    if commandable_entity != command.commandable_entity
+        || workable_entity != command.workable_entity
+        || *work_kind != command.work_kind
+    {
+        return;
     }
+
+    commandable.complete_executing(commandable_entity, &mut commands);
 }
 
 fn on_internal_interrupt(
