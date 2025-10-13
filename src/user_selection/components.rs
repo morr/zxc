@@ -3,8 +3,8 @@ use super::*;
 #[derive(Component, Default)]
 pub struct UserSelectionMarker;
 
-#[derive(Message, Debug, Default)]
-pub struct UserSelectionChangeMessage;
+#[derive(Event, Debug, Default)]
+pub struct UserSelectionEvent;
 
 #[derive(Resource, Debug, Deref, DerefMut, Default)]
 pub struct CurrentUserSelection(pub Option<UserSelectionData>);

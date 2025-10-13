@@ -16,7 +16,6 @@ fn execute_command(
     mut commands: Commands,
     mut current_user_selection: ResMut<CurrentUserSelection>,
     mut user_selection_command_reader: MessageReader<UserSelectionCommand>,
-    mut user_selection_change_event_writer: MessageWriter<UserSelectionChangeMessage>,
 ) {
     for command in user_selection_command_reader.read() {
         // println!("{:?", event);
@@ -34,6 +33,6 @@ fn execute_command(
         }
 
         *current_user_selection = CurrentUserSelection(maybe_new_selection.clone());
-        user_selection_change_event_writer.write(log_message!(UserSelectionChangeMessage));
+        commands.trigger(log_event!(UserSelectionEvent));
     }
 }
