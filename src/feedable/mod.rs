@@ -69,7 +69,6 @@ fn progress_hunger(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Feedable, &mut Commandable)>,
-    mut pawn_death_event_writer: MessageWriter<PawnDeathMessage>,
     food_stock: Res<FoodStock>,
 ) {
     let time_amount = time_scale.scale_to_seconds(time.delta_secs());
@@ -89,7 +88,7 @@ fn progress_hunger(
         }
 
         if wasnt_death_starving && feedable.is_death_starving() {
-            pawn_death_event_writer.write(log_message!(PawnDeathMessage {
+            commands.trigger(log_event!(PawnDeatEvent {
                 entity: commandable_entity,
                 reason: PawnDeathReason::Starvation
             }));

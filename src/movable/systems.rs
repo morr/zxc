@@ -119,17 +119,17 @@ fn move_to_target_location(
     transform.translation.truncate().world_pos_to_grid()
 }
 
-pub fn stop_movable_on_death(
+pub fn on_pawn_death(
+    event: On<PawnDeatEvent>,
     mut commands: Commands,
-    mut event_reader: MessageReader<PawnDeathMessage>,
     mut query: Query<&mut Movable>,
 ) {
-    for PawnDeathMessage { entity, .. } in event_reader.read() {
-        // println!("{:?}", event);
-        let Ok(mut movable) = query.get_mut(*entity) else {
-            continue;
-        };
+    let PawnDeatEvent { entity, .. } = *event;
+    // println!("{:?}", event);
 
-        movable.to_idle(*entity, &mut commands, false);
-    }
+    let Ok(mut movable) = query.get_mut(entity) else {
+        return;
+    };
+
+    movable.to_idle(entity, &mut commands, false);
 }

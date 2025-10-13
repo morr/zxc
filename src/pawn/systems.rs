@@ -189,13 +189,12 @@ pub fn progress_pawn_dying(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Pawn), With<DyingMarker>>,
-    mut event_writer: MessageWriter<PawnDeathMessage>,
 ) {
     for (entity, mut pawn) in query.iter_mut() {
         pawn.decrease_lifetime(time_scale.scale_to_seconds(time.delta_secs()));
 
         if pawn.lifetime.is_zero() {
-            event_writer.write(log_message!(PawnDeathMessage {
+            commands.trigger(log_event!(PawnDeatEvent {
                 entity,
                 reason: PawnDeathReason::OldAge
             }));
@@ -205,37 +204,35 @@ pub fn progress_pawn_dying(
 }
 
 #[allow(clippy::too_many_arguments)]
-pub fn progress_pawn_death(
+pub fn on_pawn_death(
+    event: On<PawnDeatEvent>,
     mut commands: Commands,
-    mut event_reader: MessageReader<PawnDeathMessage>,
     mut pawn_query: Query<(&mut Pawn, &mut Restable, &mut Commandable)>,
     mut bed_query: Query<&mut Bed>,
     mut available_beds: ResMut<AvailableBeds>,
     mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
 ) {
-    for PawnDeathMessage { entity, .. } in event_reader.read() {
-        match pawn_query.get_mut(*entity) {
-            Ok((mut pawn, mut restable, mut commandable)) => {
-                pawn.change_state(
-                    PawnState::Dead,
-                    *entity,
-                    &mut commands,
-                    &mut pawn_state_change_event_writer,
-                );
+    let PawnDeatEvent { entity, .. } = *event;
+    match pawn_query.get_mut(entity) {
+        Ok((mut pawn, mut restable, mut commandable)) => {
+            pawn.change_state(
+                PawnState::Dead,
+                entity,
+                &mut commands,
+                &mut pawn_state_change_event_writer,
+            );
 
-                restable.change_state(RestableState::Dead, *entity);
+            restable.change_state(RestableState::Dead, entity);
+            commandable.clear_queue(entity, &mut commands);
 
-                commandable.clear_queue(*entity, &mut commands);
-
-                if let Some(bed_entity) = pawn.owned_bed {
-                    let mut bed = bed_query.get_mut(bed_entity).unwrap();
-                    bed.unclaim_by(&mut pawn, &mut available_beds);
-                }
+            if let Some(bed_entity) = pawn.owned_bed {
+                let mut bed = bed_query.get_mut(bed_entity).unwrap();
+                bed.unclaim_by(&mut pawn, &mut available_beds);
             }
-            Err(err) => {
-                warn!("Failed to get query result: {:?}", err);
-                continue;
-            }
+        }
+        Err(err) => {
+            warn!("Failed to get query result: {:?}", err);
+            return;
         }
     }
 }

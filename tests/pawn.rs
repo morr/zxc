@@ -11,7 +11,7 @@ mod pawn {
         let mut app = App::new();
 
         app.add_plugins((TimePlugin, StatesPlugin, StoryTimePlugin))
-            .add_message::<PawnDeathMessage>()
+            .add_message::<PawnDeatEvent>()
             .add_systems(Update, progress_pawn_dying);
 
         let pawn_id = app
@@ -44,10 +44,10 @@ mod pawn {
 
         let mut reader = app
             .world_mut()
-            .resource_mut::<Messages<PawnDeathMessage>>()
+            .resource_mut::<Messages<PawnDeatEvent>>()
             .get_cursor();
         let maybe_event = reader
-            .read(app.world_mut().resource::<Messages<PawnDeathMessage>>())
+            .read(app.world_mut().resource::<Messages<PawnDeatEvent>>())
             .next();
 
         // PawnDeathEvent is sent
@@ -62,9 +62,9 @@ mod pawn {
 
         app.add_plugins((BedPlugin, WorkablePlugin, RestablePlugin, CommandablePlugin))
             // .add_message::<EntityStateChangeMessage<PawnState>>()
-            .add_message::<PawnDeathMessage>()
+            .add_message::<PawnDeatEvent>()
             .add_message::<EntityStateChangeMessage<PawnState>>()
-            .add_systems(Update, progress_pawn_death);
+            .add_systems(Update, on_pawn_death);
 
         let pawn_id = app
             .world_mut()
@@ -72,8 +72,8 @@ mod pawn {
             .id();
 
         app.world_mut()
-            .resource_mut::<Messages<PawnDeathMessage>>()
-            .write(PawnDeathMessage {
+            .resource_mut::<Messages<PawnDeatEvent>>()
+            .write(PawnDeatEvent {
                 entity: pawn_id,
                 reason: PawnDeathReason::OldAge,
             });
