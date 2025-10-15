@@ -1,21 +1,20 @@
 use super::*;
 
-// pub fn track_time(
-//     time: Res<Time>,
-//     mut elapsed_time: ResMut<ElapsedTime>,
-//     mut event_writer: MessageWriter<NewDayMessage>,
-// ) {
-//     let prev_day = elapsed_time.total_days();
-//     elapsed_time.0 += time_scale.scale_to_seconds(time.delta_secs());
-//     let new_day = elapsed_time.total_days();
-//
-//     if new_day != prev_day {
-//         // in may pass many days in one tick under very high time scale
-//         for total_day in (prev_day + 1)..=new_day {
-//             event_writer.write(log_message!(NewDayMessage(total_day)));
-//         }
-//     }
-// }
+pub fn track_time(
+    time: Res<Time>,
+    // mut elapsed_time: ResMut<ElapsedTime>,
+    mut event_writer: MessageWriter<NewDayMessage>,
+) {
+    let prev_days = total_days(time.elapsed_secs() - time.delta_secs());
+    let new_days = total_days(time.elapsed_secs());
+
+    if new_days != prev_days {
+        // in may pass many days in one tick under very high time scale
+        for total_day in (prev_days + 1)..=new_days {
+            event_writer.write(log_message!(NewDayMessage(total_day)));
+        }
+    }
+}
 
 pub fn modify_time(mut time: ResMut<Time<Virtual>>, keys: Res<ButtonInput<KeyCode>>) {
     if keys.just_pressed(KeyCode::Space) {
