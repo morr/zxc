@@ -190,6 +190,7 @@ pub fn progress_pawn_dying(
     mut query: Query<(Entity, &mut Pawn), With<DyingMarker>>,
 ) {
     for (entity, mut pawn) in query.iter_mut() {
+        println!("{:?}", time.delta_secs());
         pawn.decrease_lifetime(time_scale.scale_to_seconds(time.delta_secs()));
 
         if pawn.lifetime.is_zero() {
@@ -231,7 +232,7 @@ pub fn on_pawn_death(
         }
         Err(err) => {
             warn!("Failed to get query result: {:?}", err);
-            return;
+            // return;
         }
     }
 }

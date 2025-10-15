@@ -1,6 +1,6 @@
 use crate::*;
 
-expose_submodules!(components, systems); // , debug_components
+expose_submodules!(components, systems);
 
 pub struct PawnPlugin;
 
