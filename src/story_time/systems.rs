@@ -2,8 +2,7 @@ use super::*;
 
 pub fn track_time(
     time: Res<Time>,
-    // mut elapsed_time: ResMut<ElapsedTime>,
-    mut event_writer: MessageWriter<NewDayMessage>,
+    mut commands: Commands
 ) {
     let prev_days = total_days(time.elapsed_secs() - time.delta_secs());
     let new_days = total_days(time.elapsed_secs());
@@ -11,7 +10,7 @@ pub fn track_time(
     if new_days != prev_days {
         // in may pass many days in one tick under very high time scale
         for total_day in (prev_days + 1)..=new_days {
-            event_writer.write(log_message!(NewDayMessage(total_day)));
+            commands.trigger(log_event!(NewDayEvent(total_day)));
         }
     }
 }

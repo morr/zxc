@@ -10,6 +10,7 @@ impl Plugin for FarmPlugin {
             .add_message::<FarmProgressMessage>()
             .add_message::<FarmTendedMessage>()
             .add_message::<EntityStateChangeMessage<FarmState>>()
+            .add_observer(self::systems::on_new_day)
             .add_systems(
                 FixedUpdate,
                 (
@@ -18,7 +19,6 @@ impl Plugin for FarmPlugin {
                     progress_planted_and_tending_rest_timers,
                     progress_harvested_timer,
                     progress_on_state_changed,
-                    progress_on_new_day,
                 )
                     .chain()
                     .run_if(in_state(AppState::Playing)),

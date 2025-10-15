@@ -146,23 +146,21 @@ pub fn progress_on_state_changed(
     }
 }
 
-pub fn progress_on_new_day(
-    mut event_reader: MessageReader<NewDayMessage>,
+pub fn on_new_day(
+    _event: On<NewDayEvent>,
     mut query: Query<(Entity, &mut Farm), With<farm_state::Planted>>,
     mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
 ) {
-    for _event in event_reader.read() {
-        for (workable_entity, mut farm) in query.iter_mut() {
-            if let FarmState::Planted(planted_state) = &mut farm.state
-                && planted_state.is_tending_pending_for_next_day
-            {
-                tasks_scheduler.write(ScheduleTaskMessage::push_back(Task(TaskKind::Work {
-                    workable_entity,
-                    work_kind: WorkKind::FarmTending,
-                })));
+    for (workable_entity, mut farm) in query.iter_mut() {
+        if let FarmState::Planted(planted_state) = &mut farm.state
+            && planted_state.is_tending_pending_for_next_day
+        {
+            tasks_scheduler.write(ScheduleTaskMessage::push_back(Task(TaskKind::Work {
+                workable_entity,
+                work_kind: WorkKind::FarmTending,
+            })));
 
-                planted_state.is_tending_pending_for_next_day = false;
-            };
-        }
+            planted_state.is_tending_pending_for_next_day = false;
+        };
     }
 }

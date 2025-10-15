@@ -1,5 +1,3 @@
-use core::panic;
-
 use super::*;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
@@ -10,11 +8,11 @@ pub enum YearSeason {
     Winter,
 }
 
-#[derive(Message, Debug)]
-pub struct NewDayMessage(pub u32);
+#[derive(Event, Debug)]
+pub struct NewDayEvent(pub u32);
 
-#[derive(Message, Debug)]
-pub struct NewSeasonMessage(pub YearSeason);
+#[derive(Event, Debug)]
+pub struct NewSeasonEvent(pub YearSeason);
 
-#[derive(Message, Debug)]
-pub struct NewYearMessage(pub u32);
+#[derive(Event, Debug)]
+pub struct NewYearEvent(pub u32);

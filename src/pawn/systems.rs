@@ -162,23 +162,20 @@ pub fn update_pawn_state_text(
     }
 }
 
-pub fn progress_pawn_daily(
+pub fn on_new_day(
+    event: On<NewDayEvent>,
     mut commands: Commands,
-    mut event_reader: MessageReader<NewDayMessage>,
-    // mut event_writer: MessageWriter<PawnBirthdayEvent>,
     mut query: Query<(Entity, &mut Pawn), Without<pawn_state::PawnStateDeadTag>>,
 ) {
-    for event in event_reader.read() {
-        for (entity, mut pawn) in query.iter_mut() {
-            if pawn.is_birthday(event.0) {
-                pawn.age += 1;
-                // event_writer.write(log_message!(PawnBirthdayEvent(entity)));
-            }
-            pawn.decrease_lifetime(config().time.day_duration);
+    for (entity, mut pawn) in query.iter_mut() {
+        if pawn.is_birthday(event.0) {
+            pawn.age += 1;
+            // event_writer.write(log_message!(PawnBirthdayEvent(entity)));
+        }
+        pawn.decrease_lifetime(config().time.day_duration);
 
-            if pawn.lifetime <= config().time.day_duration {
-                commands.entity(entity).insert(DyingMarker);
-            }
+        if pawn.lifetime <= config().time.day_duration {
+            commands.entity(entity).insert(DyingMarker);
         }
     }
 }
