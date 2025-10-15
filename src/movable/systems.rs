@@ -7,7 +7,6 @@ pub fn move_moving_entities(
         With<MovableStateMovinTag>,
     >,
     time: Res<Time>,
-    time_scale: Res<TimeScale>,
     arc_navmesh: Res<ArcNavmesh>,
     // mut movable_state_event_writer: MessageWriter<EntityStateChangeMessage<MovableState>>,
     mut occupation_change_event_writer: MessageWriter<OccupationChangeMessage>,
@@ -20,7 +19,7 @@ pub fn move_moving_entities(
                     entity,
                     &mut movable,
                     &mut transform,
-                    time_scale.scale_to_seconds(time.delta_secs()),
+                    time.delta_secs(),
                     &arc_navmesh,
                     &mut commands,
                 );

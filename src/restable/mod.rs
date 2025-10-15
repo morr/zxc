@@ -7,12 +7,7 @@ impl Plugin for RestablePlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Restable>()
             // .add_message::<RestCompleteEvent>()
-            .add_systems(
-                Update,
-                progress_fatigue
-                    .run_if(in_state(AppState::Playing))
-                    .run_if(in_state(SimulationState::Running)),
-            );
+            .add_systems(Update, progress_fatigue.run_if(in_state(AppState::Playing)));
     }
 }
 
@@ -89,12 +84,11 @@ impl Restable {
 fn progress_fatigue(
     mut commands: Commands,
     time: Res<Time>,
-    time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Restable, &mut Commandable)>,
     // mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
     // mut event_writer: MessageWriter<RestCompleteEvent>,
 ) {
-    let time_amount = time_scale.scale_to_seconds(time.delta_secs());
+    let time_amount = time.delta_secs();
 
     for (commandable_entity, mut restable, mut commandable) in query.iter_mut() {
         let wasnt_fresh = !restable.is_fresh();

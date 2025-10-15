@@ -8,9 +8,8 @@ pub fn progress_work(
         With<workable_state::WorkableStateBeingWorkedTag>,
     >,
     time: Res<Time>,
-    time_scale: Res<TimeScale>,
 ) {
-    let elapsed_time = time_scale.scale_to_seconds(time.delta_secs());
+    let elapsed_time = time.delta_secs();
 
     for (workable_entity, mut workable) in workable_query.iter_mut() {
         ensure_state!(loop: WorkableState::BeingWorked(_), workable.state);

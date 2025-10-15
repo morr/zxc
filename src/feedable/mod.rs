@@ -6,12 +6,7 @@ impl Plugin for FeedablePlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Feedable>()
             .add_observer(on_food_consumed)
-            .add_systems(
-                Update,
-                progress_hunger
-                    .run_if(in_state(AppState::Playing))
-                    .run_if(in_state(SimulationState::Running)),
-            );
+            .add_systems(Update, progress_hunger.run_if(in_state(AppState::Playing)));
     }
 }
 
@@ -67,11 +62,10 @@ impl Feedable {
 fn progress_hunger(
     mut commands: Commands,
     time: Res<Time>,
-    time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Feedable, &mut Commandable)>,
     food_stock: Res<FoodStock>,
 ) {
-    let time_amount = time_scale.scale_to_seconds(time.delta_secs());
+    let time_amount = time.delta_secs();
 
     for (commandable_entity, mut feedable, mut commandable) in query.iter_mut() {
         let wasnt_overflowed = !feedable.is_overflowed();

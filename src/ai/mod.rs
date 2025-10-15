@@ -4,12 +4,7 @@ pub struct AiPlugin;
 
 impl Plugin for AiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
-            Update,
-            ai_idle_pawns
-                .run_if(in_state(AppState::Playing))
-                .run_if(in_state(SimulationState::Running)),
-        );
+        app.add_systems(Update, ai_idle_pawns.run_if(in_state(AppState::Playing)));
     }
 }
 

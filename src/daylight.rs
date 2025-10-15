@@ -4,11 +4,11 @@ pub struct DaylightPlugin;
 
 impl Plugin for DaylightPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnExit(AppState::Loading), setup)
-            .add_systems(
-                FixedUpdate,
-                day_night_cycle_system.run_if(in_state(AppState::Playing)),
-            );
+        app.add_systems(OnExit(AppState::Loading), setup);
+            // .add_systems(
+            //     FixedUpdate,
+            //     day_night_cycle_system.run_if(in_state(AppState::Playing)),
+            // );
     }
 }
 
@@ -34,22 +34,22 @@ fn setup(mut commands: Commands) {
         .insert(NightOverlay);
 }
 
-fn day_night_cycle_system(
-    elapsed_time: Res<ElapsedTime>,
-    time_scale: Res<TimeScale>,
-    mut query: Query<&mut Sprite, With<NightOverlay>>,
-) {
-    let theta = elapsed_time.day_time() * 2. * std::f32::consts::PI; // Full cycle from 0 to 2π
-
-    let transparency = if time_scale.0 > MAXIMUM_TIME_SCALE_FOR_DAY_NIGHT_CYCLE {
-        0.
-    } else {
-        0.5 + 0.5 * theta.cos()
-    }; // Transition the transparency
-    for mut sprite in query.iter_mut() {
-        sprite.color.set_alpha(transparency * 0.7); // Adjust transparency to simulate day/night
-    }
-}
+// fn day_night_cycle_system(
+//     elapsed_time: Res<ElapsedTime>,
+//     time_scale: Res<TimeScale>,
+//     mut query: Query<&mut Sprite, With<NightOverlay>>,
+// ) {
+//     let theta = elapsed_time.day_time() * 2. * std::f32::consts::PI; // Full cycle from 0 to 2π
+//
+//     let transparency = if time_scale.0 > MAXIMUM_TIME_SCALE_FOR_DAY_NIGHT_CYCLE {
+//         0.
+//     } else {
+//         0.5 + 0.5 * theta.cos()
+//     }; // Transition the transparency
+//     for mut sprite in query.iter_mut() {
+//         sprite.color.set_alpha(transparency * 0.7); // Adjust transparency to simulate day/night
+//     }
+// }
 
 // BevyMagicLight2DP
 // pub struct DaylightPlugin;

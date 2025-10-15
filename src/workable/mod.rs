@@ -11,9 +11,7 @@ impl Plugin for WorkablePlugin {
             // .add_message::<WorkStartEvent>()
             .add_systems(
                 FixedUpdate,
-                progress_work
-                    .run_if(in_state(AppState::Playing))
-                    .run_if(in_state(SimulationState::Running)),
+                progress_work.run_if(in_state(AppState::Playing)),
             );
     }
 }

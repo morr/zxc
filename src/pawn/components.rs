@@ -49,7 +49,7 @@ impl Default for Pawn {
 
 impl Pawn {
     pub fn is_birthday(&self, total_day: u32) -> bool {
-        self.birth_year_day == ElapsedTime::total_day_to_year_day(total_day)
+        self.birth_year_day == total_day_to_year_day(total_day)
     }
 
     pub fn decrease_lifetime(&mut self, amount: f32) {

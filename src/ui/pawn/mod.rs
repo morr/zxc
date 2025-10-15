@@ -390,7 +390,7 @@ fn pawn_lifetime_text(pawn: &Pawn) -> String {
 fn pawn_birthday_text(pawn: &Pawn) -> String {
     format!(
         "birthday: {}",
-        ElapsedTime::year_day_to_season_day_label(pawn.birth_year_day)
+        year_day_to_season_day_label(pawn.birth_year_day)
     )
 }
 fn pawn_state_text(pawn: &Pawn) -> String {

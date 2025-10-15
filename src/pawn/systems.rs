@@ -186,12 +186,11 @@ pub fn progress_pawn_daily(
 pub fn progress_pawn_dying(
     mut commands: Commands,
     time: Res<Time>,
-    time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Pawn), With<DyingMarker>>,
 ) {
     for (entity, mut pawn) in query.iter_mut() {
         println!("{:?}", time.delta_secs());
-        pawn.decrease_lifetime(time_scale.scale_to_seconds(time.delta_secs()));
+        pawn.decrease_lifetime(time.delta_secs());
 
         if pawn.lifetime.is_zero() {
             commands.trigger(log_event!(PawnDeatEvent {
