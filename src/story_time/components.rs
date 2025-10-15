@@ -94,6 +94,14 @@ pub enum YearSeason {
 // }
 //
 // impl ElapsedTime {
+pub fn starting_seconds() -> f32 {
+    config().time.hour_duration * config().starting_scene.day_hour as f32
+}
+
+pub fn total_days(time: &Time<Virtual>) -> u32 {
+    ((starting_seconds() + time.elapsed_secs()) / config().time.day_duration).floor() as u32
+}
+
 pub fn total_day_to_year_day(total_day: u32) -> u32 {
     total_day % config().time.days_in_year + 1
 }
