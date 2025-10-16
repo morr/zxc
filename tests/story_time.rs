@@ -225,60 +225,54 @@ mod story_time {
         );
     }
 
-    // #[test]
-    // fn current_year_day_to_season() {
-    //     assert_eq!(
-    //         story_time::current_year_day_to_season(1),
-    //         YearSeason::Spring
-    //     );
-    //     assert_eq!(
-    //         story_time::current_year_day_to_season(config().time.days_in_season - 1),
-    //         YearSeason::Spring
-    //     );
-    //     assert_eq!(
-    //         story_time::current_year_day_to_season(config().time.days_in_season),
-    //         YearSeason::Spring
-    //     );
-    //     assert_eq!(
-    //         story_time::current_year_day_to_season(config().time.days_in_season + 1),
-    //         YearSeason::Summer
-    //     );
-    //     assert_eq!(
-    //         story_time::current_year_day_to_season(config().time.days_in_season * 2 + 1),
-    //         YearSeason::Fall
-    //     );
-    //     assert_eq!(
-    //         story_time::current_year_day_to_season(config().time.days_in_season * 3 + 1),
-    //         YearSeason::Winter
-    //     );
-    // }
-    //
-    // #[test]
-    // fn current_year_day_to_season_day() {
-    //     assert_eq!(story_time::current_year_day_to_season_day(1), 1);
-    //     assert_eq!(
-    //         story_time::current_year_day_to_season_day(config().time.days_in_season),
-    //         config().time.days_in_season
-    //     );
-    //     assert_eq!(
-    //         story_time::current_year_day_to_season_day(config().time.days_in_season + 1),
-    //         1
-    //     );
-    // }
-    //
-    // #[test]
-    // fn current_year_day_to_season_day_label() {
-    //     assert_eq!(
-    //         story_time::current_year_day_to_season_day_label(1),
-    //         "1st of Spring"
-    //     );
-    //     assert_eq!(
-    //         story_time::current_year_day_to_season_day_label(config().time.days_in_season),
-    //         format!("{}th of Spring", config().time.days_in_season)
-    //     );
-    //     assert_eq!(
-    //         story_time::current_year_day_to_season_day_label(config().time.days_in_season + 1),
-    //         "1st of Summer"
-    //     );
-    // }
+    #[test]
+    fn year_day_to_season() {
+        assert_eq!(story_time::year_day_to_season(1), YearSeason::Spring);
+        assert_eq!(
+            story_time::year_day_to_season(config().time.days_in_season - 1),
+            YearSeason::Spring
+        );
+        assert_eq!(
+            story_time::year_day_to_season(config().time.days_in_season),
+            YearSeason::Spring
+        );
+        assert_eq!(
+            story_time::year_day_to_season(config().time.days_in_season + 1),
+            YearSeason::Summer
+        );
+        assert_eq!(
+            story_time::year_day_to_season(config().time.days_in_season * 2 + 1),
+            YearSeason::Fall
+        );
+        assert_eq!(
+            story_time::year_day_to_season(config().time.days_in_season * 3 + 1),
+            YearSeason::Winter
+        );
+    }
+
+    #[test]
+    fn year_day_to_season_day() {
+        assert_eq!(story_time::year_day_to_season_day(1), 1);
+        assert_eq!(
+            story_time::year_day_to_season_day(config().time.days_in_season),
+            config().time.days_in_season
+        );
+        assert_eq!(
+            story_time::year_day_to_season_day(config().time.days_in_season + 1),
+            1
+        );
+    }
+
+    #[test]
+    fn year_day_to_season_day_label() {
+        assert_eq!(story_time::year_day_to_season_day_label(1), "1st of Spring");
+        assert_eq!(
+            story_time::year_day_to_season_day_label(config().time.days_in_season),
+            format!("{}th of Spring", config().time.days_in_season)
+        );
+        assert_eq!(
+            story_time::year_day_to_season_day_label(config().time.days_in_season + 1),
+            "1st of Summer"
+        );
+    }
 }
