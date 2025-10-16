@@ -66,8 +66,13 @@ pub fn current_year_season(elapsed_seconds: f32) -> YearSeason {
     year_day_to_season(year_day(elapsed_seconds))
 }
 
+pub fn current_day_seconds(elapsed_seconds: f32) -> f32 {
+    (total_seconds(elapsed_seconds) % config().time.day_duration) / config().time.day_duration
+}
+
 pub fn current_day_hour(elapsed_seconds: f32) -> u32 {
-    ((total_seconds(elapsed_seconds) % config().time.day_duration) / config().time.hour_duration).floor() as u32
+    ((total_seconds(elapsed_seconds) % config().time.day_duration) / config().time.hour_duration)
+        .floor() as u32
 }
 
 pub fn current_hour_minute(elapsed_seconds: f32) -> u32 {
