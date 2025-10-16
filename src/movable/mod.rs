@@ -7,17 +7,12 @@ pub struct MovablePlugin;
 impl Plugin for MovablePlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Movable>()
+            .add_observer(self::systems::on_pawn_death)
             // .add_message::<MovableReachedDestinationEvent>()
             // .add_message::<EntityStateChangeMessage<MovableState>>()
             .add_systems(
                 Update,
-                move_moving_entities
-                    .run_if(in_state(AppState::Playing))
-                    .run_if(in_state(SimulationState::Running)),
-            )
-            .add_systems(
-                FixedUpdate,
-                stop_movable_on_death.run_if(in_state(AppState::Playing)),
+                move_moving_entities.run_if(in_state(AppState::Playing)),
             );
     }
 }

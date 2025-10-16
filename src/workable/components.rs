@@ -11,8 +11,8 @@ pub struct Workable {
     pub amount_total: f32,
 }
 
-#[derive(Message, Debug)]
-pub struct WorkCompleteMessage {
+#[derive(Event, Debug)]
+pub struct WorkCompleteEvent {
     pub commandable_entity: Entity,
     pub workable_entity: Entity,
     pub work_kind: WorkKind,

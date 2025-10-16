@@ -88,7 +88,6 @@ pub fn mouse_input(
         };
 
         let event = HoverMessage(grid_tile);
-        // println!("{:?}", event);
 
         let is_new_hover = match prev_hovered_grid_tile.0 {
             Some(vec) => vec != event.0,
@@ -96,7 +95,6 @@ pub fn mouse_input(
         };
 
         if is_new_hover {
-            // println!("{:?}", event);
             prev_hovered_grid_tile.0 = Some(event.0);
             hover_event_writer.write(log_message!(event));
         }
@@ -113,7 +111,6 @@ pub fn mouse_input(
             .map(|ray| ray.origin.truncate())
         {
             let event = ClickMessageStage0(world_position.world_pos_to_grid());
-            // println!("{:?}", event);
             click_event_writer.write(log_message!(event));
         }
     }

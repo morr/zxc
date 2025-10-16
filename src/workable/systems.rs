@@ -8,10 +8,8 @@ pub fn progress_work(
         With<workable_state::WorkableStateBeingWorkedTag>,
     >,
     time: Res<Time>,
-    time_scale: Res<TimeScale>,
-    mut event_writer: MessageWriter<WorkCompleteMessage>,
 ) {
-    let elapsed_time = time_scale.scale_to_seconds(time.delta_secs());
+    let elapsed_time = time.delta_secs();
 
     for (workable_entity, mut workable) in workable_query.iter_mut() {
         ensure_state!(loop: WorkableState::BeingWorked(_), workable.state);
@@ -32,7 +30,7 @@ pub fn progress_work(
                 panic!()
             };
 
-            event_writer.write(log_message!(WorkCompleteMessage {
+            commands.trigger(log_event!(WorkCompleteEvent {
                 commandable_entity,
                 workable_entity,
                 work_kind
@@ -41,25 +39,24 @@ pub fn progress_work(
     }
 }
 
-pub fn complete_work(
-    mut event_reader: MessageReader<WorkCompleteMessage>,
+pub fn on_work_complete(
+    event: On<WorkCompleteEvent>,
     mut farm_progress_event_writer: MessageWriter<FarmProgressMessage>,
     mut farm_tending_event_writer: MessageWriter<FarmTendedMessage>,
 ) {
-    for WorkCompleteMessage {
+    let WorkCompleteEvent {
         workable_entity,
-        work_kind,
+        ref work_kind,
         ..
-    } in event_reader.read()
-    {
-        match work_kind {
-            // event.workable_entity the same is task.entity
-            WorkKind::FarmPlanting | WorkKind::FarmHarvest => {
-                farm_progress_event_writer.write(log_message!(FarmProgressMessage(*workable_entity)));
-            }
-            WorkKind::FarmTending => {
-                farm_tending_event_writer.write(log_message!(FarmTendedMessage(*workable_entity)));
-            }
+    } = *event;
+
+    match work_kind {
+        // event.workable_entity the same is task.entity
+        WorkKind::FarmPlanting | WorkKind::FarmHarvest => {
+            farm_progress_event_writer.write(log_message!(FarmProgressMessage(workable_entity)));
+        }
+        WorkKind::FarmTending => {
+            farm_tending_event_writer.write(log_message!(FarmTendedMessage(workable_entity)));
         }
     }
 }

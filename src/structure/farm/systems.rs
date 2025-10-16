@@ -1,7 +1,9 @@
+use std::time::Duration;
+
 use super::*;
 
 pub fn progress_on_farm_progress_event(
-    elapsed_time: Res<ElapsedTime>,
+    time: Res<Time<Virtual>>,
     mut event_reader: MessageReader<FarmProgressMessage>,
     mut query: Query<(&mut Farm, &mut Workable, &Transform)>,
     mut commands: Commands,
@@ -17,7 +19,7 @@ pub fn progress_on_farm_progress_event(
             &mut workable,
             &mut commands,
             transform.world_pos_to_grid(),
-            elapsed_time.total_days(),
+            total_days(time.elapsed_secs()),
             &assets,
             &mut state_change_event_writer,
         );
@@ -25,7 +27,7 @@ pub fn progress_on_farm_progress_event(
 }
 
 pub fn progress_on_farm_tended_event(
-    elapsed_time: Res<ElapsedTime>,
+    time: Res<Time<Virtual>>,
     mut event_reader: MessageReader<FarmTendedMessage>,
     mut query: Query<&mut Farm>,
     // component tags seems to be working unreliable
@@ -41,15 +43,13 @@ pub fn progress_on_farm_tended_event(
         farm.tendings_done += 1;
         if let FarmState::Planted(planted_state) = &mut farm.state {
             planted_state.tending_rest_timer.reset();
-            planted_state.tending_rest_started_day = elapsed_time.total_days();
+            planted_state.tending_rest_started_day = total_days(time.elapsed_secs());
         }
     }
 }
 
 pub fn progress_planted_and_tending_rest_timers(
-    time: Res<Time>,
-    time_scale: Res<TimeScale>,
-    elapsed_time: Res<ElapsedTime>,
+    time: Res<Time<Virtual>>,
     mut query: Query<(Entity, &mut Farm), With<farm_state::Planted>>,
     mut farm_progress_event_writer: MessageWriter<FarmProgressMessage>,
     mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
@@ -60,7 +60,7 @@ pub fn progress_planted_and_tending_rest_timers(
             _ => panic!("Farm must be in a timer-assigned state"),
         };
 
-        let delta = time_scale.scale_to_duration(time.delta_secs());
+        let delta = Duration::from_secs_f32(time.delta_secs());
         planted_state.growth_timer.tick(delta);
 
         if planted_state.growth_timer.is_finished() {
@@ -77,7 +77,7 @@ pub fn progress_planted_and_tending_rest_timers(
                 //     elapsed_time.game_day()
                 // );
 
-                if planted_state.tending_rest_started_day != elapsed_time.total_days() {
+                if planted_state.tending_rest_started_day != total_days(time.elapsed_secs()) {
                     tasks_scheduler.write(ScheduleTaskMessage::push_back(Task(TaskKind::Work {
                         workable_entity,
                         work_kind: WorkKind::FarmTending,
@@ -92,7 +92,6 @@ pub fn progress_planted_and_tending_rest_timers(
 
 pub fn progress_harvested_timer(
     time: Res<Time>,
-    time_scale: Res<TimeScale>,
     mut query: Query<(Entity, &mut Farm), With<farm_state::Harvested>>,
     mut farm_progress_event_writer: MessageWriter<FarmProgressMessage>,
 ) {
@@ -102,7 +101,7 @@ pub fn progress_harvested_timer(
             _ => panic!("Farm must be in a timer-assigned state"),
         };
 
-        let delta = time_scale.scale_to_duration(time.delta_secs());
+        let delta = Duration::from_secs_f32(time.delta_secs());
         state.rest_timer.tick(delta);
 
         if state.rest_timer.is_finished() {
@@ -118,8 +117,6 @@ pub fn progress_on_state_changed(
     mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
 ) {
     for EntityStateChangeMessage(workable_entity, state) in event_reader.read() {
-        // println!("{:?}", event);
-
         let maybe_task_kind = match state {
             FarmState::NotPlanted => Some(WorkKind::FarmPlanting),
             FarmState::Grown => Some(WorkKind::FarmHarvest),
@@ -149,23 +146,21 @@ pub fn progress_on_state_changed(
     }
 }
 
-pub fn progress_on_new_day(
-    mut event_reader: MessageReader<NewDayMessage>,
+pub fn on_new_day(
+    _event: On<NewDayEvent>,
     mut query: Query<(Entity, &mut Farm), With<farm_state::Planted>>,
     mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
 ) {
-    for _event in event_reader.read() {
-        for (workable_entity, mut farm) in query.iter_mut() {
-            if let FarmState::Planted(planted_state) = &mut farm.state
-                && planted_state.is_tending_pending_for_next_day
-            {
-                tasks_scheduler.write(ScheduleTaskMessage::push_back(Task(TaskKind::Work {
-                    workable_entity,
-                    work_kind: WorkKind::FarmTending,
-                })));
+    for (workable_entity, mut farm) in query.iter_mut() {
+        if let FarmState::Planted(planted_state) = &mut farm.state
+            && planted_state.is_tending_pending_for_next_day
+        {
+            tasks_scheduler.write(ScheduleTaskMessage::push_back(Task(TaskKind::Work {
+                workable_entity,
+                work_kind: WorkKind::FarmTending,
+            })));
 
-                planted_state.is_tending_pending_for_next_day = false;
-            };
-        }
+            planted_state.is_tending_pending_for_next_day = false;
+        };
     }
 }

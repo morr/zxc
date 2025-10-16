@@ -63,8 +63,6 @@ pub fn on_pathfinding_request(
     mut commands: Commands,
     arc_navmesh: Res<ArcNavmesh>,
 ) {
-    // println!("{:?}", event);
-
     let path = pathfinding_algo::astar_pathfinding(
         &arc_navmesh.read(),
         &event.start_tile,
@@ -136,8 +134,6 @@ pub fn on_pathfinding_answer(
     mut commands: Commands,
     mut query_movable: Query<(Entity, &mut Movable), With<Movable>>,
 ) {
-    // println!("{:?}", event);
-
     let Ok((entity, mut movable)) = query_movable.get_mut(event.entity) else {
         return;
     };

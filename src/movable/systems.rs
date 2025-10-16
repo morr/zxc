@@ -7,7 +7,6 @@ pub fn move_moving_entities(
         With<MovableStateMovinTag>,
     >,
     time: Res<Time>,
-    time_scale: Res<TimeScale>,
     arc_navmesh: Res<ArcNavmesh>,
     // mut movable_state_event_writer: MessageWriter<EntityStateChangeMessage<MovableState>>,
     mut occupation_change_event_writer: MessageWriter<OccupationChangeMessage>,
@@ -20,7 +19,7 @@ pub fn move_moving_entities(
                     entity,
                     &mut movable,
                     &mut transform,
-                    time_scale.scale_to_seconds(time.delta_secs()),
+                    time.delta_secs(),
                     &arc_navmesh,
                     &mut commands,
                 );
@@ -119,17 +118,16 @@ fn move_to_target_location(
     transform.translation.truncate().world_pos_to_grid()
 }
 
-pub fn stop_movable_on_death(
+pub fn on_pawn_death(
+    event: On<PawnDeatEvent>,
     mut commands: Commands,
-    mut event_reader: MessageReader<PawnDeathMessage>,
     mut query: Query<&mut Movable>,
 ) {
-    for PawnDeathMessage { entity, .. } in event_reader.read() {
-        // println!("{:?}", event);
-        let Ok(mut movable) = query.get_mut(*entity) else {
-            continue;
-        };
+    let PawnDeatEvent { entity, .. } = *event;
 
-        movable.to_idle(*entity, &mut commands, false);
-    }
+    let Ok(mut movable) = query.get_mut(entity) else {
+        return;
+    };
+
+    movable.to_idle(entity, &mut commands, false);
 }

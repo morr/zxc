@@ -108,8 +108,6 @@ pub fn on_interrupt_command(
     // >,
     // mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
 ) {
-    // println!("{:?}", event);
-
     if let Ok((Some(pawn), mut commandable)) = pawn_query.get_mut(event.entity) {
         ensure_state!(fn: PawnState::ExecutingCommand, pawn.state);
 

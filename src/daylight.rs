@@ -35,13 +35,11 @@ fn setup(mut commands: Commands) {
 }
 
 fn day_night_cycle_system(
-    elapsed_time: Res<ElapsedTime>,
-    time_scale: Res<TimeScale>,
+    time: Res<Time<Virtual>>,
     mut query: Query<&mut Sprite, With<NightOverlay>>,
 ) {
-    let theta = elapsed_time.day_time() * 2. * std::f32::consts::PI; // Full cycle from 0 to 2π
-
-    let transparency = if time_scale.0 > MAXIMUM_TIME_SCALE_FOR_DAY_NIGHT_CYCLE {
+    let theta = current_day_normalized_time(time.elapsed_secs()) * 2. * std::f32::consts::PI; // Full cycle from 0 to 2π
+    let transparency = if time.relative_speed() > MAXIMUM_TIME_SCALE_FOR_DAY_NIGHT_CYCLE {
         0.
     } else {
         0.5 + 0.5 * theta.cos()

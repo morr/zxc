@@ -133,13 +133,8 @@ fn initialize_noise_texture(
     mut images: ResMut<Assets<Image>>,
     tile_query: Query<&Tile>,
 ) {
-    // Get noise values from tiles
     let noise_map = extract_tile_noise_map(&tile_query);
-
-    // Create texture
     let texture = render_noise_to_texture(&noise_map);
-
-    // Add texture to assets and store handle in resource
     let handle = images.add(texture);
     commands.insert_resource(NoiseTextureHandle(handle));
 }
@@ -156,10 +151,7 @@ fn on_rebuild_map(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    // Get noise values from tiles
     let noise_map = extract_tile_noise_map(&tile_query);
-
-    // Create texture
     let texture = render_noise_to_texture(&noise_map);
 
     // Update or create the texture resource

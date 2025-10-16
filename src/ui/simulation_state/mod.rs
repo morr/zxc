@@ -26,9 +26,7 @@ impl Plugin for UiSimulationStatePlugin {
 fn render_simulation_speed_ui(
     mut commands: Commands,
     font_assets: Res<FontAssets>,
-    elapsed_time: Res<ElapsedTime>,
-    time_state: Res<State<SimulationState>>,
-    time_scale: Res<TimeScale>,
+    time: Res<Time<Virtual>>,
 ) {
     commands
         .spawn((
@@ -52,7 +50,7 @@ fn render_simulation_speed_ui(
         ))
         .with_children(|parent| {
             parent.spawn((
-                Text(format_simulation_speed_text(&time_state, &time_scale)),
+                Text(format_simulation_speed_text(&time)),
                 TextFont {
                     font: font_assets.fira.clone(),
                     font_size: 24.,
@@ -62,7 +60,7 @@ fn render_simulation_speed_ui(
                 SimulationSpeedTextUIMarker::default(),
             ));
             parent.spawn((
-                Text(format_date_time_text(&elapsed_time)),
+                Text(format_date_time_text(&time)),
                 TextFont {
                     font: font_assets.fira.clone(),
                     font_size: 18.,
@@ -76,45 +74,36 @@ fn render_simulation_speed_ui(
 
 fn update_simulation_speed_text(
     query: Query<Entity, With<SimulationSpeedTextUIMarker>>,
+    time: Res<Time<Virtual>>,
     mut writer: TextUiWriter,
-    time_state: Res<State<SimulationState>>,
-    time_scale: Res<TimeScale>,
 ) {
     let entity = query.single().unwrap();
-    *writer.text(entity, 0) = format_simulation_speed_text(&time_state, &time_scale);
+    *writer.text(entity, 0) = format_simulation_speed_text(&time);
 }
 
-fn format_simulation_speed_text(
-    time_state: &Res<State<SimulationState>>,
-    time_scale: &Res<TimeScale>,
-) -> String {
-    match time_state.get() {
-        SimulationState::Running => format!("Speed: {}x", time_scale.0),
-        SimulationState::Paused => {
-            if time_scale.0 > 1.0 {
-                format!("Paused ({}x)", time_scale.0)
-            } else {
-                "Paused (1x)".to_string()
-            }
-        }
+fn format_simulation_speed_text(time: &Res<Time<Virtual>>) -> String {
+    if time.is_paused() {
+        format!("Paused ({}x)", time.relative_speed())
+    } else {
+        format!("Speed: {}x", time.relative_speed())
     }
 }
 
 fn update_simulation_date_time_text(
     query: Query<Entity, With<SimulationDateTimeTextUIMarker>>,
+    time: Res<Time<Virtual>>,
     mut writer: TextUiWriter,
-    elapsed_time: Res<ElapsedTime>,
 ) {
     let entity = query.single().unwrap();
-    *writer.text(entity, 0) = format_date_time_text(&elapsed_time);
+    *writer.text(entity, 0) = format_date_time_text(&time);
 }
 
-fn format_date_time_text(elapsed_time: &Res<ElapsedTime>) -> String {
+fn format_date_time_text(time: &Res<Time<Virtual>>) -> String {
     format!(
         "{}, {}y, {:02}:{:02}",
-        ElapsedTime::year_day_to_season_day_label(elapsed_time.year_day()),
-        elapsed_time.year(),
-        elapsed_time.day_hour(),
-        elapsed_time.hour_minute()
+        year_day_to_season_day_label(current_year_day(time.elapsed_secs())),
+        current_year(time.elapsed_secs()),
+        current_day_hour(time.elapsed_secs()),
+        current_hour_minute(time.elapsed_secs())
     )
 }
