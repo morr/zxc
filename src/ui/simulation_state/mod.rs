@@ -3,8 +3,8 @@ use super::*;
 #[derive(Component, Default)]
 struct SimulationSpeedTextUIMarker {}
 
-// #[derive(Component, Default)]
-// struct SimulationDateTimeTextUIMarker {}
+#[derive(Component, Default)]
+struct SimulationDateTimeTextUIMarker {}
 
 pub struct UiSimulationStatePlugin;
 
@@ -27,9 +27,6 @@ fn render_simulation_speed_ui(
     mut commands: Commands,
     font_assets: Res<FontAssets>,
     time: Res<Time<Virtual>>,
-    // elapsed_time: Res<ElapsedTime>,
-    // time_state: Res<State<SimulationState>>,
-    // time_scale: Res<TimeScale>,
 ) {
     commands
         .spawn((
@@ -62,16 +59,16 @@ fn render_simulation_speed_ui(
                 TextColor(Color::WHITE),
                 SimulationSpeedTextUIMarker::default(),
             ));
-            // parent.spawn((
-            //     Text(format_date_time_text(&elapsed_time)),
-            //     TextFont {
-            //         font: font_assets.fira.clone(),
-            //         font_size: 18.,
-            //         ..default()
-            //     },
-            //     TextColor(Color::WHITE),
-            //     SimulationDateTimeTextUIMarker::default(),
-            // ));
+            parent.spawn((
+                Text(format_date_time_text(&time)),
+                TextFont {
+                    font: font_assets.fira.clone(),
+                    font_size: 18.,
+                    ..default()
+                },
+                TextColor(Color::WHITE),
+                SimulationDateTimeTextUIMarker::default(),
+            ));
         });
 }
 
@@ -92,20 +89,21 @@ fn format_simulation_speed_text(time: &Res<Time<Virtual>>) -> String {
     }
 }
 
-fn update_simulation_date_time_text(//     query: Query<Entity, With<SimulationDateTimeTextUIMarker>>,
-//     mut writer: TextUiWriter,
-//     elapsed_time: Res<ElapsedTime>,
+fn update_simulation_date_time_text(
+    query: Query<Entity, With<SimulationDateTimeTextUIMarker>>,
+    time: Res<Time<Virtual>>,
+    mut writer: TextUiWriter,
 ) {
-    //     let entity = query.single().unwrap();
-    //     *writer.text(entity, 0) = format_date_time_text(&elapsed_time);
+    let entity = query.single().unwrap();
+    *writer.text(entity, 0) = format_date_time_text(&time);
 }
 
-// fn format_date_time_text(elapsed_time: &Res<Time>) -> String {
-//     format!(
-//         "{}, {}y, {:02}:{:02}",
-//         ElapsedTime::year_day_to_season_day_label(elapsed_time.year_day()),
-//         elapsed_time.year(),
-//         elapsed_time.day_hour(),
-//         elapsed_time.hour_minute()
-//     )
-// }
+fn format_date_time_text(time: &Res<Time<Virtual>>) -> String {
+    format!(
+        "{}, {}y, {:02}:{:02}",
+        year_day_to_season_day_label(year_day(time.elapsed_secs())),
+        current_year(time.elapsed_secs()),
+        current_day_hour(time.elapsed_secs()),
+        current_hour_minute(time.elapsed_secs())
+    )
+}
