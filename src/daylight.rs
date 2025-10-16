@@ -38,7 +38,7 @@ fn day_night_cycle_system(
     time: Res<Time<Virtual>>,
     mut query: Query<&mut Sprite, With<NightOverlay>>,
 ) {
-    let theta = current_day_seconds(time.elapsed_secs()) * 2. * std::f32::consts::PI; // Full cycle from 0 to 2π
+    let theta = current_day_normalized_time(time.elapsed_secs()) * 2. * std::f32::consts::PI; // Full cycle from 0 to 2π
     let transparency = if time.relative_speed() > MAXIMUM_TIME_SCALE_FOR_DAY_NIGHT_CYCLE {
         0.
     } else {

@@ -101,7 +101,7 @@ fn update_simulation_date_time_text(
 fn format_date_time_text(time: &Res<Time<Virtual>>) -> String {
     format!(
         "{}, {}y, {:02}:{:02}",
-        year_day_to_season_day_label(year_day(time.elapsed_secs())),
+        year_day_to_season_day_label(current_year_day(time.elapsed_secs())),
         current_year(time.elapsed_secs()),
         current_day_hour(time.elapsed_secs()),
         current_hour_minute(time.elapsed_secs())

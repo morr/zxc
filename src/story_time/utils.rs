@@ -1,5 +1,7 @@
 use super::*;
 
+const EPSILON: f32 = 0.0001; // used to fix edge-case rounding issue
+
 pub fn hours_to_seconds(hours: f32) -> f32 {
     hours * config().time.hour_duration
 }
@@ -50,12 +52,12 @@ pub fn year_day_to_season_day_label(year_day: u32) -> String {
     )
 }
 
-pub fn year_day(elapsed_seconds: f32) -> u32 {
+pub fn current_year_day(elapsed_seconds: f32) -> u32 {
     total_day_to_year_day(total_days(elapsed_seconds))
 }
 
 pub fn current_season_day(elapsed_seconds: f32) -> u32 {
-    year_day_to_season_day(year_day(elapsed_seconds))
+    year_day_to_season_day(current_year_day(elapsed_seconds))
 }
 
 pub fn current_year(elapsed_seconds: f32) -> u32 {
@@ -63,10 +65,10 @@ pub fn current_year(elapsed_seconds: f32) -> u32 {
 }
 
 pub fn current_year_season(elapsed_seconds: f32) -> YearSeason {
-    year_day_to_season(year_day(elapsed_seconds))
+    year_day_to_season(current_year_day(elapsed_seconds))
 }
 
-pub fn current_day_seconds(elapsed_seconds: f32) -> f32 {
+pub fn current_day_normalized_time(elapsed_seconds: f32) -> f32 /* from 0.0 to 1.0 */ {
     (total_seconds(elapsed_seconds) % config().time.day_duration) / config().time.day_duration
 }
 
@@ -77,7 +79,7 @@ pub fn current_day_hour(elapsed_seconds: f32) -> u32 {
 
 pub fn current_hour_minute(elapsed_seconds: f32) -> u32 {
     (((total_seconds(elapsed_seconds) % config().time.day_duration) % config().time.hour_duration)
-        / config().time.minute_duration)
+        / config().time.minute_duration + EPSILON)
         .floor() as u32
 }
 // }
