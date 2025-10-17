@@ -248,8 +248,12 @@ fn workable_props(farm_state: &FarmState) -> (Option<WorkKind>, f32) {
     }
 }
 
-#[derive(Message, Debug)]
-pub struct FarmProgressMessage(pub Entity);
+#[derive(Event, Debug)]
+pub struct FarmProgressEvent {
+    pub entity: Entity,
+}
 
-#[derive(Message, Debug)]
-pub struct FarmTendedMessage(pub Entity);
+#[derive(Event, Debug)]
+pub struct FarmTendedEvent {
+    pub entity: Entity,
+}

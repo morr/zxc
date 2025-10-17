@@ -2,54 +2,52 @@ use std::time::Duration;
 
 use super::*;
 
-pub fn progress_on_farm_progress_event(
+pub fn on_farm_progress(
+    event: On<FarmProgressEvent>,
     time: Res<Time<Virtual>>,
-    mut event_reader: MessageReader<FarmProgressMessage>,
     mut query: Query<(&mut Farm, &mut Workable, &Transform)>,
     mut commands: Commands,
     assets: Res<FarmAssets>,
 ) {
-    for FarmProgressMessage(entity) in event_reader.read() {
-        // println!("{:?}", FarmProgressEvent(entity));
-        let (mut farm, mut workable, transform) = query.get_mut(*entity).unwrap();
+    let FarmProgressEvent { entity } = *event;
+    // println!("{:?}", FarmProgressEvent(entity));
+    let (mut farm, mut workable, transform) = query.get_mut(entity).unwrap();
 
-        farm.progress_state(
-            *entity,
-            &mut workable,
-            &mut commands,
-            transform.world_pos_to_grid(),
-            total_days(time.elapsed_secs()),
-            &assets,
-        );
-    }
+    farm.progress_state(
+        entity,
+        &mut workable,
+        &mut commands,
+        transform.world_pos_to_grid(),
+        total_days(time.elapsed_secs()),
+        &assets,
+    );
 }
 
-pub fn progress_on_farm_tended_event(
+pub fn on_farm_tended(
+    event: On<FarmTendedEvent>,
     time: Res<Time<Virtual>>,
-    mut event_reader: MessageReader<FarmTendedMessage>,
     mut query: Query<&mut Farm>,
     // component tags seems to be working unreliable
     // mut query: Query<&mut Farm, With<farm_state::Planted>>,
 ) {
-    for FarmTendedMessage(entity) in event_reader.read() {
-        // println!("{:?}", FarmTendedEvent(*entity));
-        let Ok(mut farm) = query.get_mut(*entity) else {
-            continue;
-        };
-        ensure_state!(loop: FarmState::Planted(_), farm.state);
+    let FarmTendedEvent { entity } = *event;
+    // println!("{:?}", FarmTendedEvent(*entity));
+    let Ok(mut farm) = query.get_mut(entity) else {
+        return;
+    };
+    ensure_state!(fn: FarmState::Planted(_), farm.state);
 
-        farm.tendings_done += 1;
-        if let FarmState::Planted(planted_state) = &mut farm.state {
-            planted_state.tending_rest_timer.reset();
-            planted_state.tending_rest_started_day = total_days(time.elapsed_secs());
-        }
+    farm.tendings_done += 1;
+    if let FarmState::Planted(planted_state) = &mut farm.state {
+        planted_state.tending_rest_timer.reset();
+        planted_state.tending_rest_started_day = total_days(time.elapsed_secs());
     }
 }
 
 pub fn progress_planted_and_tending_rest_timers(
     time: Res<Time<Virtual>>,
+    mut commands: Commands,
     mut query: Query<(Entity, &mut Farm), With<farm_state::Planted>>,
-    mut farm_progress_event_writer: MessageWriter<FarmProgressMessage>,
     mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
 ) {
     for (workable_entity, mut farm) in query.iter_mut() {
@@ -62,7 +60,9 @@ pub fn progress_planted_and_tending_rest_timers(
         planted_state.growth_timer.tick(delta);
 
         if planted_state.growth_timer.is_finished() {
-            farm_progress_event_writer.write(log_message!(FarmProgressMessage(workable_entity)));
+            commands.trigger(log_event!(FarmProgressEvent {
+                entity: workable_entity
+            }));
         }
 
         if !planted_state.tending_rest_timer.is_finished() {
@@ -90,8 +90,8 @@ pub fn progress_planted_and_tending_rest_timers(
 
 pub fn progress_harvested_timer(
     time: Res<Time>,
+    mut commands: Commands,
     mut query: Query<(Entity, &mut Farm), With<farm_state::Harvested>>,
-    mut farm_progress_event_writer: MessageWriter<FarmProgressMessage>,
 ) {
     for (entity, mut farm) in query.iter_mut() {
         let state = match &mut farm.state {
@@ -103,7 +103,7 @@ pub fn progress_harvested_timer(
         state.rest_timer.tick(delta);
 
         if state.rest_timer.is_finished() {
-            farm_progress_event_writer.write(log_message!(FarmProgressMessage(entity)));
+            commands.trigger(log_event!(FarmProgressEvent { entity }));
         }
     }
 }
@@ -115,32 +115,32 @@ pub fn on_farm_state_change(
     mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
 ) {
     let EntityStateChangeEvent(workable_entity, ref state) = *event;
-        let maybe_task_kind = match state {
-            FarmState::NotPlanted => Some(WorkKind::FarmPlanting),
-            FarmState::Grown => Some(WorkKind::FarmHarvest),
-            _ => None,
-        };
+    let maybe_task_kind = match state {
+        FarmState::NotPlanted => Some(WorkKind::FarmPlanting),
+        FarmState::Grown => Some(WorkKind::FarmHarvest),
+        _ => None,
+    };
 
-        if (maybe_task_kind.is_some() || matches!(state, FarmState::Harvested(_)))
-            && let Ok((farm, transform)) = query.get(workable_entity)
-        {
-            let grid_tile = transform.world_pos_to_grid();
+    if (maybe_task_kind.is_some() || matches!(state, FarmState::Harvested(_)))
+        && let Ok((farm, transform)) = query.get(workable_entity)
+    {
+        let grid_tile = transform.world_pos_to_grid();
 
-            if let Some(work_kind) = maybe_task_kind {
-                tasks_scheduler.write(ScheduleTaskMessage::push_back(Task(TaskKind::Work {
-                    workable_entity,
-                    work_kind,
-                })));
-            }
-
-            if let FarmState::Harvested(_) = state {
-                commands.trigger(log_event!(SpawnCarryableEvent {
-                    kind: CarryableKind::Food,
-                    amount: farm.yield_amount(),
-                    grid_tile,
-                }));
-            };
+        if let Some(work_kind) = maybe_task_kind {
+            tasks_scheduler.write(ScheduleTaskMessage::push_back(Task(TaskKind::Work {
+                workable_entity,
+                work_kind,
+            })));
         }
+
+        if let FarmState::Harvested(_) = state {
+            commands.trigger(log_event!(SpawnCarryableEvent {
+                kind: CarryableKind::Food,
+                amount: farm.yield_amount(),
+                grid_tile,
+            }));
+        };
+    }
 }
 
 pub fn on_new_day(

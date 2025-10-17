@@ -39,11 +39,7 @@ pub fn progress_work(
     }
 }
 
-pub fn on_work_complete(
-    event: On<WorkCompleteEvent>,
-    mut farm_progress_event_writer: MessageWriter<FarmProgressMessage>,
-    mut farm_tending_event_writer: MessageWriter<FarmTendedMessage>,
-) {
+pub fn on_work_complete(event: On<WorkCompleteEvent>, mut commands: Commands) {
     let WorkCompleteEvent {
         workable_entity,
         ref work_kind,
@@ -53,10 +49,14 @@ pub fn on_work_complete(
     match work_kind {
         // event.workable_entity the same is task.entity
         WorkKind::FarmPlanting | WorkKind::FarmHarvest => {
-            farm_progress_event_writer.write(log_message!(FarmProgressMessage(workable_entity)));
+            commands.trigger(log_event!(FarmProgressEvent {
+                entity: workable_entity
+            }));
         }
         WorkKind::FarmTending => {
-            farm_tending_event_writer.write(log_message!(FarmTendedMessage(workable_entity)));
+            commands.trigger(log_event!(FarmTendedEvent {
+                entity: workable_entity
+            }));
         }
     }
 }
