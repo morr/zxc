@@ -23,7 +23,6 @@ fn execute_command(
     mut query: Query<(&Transform, &mut Movable, Option<&mut PathfindingTask>)>,
     arc_navmesh: Res<ArcNavmesh>,
     queue_counter: Res<AsyncQueueCounter>,
-    // mut movable_state_change_event_writer: MessageWriter<EntityStateChangeMessage<MovableState>>,
 ) {
     for MoveToCommand {
         commandable_entity,
@@ -41,7 +40,6 @@ fn execute_command(
                     &queue_counter,
                     maybe_pathfinding_task.as_deref_mut(),
                     &mut commands,
-                    // &mut movable_state_change_event_writer,
                 );
                 // commandable.change_state(CommandableState::Executing, *entity, &mut commands);
             }

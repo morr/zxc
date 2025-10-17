@@ -85,7 +85,6 @@ fn progress_fatigue(
     mut commands: Commands,
     time: Res<Time>,
     mut query: Query<(Entity, &mut Restable, &mut Commandable)>,
-    // mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
     // mut event_writer: MessageWriter<RestCompleteEvent>,
 ) {
     let time_amount = time.delta_secs();

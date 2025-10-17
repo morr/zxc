@@ -8,7 +8,6 @@ pub fn move_moving_entities(
     >,
     time: Res<Time>,
     arc_navmesh: Res<ArcNavmesh>,
-    // mut movable_state_event_writer: MessageWriter<EntityStateChangeMessage<MovableState>>,
     mut occupation_change_event_writer: MessageWriter<OccupationChangeMessage>,
 ) {
     for (entity, mut movable, mut transform, maybe_pawn) in &mut query_movable {
@@ -51,7 +50,6 @@ fn move_to_target_location(
     remaining_time: f32,
     arc_navmesh: &ArcNavmesh,
     commands: &mut Commands,
-    // event_writer: &mut MessageWriter<EntityStateChangeMessage<MovableState>>,
 ) -> IVec2 {
     if movable.path.is_empty() {
         let current_tile = transform.translation.truncate().world_pos_to_grid();

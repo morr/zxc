@@ -122,43 +122,42 @@ pub fn spawn_pawns(
 //     // }
 // }
 
-pub fn update_pawn_state_text(
-    mut event_reader: MessageReader<EntityStateChangeMessage<PawnState>>,
+pub fn on_pawn_entity_state_change(
+    event: On<EntityStateChangeEvent<PawnState>>,
     children_query: Query<&Children>,
     // mut state_text_query: Query<(&mut Text, &mut Visibility), With<PawnStateText>>,
     // mut state_text_query: Query<&mut Text, With<PawnStateText>>,
     mut text_writer: Text2dWriter,
     commandable_query: Query<&Commandable>,
 ) {
-    for EntityStateChangeMessage(pawn_entity, state) in event_reader.read() {
-        for text_entity in children_query.iter_descendants(*pawn_entity) {
-            // let (mut text, mut visibility) = state_text_query.get_mut(text_entity).unwrap();
-            // let mut text = state_text_query.get_mut(text_entity).unwrap();
+    let EntityStateChangeEvent(pawn_entity, ref state) = *event;
+    for text_entity in children_query.iter_descendants(pawn_entity) {
+        // let (mut text, mut visibility) = state_text_query.get_mut(text_entity).unwrap();
+        // let mut text = state_text_query.get_mut(text_entity).unwrap();
 
-            // *visibility = Visibility::Visible;
+        // *visibility = Visibility::Visible;
 
-            *text_writer.text(text_entity, 0) = match state {
-                PawnState::Idle => "Idle".into(),
-                PawnState::Dead => "DEAD".into(),
-                PawnState::ExecutingCommand => {
-                    let commandable = commandable_query.get(*pawn_entity).unwrap();
-                    if let Some(command_type) = &commandable.executing {
-                        (match command_type {
-                            // CommandType::MoveTo(_) => "",
-                            CommandType::Sleep(_) => "Zzz",
-                            // CommandType::ToRest(_) => "",
-                            // CommandType::UserSelection(_) => "",
-                            CommandType::WorkOn(_) => "Working",
-                            _ => "",
-                        })
-                        .into()
-                    } else {
-                        // *visibility = Visibility::Hidden;
-                        String::new()
-                    }
+        *text_writer.text(text_entity, 0) = match state {
+            PawnState::Idle => "Idle".into(),
+            PawnState::Dead => "DEAD".into(),
+            PawnState::ExecutingCommand => {
+                let commandable = commandable_query.get(pawn_entity).unwrap();
+                if let Some(command_type) = &commandable.executing {
+                    (match command_type {
+                        // CommandType::MoveTo(_) => "",
+                        CommandType::Sleep(_) => "Zzz",
+                        // CommandType::ToRest(_) => "",
+                        // CommandType::UserSelection(_) => "",
+                        CommandType::WorkOn(_) => "Working",
+                        _ => "",
+                    })
+                    .into()
+                } else {
+                    // *visibility = Visibility::Hidden;
+                    String::new()
                 }
-            };
-        }
+            }
+        };
     }
 }
 
@@ -206,17 +205,11 @@ pub fn on_pawn_death(
     mut pawn_query: Query<(&mut Pawn, &mut Restable, &mut Commandable)>,
     mut bed_query: Query<&mut Bed>,
     mut available_beds: ResMut<AvailableBeds>,
-    mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
 ) {
     let PawnDeatEvent { entity, .. } = *event;
     match pawn_query.get_mut(entity) {
         Ok((mut pawn, mut restable, mut commandable)) => {
-            pawn.change_state(
-                PawnState::Dead,
-                entity,
-                &mut commands,
-                &mut pawn_state_change_event_writer,
-            );
+            pawn.change_state(PawnState::Dead, entity, &mut commands);
 
             restable.change_state(RestableState::Dead, entity);
             commandable.clear_queue(entity, &mut commands);

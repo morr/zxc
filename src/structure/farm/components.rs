@@ -46,12 +46,11 @@ macro_rules! farm_states {
                 new_state: FarmState,
                 entity: Entity,
                 commands: &mut Commands,
-                state_change_event_writer: &mut MessageWriter<EntityStateChangeMessage<FarmState>>,
             ) {
                 self.remove_old_state_component(commands, entity);
                 self.state = new_state;
                 self.add_new_state_component(commands, entity);
-                state_change_event_writer.write(log_message!(EntityStateChangeMessage(entity, self.state.clone())));
+                commands.trigger(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
             }
         }
 
@@ -119,7 +118,6 @@ impl Farm {
         commands: &mut Commands,
         assets: &Res<FarmAssets>,
         navmesh: &mut Navmesh,
-        state_change_event_writer: &mut MessageWriter<EntityStateChangeMessage<FarmState>>,
     ) {
         let farm = Self::default();
         let farm_state = farm.state.clone(); // Clone the state here
@@ -139,7 +137,7 @@ impl Farm {
         );
         navmesh.add_occupant::<Farm>(&entity, grid_tile.x, grid_tile.y);
 
-        state_change_event_writer.write(log_message!(EntityStateChangeMessage(entity, farm_state)));
+        commands.trigger(log_event!(EntityStateChangeEvent(entity, farm_state)));
     }
 
     pub fn sync_sprite_bundle(
@@ -178,7 +176,6 @@ impl Farm {
         grid_tile: IVec2,
         simulation_day: u32,
         assets: &Res<FarmAssets>,
-        state_change_event_writer: &mut MessageWriter<EntityStateChangeMessage<FarmState>>,
     ) {
         let new_state = match &self.state {
             FarmState::NotPlanted => FarmState::Planted(PlantedState {
@@ -200,7 +197,7 @@ impl Farm {
             FarmState::Harvested(_) => FarmState::NotPlanted,
         };
 
-        self.change_state(new_state, entity, commands, state_change_event_writer);
+        self.change_state(new_state, entity, commands);
 
         if let FarmState::NotPlanted = self.state {
             self.tendings_done = 0;

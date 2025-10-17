@@ -80,7 +80,6 @@ pub fn on_pathfinding_request(
 pub fn listen_for_pathfinding_async_tasks(
     mut commands: Commands,
     mut tasks: Query<(Entity, &mut Movable, &mut PathfindingTask), With<PathfindingTask>>,
-    // mut event_writer: MessageWriter<EntityStateChangeMessage<MovableState>>,
 ) {
     for (entity, mut movable, mut pathfinding_tasks) in &mut tasks {
         pathfinding_tasks.0.retain_mut(|task| {

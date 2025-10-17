@@ -17,7 +17,6 @@ pub fn process_pending_commands(
         // component tags seems to be working unreliable
         // With<commandable_state::CommandableStatePendingExecutionTag>,
     >,
-    mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
 ) {
     for (entity, mut commandable, maybe_pawn) in &mut commandable_query {
         continue_unless!(CommandableState::PendingExecution, commandable.state);
@@ -58,7 +57,6 @@ pub fn process_pending_commands(
                     PawnState::ExecutingCommand,
                     entity,
                     &mut commands,
-                    &mut pawn_state_change_event_writer,
                 );
             }
         }
@@ -77,7 +75,6 @@ pub fn on_command_complete(
     //         With<pawn_state::PawnStateExecutingCommandTag>,
     //     ),
     // >,
-    mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
 ) {
     // println!("{:?}", CommandCompleteEvent(*entity));
 
@@ -89,7 +86,6 @@ pub fn on_command_complete(
             PawnState::Idle,
             event.entity,
             &mut commands,
-            &mut pawn_state_change_event_writer,
         );
     }
 }
@@ -106,7 +102,6 @@ pub fn on_interrupt_command(
     //         With<pawn_state::PawnStateExecutingCommandTag>,
     //     ),
     // >,
-    // mut pawn_state_change_event_writer: MessageWriter<EntityStateChangeMessage<PawnState>>,
 ) {
     if let Ok((Some(pawn), mut commandable)) = pawn_query.get_mut(event.entity) {
         ensure_state!(fn: PawnState::ExecutingCommand, pawn.state);

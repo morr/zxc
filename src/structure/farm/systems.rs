@@ -8,7 +8,6 @@ pub fn progress_on_farm_progress_event(
     mut query: Query<(&mut Farm, &mut Workable, &Transform)>,
     mut commands: Commands,
     assets: Res<FarmAssets>,
-    mut state_change_event_writer: MessageWriter<EntityStateChangeMessage<FarmState>>,
 ) {
     for FarmProgressMessage(entity) in event_reader.read() {
         // println!("{:?}", FarmProgressEvent(entity));
@@ -21,7 +20,6 @@ pub fn progress_on_farm_progress_event(
             transform.world_pos_to_grid(),
             total_days(time.elapsed_secs()),
             &assets,
-            &mut state_change_event_writer,
         );
     }
 }
@@ -110,13 +108,13 @@ pub fn progress_harvested_timer(
     }
 }
 
-pub fn progress_on_state_changed(
-    mut event_reader: MessageReader<EntityStateChangeMessage<FarmState>>,
+pub fn on_farm_state_change(
+    event: On<EntityStateChangeEvent<FarmState>>,
     mut commands: Commands,
     query: Query<(&Farm, &Transform)>,
     mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
 ) {
-    for EntityStateChangeMessage(workable_entity, state) in event_reader.read() {
+    let EntityStateChangeEvent(workable_entity, ref state) = *event;
         let maybe_task_kind = match state {
             FarmState::NotPlanted => Some(WorkKind::FarmPlanting),
             FarmState::Grown => Some(WorkKind::FarmHarvest),
@@ -124,13 +122,13 @@ pub fn progress_on_state_changed(
         };
 
         if (maybe_task_kind.is_some() || matches!(state, FarmState::Harvested(_)))
-            && let Ok((farm, transform)) = query.get(*workable_entity)
+            && let Ok((farm, transform)) = query.get(workable_entity)
         {
             let grid_tile = transform.world_pos_to_grid();
 
             if let Some(work_kind) = maybe_task_kind {
                 tasks_scheduler.write(ScheduleTaskMessage::push_back(Task(TaskKind::Work {
-                    workable_entity: *workable_entity,
+                    workable_entity,
                     work_kind,
                 })));
             }
@@ -143,7 +141,6 @@ pub fn progress_on_state_changed(
                 }));
             };
         }
-    }
 }
 
 pub fn on_new_day(
