@@ -12,27 +12,19 @@ pub struct DebugNoisePlugin;
 impl Plugin for DebugNoisePlugin {
     fn build(&self, app: &mut App) {
         app.insert_state(DebugNoiseState::Hidden)
-            .add_message::<StateChangeMessage<DebugNoiseState>>()
             .add_systems(
                 OnExit(AppState::Loading),
                 initialize_noise_texture.after(generate_map),
             )
             .add_observer(on_rebuild_map)
-            .add_systems(
-                FixedUpdate,
-                toggle_noise_visibility.run_if(in_state(AppState::Playing)),
-            );
+            .add_observer(on_debug_noise_state_change);
 
         if config().debug.is_noise {
             app.add_systems(
                 OnExit(AppState::Loading),
-                (|mut next_state: ResMut<NextState<DebugNoiseState>>,
-                  mut debug_noise_state_change_event_writer: MessageWriter<
-                    StateChangeMessage<DebugNoiseState>,
-                >| {
+                (|mut next_state: ResMut<NextState<DebugNoiseState>>, mut commands: Commands| {
                     next_state.set(DebugNoiseState::Visible);
-                    debug_noise_state_change_event_writer
-                        .write(log_message!(StateChangeMessage(DebugNoiseState::Visible)));
+                    commands.trigger(log_event!(StateChangeEvent(DebugNoiseState::Visible)));
                 })
                 .after(generate_map)
                 .after(initialize_noise_texture),
@@ -178,30 +170,29 @@ fn on_rebuild_map(
     }
 }
 
-fn toggle_noise_visibility(
+fn on_debug_noise_state_change(
+    event: On<StateChangeEvent<DebugNoiseState>>,
     mut commands: Commands,
-    mut event_reader: MessageReader<StateChangeMessage<DebugNoiseState>>,
     query_mesh: Query<Entity, With<DebugNoise>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     noise_texture: Res<NoiseTextureHandle>,
 ) {
-    for StateChangeMessage(state) in event_reader.read() {
-        match state {
-            DebugNoiseState::Visible => {
-                println!("DebugNoiseState::Hidden => DebugNoiseState::Visible");
-                refresh_noise_visualization(
-                    &mut commands,
-                    noise_texture.0.clone(),
-                    &mut meshes,
-                    &mut materials,
-                    &query_mesh,
-                );
-            }
-            DebugNoiseState::Hidden => {
-                println!("DebugNoiseState::Visible => DebugNoiseState::Hidden");
-                commands.entity(query_mesh.single().unwrap()).despawn();
-            }
+    let StateChangeEvent(ref state) = *event;
+    match state {
+        DebugNoiseState::Visible => {
+            println!("DebugNoiseState::Hidden => DebugNoiseState::Visible");
+            refresh_noise_visualization(
+                &mut commands,
+                noise_texture.0.clone(),
+                &mut meshes,
+                &mut materials,
+                &query_mesh,
+            );
+        }
+        DebugNoiseState::Hidden => {
+            println!("DebugNoiseState::Visible => DebugNoiseState::Hidden");
+            commands.entity(query_mesh.single().unwrap()).despawn();
         }
     }
 }

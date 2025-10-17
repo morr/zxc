@@ -46,8 +46,8 @@ use_modules!(
     workable
 );
 
-#[derive(Message, Debug)]
-pub struct StateChangeMessage<T>(pub T);
+#[derive(Event, Debug)]
+pub struct StateChangeEvent<T>(pub T);
 
 #[derive(Event, Debug)]
 pub struct EntityStateChangeEvent<T>(pub Entity, pub T);
