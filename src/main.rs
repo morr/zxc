@@ -69,7 +69,7 @@ fn main() {
             workable::WorkablePlugin,
             carryable::CarryablePlugin,
         ))
-        .add_systems(FixedUpdate, close_on_esc)
+        .add_systems(Update, close_on_esc)
         .run();
 }
 
