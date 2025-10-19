@@ -6,9 +6,6 @@ pub fn insert_invalid_noise_texture(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    // let noise_map = extract_tile_noise_map(&tile_query);
-    // let texture = render_noise_to_texture(&noise_map);
-
     let size = config().grid.size as usize;
     let grid_world_size = config().grid.size as f32 * config().tile.size;
 
@@ -31,8 +28,6 @@ pub fn on_debug_noise_state_change(
     event: On<StateChangeEvent<DebugNoiseState>>,
     mut commands: Commands,
     query_mesh: Query<Entity, With<DebugNoise>>,
-    // mut meshes: ResMut<Assets<Mesh>>,
-    // mut materials: ResMut<Assets<ColorMaterial>>,
     mut noise_texture: ResMut<NoiseTexture>,
     // for sync_noise_texture
     tile_query: Query<&Tile>,
@@ -48,15 +43,7 @@ pub fn on_debug_noise_state_change(
                 sync_noise_texture(&mut noise_texture, &tile_query, &mut images, &mut materials);
             }
 
-            // let handle = images.add(texture);
-            // commands.insert_resource(NoiseTextureHandle(handle));
-
-            spawn_noise_mesh(
-                &mut commands,
-                &noise_texture, // noise_texture.texture_handle.clone(),
-                                // &mut meshes,
-                                // &mut materials,
-            );
+            spawn_noise_mesh(&mut commands, &noise_texture);
         }
         DebugNoiseState::Hidden => {
             println!("DebugNoiseState::Visible => DebugNoiseState::Hidden");
@@ -109,41 +96,11 @@ pub fn sync_noise_texture(
     noise_texture.is_synced = true
 }
 
-// #[allow(clippy::too_many_arguments)]
-// pub fn on_rebuild_map(
-//     _event: On<RebuildMapEvent>,
-//     mut images: ResMut<Assets<Image>>,
-//     tile_query: Query<&Tile>,
-//     noise_texture: Option<Res<NoiseTextureHandle>>,
-//     current_state: Res<State<DebugNoiseState>>,
-//     query_mesh: Query<Entity, With<DebugNoise>>,
-//     mut commands: Commands,
-//     mut meshes: ResMut<Assets<Mesh>>,
-//     mut materials: ResMut<Assets<ColorMaterial>>,
-// ) {
-//     let noise_map = extract_tile_noise_map(&tile_query);
-//     let texture = render_noise_to_texture(&noise_map);
-//
-//     // Update or create the texture resource
-//     let texture_handle = if let Some(texture_res) = noise_texture {
-//         // Update existing texture
-//         *images.get_mut(&texture_res.0).unwrap() = texture;
-//         texture_res.0.clone()
-//     } else {
-//         // Create new texture resource
-//         let handle = images.add(texture);
-//         commands.insert_resource(NoiseTextureHandle(handle.clone()));
-//         handle
-//     };
-//
-//     // If the noise visualization is currently visible, update the visualization too
-//     if *current_state.get() == DebugNoiseState::Visible {
-//         refresh_noise_visualization(
-//             &mut commands,
-//             texture_handle,
-//             &mut meshes,
-//             &mut materials,
-//             &query_mesh,
-//         );
-//     }
-// }
+fn spawn_noise_mesh(commands: &mut Commands, noise_texture: &NoiseTexture) {
+    commands.spawn((
+        Mesh2d(noise_texture.mesh_handle.clone()),
+        MeshMaterial2d(noise_texture.material_handle.clone()),
+        Transform::from_xyz(0.0, 0.0, TILE_Z_INDEX + 2.0),
+        DebugNoise,
+    ));
+}
