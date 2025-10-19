@@ -6,7 +6,7 @@ pub struct StoryTimePlugin;
 
 impl Plugin for StoryTimePlugin {
     fn build(&self, app: &mut App) {
-        app
+        app.add_systems(Startup, apply_config_starting_scene_time_options)
             .add_systems(FixedUpdate, track_time.run_if(in_state(AppState::Playing)))
             .add_systems(Update, modify_time.run_if(in_state(AppState::Playing)));
     }

@@ -1,5 +1,9 @@
 use super::*;
 
+pub fn apply_config_starting_scene_time_options(mut time: ResMut<Time<Virtual>>) {
+    time.set_relative_speed(config().starting_scene.time_scale);
+}
+
 pub fn track_time(
     time: Res<Time>,
     mut commands: Commands
