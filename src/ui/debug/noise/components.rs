@@ -15,8 +15,8 @@ pub struct NoiseTexture {
     pub texture_handle: Handle<Image>,
     pub mesh_handle: Handle<Mesh>,
     pub material_handle: Handle<ColorMaterial>,
-    pub is_invalid: bool
+    pub is_synced: bool
 }
 
 #[derive(Event, Debug)]
-pub struct DespawnNoiseMeshEvent;
+pub struct SyncNoiseTextureEvent;

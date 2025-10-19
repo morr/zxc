@@ -90,7 +90,7 @@ pub fn create_blank_texture(width: u32, height: u32) -> Image {
 
 pub fn spawn_noise_mesh(
     commands: &mut Commands,
-    noise_texture: &Res<NoiseTexture>,
+    noise_texture: &NoiseTexture,
     // texture_handle: Handle<Image>,
     // meshes: &mut ResMut<Assets<Mesh>>,
     // materials: &mut ResMut<Assets<ColorMaterial>>,

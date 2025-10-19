@@ -22,7 +22,7 @@ pub fn insert_invalid_noise_texture(
         texture_handle,
         mesh_handle,
         material_handle,
-        is_invalid: true,
+        is_synced: false,
     });
 }
 
@@ -39,18 +39,18 @@ pub fn on_debug_noise_state_change(
         DebugNoiseState::Visible => {
             println!("DebugNoiseState::Hidden => DebugNoiseState::Visible");
 
-            // if (noise_texture.is_invalid) {
-            // }
+            if !noise_texture.is_synced {
+                commands.trigger(log_event!(SyncNoiseTextureEvent));
+            }
 
             // let handle = images.add(texture);
             // commands.insert_resource(NoiseTextureHandle(handle));
 
             spawn_noise_mesh(
                 &mut commands,
-                &noise_texture
-                // noise_texture.texture_handle.clone(),
-                // &mut meshes,
-                // &mut materials,
+                &noise_texture, // noise_texture.texture_handle.clone(),
+                                // &mut meshes,
+                                // &mut materials,
             );
         }
         DebugNoiseState::Hidden => {
@@ -67,10 +67,12 @@ pub fn on_rebuild_map(
     state: Res<State<DebugNoiseState>>,
     query_mesh: Query<Entity, With<DebugNoise>>,
 ) {
-    noise_texture.is_invalid = true;
+    noise_texture.is_synced = false;
 
     if *state.get() == DebugNoiseState::Visible {
         despawn_noise_texture(&mut commands, &query_mesh);
+        commands.trigger(log_event!(SyncNoiseTextureEvent));
+        spawn_noise_mesh(&mut commands, &noise_texture);
     }
 }
 
@@ -78,6 +80,9 @@ fn despawn_noise_texture(commands: &mut Commands, query_mesh: &Query<Entity, Wit
     if let Ok(entity) = query_mesh.single() {
         commands.entity(entity).despawn();
     }
+}
+pub fn on_sync_noise_texture(_event: On<SyncNoiseTextureEvent>) {
+            println!("on_sync_noise_texture");
 }
 
 // #[allow(clippy::too_many_arguments)]
