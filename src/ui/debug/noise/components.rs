@@ -17,6 +17,3 @@ pub struct NoiseTexture {
     pub material_handle: Handle<ColorMaterial>,
     pub is_synced: bool
 }
-
-#[derive(Event, Debug)]
-pub struct SyncNoiseTextureEvent;

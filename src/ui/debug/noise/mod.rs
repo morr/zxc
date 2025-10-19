@@ -8,7 +8,6 @@ impl Plugin for DebugNoisePlugin {
         app.insert_state(DebugNoiseState::Hidden)
             .add_observer(self::systems::on_rebuild_map)
             .add_observer(on_debug_noise_state_change)
-            .add_observer(on_sync_noise_texture)
             .add_systems(
                 OnExit(AppState::Loading),
                 insert_invalid_noise_texture.after(generate_map),

@@ -40,7 +40,7 @@ pub fn on_debug_noise_state_change(
             println!("DebugNoiseState::Hidden => DebugNoiseState::Visible");
 
             if !noise_texture.is_synced {
-                commands.trigger(log_event!(SyncNoiseTextureEvent));
+                sync_noise_texture();
             }
 
             // let handle = images.add(texture);
@@ -71,7 +71,7 @@ pub fn on_rebuild_map(
 
     if *state.get() == DebugNoiseState::Visible {
         despawn_noise_texture(&mut commands, &query_mesh);
-        commands.trigger(log_event!(SyncNoiseTextureEvent));
+        sync_noise_texture();
         spawn_noise_mesh(&mut commands, &noise_texture);
     }
 }
@@ -81,8 +81,9 @@ fn despawn_noise_texture(commands: &mut Commands, query_mesh: &Query<Entity, Wit
         commands.entity(entity).despawn();
     }
 }
-pub fn on_sync_noise_texture(_event: On<SyncNoiseTextureEvent>) {
-            println!("on_sync_noise_texture");
+
+pub fn sync_noise_texture() {
+    println!("sync_noise_texture");
 }
 
 // #[allow(clippy::too_many_arguments)]
