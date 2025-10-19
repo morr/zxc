@@ -98,4 +98,5 @@ pub fn on_rebuild_map(
     };
 
     spawn_tiles(&mut commands, &assets, &mut navmesh, &grid);
+    commands.trigger(log_event!(RebuildMapCompleteEvent));
 }

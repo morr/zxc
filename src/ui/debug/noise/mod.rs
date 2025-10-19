@@ -6,7 +6,7 @@ pub struct DebugNoisePlugin;
 impl Plugin for DebugNoisePlugin {
     fn build(&self, app: &mut App) {
         app.insert_state(DebugNoiseState::Hidden)
-            .add_observer(self::systems::on_rebuild_map)
+            .add_observer(on_rebuild_map_complete)
             .add_observer(on_debug_noise_state_change)
             .add_systems(
                 OnExit(AppState::Loading),

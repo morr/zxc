@@ -41,6 +41,9 @@ pub struct RebuildMapEvent {
     pub generator_kind: GeneratorKind,
 }
 
+#[derive(Event, Debug)]
+pub struct RebuildMapCompleteEvent;
+
 #[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq)]
 pub enum GeneratorKind {
     PerlinNoise,

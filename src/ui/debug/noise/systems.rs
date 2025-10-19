@@ -66,8 +66,8 @@ pub fn on_debug_noise_state_change(
 }
 
 #[allow(clippy::too_many_arguments)]
-pub fn on_rebuild_map(
-    _event: On<RebuildMapEvent>,
+pub fn on_rebuild_map_complete(
+    _event: On<RebuildMapCompleteEvent>,
     mut commands: Commands,
     mut noise_texture: ResMut<NoiseTexture>,
     state: Res<State<DebugNoiseState>>,
@@ -77,6 +77,7 @@ pub fn on_rebuild_map(
     mut images: ResMut<Assets<Image>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
+    println!("on_rebuild_map texture");
     noise_texture.is_synced = false;
 
     if *state.get() == DebugNoiseState::Visible {
