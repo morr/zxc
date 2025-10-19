@@ -188,6 +188,6 @@ fn refresh_noise_visualization(
         Mesh2d(mesh),
         MeshMaterial2d(material),
         Transform::from_xyz(0.0, 0.0, TILE_Z_INDEX + 2.0),
-        DebugNoise,
+        DebugNoise { is_synced: true },
     ));
 }
