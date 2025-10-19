@@ -8,9 +8,13 @@ pub enum DebugNoiseState {
 }
 
 #[derive(Component)]
-pub struct DebugNoise {
-    pub is_synced: bool,
-}
+pub struct DebugNoise;
 
 #[derive(Resource)]
-pub struct NoiseTextureHandle(pub Handle<Image>);
+pub struct NoiseTexture {
+    pub handle: Handle<Image>,
+    pub is_invalid: bool
+}
+
+#[derive(Event, Debug)]
+pub struct DespawnNoiseMeshEvent;

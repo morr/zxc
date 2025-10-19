@@ -56,7 +56,7 @@ pub fn render_noise_to_texture(noise_map: &HashMap<(usize, usize), f32>) -> Imag
     texture
 }
 
-fn create_blank_texture(width: u32, height: u32) -> Image {
+pub fn create_blank_texture(width: u32, height: u32) -> Image {
     // calculate total pixels for rgba format (4 bytes per pixel)
     let pixel_count = width * height;
     let texture_data = vec![0u8; (pixel_count * 4) as usize];
@@ -86,4 +86,22 @@ fn create_blank_texture(width: u32, height: u32) -> Image {
     });
 
     texture
+}
+
+pub fn spawn_noise_mesh_and_material(
+    commands: &mut Commands,
+    texture_handle: Handle<Image>,
+    meshes: &mut ResMut<Assets<Mesh>>,
+    materials: &mut ResMut<Assets<ColorMaterial>>,
+) {
+    let grid_world_size = config().grid.size as f32 * config().tile.size;
+    let mesh = meshes.add(Rectangle::new(grid_world_size, grid_world_size));
+    let material = materials.add(ColorMaterial::from(texture_handle));
+
+    commands.spawn((
+        Mesh2d(mesh),
+        MeshMaterial2d(material),
+        Transform::from_xyz(0.0, 0.0, TILE_Z_INDEX + 2.0),
+        DebugNoise,
+    ));
 }
