@@ -10,7 +10,7 @@ impl Plugin for DebugNoisePlugin {
             .add_observer(on_debug_noise_state_change)
             .add_systems(
                 OnExit(AppState::Loading),
-                initialize_noise_texture.after(generate_map),
+                insert_invalid_noise_texture.after(generate_map),
             );
 
         if config().debug.is_noise {

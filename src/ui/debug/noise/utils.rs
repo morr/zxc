@@ -88,19 +88,20 @@ pub fn create_blank_texture(width: u32, height: u32) -> Image {
     texture
 }
 
-pub fn spawn_noise_mesh_and_material(
+pub fn spawn_noise_mesh(
     commands: &mut Commands,
-    texture_handle: Handle<Image>,
-    meshes: &mut ResMut<Assets<Mesh>>,
-    materials: &mut ResMut<Assets<ColorMaterial>>,
+    noise_texture: &Res<NoiseTexture>,
+    // texture_handle: Handle<Image>,
+    // meshes: &mut ResMut<Assets<Mesh>>,
+    // materials: &mut ResMut<Assets<ColorMaterial>>,
 ) {
-    let grid_world_size = config().grid.size as f32 * config().tile.size;
-    let mesh = meshes.add(Rectangle::new(grid_world_size, grid_world_size));
-    let material = materials.add(ColorMaterial::from(texture_handle));
+    // let grid_world_size = config().grid.size as f32 * config().tile.size;
+    // let mesh = meshes.add(Rectangle::new(grid_world_size, grid_world_size));
+    // let material = materials.add(ColorMaterial::from(texture_handle));
 
     commands.spawn((
-        Mesh2d(mesh),
-        MeshMaterial2d(material),
+        Mesh2d(noise_texture.mesh_handle.clone()),
+        MeshMaterial2d(noise_texture.material_handle.clone()),
         Transform::from_xyz(0.0, 0.0, TILE_Z_INDEX + 2.0),
         DebugNoise,
     ));

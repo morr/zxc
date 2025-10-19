@@ -1,15 +1,27 @@
 use super::*;
 
-pub fn initialize_noise_texture(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
+pub fn insert_invalid_noise_texture(
+    mut commands: Commands,
+    mut images: ResMut<Assets<Image>>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
     // let noise_map = extract_tile_noise_map(&tile_query);
     // let texture = render_noise_to_texture(&noise_map);
 
     let size = config().grid.size as usize;
+    let grid_world_size = config().grid.size as f32 * config().tile.size;
+
     let texture = create_blank_texture(size as u32, size as u32);
-    let handle = images.add(texture);
+
+    let texture_handle = images.add(texture);
+    let mesh_handle = meshes.add(Rectangle::new(grid_world_size, grid_world_size));
+    let material_handle = materials.add(ColorMaterial::from_color(Color::BLACK));
 
     commands.insert_resource(NoiseTexture {
-        handle,
+        texture_handle,
+        mesh_handle,
+        material_handle,
         is_invalid: true,
     });
 }
@@ -20,27 +32,30 @@ pub fn on_debug_noise_state_change(
     query_mesh: Query<Entity, With<DebugNoise>>,
     // mut meshes: ResMut<Assets<Mesh>>,
     // mut materials: ResMut<Assets<ColorMaterial>>,
-    // mut noise_texture: ResMut<NoiseTexture>,
+    noise_texture: Res<NoiseTexture>,
 ) {
     let StateChangeEvent(ref state) = *event;
     match state {
         DebugNoiseState::Visible => {
             println!("DebugNoiseState::Hidden => DebugNoiseState::Visible");
 
+            // if (noise_texture.is_invalid) {
+            // }
+
             // let handle = images.add(texture);
             // commands.insert_resource(NoiseTextureHandle(handle));
 
-            // spawn_noise_mesh_and_material(
-            //     &mut commands,
-            //     noise_texture.handle.clone(),
-            //     &mut meshes,
-            //     &mut materials,
-            //     &query_mesh,
-            // );
+            spawn_noise_mesh(
+                &mut commands,
+                &noise_texture
+                // noise_texture.texture_handle.clone(),
+                // &mut meshes,
+                // &mut materials,
+            );
         }
         DebugNoiseState::Hidden => {
             println!("DebugNoiseState::Visible => DebugNoiseState::Hidden");
-            commands.entity(query_mesh.single().unwrap()).despawn();
+            despawn_noise_texture(&mut commands, &query_mesh);
         }
     }
 }
@@ -50,12 +65,12 @@ pub fn on_rebuild_map(
     mut commands: Commands,
     mut noise_texture: ResMut<NoiseTexture>,
     state: Res<State<DebugNoiseState>>,
-    query_mesh: &Query<Entity, With<DebugNoise>>,
+    query_mesh: Query<Entity, With<DebugNoise>>,
 ) {
     noise_texture.is_invalid = true;
 
     if *state.get() == DebugNoiseState::Visible {
-        despawn_noise_texture(&mut commands, query_mesh);
+        despawn_noise_texture(&mut commands, &query_mesh);
     }
 }
 

@@ -12,7 +12,9 @@ pub struct DebugNoise;
 
 #[derive(Resource)]
 pub struct NoiseTexture {
-    pub handle: Handle<Image>,
+    pub texture_handle: Handle<Image>,
+    pub mesh_handle: Handle<Mesh>,
+    pub material_handle: Handle<ColorMaterial>,
     pub is_invalid: bool
 }
 
