@@ -16,7 +16,7 @@ bevy_platform = "0.17.2"
 bevy_egui = { version = "0.37", optional = true }
 bevy_pancam = { version = "0.19", features = ["bevy_egui"] }
 # bevy_framepace = "0.19"
-bevy_framepace = { git = "https://github.com/aevyrie/bevy_framepace.git", branch = "main" }
+# bevy_framepace = { git = "https://github.com/aevyrie/bevy_framepace.git", branch = "main" }
 pathfinding = "4.9.1"
 bevy_asset_loader = "0.24.0-rc.1"
 bevy-inspector-egui = "0.34"
