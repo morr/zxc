@@ -14,18 +14,19 @@ RootConfig(
         size: 32.0,
     ),
     starting_scene: StartingSceneConfig(
-        pawns: 4,
+        is_paused: true,
+        time_scale: 1.0,
         day_hour: 8,
+        pawns: 4,
         farms: 4,
         beds: 3,
         storages: 1,
-        time_scale: 1.0,
         //time_scale: 15.0,
         //time_scale: 50.0,
         //time_scale: 300.0,
         //time_scale: 500.0
         //time_scale: 30000.0
-        food: 20
+        food: 20,
     ),
     time: TimeConfig(
         day_duration: 60.0,

@@ -91,12 +91,13 @@ pub struct TileConfig {
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct StartingSceneConfig {
-    pub pawns: i32,
+    pub is_paused: bool,
+    pub time_scale: f32,
     pub day_hour: u32,
+    pub pawns: i32,
     pub farms: i32,
     pub beds: i32,
     pub storages: i32,
-    pub time_scale: f32,
     pub food: u32,
 }
 
