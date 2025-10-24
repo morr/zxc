@@ -53,7 +53,7 @@ pub fn render_debug_ui_info(
 \"=\"/\"-\" - change game speed
 \"h\" - toggle help
 \"g\" - toggle grid
-\"p\" - toggle perlin noise
+\"p\" - cycle between noises
 \"n\" - toggle navmesh
 \"m\" - toggle movepath",
                     ),
@@ -145,8 +145,10 @@ pub fn handle_debug_info_keys(
 
     if keys.just_pressed(KeyCode::KeyP) {
         let new_state = match debug_noise_state.get() {
-            DebugNoiseState::Visible => DebugNoiseState::Hidden,
-            DebugNoiseState::Hidden => DebugNoiseState::Visible,
+            DebugNoiseState::Hidden => DebugNoiseState::HeightNoise,
+            DebugNoiseState::HeightNoise => DebugNoiseState::HumidityNoise,
+            DebugNoiseState::HumidityNoise => DebugNoiseState::PropsNoise,
+            DebugNoiseState::PropsNoise => DebugNoiseState::Hidden,
         };
         next_debug_noise_state.set(new_state.clone());
         commands.trigger(log_event!(StateChangeEvent(new_state)));

@@ -5,7 +5,7 @@ RootConfig(
     debug: DebugConfig(
         is_grid: false,
         is_navmesh: false,
-        is_noise: false
+        noise_state: Hidden // Hidden | HeightNoise | HumidityNoise | PropsNoise
     ),
     grid: GridConfig(
         size: 500,

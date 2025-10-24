@@ -4,6 +4,8 @@ use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 use std::{fs::File, io::Read};
 
+use crate::DebugNoiseState;
+
 pub const TILE_Z_INDEX: f32 = 0.0;
 pub const STRUCTURE_Z_INDEX: f32 = 10.0;
 pub const PAWN_Z_INDEX: f32 = 20.0;
@@ -66,7 +68,7 @@ pub struct AppConfig {
 pub struct DebugConfig {
     pub is_grid: bool,
     pub is_navmesh: bool,
-    pub is_noise: bool,
+    pub noise_state: DebugNoiseState,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]

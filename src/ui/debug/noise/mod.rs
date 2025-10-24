@@ -13,12 +13,13 @@ impl Plugin for DebugNoisePlugin {
                 insert_unsynced_noise_texture.after(generate_map),
             );
 
-        if config().debug.is_noise {
+        let init_noise_state = config().debug.noise_state.clone();
+        if init_noise_state != DebugNoiseState::Hidden {
             app.add_systems(
                 OnExit(AppState::Loading),
-                (|mut next_state: ResMut<NextState<DebugNoiseState>>, mut commands: Commands| {
-                    next_state.set(DebugNoiseState::Visible);
-                    commands.trigger(log_event!(StateChangeEvent(DebugNoiseState::Visible)));
+                (move |mut next_state: ResMut<NextState<DebugNoiseState>>, mut commands: Commands| {
+                    next_state.set(init_noise_state.clone());
+                    commands.trigger(log_event!(StateChangeEvent(init_noise_state.clone())));
                 })
                 .after(generate_map), // .after(initialize_noise_texture),
             );

@@ -36,8 +36,8 @@ pub fn on_debug_noise_state_change(
 ) {
     let StateChangeEvent(ref state) = *event;
     match state {
-        DebugNoiseState::Visible => {
-            println!("DebugNoiseState::Hidden => DebugNoiseState::Visible");
+        DebugNoiseState::HeightNoise => {
+            println!("DebugNoiseState::Hidden => DebugNoiseState::HeightNoise");
 
             if !noise_texture.is_synced {
                 sync_noise_texture(&mut noise_texture, &tile_query, &mut images, &mut materials);
@@ -45,8 +45,9 @@ pub fn on_debug_noise_state_change(
 
             spawn_noise_mesh(&mut commands, &noise_texture);
         }
-        DebugNoiseState::Hidden => {
-            println!("DebugNoiseState::Visible => DebugNoiseState::Hidden");
+        // DebugNoiseState::Hidden => {
+        _ => {
+            println!("DebugNoiseState::HeightNoise => DebugNoiseState::Hidden");
             despawn_noise_texture(&mut commands, &query_mesh);
         }
     }
@@ -67,7 +68,7 @@ pub fn on_rebuild_map_complete(
     println!("on_rebuild_map texture");
     noise_texture.is_synced = false;
 
-    if *state.get() == DebugNoiseState::Visible {
+    if *state.get() != DebugNoiseState::Hidden {
         despawn_noise_texture(&mut commands, &query_mesh);
         sync_noise_texture(&mut noise_texture, &tile_query, &mut images, &mut materials);
         spawn_noise_mesh(&mut commands, &noise_texture);

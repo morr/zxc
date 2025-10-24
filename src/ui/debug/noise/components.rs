@@ -1,10 +1,13 @@
+use serde::{Deserialize, Serialize};
 use super::*;
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States, Deserialize, Serialize)]
 pub enum DebugNoiseState {
     #[default]
     Hidden,
-    Visible,
+    HeightNoise,
+    HumidityNoise,
+    PropsNoise
 }
 
 #[derive(Component)]
