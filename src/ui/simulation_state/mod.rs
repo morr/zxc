@@ -12,7 +12,7 @@ impl Plugin for UiSimulationStatePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnExit(AppState::Loading), render_simulation_speed_ui)
             .add_systems(
-                FixedUpdate,
+                Update,
                 (
                     update_simulation_speed_text,
                     update_simulation_date_time_text,
