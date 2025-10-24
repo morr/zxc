@@ -1,6 +1,6 @@
 use super::*;
 
-pub fn insert_invalid_noise_texture(
+pub fn insert_unsynced_noise_texture(
     mut commands: Commands,
     mut images: ResMut<Assets<Image>>,
     mut meshes: ResMut<Assets<Mesh>>,
