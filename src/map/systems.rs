@@ -1,4 +1,6 @@
 use super::*;
+use rand::{Rng, SeedableRng};
+use rand_chacha::ChaCha8Rng;
 
 pub fn generate_map(
     mut commands: Commands,
@@ -7,7 +9,11 @@ pub fn generate_map(
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     let mut navmesh = arc_navmesh.write();
-    let grid = generator::perlin_noise::generate(&pn_config);
+    let mut rng = match pn_config.seed {
+        Some(seed) => ChaCha8Rng::seed_from_u64(seed),
+        None => ChaCha8Rng::from_os_rng(),
+    };
+    let grid = generator::perlin_noise::generate(rng.random(), &pn_config);
 
     spawn_tiles(&mut commands, &assets, &mut navmesh, &grid);
 }
@@ -93,8 +99,13 @@ pub fn on_rebuild_map(
         commands.entity(entity).despawn();
     }
 
+    let mut rng = match pn_config.seed {
+        Some(seed) => ChaCha8Rng::seed_from_u64(seed),
+        None => ChaCha8Rng::from_os_rng(),
+    };
+    let seed: u32 = rng.random();
     let grid = match generator_kind {
-        GeneratorKind::PerlinNoise => generator::perlin_noise::generate(&pn_config),
+        GeneratorKind::PerlinNoise => generator::perlin_noise::generate(seed, &pn_config),
     };
 
     spawn_tiles(&mut commands, &assets, &mut navmesh, &grid);
