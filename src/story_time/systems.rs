@@ -46,33 +46,29 @@ pub fn toggle_story_time(time: &mut Time<Virtual>) {
 }
 
 pub fn increase_time_scale(time: &mut Time<Virtual>) {
-    if time.is_paused() {
-        time.unpause();
+    let speed = time.relative_speed();
+    time.set_relative_speed(speed + if speed < 5. {
+        2.
+    } else if speed < 15. {
+        5.
+    } else if speed < 20. {
+        10.
+    } else if speed < 100. {
+        25.
+    } else if speed < 200. {
+        50.
+    } else if speed < 500. {
+        100.
+    } else if speed < 2000. {
+        500.
     } else {
-        let speed = time.relative_speed();
-        time.set_relative_speed(speed + if speed < 5. {
-            2.
-        } else if speed < 15. {
-            5.
-        } else if speed < 20. {
-            10.
-        } else if speed < 100. {
-            25.
-        } else if speed < 200. {
-            50.
-        } else if speed < 500. {
-            100.
-        } else if speed < 2000. {
-            500.
-        } else {
-            1000.
-        });
-    }
+        1000.
+    });
 }
 
 pub fn decrease_time_scale(time: &mut Time<Virtual>) {
     let speed = time.relative_speed();
-    if time.is_paused() || speed == 1.0 {
+    if speed == 1.0 {
         return;
     }
 
