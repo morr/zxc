@@ -44,7 +44,7 @@ pub fn render_tile_ui(
                         font_assets,
                     ),
                     property_text_bundle::<TileTextUIMarker>(
-                        format!("noise: {:.4}", tile.noise_value),
+                        format!("noise: {:.4}", tile.height_noise),
                         font_assets,
                     ),
                 ],

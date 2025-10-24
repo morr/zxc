@@ -18,7 +18,7 @@ pub fn extract_tile_noise_map(tile_query: &Query<&Tile>) -> HashMap<(usize, usiz
         let y = grid_tile_to_navmesh_index(grid_pos.y);
 
         if x < size && y < size {
-            noise_map.insert((x, y), tile.noise_value);
+            noise_map.insert((x, y), tile.height_noise);
         }
     }
 

@@ -17,7 +17,9 @@ pub enum TileKind {
 pub struct Tile {
     pub grid_tile: IVec2,
     pub kind: TileKind,
-    pub noise_value: f32,
+    pub height_noise: f32,
+    pub humidity_noise: f32,
+    pub props_noise: f32,
 }
 
 impl Tile {

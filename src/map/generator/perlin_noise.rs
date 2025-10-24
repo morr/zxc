@@ -71,16 +71,19 @@ pub fn generate(generator_config: &Res<PerlinNoiseConfig>) -> Vec<Vec<Tile>> {
         Some(seed) => ChaCha8Rng::seed_from_u64(seed),
         None => ChaCha8Rng::from_os_rng(),
     };
-    let seed: u32 = rng.random();
 
-    let noise = generate_noise(seed, generator_config.as_ref());
+    let height_noise = generate_noise(rng.random(), generator_config.as_ref());
+    let humidity_noise = generate_noise(rng.random(), generator_config.as_ref());
+    let props_noise = generate_noise(rng.random(), generator_config.as_ref());
 
     let mut grid = vec![
         vec![
             Tile {
                 grid_tile: IVec2::new(0, 0),
                 kind: TileKind::Grass,
-                noise_value: 0.0
+                height_noise: 0.0,
+                humidity_noise: 0.0,
+                props_noise: 0.0
             };
             config().grid.size as usize
         ];
@@ -93,9 +96,12 @@ pub fn generate(generator_config: &Res<PerlinNoiseConfig>) -> Vec<Vec<Tile>> {
             cell.grid_tile.y = navmesh_index_to_grid_tile(y);
 
             let noise_index = y * config().grid.size as usize + x;
-            cell.noise_value = noise[noise_index];
 
-            cell.kind = match cell.noise_value {
+            cell.height_noise = height_noise[noise_index];
+            cell.humidity_noise = humidity_noise[noise_index];
+            cell.props_noise = props_noise[noise_index];
+
+            cell.kind = match cell.height_noise {
                 n if n < 0.1 => TileKind::DeepWater,
                 n if n < 0.15 => TileKind::ShallowWater,
                 n if n < 0.2 => TileKind::Sand,

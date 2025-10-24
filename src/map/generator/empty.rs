@@ -6,7 +6,9 @@ pub fn generate() -> Vec<Vec<Tile>> {
             Tile {
                 grid_tile: IVec2::new(0, 0),
                 kind: TileKind::Grass,
-                noise_value: 0.0
+                height_noise: 0.0,
+                humidity_noise: 0.0,
+                props_noise: 0.0
             };
             config().grid.size as usize
         ];
