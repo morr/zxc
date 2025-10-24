@@ -1,4 +1,6 @@
 use super::*;
+use rand::{Rng, SeedableRng};
+use rand_chacha::ChaCha8Rng;
 
 #[cfg(feature = "bevy_egui")]
 use bevy_egui::egui;
@@ -64,7 +66,13 @@ impl Default for PerlinNoiseConfig {
 // 3	TAIGA	SHRUBLAND	TEMPERATE DESERT
 // 2	TEMPERATE RAIN FOREST	TEMPERATE DECIDUOUS FOREST	GRASSLAND	TEMPERATE DESERT
 // 1 (low)	TROPICAL RAIN FOREST	TROPICAL SEASONAL FOREST	GRASSLAND	SUBTROPICAL DESERT
-pub fn generate(seed: u32, generator_config: &Res<PerlinNoiseConfig>) -> Vec<Vec<Tile>> {
+pub fn generate(generator_config: &Res<PerlinNoiseConfig>) -> Vec<Vec<Tile>> {
+    let mut rng = match generator_config.seed {
+        Some(seed) => ChaCha8Rng::seed_from_u64(seed),
+        None => ChaCha8Rng::from_os_rng(),
+    };
+    let seed: u32 = rng.random();
+
     let noise = generate_noise(seed, generator_config.as_ref());
 
     let mut grid = vec![
