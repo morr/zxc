@@ -14,7 +14,7 @@ pub enum DebugNoiseState {
 pub struct DebugNoise;
 
 #[derive(Resource)]
-pub struct NoiseTexture {
+pub struct NoiseVisual {
     pub texture_handle: Handle<Image>,
     pub mesh_handle: Handle<Mesh>,
     pub material_handle: Handle<ColorMaterial>,

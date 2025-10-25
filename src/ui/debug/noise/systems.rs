@@ -15,7 +15,7 @@ pub fn insert_unsynced_noise_texture(
     let mesh_handle = meshes.add(Rectangle::new(grid_world_size, grid_world_size));
     let material_handle = materials.add(ColorMaterial::from_color(Color::BLACK));
 
-    commands.insert_resource(NoiseTexture {
+    commands.insert_resource(NoiseVisual {
         texture_handle,
         mesh_handle,
         material_handle,
@@ -28,7 +28,7 @@ pub fn on_debug_noise_state_change(
     event: On<StateChangeEvent<DebugNoiseState>>,
     mut commands: Commands,
     query_mesh: Query<Entity, With<DebugNoise>>,
-    mut noise_texture: ResMut<NoiseTexture>,
+    mut noise_visual: ResMut<NoiseVisual>,
     // for sync_noise_texture
     tile_query: Query<&Tile>,
     mut images: ResMut<Assets<Image>>,
@@ -39,11 +39,11 @@ pub fn on_debug_noise_state_change(
         DebugNoiseState::HeightNoise => {
             println!("DebugNoiseState::Hidden => DebugNoiseState::HeightNoise");
 
-            if !noise_texture.is_synced {
-                sync_noise_texture(&mut noise_texture, &tile_query, &mut images, &mut materials);
+            if !noise_visual.is_synced {
+                sync_noise_texture(&mut noise_visual, &tile_query, &mut images, &mut materials);
             }
 
-            spawn_noise_mesh(&mut commands, &noise_texture);
+            spawn_noise_mesh(&mut commands, &noise_visual);
         }
         // DebugNoiseState::Hidden => {
         _ => {
@@ -57,7 +57,7 @@ pub fn on_debug_noise_state_change(
 pub fn on_rebuild_map_complete(
     _event: On<RebuildMapCompleteEvent>,
     mut commands: Commands,
-    mut noise_texture: ResMut<NoiseTexture>,
+    mut noise_visual: ResMut<NoiseVisual>,
     state: Res<State<DebugNoiseState>>,
     query_mesh: Query<Entity, With<DebugNoise>>,
     // for sync_noise_texture
@@ -66,12 +66,12 @@ pub fn on_rebuild_map_complete(
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     println!("on_rebuild_map texture");
-    noise_texture.is_synced = false;
+    noise_visual.is_synced = false;
 
     if *state.get() != DebugNoiseState::Hidden {
         despawn_noise_texture(&mut commands, &query_mesh);
-        sync_noise_texture(&mut noise_texture, &tile_query, &mut images, &mut materials);
-        spawn_noise_mesh(&mut commands, &noise_texture);
+        sync_noise_texture(&mut noise_visual, &tile_query, &mut images, &mut materials);
+        spawn_noise_mesh(&mut commands, &noise_visual);
     }
 }
 
@@ -82,7 +82,7 @@ fn despawn_noise_texture(commands: &mut Commands, query_mesh: &Query<Entity, Wit
 }
 
 pub fn sync_noise_texture(
-    noise_texture: &mut ResMut<NoiseTexture>,
+    noise_texture: &mut ResMut<NoiseVisual>,
     tile_query: &Query<&Tile>,
     images: &mut ResMut<Assets<Image>>,
     materials: &mut ResMut<Assets<ColorMaterial>>,
@@ -97,10 +97,10 @@ pub fn sync_noise_texture(
     noise_texture.is_synced = true
 }
 
-fn spawn_noise_mesh(commands: &mut Commands, noise_texture: &NoiseTexture) {
+fn spawn_noise_mesh(commands: &mut Commands, noise_visual: &NoiseVisual) {
     commands.spawn((
-        Mesh2d(noise_texture.mesh_handle.clone()),
-        MeshMaterial2d(noise_texture.material_handle.clone()),
+        Mesh2d(noise_visual.mesh_handle.clone()),
+        MeshMaterial2d(noise_visual.material_handle.clone()),
         Transform::from_xyz(0.0, 0.0, TILE_Z_INDEX + 2.0),
         DebugNoise,
     ));
