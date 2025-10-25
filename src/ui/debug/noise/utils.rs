@@ -7,7 +7,10 @@ use bevy::{
 };
 use bevy_platform::collections::HashMap;
 
-pub fn extract_tile_noise_map(tile_query: &Query<&Tile>) -> HashMap<(usize, usize), f32> {
+pub fn extract_tile_noise_map(
+    tile_query: &Query<&Tile>,
+    noise_type: &NoiseType,
+) -> HashMap<(usize, usize), f32> {
     let size = config().grid.size as usize;
     let mut noise_map = HashMap::new();
 
@@ -18,7 +21,14 @@ pub fn extract_tile_noise_map(tile_query: &Query<&Tile>) -> HashMap<(usize, usiz
         let y = grid_tile_to_navmesh_index(grid_pos.y);
 
         if x < size && y < size {
-            noise_map.insert((x, y), tile.height_noise);
+            noise_map.insert(
+                (x, y),
+                match noise_type {
+                    NoiseType::Height => tile.height_noise,
+                    NoiseType::Humidity => tile.humidity_noise,
+                    NoiseType::Props => tile.props_noise,
+                },
+            );
         }
     }
 
