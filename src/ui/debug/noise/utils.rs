@@ -35,7 +35,10 @@ pub fn extract_tile_noise_map(
     noise_map
 }
 
-pub fn render_noise_to_texture(noise_map: &HashMap<(usize, usize), f32>) -> Image {
+pub fn render_noise_to_texture(
+    noise_map: &HashMap<(usize, usize), f32>,
+    noise_type: &NoiseType,
+) -> Image {
     let size = config().grid.size as usize;
     let mut texture = create_blank_texture(size as u32, size as u32);
     let data = texture
@@ -52,13 +55,27 @@ pub fn render_noise_to_texture(noise_map: &HashMap<(usize, usize), f32>) -> Imag
             // let texture_index = (y * size + x) * 4;
             // flip Y coordinate
             let texture_index = ((size - 1 - y) * size + x) * 4;
-            // Convert to 0-255 for RGBA
-            let rgb_value = (noise_value * 255.0) as u8;
+            // convert to 0-255 for rgba
+            let red_max = match noise_type {
+                NoiseType::Height => 0.0,
+                NoiseType::Humidity => 0.0,
+                NoiseType::Props => 255.0,
+            };
+            let green_max = match noise_type {
+                NoiseType::Height => 255.0,
+                NoiseType::Humidity => 162.0,
+                NoiseType::Props => 255.0,
+            };
+            let blue_max = match noise_type {
+                NoiseType::Height => 73.0,
+                NoiseType::Humidity => 255.0,
+                NoiseType::Props => 255.0,
+            };
 
             // Set RGBA values (grayscale with full opacity)
-            data[texture_index] = rgb_value; // R
-            data[texture_index + 1] = rgb_value; // G
-            data[texture_index + 2] = rgb_value; // B
+            data[texture_index] = (noise_value * red_max) as u8; // R
+            data[texture_index + 1] = (noise_value * green_max) as u8; // G
+            data[texture_index + 2] = (noise_value * blue_max) as u8; // B
             data[texture_index + 3] = 255; // A (full opacity)
         }
     }

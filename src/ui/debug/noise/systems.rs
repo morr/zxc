@@ -117,7 +117,7 @@ pub fn sync_noise_texture(
     materials: &mut ResMut<Assets<ColorMaterial>>,
 ) {
     let noise_map = extract_tile_noise_map(tile_query, &noise_visual.noise_type);
-    let texture = render_noise_to_texture(&noise_map);
+    let texture = render_noise_to_texture(&noise_map, &noise_visual.noise_type);
     let material = ColorMaterial::from(noise_visual.texture_handle.clone());
 
     *images.get_mut(&noise_visual.texture_handle).unwrap() = texture;
