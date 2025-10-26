@@ -1,4 +1,3 @@
-use bevy::{ecs::resource::Resource, math::f32};
 pub use once_cell::sync::Lazy;
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
@@ -33,6 +32,16 @@ pub fn apply_global_config(config: RootConfig) {
 
 pub fn config() -> &'static RootConfig {
     CONFIG.get().expect("Config not initialized")
+}
+
+pub fn config_mut() -> &'static mut RootConfig {
+    unsafe {
+        // SAFETY: Caller must ensure no concurrent access
+        // This is UB if multiple threads access simultaneously
+        (CONFIG.get().expect("Config not initialized") as *const RootConfig as *mut RootConfig)
+            .as_mut()
+            .unwrap()
+    }
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
