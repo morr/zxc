@@ -11,7 +11,10 @@ pub struct PerlinNoisePlugin;
 impl Plugin for PerlinNoisePlugin {
     fn build(&self, app: &mut App) {
         #[cfg(feature = "bevy_egui")]
-        app.add_systems(bevy_egui::EguiPrimaryContextPass, ui_system);
+        app.add_systems(
+            bevy_egui::EguiPrimaryContextPass,
+            noise_ui_system.run_if(not(in_state(DebugNoiseState::Hidden))),
+        );
     }
 }
 
@@ -167,7 +170,7 @@ fn noise_value(
 }
 
 #[cfg(feature = "bevy_egui")]
-fn ui_system(
+fn noise_ui_system(
     mut commands: Commands,
     mut egui_contexts: bevy_inspector_egui::bevy_egui::EguiContexts,
 ) {
@@ -207,9 +210,7 @@ fn ui_system(
             .changed();
 
         is_changed |= ui
-            .add(
-                egui::Slider::new(&mut noise_config.persistence, 0.0..=1.0).text("Persistence"),
-            )
+            .add(egui::Slider::new(&mut noise_config.persistence, 0.0..=1.0).text("Persistence"))
             .changed();
 
         // Add ComboBox for noise distortion type
