@@ -172,6 +172,7 @@ fn noise_value(
 #[cfg(feature = "bevy_egui")]
 fn noise_ui_system(
     mut commands: Commands,
+    state: Res<State<DebugNoiseState>>,
     mut egui_contexts: bevy_inspector_egui::bevy_egui::EguiContexts,
 ) {
     let ctx = egui_contexts.ctx_mut().unwrap();
@@ -181,7 +182,13 @@ fn noise_ui_system(
 
         // Get mutable reference to the config
         let map_config = &mut config_mut().map_generator;
-        let noise_config = &mut map_config.general_noise;
+        let noise_config = match state.get() {
+            DebugNoiseState::HeightNoise | DebugNoiseState::HumidityNoise => {
+                &mut map_config.general_noise
+            }
+            DebugNoiseState::PropsNoise => &mut map_config.props_noise,
+            DebugNoiseState::Hidden => unreachable!("Should not run when Hidden"),
+        };
 
         ui.add(bevy_egui::egui::Checkbox::new(
             &mut map_config.auto_generate,
