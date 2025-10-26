@@ -39,6 +39,7 @@ pub fn config() -> &'static RootConfig {
 pub struct RootConfig {
     pub app: AppConfig,
     pub debug: DebugConfig,
+    pub map_generator: MapGeneratorConfig,
     pub grid: GridConfig,
     pub tile: TileConfig,
     pub starting_scene: StartingSceneConfig,
@@ -69,6 +70,14 @@ pub struct DebugConfig {
     pub is_grid: bool,
     pub is_navmesh: bool,
     pub noise_state: DebugNoiseState,
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct MapGeneratorConfig {
+    pub auto_generate: bool,
+    pub seed: Option<u64>,
+    pub general_noise: PerlinNoiseConfig,
+    pub props_noise: PerlinNoiseConfig,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]

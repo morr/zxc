@@ -24,7 +24,7 @@ pub enum NoiseDistortion {
     Skewed,
 }
 
-#[derive(Resource)]
+#[derive(Resource, Deserialize, Serialize, Clone, Debug)]
 pub struct PerlinNoiseConfig {
     pub auto_generate: bool,
     pub seed: Option<u64>,
@@ -214,7 +214,7 @@ fn ui_system(
 
         is_changed |= ui
             .add(
-                egui::Slider::new(&mut generator_config.frequency, 0.001..=0.1)
+                egui::Slider::new(&mut generator_config.frequency, 0.001..=0.2)
                     .text("Frequency")
                     .logarithmic(true),
             )

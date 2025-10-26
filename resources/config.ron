@@ -7,6 +7,28 @@ RootConfig(
         is_navmesh: false,
         noise_state: Hidden // Hidden | HeightNoise | HumidityNoise | PropsNoise
     ),
+    map_generator: MapGeneratorConfig(
+        auto_generate: true,
+        seed: Some(15759246571423803862),
+        general_noise: PerlinNoiseConfig(
+            frequency: 0.01,
+            octaves: 4,
+            lacunarity: 2.0,
+            persistence: 0.5,
+            offset_x: 0,
+            offset_y: 0,
+            distortion: RawValue,
+        ),
+        props_noise: PerlinNoiseConfig(
+            frequency: 0.2,
+            octaves: 6,
+            lacunarity: 1.0,
+            persistence: 0.9,
+            offset_x: 0,
+            offset_y: 0,
+            distortion: Distortion,
+        ),
+    ),
     grid: GridConfig(
         size: 500,
     ),
