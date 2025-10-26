@@ -1,4 +1,4 @@
-use bevy::math::f32;
+use bevy::{ecs::resource::Resource, math::f32};
 pub use once_cell::sync::Lazy;
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
@@ -72,12 +72,24 @@ pub struct DebugConfig {
     pub noise_state: DebugNoiseState,
 }
 
+// #[derive(Resource, Deserialize, Serialize, Clone, Debug)]
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct MapGeneratorConfig {
     pub auto_generate: bool,
     pub seed: Option<u64>,
     pub general_noise: PerlinNoiseConfig,
     pub props_noise: PerlinNoiseConfig,
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct PerlinNoiseConfig {
+    pub frequency: f64,
+    pub octaves: usize,
+    pub lacunarity: f64,
+    pub persistence: f64,
+    pub offset_x: i32,
+    pub offset_y: i32,
+    pub distortion: crate::generator::perlin_noise::NoiseDistortion,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]

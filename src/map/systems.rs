@@ -3,11 +3,11 @@ use super::*;
 pub fn generate_map(
     mut commands: Commands,
     assets: Res<TextureAssets>,
-    pn_config: Res<generator::perlin_noise::PerlinNoiseConfig>,
+    // pn_config: Res<generator::perlin_noise::PerlinNoiseConfig>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     let mut navmesh = arc_navmesh.write();
-    let grid = generator::perlin_noise::generate(&pn_config);
+    let grid = generator::perlin_noise::generate();
 
     spawn_tiles(&mut commands, &assets, &mut navmesh, &grid);
 }
@@ -80,7 +80,6 @@ pub fn track_hover(
 pub fn on_rebuild_map(
     event: On<RebuildMapEvent>,
     mut commands: Commands,
-    pn_config: Res<generator::perlin_noise::PerlinNoiseConfig>,
     assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
     tiles_query: Query<(Entity, &Tile)>,
@@ -94,7 +93,7 @@ pub fn on_rebuild_map(
     }
 
     let grid = match generator_kind {
-        GeneratorKind::PerlinNoise => generator::perlin_noise::generate(&pn_config),
+        GeneratorKind::PerlinNoise => generator::perlin_noise::generate(),
     };
 
     spawn_tiles(&mut commands, &assets, &mut navmesh, &grid);

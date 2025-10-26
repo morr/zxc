@@ -1,6 +1,7 @@
 use super::*;
 use rand::{Rng, SeedableRng};
 use rand_chacha::ChaCha8Rng;
+use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "bevy_egui")]
 use bevy_egui::egui;
@@ -9,14 +10,14 @@ pub struct PerlinNoisePlugin;
 
 impl Plugin for PerlinNoisePlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<PerlinNoiseConfig>();
+        // app.insert_resource(config().map_generator.clone());
 
-        #[cfg(feature = "bevy_egui")]
-        app.add_systems(bevy_egui::EguiPrimaryContextPass, ui_system);
+        // #[cfg(feature = "bevy_egui")]
+        // app.add_systems(bevy_egui::EguiPrimaryContextPass, ui_system);
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum NoiseDistortion {
     RawValue,
     EdgeShape,
@@ -24,34 +25,34 @@ pub enum NoiseDistortion {
     Skewed,
 }
 
-#[derive(Resource, Deserialize, Serialize, Clone, Debug)]
-pub struct PerlinNoiseConfig {
-    pub auto_generate: bool,
-    pub seed: Option<u64>,
-    pub frequency: f64,
-    pub octaves: usize,
-    pub lacunarity: f64,
-    pub persistence: f64,
-    pub offset_x: i32,
-    pub offset_y: i32,
-    pub distortion: NoiseDistortion,
-}
+// #[derive(Resource, Deserialize, Serialize, Clone, Debug)]
+// pub struct PerlinNoiseConfig {
+//     pub auto_generate: bool,
+//     pub seed: Option<u64>,
+//     pub frequency: f64,
+//     pub octaves: usize,
+//     pub lacunarity: f64,
+//     pub persistence: f64,
+//     pub offset_x: i32,
+//     pub offset_y: i32,
+//     pub distortion: NoiseDistortion,
+// }
 
-impl Default for PerlinNoiseConfig {
-    fn default() -> Self {
-        Self {
-            auto_generate: true,
-            seed: Some(15759246571423803862),
-            frequency: 0.01,
-            octaves: 4,
-            lacunarity: 2.0,
-            persistence: 0.5,
-            offset_x: 0,
-            offset_y: 0,
-            distortion: NoiseDistortion::RawValue,
-        }
-    }
-}
+// impl Default for PerlinNoiseConfig {
+//     fn default() -> Self {
+//         Self {
+//             auto_generate: true,
+//             seed: Some(15759246571423803862),
+//             frequency: 0.01,
+//             octaves: 4,
+//             lacunarity: 2.0,
+//             persistence: 0.5,
+//             offset_x: 0,
+//             offset_y: 0,
+//             distortion: NoiseDistortion::RawValue,
+//         }
+//     }
+// }
 
 // http://www-cs-students.stanford.edu/~amitp/game-programming/polygon-map-generation/
 
@@ -66,15 +67,15 @@ impl Default for PerlinNoiseConfig {
 // 3	TAIGA	SHRUBLAND	TEMPERATE DESERT
 // 2	TEMPERATE RAIN FOREST	TEMPERATE DECIDUOUS FOREST	GRASSLAND	TEMPERATE DESERT
 // 1 (low)	TROPICAL RAIN FOREST	TROPICAL SEASONAL FOREST	GRASSLAND	SUBTROPICAL DESERT
-pub fn generate(generator_config: &Res<PerlinNoiseConfig>) -> Vec<Vec<Tile>> {
-    let mut rng = match generator_config.seed {
+pub fn generate() -> Vec<Vec<Tile>> {
+    let mut rng = match config().map_generator.seed {
         Some(seed) => ChaCha8Rng::seed_from_u64(seed),
         None => ChaCha8Rng::from_os_rng(),
     };
 
-    let height_noise = generate_noise(rng.random(), generator_config.as_ref());
-    let humidity_noise = generate_noise(rng.random(), generator_config.as_ref());
-    let props_noise = generate_noise(rng.random(), generator_config.as_ref());
+    let height_noise = generate_noise(rng.random(), &config().map_generator.general_noise);
+    let humidity_noise = generate_noise(rng.random(), &config().map_generator.general_noise);
+    let props_noise = generate_noise(rng.random(), &config().map_generator.props_noise);
 
     let mut grid = vec![
         vec![
@@ -196,101 +197,101 @@ fn noise_value(
     ((noise_value + 1.0) / 2.0) as f32
 }
 
-#[cfg(feature = "bevy_egui")]
-fn ui_system(
-    mut commands: Commands,
-    mut egui_contexts: bevy_inspector_egui::bevy_egui::EguiContexts,
-    mut generator_config: ResMut<PerlinNoiseConfig>,
-) {
-    let ctx = egui_contexts.ctx_mut().unwrap();
-
-    bevy_egui::egui::Window::new("Perlin Noise Settings").show(ctx, |ui| {
-        let mut is_changed = false;
-
-        ui.add(bevy_egui::egui::Checkbox::new(
-            &mut generator_config.auto_generate,
-            "Auto Generate",
-        ));
-
-        is_changed |= ui
-            .add(
-                egui::Slider::new(&mut generator_config.frequency, 0.001..=0.2)
-                    .text("Frequency")
-                    .logarithmic(true),
-            )
-            .changed();
-
-        let mut octaves = generator_config.octaves as i32;
-        if ui
-            .add(egui::Slider::new(&mut octaves, 1..=8).text("Octaves"))
-            .changed()
-        {
-            generator_config.octaves = octaves as usize;
-            is_changed = true;
-        }
-
-        is_changed |= ui
-            .add(egui::Slider::new(&mut generator_config.lacunarity, 1.0..=4.0).text("Lacunarity"))
-            .changed();
-
-        is_changed |= ui
-            .add(
-                egui::Slider::new(&mut generator_config.persistence, 0.0..=1.0).text("Persistence"),
-            )
-            .changed();
-
-        // Add ComboBox for noise distortion type
-        egui::ComboBox::from_label("Noise Distortion")
-            .selected_text(format!("{:?}", generator_config.distortion))
-            .show_ui(ui, |ui| {
-                is_changed |= ui
-                    .selectable_value(
-                        &mut generator_config.distortion,
-                        NoiseDistortion::RawValue,
-                        "Raw Value",
-                    )
-                    .changed();
-                is_changed |= ui
-                    .selectable_value(
-                        &mut generator_config.distortion,
-                        NoiseDistortion::EdgeShape,
-                        "Edge Shape",
-                    )
-                    .changed();
-                is_changed |= ui
-                    .selectable_value(
-                        &mut generator_config.distortion,
-                        NoiseDistortion::Distortion,
-                        "Distortion",
-                    )
-                    .changed();
-                is_changed |= ui
-                    .selectable_value(
-                        &mut generator_config.distortion,
-                        NoiseDistortion::Skewed,
-                        "Skewed",
-                    )
-                    .changed();
-            });
-
-        let generate_new_seed_button = ui.button("Generate New Seed");
-        if generate_new_seed_button.clicked() {
-            generator_config.seed = Some(rand::random());
-            is_changed = true;
-        }
-
-        let maybe_button = if generator_config.auto_generate {
-            None
-        } else {
-            Some(ui.button("Generate"))
-        };
-
-        if (maybe_button.is_some() && maybe_button.unwrap().clicked())
-            || (generator_config.auto_generate && is_changed)
-        {
-            commands.trigger(log_event!(RebuildMapEvent {
-                generator_kind: GeneratorKind::PerlinNoise
-            }));
-        }
-    });
-}
+// #[cfg(feature = "bevy_egui")]
+// fn ui_system(
+//     mut commands: Commands,
+//     mut egui_contexts: bevy_inspector_egui::bevy_egui::EguiContexts,
+//     mut generator_config: ResMut<PerlinNoiseConfig>,
+// ) {
+//     let ctx = egui_contexts.ctx_mut().unwrap();
+//
+//     bevy_egui::egui::Window::new("Perlin Noise Settings").show(ctx, |ui| {
+//         let mut is_changed = false;
+//
+//         ui.add(bevy_egui::egui::Checkbox::new(
+//             &mut generator_config.auto_generate,
+//             "Auto Generate",
+//         ));
+//
+//         is_changed |= ui
+//             .add(
+//                 egui::Slider::new(&mut generator_config.frequency, 0.001..=0.2)
+//                     .text("Frequency")
+//                     .logarithmic(true),
+//             )
+//             .changed();
+//
+//         let mut octaves = generator_config.octaves as i32;
+//         if ui
+//             .add(egui::Slider::new(&mut octaves, 1..=8).text("Octaves"))
+//             .changed()
+//         {
+//             generator_config.octaves = octaves as usize;
+//             is_changed = true;
+//         }
+//
+//         is_changed |= ui
+//             .add(egui::Slider::new(&mut generator_config.lacunarity, 1.0..=4.0).text("Lacunarity"))
+//             .changed();
+//
+//         is_changed |= ui
+//             .add(
+//                 egui::Slider::new(&mut generator_config.persistence, 0.0..=1.0).text("Persistence"),
+//             )
+//             .changed();
+//
+//         // Add ComboBox for noise distortion type
+//         egui::ComboBox::from_label("Noise Distortion")
+//             .selected_text(format!("{:?}", generator_config.distortion))
+//             .show_ui(ui, |ui| {
+//                 is_changed |= ui
+//                     .selectable_value(
+//                         &mut generator_config.distortion,
+//                         NoiseDistortion::RawValue,
+//                         "Raw Value",
+//                     )
+//                     .changed();
+//                 is_changed |= ui
+//                     .selectable_value(
+//                         &mut generator_config.distortion,
+//                         NoiseDistortion::EdgeShape,
+//                         "Edge Shape",
+//                     )
+//                     .changed();
+//                 is_changed |= ui
+//                     .selectable_value(
+//                         &mut generator_config.distortion,
+//                         NoiseDistortion::Distortion,
+//                         "Distortion",
+//                     )
+//                     .changed();
+//                 is_changed |= ui
+//                     .selectable_value(
+//                         &mut generator_config.distortion,
+//                         NoiseDistortion::Skewed,
+//                         "Skewed",
+//                     )
+//                     .changed();
+//             });
+//
+//         let generate_new_seed_button = ui.button("Generate New Seed");
+//         if generate_new_seed_button.clicked() {
+//             generator_config.seed = Some(rand::random());
+//             is_changed = true;
+//         }
+//
+//         let maybe_button = if generator_config.auto_generate {
+//             None
+//         } else {
+//             Some(ui.button("Generate"))
+//         };
+//
+//         if (maybe_button.is_some() && maybe_button.unwrap().clicked())
+//             || (generator_config.auto_generate && is_changed)
+//         {
+//             commands.trigger(log_event!(RebuildMapEvent {
+//                 generator_kind: GeneratorKind::PerlinNoise
+//             }));
+//         }
+//     });
+// }
