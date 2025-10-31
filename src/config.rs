@@ -6,6 +6,7 @@ use std::{fs::File, io::Read};
 use crate::DebugNoiseState;
 
 pub const TILE_Z_INDEX: f32 = 0.0;
+pub const PROP_Z_INDEX: f32 = 5.0;
 pub const STRUCTURE_Z_INDEX: f32 = 10.0;
 pub const PAWN_Z_INDEX: f32 = 20.0;
 pub const ITEM_Z_INDEX: f32 = 40.0;

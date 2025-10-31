@@ -62,6 +62,9 @@ pub struct TextureAssets {
     #[asset(path = "sprites/house_4.png")]
     pub house_4: Handle<Image>,
 
+    #[asset(path = "sprites/tree/tree_1.png")]
+    pub tree_1: Handle<Image>,
+
     // prompt: round basin full of deep water, rough stone and stone border, minimal details, top down view, pixel art, texture for sprite, clean water, transparent background
     //
     // negativeprompt: blurry, shadows,  hole at center, shadow, basin shadow

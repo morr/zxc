@@ -10,6 +10,7 @@ pub fn generate_map(
     let grid = generator::perlin_noise::generate();
 
     spawn_tiles(&mut commands, &assets, &mut navmesh, &grid);
+    spawn_trees(&mut commands, &assets, &mut navmesh, &grid);
 }
 
 fn spawn_tiles(
@@ -39,6 +40,43 @@ fn spawn_tiles(
             navmesh.add_occupant::<Tile>(&id, tile.grid_tile.x, tile.grid_tile.y);
             // no need to inform about occupation change for spawned empty map tiles
             // occupation_change_event_writer.write(log_message!(OccupationChangeEvent::new(grid_tile)));
+        }
+    }
+}
+
+fn spawn_trees(
+    commands: &mut Commands,
+    assets: &Res<TextureAssets>,
+    navmesh: &mut Navmesh,
+    grid: &[Vec<Tile>],
+) {
+    // use rand::Rng;
+    // let mut rng = rand::thread_rng();
+
+    for row in grid.iter().rev() {
+        for tile in row.iter().rev() {
+            // if tile.height_noise >= 0.6 && tile.humidity_noise >= 0.6 && tile.props_noise >= 0.6 {
+            if tile.height_noise >= 0.6 && tile.props_noise >= 0.7 {
+                let tree_image = assets.tree_1.clone();
+                // let tree_image = if rng.random_bool(0.5) {
+                //     assets.tree_1.clone()
+                // } else {
+                //     assets.tree_2.clone()
+                // };
+
+                commands.spawn((
+                    Sprite {
+                        image: tree_image,
+                        custom_size: Some(Vec2::new(config().tile.size, config().tile.size * 2.)),
+                        ..default()
+                    },
+                    Transform::from_xyz(
+                        grid_tile_edge_to_world(tile.grid_tile.x) + config().tile.size / 2.,
+                        grid_tile_edge_to_world(tile.grid_tile.y) + config().tile.size,
+                        PROP_Z_INDEX,
+                    ),
+                ));
+            }
         }
     }
 }
