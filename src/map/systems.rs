@@ -56,7 +56,7 @@ fn spawn_trees(
     for row in grid.iter().rev() {
         for tile in row.iter().rev() {
             // if tile.height_noise >= 0.6 && tile.humidity_noise >= 0.6 && tile.props_noise >= 0.6 {
-            if tile.height_noise >= 0.6 && tile.props_noise >= 0.7 {
+            if tile.height_noise >= 0.6 && tile.props_noise >= 0.5 {
                 let tree_image = assets.tree_1.clone();
                 // let tree_image = if rng.random_bool(0.5) {
                 //     assets.tree_1.clone()
