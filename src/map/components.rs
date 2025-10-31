@@ -50,3 +50,29 @@ pub struct RebuildMapCompleteEvent;
 pub enum GeneratorKind {
     PerlinNoise,
 }
+
+pub struct TileItem {
+    pub grid_tile: IVec2,
+    pub width: i32,
+    pub height: i32,
+    pub aspect_ratio: f32,
+}
+
+impl TileItem {
+    pub fn sprite_size(&self) -> Vec2 {
+        let world_width = grid_tile_edge_to_world(self.width);
+        Vec2::new(world_width, world_width / self.aspect_ratio)
+    }
+
+    // pub fn sprite_height(width: f32, aspectratio: f32) -> f32 {
+    //     width / aspectratio
+    // }
+    //
+    pub fn sprite_transform(&self, z_index: f32) -> Transform {
+        Transform::from_xyz(
+            grid_tile_edge_to_world(self.grid_tile.x) + grid_tile_edge_to_world(self.width) / 2.,
+            grid_tile_edge_to_world(self.grid_tile.y) + grid_tile_edge_to_world(self.height) / 2.,
+            z_index,
+        )
+    }
+}

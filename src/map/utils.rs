@@ -12,22 +12,6 @@ pub fn world_pos_to_grid(value: f32) -> i32 {
     (value / config().tile.size).floor() as i32
 }
 
-pub fn sprite_size(width: f32, aspectratio: f32) -> Vec2 {
-    Vec2::new(width, sprite_height(width, aspectratio))
-}
-
-pub fn sprite_height(width: f32, aspectratio: f32) -> f32 {
-    width / aspectratio
-}
-
-pub fn sprite_transform(grid_tile: IVec2, sprite_size: Vec2, z_index: f32) -> Transform {
-    Transform::from_xyz(
-        grid_tile_edge_to_world(grid_tile.x) + sprite_size.x / 2.,
-        grid_tile_edge_to_world(grid_tile.y) + sprite_size.y / 2.,
-        z_index,
-    )
-}
-
 pub trait WorldTranslationHelper {
     fn world_pos_to_grid(&self) -> IVec2;
 }
