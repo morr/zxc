@@ -47,7 +47,7 @@ fn spawn_tiles(
 fn spawn_trees(
     commands: &mut Commands,
     assets: &Res<TextureAssets>,
-    navmesh: &mut Navmesh,
+    // navmesh: &mut Navmesh,
     grid: &[Vec<Tile>],
 ) {
     // use rand::Rng;
@@ -58,6 +58,7 @@ fn spawn_trees(
             // if tile.height_noise >= 0.6 && tile.humidity_noise >= 0.6 && tile.props_noise >= 0.6 {
             if tile.height_noise >= 0.6 && tile.props_noise >= 0.5 {
                 let tree_image = assets.tree_1.clone();
+                let size = sprite_size(config().tile.size, 768.0 / 1024.0);
                 // let tree_image = if rng.random_bool(0.5) {
                 //     assets.tree_1.clone()
                 // } else {
@@ -67,14 +68,10 @@ fn spawn_trees(
                 commands.spawn((
                     Sprite {
                         image: tree_image,
-                        custom_size: Some(Vec2::new(config().tile.size, config().tile.size * 2.)),
+                        custom_size: Some(size),
                         ..default()
                     },
-                    Transform::from_xyz(
-                        grid_tile_edge_to_world(tile.grid_tile.x) + config().tile.size / 2.,
-                        grid_tile_edge_to_world(tile.grid_tile.y) + config().tile.size,
-                        PROP_Z_INDEX,
-                    ),
+                    sprite_transform(tile.grid_tile, size, PROP_Z_INDEX)
                 ));
             }
         }
