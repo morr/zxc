@@ -56,6 +56,8 @@ pub struct TileItem {
     pub width: i32,
     pub height: i32,
     pub aspect_ratio: f32,
+    pub z_index: f32,
+    pub movement_cost: f32,
 }
 
 impl TileItem {
@@ -64,15 +66,20 @@ impl TileItem {
         Vec2::new(world_width, world_width / self.aspect_ratio)
     }
 
-    // pub fn sprite_height(width: f32, aspectratio: f32) -> f32 {
-    //     width / aspectratio
-    // }
-    //
-    pub fn sprite_transform(&self, z_index: f32) -> Transform {
+    pub fn sprite_transform(&self) -> Transform {
         Transform::from_xyz(
             grid_tile_edge_to_world(self.grid_tile.x) + grid_tile_edge_to_world(self.width) / 2.,
             grid_tile_edge_to_world(self.grid_tile.y) + grid_tile_edge_to_world(self.height) / 2.,
-            z_index,
+            self.z_index,
         )
+    }
+
+    pub fn sync_navmesh<T: 'static>(&self, id: Entity, navmesh: &mut Navmesh) {
+        navmesh.update_cost(
+            (self.grid_tile.x)..(self.grid_tile.x + self.width),
+            (self.grid_tile.y)..(self.grid_tile.y + self.height),
+            Navtile::config_cost_to_pathfinding_cost(self.movement_cost),
+        );
+        navmesh.add_occupant::<T>(&id, self.grid_tile.x, self.grid_tile.y);
     }
 }

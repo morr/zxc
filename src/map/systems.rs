@@ -59,11 +59,13 @@ fn spawn_trees(
             if tile.height_noise >= 0.6 && tile.props_noise >= 0.5 {
                 let tree_image = assets.tree_1.clone();
                 // let size = sprite_size(config().tile.size, 768.0 / 1024.0);
-                let tile_item_size = TileItem {
+                let tile_item = TileItem {
                     grid_tile: tile.grid_tile,
                     width: 1,
                     height: 1,
                     aspect_ratio: 768.0 / 1024.0,
+                    z_index: PROP_Z_INDEX,
+                    movement_cost: 1.0
                 };
                 // let tree_image = if rng.random_bool(0.5) {
                 //     assets.tree_1.clone()
@@ -74,10 +76,10 @@ fn spawn_trees(
                 commands.spawn((
                     Sprite {
                         image: tree_image,
-                        custom_size: Some(tile_item_size.sprite_size()),
+                        custom_size: Some(tile_item.sprite_size()),
                         ..default()
                     },
-                    tile_item_size.sprite_transform(PROP_Z_INDEX),
+                    tile_item.sprite_transform(),
                     // sprite_transform(tile.grid_tile, size, PROP_Z_INDEX),
                 ));
             }
