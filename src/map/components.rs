@@ -69,7 +69,7 @@ impl TileItem {
     pub fn sprite_transform(&self) -> Transform {
         Transform::from_xyz(
             grid_tile_edge_to_world(self.grid_tile.x) + grid_tile_edge_to_world(self.width) / 2.,
-            grid_tile_edge_to_world(self.grid_tile.y) + grid_tile_edge_to_world(self.height) / 2.,
+            grid_tile_edge_to_world(self.grid_tile.y) + grid_tile_edge_to_world(self.width) / self.aspect_ratio / 2.,
             self.z_index,
         )
     }
