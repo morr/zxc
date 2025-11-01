@@ -66,10 +66,15 @@ impl TileItem {
         Vec2::new(world_width, world_width / self.aspect_ratio)
     }
 
-    pub fn sprite_transform(&self) -> Transform {
+    pub fn sprite_transform(&self, maybe_offset: Option<Vec2>) -> Transform {
+        let offset = maybe_offset.unwrap_or_default(); // Vec2::ZERO
         Transform::from_xyz(
-            grid_tile_edge_to_world(self.grid_tile.x) + grid_tile_edge_to_world(self.width) / 2.,
-            grid_tile_edge_to_world(self.grid_tile.y) + grid_tile_edge_to_world(self.width) / self.aspect_ratio / 2.,
+            grid_tile_edge_to_world(self.grid_tile.x)
+                + grid_tile_edge_to_world(self.width) / 2.
+                + offset.x * config().tile.size,
+            grid_tile_edge_to_world(self.grid_tile.y)
+                + grid_tile_edge_to_world(self.width) / self.aspect_ratio / 2.
+                + offset.y * config().tile.size,
             self.z_index,
         )
     }

@@ -58,7 +58,7 @@ impl Bed {
                 //     (grid_tile.grid_tile_edge_to_world() + size.grid_tile_edge_to_world() / 2.0)
                 //         .extend(STRUCTURE_Z_INDEX),
                 // ),
-                tile_item.sprite_transform(),
+                tile_item.sprite_transform(None),
             ))
             // .insert(ShowAabbGizmo {
             //     colo: Some(Color::srgba(1.0, 1.0, 1.0, 0.25)),

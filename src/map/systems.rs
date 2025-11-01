@@ -73,9 +73,10 @@ fn spawn_trees(
             custom_size: Some(tile_item.sprite_size()),
             ..default()
         },
-        tile_item.sprite_transform(),
+        tile_item.sprite_transform(None),
         // sprite_transform(tile.grid_tile, size, PROP_Z_INDEX),
     ));
+    println!("{:?}", tile_item.sprite_size());
 
     for row in grid.iter().rev() {
         for tile in row.iter().rev() {
@@ -103,7 +104,7 @@ fn spawn_trees(
                         custom_size: Some(tile_item.sprite_size()),
                         ..default()
                     },
-                    tile_item.sprite_transform(),
+                    tile_item.sprite_transform(None),
                     // sprite_transform(tile.grid_tile, size, PROP_Z_INDEX),
                 ));
             }
