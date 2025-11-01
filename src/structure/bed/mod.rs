@@ -34,7 +34,15 @@ impl Bed {
         navmesh: &mut Navmesh,
         available_beds: &mut ResMut<AvailableBeds>,
     ) {
-        let size = IVec2::new(BED_SIZE, BED_SIZE);
+        // let size = IVec2::new(BED_SIZE, BED_SIZE);
+        let tile_item = TileItem {
+            grid_tile,
+            width: BED_SIZE,
+            height: BED_SIZE,
+            aspect_ratio: 1.0,
+            z_index: STRUCTURE_Z_INDEX,
+            movement_cost: config().movement_cost.furniture,
+        };
 
         let id = commands
             .spawn((
@@ -42,25 +50,28 @@ impl Bed {
                 Name::new("Bed"),
                 Sprite {
                     image: texture,
-                    custom_size: Some(size.grid_tile_edge_to_world()),
+                    // custom_size: Some(size.grid_tile_edge_to_world()),
+                    custom_size: Some(tile_item.sprite_size()),
                     ..default()
                 },
-                Transform::from_translation(
-                    (grid_tile.grid_tile_edge_to_world() + size.grid_tile_edge_to_world() / 2.0)
-                        .extend(STRUCTURE_Z_INDEX),
-                ),
+                // Transform::from_translation(
+                //     (grid_tile.grid_tile_edge_to_world() + size.grid_tile_edge_to_world() / 2.0)
+                //         .extend(STRUCTURE_Z_INDEX),
+                // ),
+                tile_item.sprite_transform(),
             ))
             // .insert(ShowAabbGizmo {
             //     colo: Some(Color::srgba(1.0, 1.0, 1.0, 0.25)),
             // })
             .id();
 
-        navmesh.update_cost(
-            (grid_tile.x)..(grid_tile.x + size.x),
-            (grid_tile.y)..(grid_tile.y + size.y),
-            Navtile::config_cost_to_pathfinding_cost(config().movement_cost.furniture),
-        );
-        navmesh.add_occupant::<Bed>(&id, grid_tile.x, grid_tile.y);
+        // navmesh.update_cost(
+        //     (grid_tile.x)..(grid_tile.x + size.x),
+        //     (grid_tile.y)..(grid_tile.y + size.y),
+        //     Navtile::config_cost_to_pathfinding_cost(config().movement_cost.furniture),
+        // );
+        // navmesh.add_occupant::<Bed>(&id, grid_tile.x, grid_tile.y);
+        tile_item.sync_navmesh::<Bed>(id, navmesh);
 
         available_beds.increment();
     }

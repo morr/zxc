@@ -19,6 +19,7 @@ impl Storage {
         texture: Handle<Image>,
         navmesh: &mut Navmesh,
     ) {
+        // let size = IVec2::new(STORAGE_SIZE, STORAGE_SIZE);
         let tile_item = TileItem {
             grid_tile,
             width: STORAGE_SIZE,
@@ -34,9 +35,14 @@ impl Storage {
                 Name::new("Storage"),
                 Sprite {
                     image: texture,
+                    // custom_size: Some(size.grid_tile_edge_to_world()),
                     custom_size: Some(tile_item.sprite_size()),
                     ..default()
                 },
+                // Transform::from_translation(
+                //     (grid_tile.grid_tile_edge_to_world() + size.grid_tile_edge_to_world() / 2.0)
+                //         .extend(STRUCTURE_Z_INDEX),
+                // ),
                 tile_item.sprite_transform(),
             ))
             // .insert(ShowAabbGizmo {
@@ -44,13 +50,13 @@ impl Storage {
             // })
             .id();
 
-        tile_item.sync_navmesh::<Storage>(id, navmesh);
         // navmesh.update_cost(
         //     (grid_tile.x)..(grid_tile.x + size.x),
         //     (grid_tile.y)..(grid_tile.y + size.y),
         //     Navtile::config_cost_to_pathfinding_cost(config().movement_cost.furniture),
         // );
         // navmesh.add_occupant::<Storage>(&id, grid_tile.x, grid_tile.y);
+        tile_item.sync_navmesh::<Storage>(id, navmesh);
     }
 }
 
