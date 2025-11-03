@@ -1,4 +1,5 @@
 use super::*;
+use rand::Rng;
 
 pub fn generate_map(
     mut commands: Commands,
@@ -53,30 +54,35 @@ fn spawn_trees(
     // use rand::Rng;
     // let mut rng = rand::thread_rng();
 
-    let tile_item = TileItem {
-        grid_tile: IVec2 { x: 0, y: 0 },
-        width: 1,
-        height: 1,
-        aspect_ratio: 768.0 / 1024.0,
-        z_index: PROP_Z_INDEX,
-        movement_cost: 1.0,
-    };
+    let mut rng = rand::rng();
+    // let tile_item = TileItem {
+    //     grid_tile: IVec2 { x: 0, y: 0 },
+    //     width: 1,
+    //     height: 1,
+    //     aspect_ratio: 768.0 / 1024.0,
+    //     z_index: PROP_Z_INDEX,
+    //     movement_cost: 1.0,
+    // };
     // let tree_image = if rng.random_bool(0.5) {
     //     assets.tree_1.clone()
     // } else {
     //     assets.tree_2.clone()
     // };
-
-    commands.spawn((
-        Sprite {
-            image: assets.tree_1.clone(),
-            custom_size: Some(tile_item.sprite_size()),
-            ..default()
-        },
-        tile_item.sprite_transform(None),
-        // sprite_transform(tile.grid_tile, size, PROP_Z_INDEX),
-    ));
-    println!("{:?}", tile_item.sprite_size());
+    // let random_angle: f32 = rng.random_range(0.0..360.0);
+    //
+    // commands.spawn((
+    //     Sprite {
+    //         image: assets.tree_1.clone(),
+    //         custom_size: Some(tile_item.sprite_size()),
+    //         ..default()
+    //     },
+    //     tile_item.sprite_transform(Some(Vec2 {
+    //         x: random_angle.cos() * 0.35,
+    //         y: random_angle.sin() * 0.5,
+    //     })),
+    //     // sprite_transform(tile.grid_tile, size, PROP_Z_INDEX),
+    // ));
+    // println!("{:?}", tile_item.sprite_size());
 
     for row in grid.iter().rev() {
         for tile in row.iter().rev() {
@@ -92,6 +98,7 @@ fn spawn_trees(
                     z_index: PROP_Z_INDEX,
                     movement_cost: 1.0,
                 };
+                let random_angle: f32 = rng.random_range(0.0..360.0);
                 // let tree_image = if rng.random_bool(0.5) {
                 //     assets.tree_1.clone()
                 // } else {
@@ -104,7 +111,10 @@ fn spawn_trees(
                         custom_size: Some(tile_item.sprite_size()),
                         ..default()
                     },
-                    tile_item.sprite_transform(None),
+                    tile_item.sprite_transform(Some(Vec2 {
+                        x: random_angle.cos() * 0.35,
+                        y: random_angle.sin().abs() * 0.5,
+                    })),
                     // sprite_transform(tile.grid_tile, size, PROP_Z_INDEX),
                 ));
             }
