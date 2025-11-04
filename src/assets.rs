@@ -112,6 +112,8 @@ pub struct TreeAssets {
     pub tree_1x2_8: Handle<Image>,
     #[asset(path = "sprites/tree/1x2_9.png")]
     pub tree_1x2_9: Handle<Image>,
+    #[asset(path = "sprites/tree/1x2_10.png")]
+    pub tree_1x2_10: Handle<Image>,
 
     #[asset(path = "sprites/tree/1x3_1.png")]
     pub tree_1x3_1: Handle<Image>,

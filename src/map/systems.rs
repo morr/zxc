@@ -64,6 +64,7 @@ fn spawn_trees(
         (assets.tree_1x2_7.clone(), TreeAssets::ASPECT_RATIO_1X2),
         (assets.tree_1x2_8.clone(), TreeAssets::ASPECT_RATIO_1X2),
         (assets.tree_1x2_9.clone(), TreeAssets::ASPECT_RATIO_1X2),
+        (assets.tree_1x2_10.clone(), TreeAssets::ASPECT_RATIO_1X2),
         (assets.tree_1x3_1.clone(), TreeAssets::ASPECT_RATIO_1X3),
         (assets.tree_1x3_2.clone(), TreeAssets::ASPECT_RATIO_1X3),
         (assets.tree_1x3_3.clone(), TreeAssets::ASPECT_RATIO_1X3),
