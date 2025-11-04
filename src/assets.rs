@@ -118,17 +118,26 @@ pub struct TreeAssets {
     #[asset(path = "sprites/tree/tree_1x3_8.png")]
     pub tree_1x3_8: Handle<Image>,
 
+    #[asset(path = "sprites/tree/tree_2x3_1.png")]
+    pub tree_2x3_1: Handle<Image>,
+
+    #[asset(path = "sprites/tree/tree_2x3_2.png")]
+    pub tree_2x3_2: Handle<Image>,
+
+    #[asset(path = "sprites/tree/tree_2x3_3.png")]
+    pub tree_2x3_3: Handle<Image>,
+
+    #[asset(path = "sprites/tree/tree_2x3_4.png")]
+    pub tree_2x3_4: Handle<Image>,
+
     // Prompt: single {chestnut, willow tree, oak, chestnut, aspen, birch, pine, fir, eucalyptus} tree, topdown view, {blank, white, empty, transparent} background
     // Negative Prompt: shadows, grass, extra details, extra details, {soil, earth, grass, water} around roots, {grass, water, foundation, soil, roots} circle, yellow leafs
     // Model: superPixelartXLMV1_v10, Seed: 1871244719, Steps: 30, CFG Scale: 5, Aspect Ratio: Custom, Width: 768, Height: 1024, Sampler: DPM++ 3M SDE, GPU Seeded, Scheduler: Karras, Automatic VAE: true,
     #[asset(path = "sprites/tree/tree_3x4_1.png")]
     pub tree_3x4_1: Handle<Image>,
 
-    #[asset(path = "sprites/tree/tree_2x3_1.png")]
-    pub tree_2x3_1: Handle<Image>,
-
-    #[asset(path = "sprites/tree/tree_2x3_2.png")]
-    pub tree_2x3_2: Handle<Image>,
+    #[asset(path = "sprites/tree/tree_3x4_2.png")]
+    pub tree_3x4_2: Handle<Image>,
 
 }
 impl TreeAssets {
