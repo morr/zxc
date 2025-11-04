@@ -54,29 +54,28 @@ fn spawn_trees(
 ) {
     let mut rng = rand::rng();
 
+    let tree_variants: [(Handle<Image>, f32); 14] = [
+        (assets.tree_1x3_1.clone(), TreeAssets::ASPECT_RATIO_1X3),
+        (assets.tree_1x3_2.clone(), TreeAssets::ASPECT_RATIO_1X3),
+        (assets.tree_1x3_3.clone(), TreeAssets::ASPECT_RATIO_1X3),
+        (assets.tree_1x3_4.clone(), TreeAssets::ASPECT_RATIO_1X3),
+        (assets.tree_1x3_5.clone(), TreeAssets::ASPECT_RATIO_1X3),
+        (assets.tree_1x3_6.clone(), TreeAssets::ASPECT_RATIO_1X3),
+        (assets.tree_1x3_7.clone(), TreeAssets::ASPECT_RATIO_1X3),
+        (assets.tree_1x3_8.clone(), TreeAssets::ASPECT_RATIO_1X3),
+        (assets.tree_2x3_1.clone(), TreeAssets::ASPECT_RATIO_2X3),
+        (assets.tree_2x3_2.clone(), TreeAssets::ASPECT_RATIO_2X3),
+        (assets.tree_2x3_3.clone(), TreeAssets::ASPECT_RATIO_2X3),
+        (assets.tree_2x3_4.clone(), TreeAssets::ASPECT_RATIO_2X3),
+        (assets.tree_3x4_1.clone(), TreeAssets::ASPECT_RATIO_3X4),
+        (assets.tree_3x4_2.clone(), TreeAssets::ASPECT_RATIO_3X4),
+    ];
+
     for row in grid.iter().rev() {
         for tile in row.iter().rev() {
             // if tile.height_noise >= 0.6 && tile.humidity_noise >= 0.6 && tile.props_noise >= 0.6 {
             if tile.height_noise >= 0.6 && tile.props_noise >= 0.5 {
-                let tree_variant = rng.random_range(0..14);
-                let (tree_image, aspect_ratio) = match tree_variant {
-                    0 => (assets.tree_1x3_1.clone(), TreeAssets::ASPECT_RATIO_1X3),
-                    1 => (assets.tree_1x3_2.clone(), TreeAssets::ASPECT_RATIO_1X3),
-                    2 => (assets.tree_1x3_3.clone(), TreeAssets::ASPECT_RATIO_1X3),
-                    3 => (assets.tree_1x3_4.clone(), TreeAssets::ASPECT_RATIO_1X3),
-                    4 => (assets.tree_1x3_5.clone(), TreeAssets::ASPECT_RATIO_1X3),
-                    5 => (assets.tree_1x3_6.clone(), TreeAssets::ASPECT_RATIO_1X3),
-                    6 => (assets.tree_1x3_7.clone(), TreeAssets::ASPECT_RATIO_1X3),
-                    7 => (assets.tree_1x3_7.clone(), TreeAssets::ASPECT_RATIO_1X3),
-                    8 => (assets.tree_2x3_1.clone(), TreeAssets::ASPECT_RATIO_2X3),
-                    9 => (assets.tree_2x3_2.clone(), TreeAssets::ASPECT_RATIO_2X3),
-                    10 => (assets.tree_2x3_3.clone(), TreeAssets::ASPECT_RATIO_2X3),
-                    11 => (assets.tree_2x3_4.clone(), TreeAssets::ASPECT_RATIO_2X3),
-                    12 => (assets.tree_3x4_1.clone(), TreeAssets::ASPECT_RATIO_3X4),
-                    13 => (assets.tree_3x4_2.clone(), TreeAssets::ASPECT_RATIO_3X4),
-                    _ => unreachable!(),
-                };
-
+                let (tree_image, aspect_ratio) = tree_variants[rng.random_range(0..14)].clone();
                 let tile_item = TileItem {
                     grid_tile: tile.grid_tile,
                     width: 1,
