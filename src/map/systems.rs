@@ -3,15 +3,16 @@ use rand::Rng;
 
 pub fn generate_map(
     mut commands: Commands,
-    assets: Res<TextureAssets>,
+    texture_assets: Res<TextureAssets>,
+    tree_assets: Res<TreeAssets>,
     // pn_config: Res<generator::perlin_noise::PerlinNoiseConfig>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     let mut navmesh = arc_navmesh.write();
     let grid = generator::perlin_noise::generate();
 
-    spawn_tiles(&mut commands, &assets, &mut navmesh, &grid);
-    spawn_trees(&mut commands, &assets, &mut navmesh, &grid);
+    spawn_tiles(&mut commands, &texture_assets, &mut navmesh, &grid);
+    spawn_trees(&mut commands, &tree_assets, &mut navmesh, &grid);
 }
 
 fn spawn_tiles(
@@ -47,7 +48,7 @@ fn spawn_tiles(
 
 fn spawn_trees(
     commands: &mut Commands,
-    assets: &Res<TextureAssets>,
+    assets: &Res<TreeAssets>,
     _navmesh: &mut Navmesh,
     grid: &[Vec<Tile>],
 ) {
@@ -94,7 +95,7 @@ fn spawn_trees(
                     grid_tile: tile.grid_tile,
                     width: 1,
                     height: 1,
-                    aspect_ratio: 768.0 / 1024.0,
+                    aspect_ratio: TreeAssets::TREE_1_ASPECT_RATIO,
                     z_index: PROP_Z_INDEX,
                     movement_cost: 1.0,
                 };

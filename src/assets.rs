@@ -10,6 +10,7 @@ impl Plugin for AssetsPlugin {
                 .finally_init_resource::<MeshesCollection>()
                 .load_collection::<FontAssets>()
                 .load_collection::<TextureAssets>()
+                .load_collection::<TreeAssets>()
                 .load_collection::<IconAssets>()
                 .load_collection::<FarmAssets>(),
         );
@@ -62,9 +63,6 @@ pub struct TextureAssets {
     #[asset(path = "sprites/house_4.png")]
     pub house_4: Handle<Image>,
 
-    #[asset(path = "sprites/tree/tree_1.png")]
-    pub tree_1: Handle<Image>,
-
     // prompt: round basin full of deep water, rough stone and stone border, minimal details, top down view, pixel art, texture for sprite, clean water, transparent background
     //
     // negativeprompt: blurry, shadows,  hole at center, shadow, basin shadow
@@ -92,6 +90,16 @@ pub struct TextureAssets {
     // images: 25, seed: 2128735519, steps: 20, cfgscale: 7, aspectratio: 1:1, width: 1024, height: 1024, sampler: ddim, scheduler: karras, model: pixelArtDiffusionXL_spriteShaper.safetensors, swarm_version: 0.6.2.0, date: 2024-06-09, generation_time: 12.61 (prep) and 5.67 (gen) seconds,
     #[asset(path = "sprites/storage.png")]
     pub storage: Handle<Image>,
+}
+
+// thttps://itch.io/game-assets/free/tag-textures
+#[derive(AssetCollection, Resource)]
+pub struct TreeAssets {
+    #[asset(path = "sprites/tree/tree_1.png")]
+    pub tree_1: Handle<Image>,
+}
+impl TreeAssets {
+    pub const TREE_1_ASPECT_RATIO: f32 = 768.0 / 1024.0;
 }
 
 #[derive(AssetCollection, Resource)]
