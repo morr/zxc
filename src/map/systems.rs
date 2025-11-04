@@ -52,59 +52,37 @@ fn spawn_trees(
     _navmesh: &mut Navmesh,
     grid: &[Vec<Tile>],
 ) {
-    // use rand::Rng;
-    // let mut rng = rand::thread_rng();
-
     let mut rng = rand::rng();
-    // let tile_item = TileItem {
-    //     grid_tile: IVec2 { x: 0, y: 0 },
-    //     width: 1,
-    //     height: 1,
-    //     aspect_ratio: 768.0 / 1024.0,
-    //     z_index: PROP_Z_INDEX,
-    //     movement_cost: 1.0,
-    // };
-    // let tree_image = if rng.random_bool(0.5) {
-    //     assets.tree_1.clone()
-    // } else {
-    //     assets.tree_2.clone()
-    // };
-    // let random_angle: f32 = rng.random_range(0.0..360.0);
-    //
-    // commands.spawn((
-    //     Sprite {
-    //         image: assets.tree_1.clone(),
-    //         custom_size: Some(tile_item.sprite_size()),
-    //         ..default()
-    //     },
-    //     tile_item.sprite_transform(Some(Vec2 {
-    //         x: random_angle.cos() * 0.35,
-    //         y: random_angle.sin() * 0.5,
-    //     })),
-    //     // sprite_transform(tile.grid_tile, size, PROP_Z_INDEX),
-    // ));
-    // println!("{:?}", tile_item.sprite_size());
 
     for row in grid.iter().rev() {
         for tile in row.iter().rev() {
             // if tile.height_noise >= 0.6 && tile.humidity_noise >= 0.6 && tile.props_noise >= 0.6 {
             if tile.height_noise >= 0.6 && tile.props_noise >= 0.5 {
-                let tree_image = assets.tree_1.clone();
-                // let size = sprite_size(config().tile.size, 768.0 / 1024.0);
+                let tree_variant = rng.random_range(0..11);
+                let (tree_image, aspect_ratio) = match tree_variant {
+                    0 => (assets.tree_3x4_1.clone(), TreeAssets::ASPECT_RATIO_3X4),
+                    1 => (assets.tree_1x3_1.clone(), TreeAssets::ASPECT_RATIO_1X3),
+                    2 => (assets.tree_1x3_2.clone(), TreeAssets::ASPECT_RATIO_1X3),
+                    3 => (assets.tree_1x3_3.clone(), TreeAssets::ASPECT_RATIO_1X3),
+                    4 => (assets.tree_1x3_4.clone(), TreeAssets::ASPECT_RATIO_1X3),
+                    5 => (assets.tree_1x3_5.clone(), TreeAssets::ASPECT_RATIO_1X3),
+                    6 => (assets.tree_1x3_6.clone(), TreeAssets::ASPECT_RATIO_1X3),
+                    7 => (assets.tree_1x3_7.clone(), TreeAssets::ASPECT_RATIO_1X3),
+                    8 => (assets.tree_1x3_7.clone(), TreeAssets::ASPECT_RATIO_1X3),
+                    9 => (assets.tree_2x3_1.clone(), TreeAssets::ASPECT_RATIO_2X3),
+                    10 => (assets.tree_2x3_2.clone(), TreeAssets::ASPECT_RATIO_2X3),
+                    _ => unreachable!(),
+                };
+
                 let tile_item = TileItem {
                     grid_tile: tile.grid_tile,
                     width: 1,
                     height: 1,
-                    aspect_ratio: TreeAssets::TREE_1_ASPECT_RATIO,
+                    aspect_ratio,
                     z_index: PROP_Z_INDEX,
                     movement_cost: 1.0,
                 };
                 let random_angle: f32 = rng.random_range(0.0..360.0);
-                // let tree_image = if rng.random_bool(0.5) {
-                //     assets.tree_1.clone()
-                // } else {
-                //     assets.tree_2.clone()
-                // };
 
                 commands.spawn((
                     Sprite {
@@ -116,7 +94,6 @@ fn spawn_trees(
                         x: random_angle.cos() * 0.35,
                         y: random_angle.sin().abs() * 0.5,
                     })),
-                    // sprite_transform(tile.grid_tile, size, PROP_Z_INDEX),
                 ));
             }
         }
