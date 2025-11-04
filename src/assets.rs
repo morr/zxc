@@ -94,53 +94,63 @@ pub struct TextureAssets {
 
 #[derive(AssetCollection, Resource)]
 pub struct TreeAssets {
-    #[asset(path = "sprites/tree/tree_1x3_1.png")]
+    #[asset(path = "sprites/tree/1x2_1.png")]
+    pub tree_1x2_1: Handle<Image>,
+    #[asset(path = "sprites/tree/1x2_2.png")]
+    pub tree_1x2_2: Handle<Image>,
+    #[asset(path = "sprites/tree/1x2_3.png")]
+    pub tree_1x2_3: Handle<Image>,
+    #[asset(path = "sprites/tree/1x2_4.png")]
+    pub tree_1x2_4: Handle<Image>,
+    #[asset(path = "sprites/tree/1x2_5.png")]
+    pub tree_1x2_5: Handle<Image>,
+    #[asset(path = "sprites/tree/1x2_6.png")]
+    pub tree_1x2_6: Handle<Image>,
+    #[asset(path = "sprites/tree/1x2_7.png")]
+    pub tree_1x2_7: Handle<Image>,
+    #[asset(path = "sprites/tree/1x2_8.png")]
+    pub tree_1x2_8: Handle<Image>,
+    #[asset(path = "sprites/tree/1x2_9.png")]
+    pub tree_1x2_9: Handle<Image>,
+
+    #[asset(path = "sprites/tree/1x3_1.png")]
     pub tree_1x3_1: Handle<Image>,
-
-    #[asset(path = "sprites/tree/tree_1x3_2.png")]
+    #[asset(path = "sprites/tree/1x3_2.png")]
     pub tree_1x3_2: Handle<Image>,
-
-    #[asset(path = "sprites/tree/tree_1x3_3.png")]
+    #[asset(path = "sprites/tree/1x3_3.png")]
     pub tree_1x3_3: Handle<Image>,
-
-    #[asset(path = "sprites/tree/tree_1x3_4.png")]
+    #[asset(path = "sprites/tree/1x3_4.png")]
     pub tree_1x3_4: Handle<Image>,
-
-    #[asset(path = "sprites/tree/tree_1x3_5.png")]
+    #[asset(path = "sprites/tree/1x3_5.png")]
     pub tree_1x3_5: Handle<Image>,
-
-    #[asset(path = "sprites/tree/tree_1x3_6.png")]
+    #[asset(path = "sprites/tree/1x3_6.png")]
     pub tree_1x3_6: Handle<Image>,
-
-    #[asset(path = "sprites/tree/tree_1x3_7.png")]
+    #[asset(path = "sprites/tree/1x3_7.png")]
     pub tree_1x3_7: Handle<Image>,
-
-    #[asset(path = "sprites/tree/tree_1x3_8.png")]
+    #[asset(path = "sprites/tree/1x3_8.png")]
     pub tree_1x3_8: Handle<Image>,
 
-    #[asset(path = "sprites/tree/tree_2x3_1.png")]
+    #[asset(path = "sprites/tree/2x3_1.png")]
     pub tree_2x3_1: Handle<Image>,
-
-    #[asset(path = "sprites/tree/tree_2x3_2.png")]
+    #[asset(path = "sprites/tree/2x3_2.png")]
     pub tree_2x3_2: Handle<Image>,
-
-    #[asset(path = "sprites/tree/tree_2x3_3.png")]
+    #[asset(path = "sprites/tree/2x3_3.png")]
     pub tree_2x3_3: Handle<Image>,
-
-    #[asset(path = "sprites/tree/tree_2x3_4.png")]
+    #[asset(path = "sprites/tree/2x3_4.png")]
     pub tree_2x3_4: Handle<Image>,
 
     // Prompt: single {chestnut, willow tree, oak, chestnut, aspen, birch, pine, fir, eucalyptus} tree, topdown view, {blank, white, empty, transparent} background
     // Negative Prompt: shadows, grass, extra details, extra details, {soil, earth, grass, water} around roots, {grass, water, foundation, soil, roots} circle, yellow leafs
     // Model: superPixelartXLMV1_v10, Seed: 1871244719, Steps: 30, CFG Scale: 5, Aspect Ratio: Custom, Width: 768, Height: 1024, Sampler: DPM++ 3M SDE, GPU Seeded, Scheduler: Karras, Automatic VAE: true,
-    #[asset(path = "sprites/tree/tree_3x4_1.png")]
+    #[asset(path = "sprites/tree/3x4_1.png")]
     pub tree_3x4_1: Handle<Image>,
 
-    #[asset(path = "sprites/tree/tree_3x4_2.png")]
+    #[asset(path = "sprites/tree/3x4_2.png")]
     pub tree_3x4_2: Handle<Image>,
 
 }
 impl TreeAssets {
+    pub const ASPECT_RATIO_1X2: f32 = 512.0 / 1024.0;
     pub const ASPECT_RATIO_1X3: f32 = 512.0 / 1536.0;
     pub const ASPECT_RATIO_2X3: f32 = 512.0 / 768.0;
     pub const ASPECT_RATIO_3X4: f32 = 768.0 / 1024.0;

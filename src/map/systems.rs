@@ -54,7 +54,16 @@ fn spawn_trees(
 ) {
     let mut rng = rand::rng();
 
-    let tree_variants: [(Handle<Image>, f32); 14] = [
+    let tree_variants: [(Handle<Image>, f32); _] = [
+        (assets.tree_1x2_1.clone(), TreeAssets::ASPECT_RATIO_1X2),
+        (assets.tree_1x2_2.clone(), TreeAssets::ASPECT_RATIO_1X2),
+        (assets.tree_1x2_3.clone(), TreeAssets::ASPECT_RATIO_1X2),
+        (assets.tree_1x2_4.clone(), TreeAssets::ASPECT_RATIO_1X2),
+        (assets.tree_1x2_5.clone(), TreeAssets::ASPECT_RATIO_1X2),
+        (assets.tree_1x2_6.clone(), TreeAssets::ASPECT_RATIO_1X2),
+        (assets.tree_1x2_7.clone(), TreeAssets::ASPECT_RATIO_1X2),
+        (assets.tree_1x2_8.clone(), TreeAssets::ASPECT_RATIO_1X2),
+        (assets.tree_1x2_9.clone(), TreeAssets::ASPECT_RATIO_1X2),
         (assets.tree_1x3_1.clone(), TreeAssets::ASPECT_RATIO_1X3),
         (assets.tree_1x3_2.clone(), TreeAssets::ASPECT_RATIO_1X3),
         (assets.tree_1x3_3.clone(), TreeAssets::ASPECT_RATIO_1X3),
