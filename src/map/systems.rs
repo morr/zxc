@@ -84,7 +84,7 @@ fn spawn_trees(
     for row in grid.iter().rev() {
         for tile in row.iter().rev() {
             // if tile.height_noise >= 0.6 && tile.humidity_noise >= 0.6 && tile.props_noise >= 0.6 {
-            if tile.height_noise >= 0.6 && tile.props_noise >= 0.5 {
+            if tile.height_noise >= 0.6 && tile.props_noise >= 0.4 {
                 let (tree_image, aspect_ratio) = tree_variants[rng.random_range(0..14)].clone();
                 let tile_item = TileItem {
                     grid_tile: tile.grid_tile,
