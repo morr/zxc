@@ -3,16 +3,15 @@ mod apply_default_global_config;
 mod pawn {
     use std::time::Duration;
 
-    use bevy::{state::app::StatesPlugin, time::TimePlugin};
+    use bevy::time::{TimePlugin, TimeUpdateStrategy};
     use zxc::*;
 
     #[test]
     fn lifetime_loss_to_zero_leads_to_death_event() {
         let mut app = App::new();
 
-        app.add_plugins((TimePlugin, StatesPlugin, StoryTimePlugin))
-            // .add_message::<PawnDeatEvent>()
-            // .add_observer(on_pawn_death)
+        app.add_plugins(TimePlugin)
+            .insert_resource(TimeUpdateStrategy::ManualDuration(Duration::from_secs(1)))
             .add_systems(Update, progress_pawn_dying);
 
         let pawn_id = app
@@ -27,13 +26,10 @@ mod pawn {
             ))
             .id();
 
+        // First update: delta is 0 (time initialization)
         app.update();
-        // advance time by 5 seconds
-        // app.world_mut()
-        //     .resource_mut::<Time<Virtual>>()
-        //     .advance_by(Duration::from_secs(50000));
-        std::thread::sleep(Duration::from_secs_f32(0.1));
-        app.update(); // second update needs so some time passes
+        // Second update: delta is 1 second, which exceeds lifetime
+        app.update();
 
         // lifetime is changed
         let pawn = app.world().get::<Pawn>(pawn_id).unwrap();
@@ -42,32 +38,24 @@ mod pawn {
         // Dying component is removed
         let maybe_dying = app.world().get::<DyingMarker>(pawn_id);
         assert!(maybe_dying.is_none());
-
-        // // Pawn state is Dead
-        // let pawn = app.world().get::<Pawn>(pawn_id).unwrap();
-        // assert_eq!(pawn.state, PawnState::Dead);
-
-        // // PawnStateDeadTag component is added
-        // let has_dead_tag = app.world().get::<pawn_state::PawnStateDeadTag>(pawn_id);
-        // assert!(has_dead_tag.is_some())
     }
 
     #[test]
     fn state_changed_to_death_by_event() {
         let mut app = App::new();
 
-        app.add_plugins((
-            BedPlugin,
-            WorkablePlugin,
-            RestablePlugin,
-            CommandablePlugin,
-            PawnPlugin,
-        ));
+        // Register only the observers/plugins needed, without PawnPlugin
+        // (which registers on_pawn_entity_state_change that requires Text2dWriter resources)
+        app.add_plugins((BedPlugin, WorkablePlugin, RestablePlugin, CommandablePlugin))
+            .add_observer(on_pawn_death);
 
         let pawn_id = app
             .world_mut()
             .spawn((Pawn::default(), Commandable::default(), Restable::default()))
             .id();
+
+        // First update to finalize observer registration
+        app.update();
 
         app.world_mut().trigger(PawnDeatEvent {
             entity: pawn_id,
