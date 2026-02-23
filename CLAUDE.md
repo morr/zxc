@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-ZXC is a 2D top-down simulation/strategy game built with **Bevy 0.17** (Rust, edition 2024). It uses Bevy's ECS (Entity-Component-System) architecture with a plugin-based modular design. Requires **nightly Rust toolchain**.
+ZXC is a 2D top-down simulation/strategy game built with **Bevy 0.18** (Rust, edition 2024). It uses Bevy's ECS (Entity-Component-System) architecture with a plugin-based modular design. Requires **nightly Rust toolchain**.
 
 ## Build & Development Commands
 
