@@ -44,20 +44,26 @@ mod pawn {
     fn state_changed_to_death_by_event() {
         let mut app = App::new();
 
-        // Register only the observers/plugins needed, without PawnPlugin
-        // (which registers on_pawn_entity_state_change that requires Text2dWriter resources)
-        app.add_plugins((BedPlugin, WorkablePlugin, RestablePlugin, CommandablePlugin))
-            .add_observer(on_pawn_death);
+        // PawnPlugin registers on_pawn_entity_state_change which needs Text2dWriter,
+        // so MinimalPlugins + AssetPlugin + TextPlugin are required for text infrastructure.
+        app.add_plugins((
+            MinimalPlugins,
+            AssetPlugin::default(),
+            bevy::text::TextPlugin,
+            BedPlugin,
+            WorkablePlugin,
+            RestablePlugin,
+            CommandablePlugin,
+            PawnPlugin,
+        ));
 
         let pawn_id = app
             .world_mut()
             .spawn((Pawn::default(), Commandable::default(), Restable::default()))
             .id();
 
-        // First update to finalize observer registration
-        app.update();
-
-        app.world_mut().trigger(PawnDeatEvent {
+        // Trigger via Commands (deferred) so it runs during the next update
+        app.world_mut().commands().trigger(PawnDeatEvent {
             entity: pawn_id,
             reason: PawnDeathReason::OldAge,
         });
