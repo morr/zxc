@@ -14,15 +14,15 @@ pub struct AsyncQueueCounter(pub Arc<AtomicI32>);
 
 impl AsyncQueueCounter {
     pub fn increment(&self) {
-        self.0.fetch_add(1, Ordering::SeqCst);
+        self.0.fetch_add(1, Ordering::Relaxed);
     }
 
     pub fn decrement(&self) {
-        self.0.fetch_sub(1, Ordering::SeqCst);
+        self.0.fetch_sub(1, Ordering::Relaxed);
     }
 
     pub fn get(&self) -> i32 {
-        self.0.load(Ordering::SeqCst)
+        self.0.load(Ordering::Relaxed)
     }
 }
 

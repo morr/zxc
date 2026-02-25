@@ -149,11 +149,11 @@ fn into_iter(self) -> Self::IntoIter {
 ```
 **Fix:** Use `std::iter::once(self)`.
 
-### 17. `SeqCst` ordering on counter atomics
-**File:** `src/async_queue.rs:15-27` — Uses `Ordering::SeqCst` for a simple counter. `Relaxed` or `AcqRel` is sufficient.
+### ~~17. `SeqCst` ordering on counter atomics~~ ✅ FIXED
+**File:** `src/async_queue.rs:15-27` — Now uses `Ordering::Relaxed` for the simple counter.
 
-### 18. Navtile HashMap entries never cleaned up
-**File:** `src/navigation/components/navtile.rs:22-24` — Commented-out cleanup code; empty `HashSet` entries accumulate.
+### ~~18. Navtile HashMap entries never cleaned up~~ ✅ FIXED
+**File:** `src/navigation/components/navtile.rs` — Empty `HashSet` entries are now removed in `remove_occupant()`.
 
 ### 19. Minimal test coverage
 Only ~7 tests total (farm yield, pawn death, utils). No tests for:
