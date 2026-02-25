@@ -1,7 +1,7 @@
-pub use once_cell::sync::Lazy;
-use once_cell::sync::OnceCell;
+pub use std::sync::LazyLock;
+use bevy::prelude::Resource;
 use serde::{Deserialize, Serialize};
-use std::{fs::File, io::Read};
+use std::{fs::File, io::Read, sync::OnceLock};
 
 use crate::DebugNoiseState;
 
@@ -25,7 +25,7 @@ pub fn load_config() -> RootConfig {
     config
 }
 
-pub static CONFIG: OnceCell<RootConfig> = OnceCell::new();
+pub static CONFIG: OnceLock<RootConfig> = OnceLock::new();
 
 pub fn apply_global_config(config: RootConfig) {
     CONFIG.set(config).expect("Failed to set global config");
@@ -35,15 +35,6 @@ pub fn config() -> &'static RootConfig {
     CONFIG.get().expect("Config not initialized")
 }
 
-pub fn config_mut() -> &'static mut RootConfig {
-    unsafe {
-        // SAFETY: Caller must ensure no concurrent access
-        // This is UB if multiple threads access simultaneously
-        (CONFIG.get().expect("Config not initialized") as *const RootConfig as *mut RootConfig)
-            .as_mut()
-            .unwrap()
-    }
-}
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct RootConfig {
@@ -82,8 +73,7 @@ pub struct DebugConfig {
     pub noise_state: DebugNoiseState,
 }
 
-// #[derive(Resource, Deserialize, Serialize, Clone, Debug)]
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Resource, Deserialize, Serialize, Clone, Debug)]
 pub struct MapGeneratorConfig {
     pub auto_generate: bool,
     pub seed: Option<u64>,

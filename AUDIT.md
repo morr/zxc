@@ -8,21 +8,10 @@ Full codebase analysis of the ZXC Bevy game project, evaluating architecture, EC
 
 ## CRITICAL — Unsafe Code & Soundness
 
-### 1. Unsafe global mutable state via `config_mut()`
-**File:** `src/config.rs:38-46`
+### ~~1. Unsafe global mutable state via `config_mut()`~~ ✅ FIXED
+**File:** `src/config.rs`
 
-```rust
-pub fn config_mut() -> &'static mut RootConfig {
-    unsafe {
-        (CONFIG.get().expect("Config not initialized") as *const RootConfig as *mut RootConfig)
-            .as_mut().unwrap()
-    }
-}
-```
-
-- Casts away `const` with raw pointer — textbook undefined behavior under concurrent access
-- Bevy runs systems in parallel; nothing prevents two systems calling this simultaneously
-- **Fix:** Replace with `Res<RootConfig>` / `ResMut<RootConfig>` (Bevy resource), or at minimum `RwLock`
+Removed `config_mut()` entirely. The single mutable use case (debug noise UI) now uses `ResMut<MapGeneratorConfig>` Bevy resource. Also replaced `once_cell` with `std::sync::OnceLock`/`LazyLock`.
 
 ### 2. Commandable state tag components are disabled — state machine is broken
 **File:** `src/commandable/components.rs:241-256`
@@ -163,7 +152,7 @@ Only ~7 tests total (farm yield, pawn death, utils). No tests for:
 
 | Priority | Issue | Why |
 |----------|-------|-----|
-| 1 | Replace `config_mut()` unsafe with Bevy resource | Eliminates undefined behavior |
+| ~~1~~ | ~~Replace `config_mut()` unsafe with Bevy resource~~ | ~~Eliminates undefined behavior~~ ✅ |
 | 2 | Fix or remove disabled commandable state tags | State machine integrity |
 | 3 | Replace panics/unwraps with graceful handling | Game stability |
 | 4 | Return slice from `tile_successors()` | Pathfinding performance |

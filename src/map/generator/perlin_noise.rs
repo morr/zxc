@@ -39,15 +39,15 @@ pub enum NoiseDistortion {
 // 3	TAIGA	SHRUBLAND	TEMPERATE DESERT
 // 2	TEMPERATE RAIN FOREST	TEMPERATE DECIDUOUS FOREST	GRASSLAND	TEMPERATE DESERT
 // 1 (low)	TROPICAL RAIN FOREST	TROPICAL SEASONAL FOREST	GRASSLAND	SUBTROPICAL DESERT
-pub fn generate() -> Vec<Vec<Tile>> {
-    let mut rng = match config().map_generator.seed {
+pub fn generate(map_config: &MapGeneratorConfig) -> Vec<Vec<Tile>> {
+    let mut rng = match map_config.seed {
         Some(seed) => ChaCha8Rng::seed_from_u64(seed),
         None => ChaCha8Rng::from_os_rng(),
     };
 
-    let height_noise = generate_noise(rng.random(), &config().map_generator.general_noise);
-    let humidity_noise = generate_noise(rng.random(), &config().map_generator.general_noise);
-    let props_noise = generate_noise(rng.random(), &config().map_generator.props_noise);
+    let height_noise = generate_noise(rng.random(), &map_config.general_noise);
+    let humidity_noise = generate_noise(rng.random(), &map_config.general_noise);
+    let props_noise = generate_noise(rng.random(), &map_config.props_noise);
 
     let mut grid = vec![
         vec![
@@ -174,14 +174,14 @@ fn noise_ui_system(
     mut commands: Commands,
     state: Res<State<DebugNoiseState>>,
     mut egui_contexts: bevy_inspector_egui::bevy_egui::EguiContexts,
+    mut map_config: ResMut<MapGeneratorConfig>,
 ) {
     let ctx = egui_contexts.ctx_mut().unwrap();
 
     bevy_egui::egui::Window::new("Perlin Noise Settings").show(ctx, |ui| {
         let mut is_changed = false;
 
-        // Get mutable reference to the config
-        let map_config = &mut config_mut().map_generator;
+        let map_config = &mut *map_config;
         let noise_config = match state.get() {
             DebugNoiseState::HeightNoise | DebugNoiseState::HumidityNoise => {
                 &mut map_config.general_noise

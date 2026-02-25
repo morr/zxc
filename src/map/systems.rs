@@ -5,11 +5,11 @@ pub fn generate_map(
     mut commands: Commands,
     texture_assets: Res<TextureAssets>,
     tree_assets: Res<TreeAssets>,
-    // pn_config: Res<generator::perlin_noise::PerlinNoiseConfig>,
+    map_config: Res<MapGeneratorConfig>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     let mut navmesh = arc_navmesh.write();
-    let grid = generator::perlin_noise::generate();
+    let grid = generator::perlin_noise::generate(&map_config);
 
     spawn_tiles(&mut commands, &texture_assets, &mut navmesh, &grid);
     spawn_trees(&mut commands, &tree_assets, &mut navmesh, &grid);
@@ -151,6 +151,7 @@ pub fn on_rebuild_map(
     mut commands: Commands,
     assets: Res<TextureAssets>,
     arc_navmesh: ResMut<ArcNavmesh>,
+    map_config: Res<MapGeneratorConfig>,
     tiles_query: Query<(Entity, &Tile)>,
 ) {
     let RebuildMapEvent { generator_kind } = *event;
@@ -162,7 +163,7 @@ pub fn on_rebuild_map(
     }
 
     let grid = match generator_kind {
-        GeneratorKind::PerlinNoise => generator::perlin_noise::generate(),
+        GeneratorKind::PerlinNoise => generator::perlin_noise::generate(&map_config),
     };
 
     spawn_tiles(&mut commands, &assets, &mut navmesh, &grid);
