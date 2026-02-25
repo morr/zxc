@@ -10,6 +10,8 @@ pub fn move_moving_entities(
     arc_navmesh: Res<ArcNavmesh>,
     mut occupation_change_event_writer: MessageWriter<OccupationChangeMessage>,
 ) {
+    let mut occupant_changes: Vec<(Entity, IVec2, IVec2)> = Vec::new();
+
     for (entity, mut movable, mut transform, maybe_pawn) in &mut query_movable {
         match movable.state {
             MovableState::Moving(_) => {
@@ -24,11 +26,8 @@ pub fn move_moving_entities(
                 );
 
                 if current_tile != final_tile {
-                    let mut navmesh = arc_navmesh.write();
-
                     if maybe_pawn.is_some() {
-                        navmesh.remove_occupant::<Pawn>(&entity, current_tile.x, current_tile.y);
-                        navmesh.add_occupant::<Pawn>(&entity, final_tile.x, final_tile.y);
+                        occupant_changes.push((entity, current_tile, final_tile));
                     }
 
                     occupation_change_event_writer
@@ -39,6 +38,14 @@ pub fn move_moving_entities(
                 // This can happen between switching states while executing commands
                 continue;
             }
+        }
+    }
+
+    if !occupant_changes.is_empty() {
+        let mut navmesh = arc_navmesh.write();
+        for (entity, current_tile, final_tile) in &occupant_changes {
+            navmesh.remove_occupant::<Pawn>(entity, current_tile.x, current_tile.y);
+            navmesh.add_occupant::<Pawn>(entity, final_tile.x, final_tile.y);
         }
     }
 }
