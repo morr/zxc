@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "bevy",
+  "owner": "bfollington",
+  "repo": "terma",
+  "path": "plugins/tsal/skills/bevy",
+  "branch": "main",
+  "sha": "cef3792c11205d9c40c78a61773cf6dad552bf12",
+  "source": "manual"
+}
