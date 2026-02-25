@@ -32,7 +32,7 @@ pub fn astar_pathfinding(
         astar(
             start_tile,
             |&IVec2 { x, y }| {
-                navmesh.tile_successors(x, y)
+                navmesh.tile_successors(x, y).iter().copied()
                 // [
                 //     (x - 1, y),     // left
                 //     (x - 1, y - 1), // left-top

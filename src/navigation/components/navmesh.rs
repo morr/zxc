@@ -43,8 +43,8 @@ impl Navmesh {
             && y > -config().grid.half_size
     }
 
-    pub fn tile_successors(&self, x: i32, y: i32) -> Vec<(IVec2, i32)> {
-        self.successors[grid_tile_to_navmesh_index(x)][grid_tile_to_navmesh_index(y)].clone()
+    pub fn tile_successors(&self, x: i32, y: i32) -> &[(IVec2, i32)] {
+        &self.successors[grid_tile_to_navmesh_index(x)][grid_tile_to_navmesh_index(y)]
     }
 
     pub fn update_cost(&mut self, x_range: Range<i32>, y_range: Range<i32>, cost: Option<i32>) {
