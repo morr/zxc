@@ -16,29 +16,17 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
-      - name: Cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-test-${{ hashFiles('**/Cargo.toml') }}
       - name: Install nightly toolchain
         uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: clippy
+      - name: Cache Rust artifacts
+        uses: Swatinem/rust-cache@v2
       - name: Install Dependencies
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libx11-dev libxcursor-dev libxi-dev libxrandr-dev libxinerama-dev libx11-xcb-dev libxss-dev libvulkan-dev libwayland-dev
-      - name: Install clippy
-        run: rustup component add clippy
-      # - name: Install rustfmt
-      #   run: rustup component add rustfmt
       - name: Build
         run: cargo build --verbose
       - name: Run cargo test
         run: cargo test --verbose
       - name: Run clippy
         run: cargo clippy -- -D warnings
-      # - name: Run cargo fmt
-      #   run: cargo fmt --all -- --check
