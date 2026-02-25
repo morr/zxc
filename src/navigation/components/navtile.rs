@@ -38,10 +38,9 @@ impl Navtile {
         if let Some(entities) = self.occupied_by.get_mut(&TypeId::of::<T>()) {
             entities.remove(entity);
 
-            // not sure if it is necessary to cleanup type T from HashMap
-            // if entities.is_empty() {
-            //     self.occupied_by.remove(&TypeId::of::<T>());
-            // }
+            if entities.is_empty() {
+                self.occupied_by.remove(&TypeId::of::<T>());
+            }
         }
     }
 
