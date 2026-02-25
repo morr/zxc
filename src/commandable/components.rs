@@ -1,7 +1,6 @@
 use super::*;
 
 use std::collections::VecDeque;
-use std::vec;
 
 #[derive(Debug, Clone, Reflect)]
 pub enum CommandType {
@@ -19,10 +18,10 @@ pub enum CommandType {
 // it is implemented so a single command can be passed into Commandable.schedule
 impl IntoIterator for CommandType {
     type Item = CommandType;
-    type IntoIter = vec::IntoIter<CommandType>;
+    type IntoIter = std::iter::Once<CommandType>;
 
     fn into_iter(self) -> Self::IntoIter {
-        vec![self].into_iter()
+        std::iter::once(self)
     }
 }
 

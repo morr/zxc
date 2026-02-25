@@ -140,14 +140,8 @@ All internal details (systems, helpers) are publicly accessible. Prevents safe r
 
 Should be removed; git history preserves it.
 
-### 16. Unnecessary `Vec` allocation in `CommandType::IntoIterator`
-**File:** `src/commandable/components.rs:26`
-```rust
-fn into_iter(self) -> Self::IntoIter {
-    vec![self].into_iter()  // heap alloc to iterate 1 item
-}
-```
-**Fix:** Use `std::iter::once(self)`.
+### ~~16. Unnecessary `Vec` allocation in `CommandType::IntoIterator`~~ ✅ FIXED
+**File:** `src/commandable/components.rs` — Now uses `std::iter::once(self)` instead of `vec![self].into_iter()`.
 
 ### ~~17. `SeqCst` ordering on counter atomics~~ ✅ FIXED
 **File:** `src/async_queue.rs:15-27` — Now uses `Ordering::Relaxed` for the simple counter.
