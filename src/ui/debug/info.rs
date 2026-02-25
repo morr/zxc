@@ -35,7 +35,7 @@ pub fn render_debug_ui_info(
     root_ui_query: Query<Entity, With<DebugUiContainerarker>>,
     async_queue_counter: Res<AsyncQueueCounter>,
 ) {
-    let root_ui_id = root_ui_query.single().unwrap();
+    let root_ui_id = root_ui_query.single().expect("DebugUiContainer query failed");
     let mut root_ui_commands = commands.entity(root_ui_id);
 
     root_ui_commands.with_children(|parent| {
@@ -84,7 +84,7 @@ pub fn update_debug_ui_headline(
     text_query: Query<Entity, With<DebugUiHeadlineUIMarker>>,
     mut writer: TextUiWriter,
 ) {
-    let text_entity = text_query.single().unwrap();
+    let text_entity = text_query.single().expect("DebugUiHeadline query failed");
     *writer.text(text_entity, 0) = format_headline(&async_queue_counter);
 }
 
@@ -113,7 +113,7 @@ pub fn handle_debug_info_keys(
     // mut rebuild_map_event_writer: MessageWriter<RebuildMapEvent>,
 ) {
     if keys.just_pressed(KeyCode::KeyH) {
-        let (mut visibility, mut style) = query.single_mut().unwrap();
+        let (mut visibility, mut style) = query.single_mut().expect("DebugHelpBlock query failed");
 
         match *visibility {
             Visibility::Hidden => {

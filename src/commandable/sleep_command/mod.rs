@@ -60,7 +60,10 @@ fn on_rest_complete(
         return;
     };
     if event.entity != *command_commandable_entity {
-        panic!("event.entity != *command_commandable_entity");
+        panic!(
+            "on_rest_complete: event.entity {:?} != command_commandable_entity {:?}",
+            event.entity, command_commandable_entity
+        );
     }
 
     commandable.complete_executing(event.entity, &mut commands);

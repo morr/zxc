@@ -11,7 +11,9 @@ pub fn on_farm_progress(
 ) {
     let FarmProgressEvent { entity } = *event;
     // println!("{:?}", FarmProgressEvent(entity));
-    let (mut farm, mut workable, transform) = query.get_mut(entity).unwrap();
+    let (mut farm, mut workable, transform) = query
+        .get_mut(entity)
+        .expect("on_farm_progress: Farm entity query failed");
 
     farm.progress_state(
         entity,

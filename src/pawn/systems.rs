@@ -141,7 +141,9 @@ pub fn on_pawn_entity_state_change(
             PawnState::Idle => "Idle".into(),
             PawnState::Dead => "DEAD".into(),
             PawnState::ExecutingCommand => {
-                let commandable = commandable_query.get(pawn_entity).unwrap();
+                let commandable = commandable_query
+                    .get(pawn_entity)
+                    .expect("on_pawn_entity_state_change: Commandable query failed");
                 if let Some(command_type) = &commandable.executing {
                     (match command_type {
                         // CommandType::MoveTo(_) => "",
@@ -214,7 +216,9 @@ pub fn on_pawn_death(
             commandable.clear_queue(entity, &mut commands);
 
             if let Some(bed_entity) = pawn.owned_bed {
-                let mut bed = bed_query.get_mut(bed_entity).unwrap();
+                let mut bed = bed_query
+                    .get_mut(bed_entity)
+                    .expect("on_pawn_death: Bed entity query failed");
                 bed.unclaim_by(&mut pawn, &mut available_beds);
             }
         }

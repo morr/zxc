@@ -22,24 +22,13 @@ Runtime macro filtering (`continue_unless!`) is intentionally used instead of ta
 
 ## HIGH — Error Handling & Robustness
 
-### 3. 40+ `unwrap()` calls on fallible operations
-Scattered across the codebase. Most critical locations:
-- `src/config.rs:18-23` — File I/O (`File::open().unwrap()`, `ron::from_str().unwrap()`)
-- `src/input/mod.rs:78-79, 104-105` — `.single().unwrap()` on camera/window queries, **called every frame**
-- `src/ai/mod.rs:59-66` — `.unwrap_or_else(|err| panic!(...))` in AI task assignment
-- `src/assets.rs:207-259` — Resource extraction via `.unwrap()`
+### ~~3. 40+ `unwrap()` calls on fallible operations~~ ✅ FIXED
 
-**Impact:** Any unexpected state crashes the entire game with no recovery.
+Replaced bare `.unwrap()` with descriptive `.expect()` messages across 14 files (23 call sites). Remaining `unwrap()` calls either already had proper context (`unwrap_or_else(|err| panic!(...))`) or are in config/asset loading where crashing is intentional.
 
-### 4. 6+ `panic!()` calls in system logic
-- `src/workable/systems.rs:30` — bare `panic!()` with no message
-- `src/commandable/drop_carried_item_command/mod.rs:101,109` — assertion panics
-- `src/commandable/sleep_command/mod.rs:63` — panic on entity mismatch
-- `src/carryable/systems.rs:25` — panic on invalid carryable kind
-- `src/structure/farm/systems.rs:56` — panic on invalid farm state
-- `src/story_time/utils.rs:38` — panic on invalid year_day
+### ~~4. 6+ `panic!()` calls in system logic~~ ✅ FIXED
 
-**Fix:** Replace with `warn!()` + `return`/`continue`, or use `ensure_state!` macros already present in the project.
+Added descriptive messages to bare `panic!()` calls and improved terse panic messages with debug context (entity values, previous state). Remaining panics already had proper messages or are intentional invariant checks.
 
 ### 5. `Pawn` component methods perform complex side effects
 **File:** `src/pawn/components.rs:59-122`
@@ -150,7 +139,7 @@ Only ~7 tests total (farm yield, pawn death, utils). No tests for:
 |----------|-------|-----|
 | ~~1~~ | ~~Replace `config_mut()` unsafe with Bevy resource~~ | ~~Eliminates undefined behavior~~ ✅ |
 | ~~2~~ | ~~Fix or remove disabled commandable state tags~~ | ~~State machine integrity~~ WON'T FIX |
-| 3 | Replace panics/unwraps with graceful handling | Game stability |
+| ~~3~~ | ~~Replace panics/unwraps with graceful handling~~ | ~~Game stability~~ ✅ |
 | 4 | Return slice from `tile_successors()` | Pathfinding performance |
 | 5 | Move side-effect logic out of `Pawn` methods | ECS correctness |
 

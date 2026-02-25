@@ -27,7 +27,10 @@ pub fn progress_work(
                 work_kind,
             }) = prev_state
             else {
-                panic!()
+                panic!(
+                    "Workable completed but previous state was not BeingWorked: {:?}",
+                    prev_state
+                )
             };
 
             commands.trigger(log_event!(WorkCompleteEvent {

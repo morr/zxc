@@ -66,7 +66,7 @@ fn update_ui_on_hover_event(
         return;
     };
 
-    let hovered_root_ui_id = hovered_root_ui_query.single().unwrap();
+    let hovered_root_ui_id = hovered_root_ui_query.single().expect("HoveredUIRoot query failed");
     let mut hovered_root_ui_commands = commands.entity(hovered_root_ui_id);
     hovered_root_ui_commands.despawn_related::<Children>();
 

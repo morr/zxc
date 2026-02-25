@@ -75,8 +75,8 @@ pub fn mouse_input(
     mut click_event_writer: MessageWriter<ClickMessageStage0>,
     mut prev_hovered_grid_tile: ResMut<HoveredGridTile>,
 ) {
-    let (camera, camera_transform) = q_camera.single().unwrap();
-    let window = q_window.single().unwrap();
+    let (camera, camera_transform) = q_camera.single().expect("Camera query failed in mouse_input");
+    let window = q_window.single().expect("PrimaryWindow query failed in mouse_input");
     if let Some(world_position) = window
         .cursor_position()
         .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor).ok())
@@ -101,8 +101,9 @@ pub fn mouse_input(
     }
 
     if mouse_button_input.just_pressed(MouseButton::Left) {
-        let (camera, camera_transform) = q_camera.single().unwrap();
-        let window = q_window.single().unwrap();
+        let (camera, camera_transform) =
+            q_camera.single().expect("Camera query failed in mouse_input");
+        let window = q_window.single().expect("PrimaryWindow query failed in mouse_input");
         // check if the cursor is inside the window and get its position
         // then, ask bevy to convert into world coordinates, and truncate to discard Z
         if let Some(world_position) = window

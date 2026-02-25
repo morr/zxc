@@ -77,7 +77,7 @@ fn update_simulation_speed_text(
     time: Res<Time<Virtual>>,
     mut writer: TextUiWriter,
 ) {
-    let entity = query.single().unwrap();
+    let entity = query.single().expect("SimulationSpeedText query failed");
     *writer.text(entity, 0) = format_simulation_speed_text(&time);
 }
 
@@ -94,7 +94,7 @@ fn update_simulation_date_time_text(
     time: Res<Time<Virtual>>,
     mut writer: TextUiWriter,
 ) {
-    let entity = query.single().unwrap();
+    let entity = query.single().expect("SimulationDateTimeText query failed");
     *writer.text(entity, 0) = format_date_time_text(&time);
 }
 

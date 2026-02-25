@@ -94,7 +94,10 @@ fn move_to_target_location(
     let actual_speed = movable.speed * speed_modifier;
     let distance_to_move = actual_speed * remaining_time;
 
-    let target_point_tile = movable.path.front().unwrap();
+    let target_point_tile = movable
+        .path
+        .front()
+        .expect("Movable path is empty after non-empty check");
     let target_point_world = target_point_tile.grid_tile_center_to_world();
     let direction = (target_point_world - current_point_world).normalize_or_zero();
     let distance_between_points = (target_point_world - current_point_world).length();

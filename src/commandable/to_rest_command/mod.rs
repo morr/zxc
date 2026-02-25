@@ -30,7 +30,9 @@ fn execute_command(
 
                 let (grid_tile, is_sleep_in_bed) = if let Some(bed_entity) = pawn.owned_bed {
                     // move to claimed bed
-                    let (_entity, bed_transform, _bed) = bed_query.get(bed_entity).unwrap();
+                    let (_entity, bed_transform, _bed) = bed_query
+                        .get(bed_entity)
+                        .expect("to_rest_command: Owned bed query failed");
 
                     (
                         bed_transform.translation.truncate().world_pos_to_grid(),
@@ -53,7 +55,12 @@ fn execute_command(
                             Some(bed_transform.translation.truncate().world_pos_to_grid());
                         break;
                     }
-                    (found_bed_tile.unwrap(), true)
+                    (
+                        found_bed_tile.expect(
+                            "to_rest_command: No unclaimed bed found despite available_beds > 0",
+                        ),
+                        true,
+                    )
                 } else {
                     // Check if the current pawn location is empty
                     let current_tile = pawn_transform.translation.truncate().world_pos_to_grid();
