@@ -29,7 +29,7 @@ jobs:
       - name: Install nightly toolchain
         uses: dtolnay/rust-toolchain@nightly
       - name: Install Dependencies
-        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libx11-dev libxcursor-dev libxi-dev libxrandr-dev libxinerama-dev libx11-xcb-dev libxss-dev libvulkan-dev
+        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libx11-dev libxcursor-dev libxi-dev libxrandr-dev libxinerama-dev libx11-xcb-dev libxss-dev libvulkan-dev libwayland-dev
       - name: Install clippy
         run: rustup component add clippy
       # - name: Install rustfmt
