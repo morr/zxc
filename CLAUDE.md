@@ -79,6 +79,24 @@ RUSTFMT=~/.rustup/toolchains/nightly-aarch64-apple-darwin/bin/rustfmt cargo fmt 
 - Clippy `type_complexity` lint is allowed globally
 - Formatting: block indent style, reorder imports (`.rustfmt.toml`)
 
+## Bevy Remote Protocol (BRP) / MCP Debugger
+
+The game exposes a BRP endpoint via `RemotePlugin` + `RemoteHttpPlugin` (from `bevy::remote`) on `127.0.0.1:15702`. This allows runtime inspection and control of the ECS via JSON-RPC 2.0.
+
+- **No library dependency needed** — `bevy_debugger_mcp` is only a CLI tool (MCP server), configured in `.mcp.json`. The game just needs Bevy's built-in `bevy_remote` feature.
+- **Bevy 0.18 method namespace**: `world.*` (not `bevy/*` from older versions). Full method list:
+  - `registry.schema`, `rpc.discover`
+  - `world.query`, `world.get_components`, `world.get_components+watch`, `world.list_components`, `world.list_components+watch`
+  - `world.insert_components`, `world.mutate_components`, `world.remove_components`
+  - `world.spawn_entity`, `world.despawn_entity`, `world.reparent_entities`
+  - `world.get_resources`, `world.list_resources`, `world.insert_resources`, `world.mutate_resources`, `world.remove_resources`
+  - `world.trigger_event`
+- **Example query** (all named entities):
+  ```bash
+  curl -s -X POST http://127.0.0.1:15702 -H "Content-Type: application/json" \
+    -d '{"jsonrpc":"2.0","id":1,"method":"world.query","params":{"data":{"components":["bevy_ecs::name::Name"]}}}'
+  ```
+
 ## Features
 
 - `default = ["bevy_egui", "debug_ui"]`

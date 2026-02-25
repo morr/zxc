@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "bevy-debugger": {
+      "command": "bevy-debugger-mcp",
+      "args": []
+    }
+  }
+}

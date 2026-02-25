@@ -1,4 +1,5 @@
 use bevy::app::AppExit;
+use bevy::remote::{RemotePlugin, http::RemoteHttpPlugin};
 // use bevy::dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin};
 use zxc::*;
 
@@ -69,6 +70,7 @@ fn main() {
             workable::WorkablePlugin,
             carryable::CarryablePlugin,
         ))
+        .add_plugins((RemotePlugin::default(), RemoteHttpPlugin::default())) // bevy_debugger_mcp
         .add_systems(Update, close_on_esc)
         .run();
 }

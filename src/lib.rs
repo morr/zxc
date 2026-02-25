@@ -80,13 +80,12 @@ macro_rules! ensure_state {
         if $current_state != $expected_state {
             trace!(
                 "Got {:?} while expected {:?} by Query<With<_>> param",
-                $current_state,
-                $expected_state,
+                $current_state, $expected_state,
             );
             continue;
         }
     };
-    
+
     // For functions - uses return
     (fn: $expected_pattern:pat, $current_state:expr) => {
         match $current_state {
@@ -105,8 +104,7 @@ macro_rules! ensure_state {
         if $current_state != $expected_state {
             trace!(
                 "Got {:?} while expected {:?} by Query<With<_>> param",
-                $current_state,
-                $expected_state,
+                $current_state, $expected_state,
             );
             return;
         }

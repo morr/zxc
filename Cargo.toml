@@ -9,7 +9,7 @@ bevy_egui = ["dep:bevy_egui"]
 debug_ui = []
 
 [dependencies]
-bevy = { version = "0.18", features = ["dynamic_linking", "bevy_dev_tools"] }
+bevy = { version = "0.18", features = ["dynamic_linking", "bevy_dev_tools", "bevy_remote"] }
 bevy_platform = "0.18"
 bevy_egui = { version = "0.39", optional = true }
 bevy_pancam = { version = "0.20", features = ["bevy_egui_0_39"] }
