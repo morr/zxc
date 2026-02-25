@@ -185,7 +185,6 @@ pub fn progress_pawn_dying(
     mut query: Query<(Entity, &mut Pawn), With<DyingMarker>>,
 ) {
     for (entity, mut pawn) in query.iter_mut() {
-        println!("{:?}", time.delta_secs());
         pawn.decrease_lifetime(time.delta_secs());
 
         if pawn.lifetime.is_zero() {

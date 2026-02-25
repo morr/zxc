@@ -130,8 +130,8 @@ All internal details (systems, helpers) are publicly accessible. Prevents safe r
 
 ## LOW — Code Quality
 
-### 14. `println!` left in production code
-**File:** `src/pawn/systems.rs:188` — `println!("{:?}", time.delta_secs());` runs every frame.
+### ~~14. `println!` left in production code~~ ✅ FIXED
+**File:** `src/pawn/systems.rs` — Removed debug `println!` that ran every frame.
 
 ### 15. Large blocks of commented-out code
 - `src/commandable/components.rs:171-192` (interrupt logic)
