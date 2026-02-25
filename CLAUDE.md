@@ -59,6 +59,18 @@ State tag components are used for ECS query filtering. Guard macros enforce vali
 ### UI
 Debug UI via `bevy_egui` (behind `debug_ui` feature flag, enabled by default).
 
+## Verification After Each Task
+
+After completing any task, always run these steps in order:
+
+```bash
+cargo build --verbose
+cargo test --verbose
+cargo clippy -- -D warnings
+# fmt only the files you changed
+RUSTFMT=~/.rustup/toolchains/nightly-aarch64-apple-darwin/bin/rustfmt cargo fmt -- src/changed_file.rs src/other_file.rs
+```
+
 ## Code Conventions
 
 - State tags use `*Tag` suffix; plugins use `*Plugin` suffix
