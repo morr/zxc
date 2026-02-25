@@ -58,14 +58,22 @@ impl Feedable {
     }
 }
 
+const NEEDS_TICK_INTERVAL: f32 = 0.25;
+
 #[allow(clippy::too_many_arguments)]
 fn progress_hunger(
     mut commands: Commands,
     time: Res<Time>,
+    mut tick_acc: Local<f32>,
     mut query: Query<(Entity, &mut Feedable, &mut Commandable)>,
     food_stock: Res<FoodStock>,
 ) {
-    let time_amount = time.delta_secs();
+    *tick_acc += time.delta_secs();
+    if *tick_acc < NEEDS_TICK_INTERVAL {
+        return;
+    }
+    let time_amount = *tick_acc;
+    *tick_acc = 0.0;
 
     for (commandable_entity, mut feedable, mut commandable) in query.iter_mut() {
         let wasnt_overflowed = !feedable.is_overflowed();

@@ -81,13 +81,21 @@ impl Restable {
     }
 }
 
+const NEEDS_TICK_INTERVAL: f32 = 0.25;
+
 fn progress_fatigue(
     mut commands: Commands,
     time: Res<Time>,
+    mut tick_acc: Local<f32>,
     mut query: Query<(Entity, &mut Restable, &mut Commandable)>,
     // mut event_writer: MessageWriter<RestCompleteEvent>,
 ) {
-    let time_amount = time.delta_secs();
+    *tick_acc += time.delta_secs();
+    if *tick_acc < NEEDS_TICK_INTERVAL {
+        return;
+    }
+    let time_amount = *tick_acc;
+    *tick_acc = 0.0;
 
     for (commandable_entity, mut restable, mut commandable) in query.iter_mut() {
         let wasnt_fresh = !restable.is_fresh();
