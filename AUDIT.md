@@ -13,14 +13,10 @@ Full codebase analysis of the ZXC Bevy game project, evaluating architecture, EC
 
 Removed `config_mut()` entirely. The single mutable use case (debug noise UI) now uses `ResMut<MapGeneratorConfig>` Bevy resource. Also replaced `once_cell` with `std::sync::OnceLock`/`LazyLock`.
 
-### 2. Commandable state tag components are disabled — state machine is broken
+### ~~2. Commandable state tag components are disabled — state machine is broken~~ WON'T FIX
 **File:** `src/commandable/components.rs:241-256`
 
-- `change_state()` has `_commands: &mut Commands` (underscore = unused)
-- `remove_old_state_component` and `add_new_state_component` calls are **commented out**
-- Any query using `With<CommandableStateIdleTag>` etc. will silently return wrong results
-- Runtime macros (`continue_unless!`) compensate, but this defeats ECS query-level filtering
-- **Fix:** Either re-enable tag sync or remove the tag components entirely and formalize the macro-based approach
+Runtime macro filtering (`continue_unless!`) is intentionally used instead of tag components. Tag-based state would cause archetype moves on every state transition (Idle → PendingExecution → Executing → Idle), which is more expensive than iterating and checking a field at this entity scale. Additionally, tag insertion via `Commands` is deferred to the next sync point, causing one-frame-off bugs where `.state` and the tag disagree — this is the "unreliable" behavior noted in the code comment.
 
 ---
 
@@ -153,7 +149,7 @@ Only ~7 tests total (farm yield, pawn death, utils). No tests for:
 | Priority | Issue | Why |
 |----------|-------|-----|
 | ~~1~~ | ~~Replace `config_mut()` unsafe with Bevy resource~~ | ~~Eliminates undefined behavior~~ ✅ |
-| 2 | Fix or remove disabled commandable state tags | State machine integrity |
+| ~~2~~ | ~~Fix or remove disabled commandable state tags~~ | ~~State machine integrity~~ WON'T FIX |
 | 3 | Replace panics/unwraps with graceful handling | Game stability |
 | 4 | Return slice from `tile_successors()` | Pathfinding performance |
 | 5 | Move side-effect logic out of `Pawn` methods | ECS correctness |
