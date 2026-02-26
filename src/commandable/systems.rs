@@ -5,7 +5,6 @@ pub fn process_pending_commands(
     mut commands: Commands,
     mut drop_carried_item_command_writer: MessageWriter<DropCarriedItemCommand>,
     mut pick_up_item_command_writer: MessageWriter<PickUpItemCommand>,
-    mut to_rest_command_writer: MessageWriter<ToRestCommand>,
     mut commandable_query: Query<
         (Entity, &mut Commandable, Option<&mut Pawn>),
         // component tags seems to be working unreliable
@@ -36,7 +35,7 @@ pub fn process_pending_commands(
                     commands.trigger(log_event!(command));
                 }
                 CommandType::ToRest(command) => {
-                    to_rest_command_writer.write(log_message!(command));
+                    commands.trigger(log_event!(command));
                 }
                 CommandType::UserSelection(command) => {
                     commands.trigger(log_event!(command));

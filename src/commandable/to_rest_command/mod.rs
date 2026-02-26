@@ -4,105 +4,102 @@ pub struct ToRestCommandPlugin;
 
 impl Plugin for ToRestCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_message::<ToRestCommand>()
-            .add_systems(Update, execute_command.run_if(in_state(AppState::Playing)));
+        app.add_observer(execute_command);
     }
 }
 
-#[derive(Message, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct ToRestCommand {
     pub commandable_entity: Entity,
 }
 
 #[allow(clippy::too_many_arguments)]
 fn execute_command(
+    event: On<ToRestCommand>,
     mut commands: Commands,
     mut bed_query: Query<(Entity, &Transform, &mut Bed)>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
-    mut command_reader: MessageReader<ToRestCommand>,
     mut available_beds: ResMut<AvailableBeds>,
     arc_navmesh: Res<ArcNavmesh>,
 ) {
-    for ToRestCommand { commandable_entity } in command_reader.read() {
-        match commandable_query.get_mut(*commandable_entity) {
-            Ok((mut pawn, mut commandable, pawn_transform)) => {
-                commandable.complete_executing(*commandable_entity, &mut commands);
+    let ToRestCommand { commandable_entity } = *event;
 
-                let (grid_tile, is_sleep_in_bed) = if let Some(bed_entity) = pawn.owned_bed {
-                    // move to claimed bed
-                    let (_entity, bed_transform, _bed) = bed_query
-                        .get(bed_entity)
-                        .expect("to_rest_command: Owned bed query failed");
+    match commandable_query.get_mut(commandable_entity) {
+        Ok((mut pawn, mut commandable, pawn_transform)) => {
+            commandable.complete_executing(commandable_entity, &mut commands);
 
-                    (
-                        bed_transform.translation.truncate().world_pos_to_grid(),
-                        true,
-                    )
-                } else if available_beds.0 > 0 {
-                    // or claim fee bed
-                    let mut found_bed_tile = None;
-                    for (bed_entity, bed_transform, mut bed) in bed_query.iter_mut() {
-                        if bed.owner.is_some() {
-                            continue;
-                        }
-                        bed.claim_by(
-                            bed_entity,
-                            *commandable_entity,
-                            &mut pawn,
-                            &mut available_beds,
-                        );
-                        found_bed_tile =
-                            Some(bed_transform.translation.truncate().world_pos_to_grid());
-                        break;
+            let (grid_tile, is_sleep_in_bed) = if let Some(bed_entity) = pawn.owned_bed {
+                // move to claimed bed
+                let (_entity, bed_transform, _bed) = bed_query
+                    .get(bed_entity)
+                    .expect("to_rest_command: Owned bed query failed");
+
+                (
+                    bed_transform.translation.truncate().world_pos_to_grid(),
+                    true,
+                )
+            } else if available_beds.0 > 0 {
+                // or claim fee bed
+                let mut found_bed_tile = None;
+                for (bed_entity, bed_transform, mut bed) in bed_query.iter_mut() {
+                    if bed.owner.is_some() {
+                        continue;
                     }
+                    bed.claim_by(
+                        bed_entity,
+                        commandable_entity,
+                        &mut pawn,
+                        &mut available_beds,
+                    );
+                    found_bed_tile = Some(bed_transform.translation.truncate().world_pos_to_grid());
+                    break;
+                }
+                (
+                    found_bed_tile.expect(
+                        "to_rest_command: No unclaimed bed found despite available_beds > 0",
+                    ),
+                    true,
+                )
+            } else {
+                // Check if the current pawn location is empty
+                let current_tile = pawn_transform.translation.truncate().world_pos_to_grid();
+
+                if arc_navmesh
+                    .read()
+                    .has_occupants_except_of::<Pawn>(current_tile.x, current_tile.y)
+                {
+                    // go to random nearest empty place
                     (
-                        found_bed_tile.expect(
-                            "to_rest_command: No unclaimed bed found despite available_beds > 0",
+                        find_empty_grid_tile(
+                            pawn_transform.translation.truncate(),
+                            &arc_navmesh.read(),
+                            &mut rand::rng(),
+                            0,
                         ),
-                        true,
+                        false,
                     )
                 } else {
-                    // Check if the current pawn location is empty
-                    let current_tile = pawn_transform.translation.truncate().world_pos_to_grid();
+                    (current_tile, false)
+                }
+            };
 
-                    if arc_navmesh
-                        .read()
-                        .has_occupants_except_of::<Pawn>(current_tile.x, current_tile.y)
-                    {
-                        // go to random nearest empty place
-                        (
-                            find_empty_grid_tile(
-                                pawn_transform.translation.truncate(),
-                                &arc_navmesh.read(),
-                                &mut rand::rng(),
-                                0,
-                            ),
-                            false,
-                        )
-                    } else {
-                        (current_tile, false)
-                    }
-                };
-
-                commandable.set_queue(
-                    [
-                        CommandType::MoveTo(MoveToCommand {
-                            commandable_entity: *commandable_entity,
-                            grid_tile,
-                        }),
-                        CommandType::Sleep(SleepCommand {
-                            commandable_entity: *commandable_entity,
-                            is_sleep_in_bed,
-                        }),
-                    ],
-                    *commandable_entity,
-                    &mut commands,
-                );
-            }
-            Err(err) => {
-                warn!("Failed to get query result: {:?}", err);
-                continue;
-            }
+            commandable.set_queue(
+                [
+                    CommandType::MoveTo(MoveToCommand {
+                        commandable_entity,
+                        grid_tile,
+                    }),
+                    CommandType::Sleep(SleepCommand {
+                        commandable_entity,
+                        is_sleep_in_bed,
+                    }),
+                ],
+                commandable_entity,
+                &mut commands,
+            );
+        }
+        Err(err) => {
+            warn!("Failed to get query result: {:?}", err);
         }
     }
 }
