@@ -4,19 +4,13 @@ pub struct WorkOnCommandPlugin;
 
 impl Plugin for WorkOnCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_message::<WorkOnCommand>()
+        app.add_observer(execute_command)
             .add_observer(on_internal_interrupt)
-            .add_observer(on_work_complete)
-            .add_systems(
-                Update,
-                (execute_command,)
-                    .chain()
-                    .run_if(in_state(AppState::Playing)),
-            );
+            .add_observer(on_work_complete);
     }
 }
 
-#[derive(Message, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct WorkOnCommand {
     pub commandable_entity: Entity,
     pub workable_entity: Entity,
@@ -24,23 +18,22 @@ pub struct WorkOnCommand {
 }
 
 fn execute_command(
+    event: On<WorkOnCommand>,
     mut commands: Commands,
-    mut command_reader: MessageReader<WorkOnCommand>,
     mut workable_query: Query<&mut Workable>,
 ) {
-    for command in command_reader.read() {
-        match workable_query.get_mut(command.workable_entity) {
-            Ok(mut workable) => {
-                workable.change_state(
-                    WorkableState::BeingWorked(command.clone()),
-                    command.workable_entity,
-                    &mut commands,
-                );
-            }
-            Err(err) => {
-                warn!("Failed to get query result: {:?}", err);
-                continue;
-            }
+    let command = &*event;
+
+    match workable_query.get_mut(command.workable_entity) {
+        Ok(mut workable) => {
+            workable.change_state(
+                WorkableState::BeingWorked(command.clone()),
+                command.workable_entity,
+                &mut commands,
+            );
+        }
+        Err(err) => {
+            warn!("Failed to get query result: {:?}", err);
         }
     }
 }
