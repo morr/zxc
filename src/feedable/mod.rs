@@ -54,7 +54,7 @@ impl Feedable {
     }
 
     pub fn be_fed(&mut self) {
-        self.hunger -= HUNGER_OVERFLOW;
+        self.hunger = (self.hunger - HUNGER_OVERFLOW).max(HUNGER_FRESH);
     }
 }
 
