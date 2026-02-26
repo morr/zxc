@@ -15,6 +15,22 @@ pub enum CommandType {
     WorkOn(WorkOnCommand),
 }
 
+impl CommandType {
+    pub fn trigger(self, commands: &mut Commands) {
+        match self {
+            CommandType::CompleteTask(command) => commands.trigger(log_event!(command)),
+            CommandType::DropCarriedItem(command) => commands.trigger(log_event!(command)),
+            CommandType::Feed(command) => commands.trigger(log_event!(command)),
+            CommandType::MoveTo(command) => commands.trigger(log_event!(command)),
+            CommandType::PickUpItem(command) => commands.trigger(log_event!(command)),
+            CommandType::Sleep(command) => commands.trigger(log_event!(command)),
+            CommandType::ToRest(command) => commands.trigger(log_event!(command)),
+            CommandType::UserSelection(command) => commands.trigger(log_event!(command)),
+            CommandType::WorkOn(command) => commands.trigger(log_event!(command)),
+        }
+    }
+}
+
 // it is implemented so a single command can be passed into Commandable.schedule
 impl IntoIterator for CommandType {
     type Item = CommandType;

@@ -1,6 +1,5 @@
 use super::*;
 
-#[allow(clippy::too_many_arguments)]
 pub fn process_pending_commands(
     mut commands: Commands,
     mut commandable_query: Query<
@@ -13,35 +12,7 @@ pub fn process_pending_commands(
         continue_unless!(CommandableState::PendingExecution, commandable.state);
 
         if let Some(command_type) = commandable.start_executing(entity, &mut commands) {
-            match command_type {
-                CommandType::CompleteTask(command) => {
-                    commands.trigger(log_event!(command));
-                }
-                CommandType::DropCarriedItem(command) => {
-                    commands.trigger(log_event!(command));
-                }
-                CommandType::Feed(command) => {
-                    commands.trigger(log_event!(command));
-                }
-                CommandType::MoveTo(command) => {
-                    commands.trigger(log_event!(command));
-                }
-                CommandType::PickUpItem(command) => {
-                    commands.trigger(log_event!(command));
-                }
-                CommandType::Sleep(command) => {
-                    commands.trigger(log_event!(command));
-                }
-                CommandType::ToRest(command) => {
-                    commands.trigger(log_event!(command));
-                }
-                CommandType::UserSelection(command) => {
-                    commands.trigger(log_event!(command));
-                }
-                CommandType::WorkOn(command) => {
-                    commands.trigger(log_event!(command));
-                }
-            }
+            command_type.trigger(&mut commands);
 
             if let Some(mut pawn) = maybe_pawn {
                 pawn.change_state(PawnState::ExecutingCommand, entity, &mut commands);
