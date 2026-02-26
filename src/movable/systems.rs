@@ -138,4 +138,5 @@ pub fn on_pawn_death(
     };
 
     movable.to_idle(entity, &mut commands, false);
+    commands.entity(entity).remove::<PathfindingTask>();
 }

@@ -160,15 +160,14 @@ It queries 7 components + 2 additional queries + 2 resources. It makes decisions
 
 ---
 
-### 10. Missing entity cleanup on despawn
+### 10. Missing entity cleanup on despawn — FIXED
 
-When a pawn dies or is despawned:
-- `on_pawn_death` in `movable/systems.rs` sets movable to idle but doesn't cancel pending `PathfindingTask` components
-- Queued commands in `Commandable` are not drained (beds not unclaimed, tasks not returned)
-- Navmesh occupancy for carried items in inventory is not updated
-- `Pawn.inventory` items become orphaned entities
-
-There's no centralized despawn handler that cleans up all related state.
+When a pawn dies, `on_pawn_death` observers now handle cleanup:
+- ~~`PathfindingTask` not cancelled~~ → `movable/systems.rs:on_pawn_death` removes the component
+- ~~Queued commands not drained~~ → `pawn/systems.rs:on_pawn_death` calls `commandable.clear_queue()` (drains queue, triggers `ReleaseCommandResourcesEvent` per command)
+- ~~Beds not unclaimed~~ → `pawn/systems.rs:on_pawn_death` unclaims bed via `bed.unclaim_by()`
+- ~~Tasks not returned~~ → `complete_task_command/on_release_resources` re-queues task to `TasksQueue`
+- Navmesh occupancy and inventory are intentionally kept on the dead pawn entity (cleaned up on actual despawn)
 
 ---
 
