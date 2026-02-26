@@ -4,40 +4,38 @@ pub struct CompleteTaskCommandPlugin;
 
 impl Plugin for CompleteTaskCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_message::<CompleteTaskCommand>()
-            .add_observer(on_release_resources)
-            .add_systems(Update, execute_command.run_if(in_state(AppState::Playing)));
+        app.add_observer(execute_command)
+            .add_observer(on_release_resources);
     }
 }
 
-#[derive(Message, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct CompleteTaskCommand {
     pub commandable_entity: Entity,
     pub task: Task,
 }
 
 fn execute_command(
+    event: On<CompleteTaskCommand>,
     mut commands: Commands,
-    mut command_reader: MessageReader<CompleteTaskCommand>,
     mut commandable_query: Query<&mut Commandable>,
 ) {
-    for CompleteTaskCommand {
+    let CompleteTaskCommand {
         commandable_entity, ..
-    } in command_reader.read()
-    {
-        let mut commandable = match commandable_query.get_mut(*commandable_entity) {
-            Ok(commandable) => commandable,
-            Err(err) => {
-                warn!(
-                    "Failed to get query result for commandable_entity {:?}: {:?}",
-                    commandable_entity, err
-                );
-                continue;
-            }
-        };
+    } = *event;
 
-        commandable.complete_executing(*commandable_entity, &mut commands);
-    }
+    let mut commandable = match commandable_query.get_mut(commandable_entity) {
+        Ok(commandable) => commandable,
+        Err(err) => {
+            warn!(
+                "Failed to get query result for commandable_entity {:?}: {:?}",
+                commandable_entity, err
+            );
+            return;
+        }
+    };
+
+    commandable.complete_executing(commandable_entity, &mut commands);
 }
 
 fn on_release_resources(

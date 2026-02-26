@@ -3,7 +3,6 @@ use super::*;
 #[allow(clippy::too_many_arguments)]
 pub fn process_pending_commands(
     mut commands: Commands,
-    mut complete_task_command_writer: MessageWriter<CompleteTaskCommand>,
     mut drop_carried_item_command_writer: MessageWriter<DropCarriedItemCommand>,
     mut feed_command_writer: MessageWriter<FeedCommand>,
     mut move_to_command_writer: MessageWriter<MoveToCommand>,
@@ -24,7 +23,7 @@ pub fn process_pending_commands(
         if let Some(command_type) = commandable.start_executing(entity, &mut commands) {
             match command_type {
                 CommandType::CompleteTask(command) => {
-                    complete_task_command_writer.write(log_message!(command));
+                    commands.trigger(log_message!(command));
                 }
                 CommandType::DropCarriedItem(command) => {
                     drop_carried_item_command_writer.write(log_message!(command));
@@ -53,11 +52,7 @@ pub fn process_pending_commands(
             }
 
             if let Some(mut pawn) = maybe_pawn {
-                pawn.change_state(
-                    PawnState::ExecutingCommand,
-                    entity,
-                    &mut commands,
-                );
+                pawn.change_state(PawnState::ExecutingCommand, entity, &mut commands);
             }
         }
     }
@@ -82,11 +77,7 @@ pub fn on_command_complete(
         ensure_state!(fn: PawnState::ExecutingCommand, pawn.state);
         return_unless!(CommandableState::Idle, commandable.state);
 
-        pawn.change_state(
-            PawnState::Idle,
-            event.entity,
-            &mut commands,
-        );
+        pawn.change_state(PawnState::Idle, event.entity, &mut commands);
     }
 }
 
