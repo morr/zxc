@@ -34,7 +34,7 @@ pub struct FoodConsumedEvent {
 
 impl Feedable {
     pub fn is_fresh(&self) -> bool {
-        self.hunger == HUNGER_FRESH
+        self.hunger <= HUNGER_FRESH
     }
 
     pub fn is_overflowed(&self) -> bool {
@@ -42,7 +42,7 @@ impl Feedable {
     }
 
     pub fn is_death_starving(&self) -> bool {
-        self.hunger == HUNGER_OVERFLOW * config().feedable.max_starvation_multiplier
+        self.hunger >= HUNGER_OVERFLOW * config().feedable.max_starvation_multiplier
     }
 
     pub fn progress_hunger(&mut self, time_amount: f32) {

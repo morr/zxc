@@ -22,6 +22,7 @@ These issues were identified in earlier audits and have been resolved.
 8. **Unnecessary `Vec` allocation in `CommandType::IntoIterator`** — Now uses `std::iter::once(self)`. (`src/commandable/components.rs`)
 9. **`SeqCst` ordering on counter atomics** — Changed to `Ordering::Relaxed` for simple counter. (`src/async_queue.rs`)
 10. **Navtile HashMap entries never cleaned up** — Empty `HashSet` entries are now removed in `remove_occupant()`. (`src/navigation/components/navtile.rs`)
+11. **Floating-point equality comparisons** — Replaced `==` with `<=` for fresh checks and `>=` for overflow/death checks in `Feedable` and `Restable`. (`src/feedable/mod.rs`, `src/restable/mod.rs`)
 
 ---
 
@@ -71,24 +72,7 @@ Same issue with `TaskKind::Work` — the `unwrap_or_else(panic!)` at line 61 mea
 
 ---
 
-### 3. Floating-point equality comparisons
-
-| Location | Code | Problem |
-|---|---|---|
-| `feedable/mod.rs:37` | `self.hunger == HUNGER_FRESH` | `0.0` comparison after float arithmetic |
-| `feedable/mod.rs:45` | `self.hunger == HUNGER_OVERFLOW * ...` | Exact float equality for death threshold |
-| `restable/mod.rs:47` | `self.fatigue == FATIGUE_FRESH` | Same pattern |
-| `restable/mod.rs:51` | `self.fatigue == FATIGUE_OVERFLOW` | Same pattern |
-
-The `progress_hunger` and `progress_fatigue` methods use `.clamp()` which helps, but `is_fresh()` and `is_overflowed()` use `==` instead of `<=` / `>=`. `is_overflowed` in `Restable` uses `==` while `Feedable` uses `>=` — inconsistent.
-
-The `is_death_starving()` check (`== HUNGER_OVERFLOW * multiplier`) is particularly fragile — accumulated float imprecision could prevent death from ever triggering.
-
-**Fix**: Use `<=` for fresh checks, `>=` for overflow/death checks consistently.
-
----
-
-### 4. System ordering — no explicit ordering between competing writers
+### 3. System ordering — no explicit ordering between competing writers
 
 Three systems all call `commandable.set_queue()` on the same entities in `Update` with no ordering:
 
@@ -102,7 +86,7 @@ Three systems all call `commandable.set_queue()` on the same entities in `Update
 
 ---
 
-### 5. `be_fed()` can make hunger negative
+### 4. `be_fed()` can make hunger negative
 
 `feedable/mod.rs:56-58`:
 ```rust
@@ -117,7 +101,7 @@ If hunger is, say, 80.0 (below overflow), this produces -20.0. While `progress_h
 
 ---
 
-### 6. Atomic ordering inconsistency
+### 5. Atomic ordering inconsistency
 
 `async_queue.rs:17-26`:
 ```rust
@@ -135,7 +119,7 @@ The `decrement()` method (Relaxed) is never called — the async closure uses di
 
 ---
 
-### 7. Recursive movement — potential stack overflow
+### 6. Recursive movement — potential stack overflow
 
 `movable/systems.rs:112-121`:
 ```rust
@@ -150,7 +134,7 @@ If a pawn is very fast and path segments are short, this recurses once per path 
 
 ---
 
-### 8. Commented-out code accumulation
+### 7. Commented-out code accumulation
 
 Large blocks of dead code throughout the codebase:
 
@@ -164,7 +148,7 @@ This clutters the codebase and makes it harder to understand intent. If the code
 
 ---
 
-### 9. Typo: `MovableStateMovinTag`
+### 8. Typo: `MovableStateMovinTag`
 
 `movable/components.rs:16`:
 ```rust
@@ -175,7 +159,7 @@ Should be `MovableStateMovingTag`. Used in queries throughout `movable/systems.r
 
 ---
 
-### 10. Typo: `PawnDeatEvent`
+### 9. Typo: `PawnDeatEvent`
 
 `pawn/components.rs:191`:
 ```rust
@@ -186,7 +170,7 @@ Should be `PawnDeathEvent`. Used in multiple files (`movable/systems.rs:134`, `f
 
 ---
 
-### 11. God system — `ai_idle_pawns`
+### 10. God system — `ai_idle_pawns`
 
 `ai/mod.rs:12-142`: This single 130-line function handles:
 - Hunger-triggered feeding
@@ -200,7 +184,7 @@ It queries 7 components + 2 additional queries + 2 resources. It makes decisions
 
 ---
 
-### 12. Missing entity cleanup on despawn
+### 11. Missing entity cleanup on despawn
 
 When a pawn dies or is despawned:
 - `on_pawn_death` in `movable/systems.rs` sets movable to idle but doesn't cancel pending `PathfindingTask` components
@@ -212,7 +196,7 @@ There's no centralized despawn handler that cleans up all related state.
 
 ---
 
-### 13. `MovableState` derives `States` unnecessarily
+### 12. `MovableState` derives `States` unnecessarily
 
 `movable/components.rs:5`:
 ```rust
@@ -224,7 +208,7 @@ pub enum MovableState {
 
 ---
 
-### 14. `Pawn::pick_up_item` / `drop_item` — methods with too many params doing world mutation
+### 13. `Pawn::pick_up_item` / `drop_item` — methods with too many params doing world mutation
 
 `pawn/components.rs:59-122`: These methods take `&mut Commands`, `&mut Navmesh`, `&mut ResMut<FoodStock>`, etc. — they're effectively systems disguised as component methods. This pattern:
 - Makes the component harder to test
@@ -235,7 +219,7 @@ pub enum MovableState {
 
 ---
 
-### 15. `process_pending_commands` has 10 MessageWriter parameters
+### 14. `process_pending_commands` has 10 MessageWriter parameters
 
 **File:** `src/commandable/systems.rs:3-20`
 
@@ -245,7 +229,7 @@ One writer per command type (`MoveToCommand`, `FeedCommand`, `SleepCommand`, etc
 
 ---
 
-### 16. `Pawn` is a god-component
+### 15. `Pawn` is a god-component
 
 **File:** `src/pawn/components.rs:9-20`
 
@@ -255,7 +239,7 @@ Stores: state, age, birth_year_day, lifetime, `HashMap<Entity, Carryable>` inven
 
 ---
 
-### 17. `use_modules!` macro re-exports everything with `pub use crate::$x::*`
+### 16. `use_modules!` macro re-exports everything with `pub use crate::$x::*`
 
 **File:** `src/lib.rs`
 
@@ -265,7 +249,7 @@ All internal details (systems, helpers) are publicly accessible. Prevents safe r
 
 ---
 
-### 18. No state transition validation
+### 17. No state transition validation
 
 **File:** `src/pawn/components.rs:143-178`
 
@@ -275,7 +259,7 @@ All internal details (systems, helpers) are publicly accessible. Prevents safe r
 
 ---
 
-### 19. Minimal test coverage
+### 18. Minimal test coverage
 
 Only ~7 tests total (farm yield, pawn death, utils). No tests for:
 - Command execution pipeline

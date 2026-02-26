@@ -44,11 +44,11 @@ impl Default for Restable {
 
 impl Restable {
     pub fn is_fresh(&self) -> bool {
-        self.fatigue == FATIGUE_FRESH
+        self.fatigue <= FATIGUE_FRESH
     }
 
     pub fn is_overflowed(&self) -> bool {
-        self.fatigue == FATIGUE_OVERFLOW
+        self.fatigue >= FATIGUE_OVERFLOW
     }
 
     pub fn progress_fatigue(&mut self, time_amount: f32) {
