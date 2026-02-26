@@ -4,12 +4,11 @@ pub struct PickUpItemCommandPlugin;
 
 impl Plugin for PickUpItemCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_message::<PickUpItemCommand>()
-            .add_systems(Update, execute_command.run_if(in_state(AppState::Playing)));
+        app.add_observer(execute_command);
     }
 }
 
-#[derive(Message, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct PickUpItemCommand {
     pub commandable_entity: Entity,
     pub carryable_entity: Entity,
@@ -17,63 +16,61 @@ pub struct PickUpItemCommand {
 
 #[allow(clippy::too_many_arguments)]
 fn execute_command(
+    event: On<PickUpItemCommand>,
     mut commands: Commands,
-    mut command_reader: MessageReader<PickUpItemCommand>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
     mut carryable_query: Query<(&mut Carryable, &Transform)>,
     arc_navmesh: ResMut<ArcNavmesh>,
     mut food_stock: ResMut<FoodStock>,
 ) {
-    for PickUpItemCommand {
+    let PickUpItemCommand {
         commandable_entity,
         carryable_entity,
-    } in command_reader.read()
-    {
-        let (mut pawn, mut commandable, commandable_transform) =
-            match commandable_query.get_mut(*commandable_entity) {
-                Ok((pawn, commandable, transform)) => (pawn, commandable, transform),
-                Err(err) => {
-                    warn!(
-                        "Failed to get query result for commandable_entity {:?}: {:?}",
-                        commandable_entity, err
-                    );
-                    continue;
-                }
-            };
+    } = *event;
 
-        let (mut carryable, carryable_transform) = match carryable_query.get_mut(*carryable_entity)
-        {
-            Ok((carryable, transform)) => (carryable, transform),
+    let (mut pawn, mut commandable, commandable_transform) =
+        match commandable_query.get_mut(commandable_entity) {
+            Ok((pawn, commandable, transform)) => (pawn, commandable, transform),
             Err(err) => {
                 warn!(
-                    "Failed to get query result for carryable_entity {:?}: {:?}",
-                    carryable_entity, err
+                    "Failed to get query result for commandable_entity {:?}: {:?}",
+                    commandable_entity, err
                 );
-                interrupt_commandable_commands_queue!(commands, *commandable_entity);
-                continue;
+                return;
             }
         };
 
-        let commandable_grid_tile = commandable_transform.world_pos_to_grid();
-        let carryable_grid_tile = carryable_transform.world_pos_to_grid();
-
-        if commandable_grid_tile != carryable_grid_tile {
-            warn!("commandable_grid_tile != carryable_grid_tile");
-            interrupt_commandable_commands_queue!(commands, *commandable_entity);
-            continue;
+    let (mut carryable, carryable_transform) = match carryable_query.get_mut(carryable_entity) {
+        Ok((carryable, transform)) => (carryable, transform),
+        Err(err) => {
+            warn!(
+                "Failed to get query result for carryable_entity {:?}: {:?}",
+                carryable_entity, err
+            );
+            interrupt_commandable_commands_queue!(commands, commandable_entity);
+            return;
         }
+    };
 
-        pawn.pick_up_item(
-            *carryable_entity,
-            &mut carryable,
-            commandable_grid_tile,
-            &mut commands,
-            &mut arc_navmesh.write(),
-            &mut food_stock,
-        );
+    let commandable_grid_tile = commandable_transform.world_pos_to_grid();
+    let carryable_grid_tile = carryable_transform.world_pos_to_grid();
 
-        commandable.complete_executing(*commandable_entity, &mut commands);
+    if commandable_grid_tile != carryable_grid_tile {
+        warn!("commandable_grid_tile != carryable_grid_tile");
+        interrupt_commandable_commands_queue!(commands, commandable_entity);
+        return;
     }
+
+    pawn.pick_up_item(
+        carryable_entity,
+        &mut carryable,
+        commandable_grid_tile,
+        &mut commands,
+        &mut arc_navmesh.write(),
+        &mut food_stock,
+    );
+
+    commandable.complete_executing(commandable_entity, &mut commands);
 }
 
 // The command is executed and completed within the same system (execute_command),
