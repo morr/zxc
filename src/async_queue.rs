@@ -1,6 +1,6 @@
 use std::sync::{
-    atomic::{AtomicI32, Ordering},
     Arc,
+    atomic::{AtomicI32, Ordering},
 };
 
 use bevy::tasks::AsyncComputeTaskPool;
@@ -14,15 +14,15 @@ pub struct AsyncQueueCounter(pub Arc<AtomicI32>);
 
 impl AsyncQueueCounter {
     pub fn increment(&self) {
-        self.0.fetch_add(1, Ordering::Relaxed);
+        self.0.fetch_add(1, Ordering::SeqCst);
     }
 
     pub fn decrement(&self) {
-        self.0.fetch_sub(1, Ordering::Relaxed);
+        self.0.fetch_sub(1, Ordering::SeqCst);
     }
 
     pub fn get(&self) -> i32 {
-        self.0.load(Ordering::Relaxed)
+        self.0.load(Ordering::SeqCst)
     }
 }
 
