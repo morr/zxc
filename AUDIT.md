@@ -171,15 +171,9 @@ When a pawn dies, `on_pawn_death` observers now handle cleanup:
 
 ---
 
-### 11. `MovableState` derives `States` unnecessarily
+### 11. `MovableState` derives `States` unnecessarily — FIXED
 
-`movable/components.rs:5`:
-```rust
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States, InspectorOptions, Reflect)]
-pub enum MovableState {
-```
-
-`States` is for Bevy's state machine system (app states like `AppState::Loading`/`AppState::Playing`). Using it on a per-entity enum that's stored as a component field is incorrect — it's not registered as a Bevy State and the derive does nothing useful here. It should be removed.
+Removed the unnecessary `States` derive from `MovableState` in `movable/components.rs`. `States` is for Bevy's app state machine, not per-entity enums stored as component fields.
 
 ---
 

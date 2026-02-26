@@ -2,7 +2,7 @@ use super::*;
 
 use std::collections::VecDeque;
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States, InspectorOptions, Reflect)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
 pub enum MovableState {
     #[default]
