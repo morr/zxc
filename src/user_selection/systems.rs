@@ -1,11 +1,11 @@
 use super::*;
 
 pub fn find_new_selection_on_click(
+    mut commands: Commands,
     mut click_event_reader: MessageReader<ClickMessageStage0>,
     mut click_event_writer: MessageWriter<ClickMessageStage1>,
     arc_navmesh: ResMut<ArcNavmesh>,
     current_user_selection: Res<CurrentUserSelection>,
-    mut user_selection_command_writer: MessageWriter<UserSelectionCommand>,
 ) {
     for ClickMessageStage0(grid_tile) in click_event_reader.read() {
         let navmesh = arc_navmesh.read();
@@ -60,6 +60,6 @@ pub fn find_new_selection_on_click(
         let maybe_new_selection =
             maybe_selection_index.map(|selection_index| entities[selection_index].clone());
 
-        user_selection_command_writer.write(log_message!(UserSelectionCommand(maybe_new_selection)));
+        commands.trigger(log_event!(UserSelectionCommand(maybe_new_selection)));
     }
 }

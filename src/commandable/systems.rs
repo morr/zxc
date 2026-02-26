@@ -9,7 +9,6 @@ pub fn process_pending_commands(
     mut pick_up_item_command_writer: MessageWriter<PickUpItemCommand>,
     mut sleep_command_writer: MessageWriter<SleepCommand>,
     mut to_rest_command_writer: MessageWriter<ToRestCommand>,
-    mut user_selection_command_writer: MessageWriter<UserSelectionCommand>,
     mut work_on_command_writer: MessageWriter<WorkOnCommand>,
     mut commandable_query: Query<
         (Entity, &mut Commandable, Option<&mut Pawn>),
@@ -23,7 +22,7 @@ pub fn process_pending_commands(
         if let Some(command_type) = commandable.start_executing(entity, &mut commands) {
             match command_type {
                 CommandType::CompleteTask(command) => {
-                    commands.trigger(log_message!(command));
+                    commands.trigger(log_event!(command));
                 }
                 CommandType::DropCarriedItem(command) => {
                     drop_carried_item_command_writer.write(log_message!(command));
@@ -44,7 +43,7 @@ pub fn process_pending_commands(
                     to_rest_command_writer.write(log_message!(command));
                 }
                 CommandType::UserSelection(command) => {
-                    user_selection_command_writer.write(log_message!(command));
+                    commands.trigger(log_event!(command));
                 }
                 CommandType::WorkOn(command) => {
                     work_on_command_writer.write(log_message!(command));
