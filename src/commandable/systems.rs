@@ -4,7 +4,6 @@ use super::*;
 pub fn process_pending_commands(
     mut commands: Commands,
     mut drop_carried_item_command_writer: MessageWriter<DropCarriedItemCommand>,
-    mut feed_command_writer: MessageWriter<FeedCommand>,
     mut move_to_command_writer: MessageWriter<MoveToCommand>,
     mut pick_up_item_command_writer: MessageWriter<PickUpItemCommand>,
     mut sleep_command_writer: MessageWriter<SleepCommand>,
@@ -28,7 +27,7 @@ pub fn process_pending_commands(
                     drop_carried_item_command_writer.write(log_message!(command));
                 }
                 CommandType::Feed(command) => {
-                    feed_command_writer.write(log_message!(command));
+                    commands.trigger(log_event!(command));
                 }
                 CommandType::MoveTo(command) => {
                     move_to_command_writer.write(log_message!(command));
