@@ -4,41 +4,32 @@ pub struct SleepCommandPlugin;
 
 impl Plugin for SleepCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_message::<SleepCommand>()
+        app.add_observer(execute_command)
             .add_observer(on_rest_complete)
-            .add_observer(on_internal_interrupt)
-            .add_systems(
-                Update,
-                execute_command
-                    .run_if(in_state(AppState::Playing)),
-            );
+            .add_observer(on_internal_interrupt);
     }
 }
 
-#[derive(Message, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct SleepCommand {
     pub commandable_entity: Entity,
     pub is_sleep_in_bed: bool,
 }
 
-fn execute_command(
-    mut command_reader: MessageReader<SleepCommand>,
-    mut query: Query<&mut Restable>,
-) {
-    for SleepCommand {
+fn execute_command(event: On<SleepCommand>, mut query: Query<&mut Restable>) {
+    let SleepCommand {
         commandable_entity,
         is_sleep_in_bed,
-    } in command_reader.read()
-    {
-        let Ok(mut restable) = query.get_mut(*commandable_entity) else {
-            continue;
-        };
+    } = *event;
 
-        restable.change_state(
-            RestableState::Resting(Restable::sleep_quality_multiplier(*is_sleep_in_bed)),
-            *commandable_entity,
-        );
-    }
+    let Ok(mut restable) = query.get_mut(commandable_entity) else {
+        return;
+    };
+
+    restable.change_state(
+        RestableState::Resting(Restable::sleep_quality_multiplier(is_sleep_in_bed)),
+        commandable_entity,
+    );
 }
 
 fn on_rest_complete(

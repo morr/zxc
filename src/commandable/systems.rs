@@ -6,7 +6,6 @@ pub fn process_pending_commands(
     mut drop_carried_item_command_writer: MessageWriter<DropCarriedItemCommand>,
     mut move_to_command_writer: MessageWriter<MoveToCommand>,
     mut pick_up_item_command_writer: MessageWriter<PickUpItemCommand>,
-    mut sleep_command_writer: MessageWriter<SleepCommand>,
     mut to_rest_command_writer: MessageWriter<ToRestCommand>,
     mut work_on_command_writer: MessageWriter<WorkOnCommand>,
     mut commandable_query: Query<
@@ -36,7 +35,7 @@ pub fn process_pending_commands(
                     pick_up_item_command_writer.write(log_message!(command));
                 }
                 CommandType::Sleep(command) => {
-                    sleep_command_writer.write(log_message!(command));
+                    commands.trigger(log_event!(command));
                 }
                 CommandType::ToRest(command) => {
                     to_rest_command_writer.write(log_message!(command));
