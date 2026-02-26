@@ -4,13 +4,12 @@ pub struct DropCarriedItemCommandPlugin;
 
 impl Plugin for DropCarriedItemCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_message::<DropCarriedItemCommand>()
-            .add_observer(on_release_resources)
-            .add_systems(Update, execute_command.run_if(in_state(AppState::Playing)));
+        app.add_observer(execute_command)
+            .add_observer(on_release_resources);
     }
 }
 
-#[derive(Message, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct DropCarriedItemCommand {
     pub commandable_entity: Entity,
     pub carryable_entity: Entity,
@@ -18,8 +17,8 @@ pub struct DropCarriedItemCommand {
 
 #[allow(clippy::too_many_arguments)]
 fn execute_command(
+    event: On<DropCarriedItemCommand>,
     mut commands: Commands,
-    mut command_reader: MessageReader<DropCarriedItemCommand>,
     mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
     mut carryable_query: Query<&mut Carryable>,
     assets_collection: Res<AssetsCollection>,
@@ -27,48 +26,47 @@ fn execute_command(
     arc_navmesh: ResMut<ArcNavmesh>,
     mut food_stock: ResMut<FoodStock>,
 ) {
-    for DropCarriedItemCommand {
+    let DropCarriedItemCommand {
         commandable_entity,
         carryable_entity,
-    } in command_reader.read()
+    } = *event;
+
+    let (mut pawn, mut commandable, transform) = match commandable_query.get_mut(commandable_entity)
     {
-        let (mut pawn, mut commandable, transform) =
-            match commandable_query.get_mut(*commandable_entity) {
-                Ok((pawn, commandable, transform)) => (pawn, commandable, transform),
-                Err(err) => {
-                    warn!(
-                        "Failed to get query result for commandable_entity {:?}: {:?}",
-                        commandable_entity, err
-                    );
-                    continue;
-                }
-            };
+        Ok((pawn, commandable, transform)) => (pawn, commandable, transform),
+        Err(err) => {
+            warn!(
+                "Failed to get query result for commandable_entity {:?}: {:?}",
+                commandable_entity, err
+            );
+            return;
+        }
+    };
 
-        let mut carryable = match carryable_query.get_mut(*carryable_entity) {
-            Ok(carryable) => carryable,
-            Err(err) => {
-                warn!(
-                    "Failed to get query result for carryable_entity {:?}: {:?}",
-                    carryable_entity, err
-                );
-                interrupt_commandable_commands_queue!(commands, *commandable_entity);
-                continue;
-            }
-        };
+    let mut carryable = match carryable_query.get_mut(carryable_entity) {
+        Ok(carryable) => carryable,
+        Err(err) => {
+            warn!(
+                "Failed to get query result for carryable_entity {:?}: {:?}",
+                carryable_entity, err
+            );
+            interrupt_commandable_commands_queue!(commands, commandable_entity);
+            return;
+        }
+    };
 
-        pawn.drop_item(
-            *carryable_entity,
-            &mut carryable,
-            transform.world_pos_to_grid(),
-            &mut commands,
-            &assets_collection,
-            &meshes_collection,
-            &mut arc_navmesh.write(),
-            &mut food_stock,
-        );
+    pawn.drop_item(
+        carryable_entity,
+        &mut carryable,
+        transform.world_pos_to_grid(),
+        &mut commands,
+        &assets_collection,
+        &meshes_collection,
+        &mut arc_navmesh.write(),
+        &mut food_stock,
+    );
 
-        commandable.complete_executing(*commandable_entity, &mut commands);
-    }
+    commandable.complete_executing(commandable_entity, &mut commands);
 }
 
 // The command is executed and completed within the same system (execute_command),
