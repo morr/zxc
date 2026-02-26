@@ -13,7 +13,7 @@ pub enum MovableState {
 }
 
 #[derive(Component, Reflect)]
-pub struct MovableStateMovinTag;
+pub struct MovableStateMovingTag;
 
 #[derive(Component, Debug, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
@@ -71,7 +71,7 @@ impl Movable {
     ) {
         self.state = MovableState::Moving(end_tile);
         self.path = path;
-        commands.entity(entity).insert(MovableStateMovinTag);
+        commands.entity(entity).insert(MovableStateMovingTag);
         // commands.trigger(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
     }
 
@@ -144,6 +144,6 @@ impl Movable {
 
     fn stop_moving(&mut self, entity: Entity, commands: &mut Commands) {
         self.path = [].into();
-        commands.entity(entity).remove::<MovableStateMovinTag>();
+        commands.entity(entity).remove::<MovableStateMovingTag>();
     }
 }

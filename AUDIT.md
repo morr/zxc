@@ -134,25 +134,15 @@ This clutters the codebase and makes it harder to understand intent. If the code
 
 ---
 
-### 7. Typo: `MovableStateMovinTag`
+### 7. ~~Typo: `MovableStateMovinTag`~~ FIXED
 
-`movable/components.rs:16`:
-```rust
-pub struct MovableStateMovinTag;
-```
-
-Should be `MovableStateMovingTag`. Used in queries throughout `movable/systems.rs` and the movement system. Not a bug, but a readability issue that compounds as the codebase grows.
+Renamed `MovableStateMovinTag` → `MovableStateMovingTag` in `movable/components.rs` and `movable/systems.rs`.
 
 ---
 
-### 8. Typo: `PawnDeatEvent`
+### 8. ~~Typo: `PawnDeatEvent`~~ FIXED
 
-`pawn/components.rs:191`:
-```rust
-pub struct PawnDeatEvent {
-```
-
-Should be `PawnDeathEvent`. Used in multiple files (`movable/systems.rs:134`, `feedable/mod.rs:93`, `pawn/systems.rs`).
+Renamed `PawnDeatEvent` → `PawnDeathEvent` in `pawn/components.rs`, `pawn/systems.rs`, `movable/systems.rs`, `feedable/mod.rs`, and `tests/pawn.rs`.
 
 ---
 

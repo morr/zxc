@@ -63,7 +63,7 @@ mod pawn {
             .id();
 
         // Trigger via Commands (deferred) so it runs during the next update
-        app.world_mut().commands().trigger(PawnDeatEvent {
+        app.world_mut().commands().trigger(PawnDeathEvent {
             entity: pawn_id,
             reason: PawnDeathReason::OldAge,
         });

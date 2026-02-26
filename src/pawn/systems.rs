@@ -190,7 +190,7 @@ pub fn progress_pawn_dying(
         pawn.decrease_lifetime(time.delta_secs());
 
         if pawn.lifetime.is_zero() {
-            commands.trigger(log_event!(PawnDeatEvent {
+            commands.trigger(log_event!(PawnDeathEvent {
                 entity,
                 reason: PawnDeathReason::OldAge
             }));
@@ -201,13 +201,13 @@ pub fn progress_pawn_dying(
 
 #[allow(clippy::too_many_arguments)]
 pub fn on_pawn_death(
-    event: On<PawnDeatEvent>,
+    event: On<PawnDeathEvent>,
     mut commands: Commands,
     mut pawn_query: Query<(&mut Pawn, &mut Restable, &mut Commandable)>,
     mut bed_query: Query<&mut Bed>,
     mut available_beds: ResMut<AvailableBeds>,
 ) {
-    let PawnDeatEvent { entity, .. } = *event;
+    let PawnDeathEvent { entity, .. } = *event;
     match pawn_query.get_mut(entity) {
         Ok((mut pawn, mut restable, mut commandable)) => {
             pawn.change_state(PawnState::Dead, entity, &mut commands);

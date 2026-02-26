@@ -4,7 +4,7 @@ pub fn move_moving_entities(
     mut commands: Commands,
     mut query_movable: Query<
         (Entity, &mut Movable, &mut Transform, Option<&Pawn>),
-        With<MovableStateMovinTag>,
+        With<MovableStateMovingTag>,
     >,
     time: Res<Time>,
     arc_navmesh: Res<ArcNavmesh>,
@@ -127,11 +127,11 @@ fn move_to_target_location(
 }
 
 pub fn on_pawn_death(
-    event: On<PawnDeatEvent>,
+    event: On<PawnDeathEvent>,
     mut commands: Commands,
     mut query: Query<&mut Movable>,
 ) {
-    let PawnDeatEvent { entity, .. } = *event;
+    let PawnDeathEvent { entity, .. } = *event;
 
     let Ok(mut movable) = query.get_mut(entity) else {
         return;
