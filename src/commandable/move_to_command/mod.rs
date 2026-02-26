@@ -4,49 +4,44 @@ pub struct MoveToCommandPlugin;
 
 impl Plugin for MoveToCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_message::<MoveToCommand>()
+        app.add_observer(execute_command)
             .add_observer(on_internal_interrupt)
-            .add_observer(on_movable_reached_destination)
-            .add_systems(Update, execute_command.run_if(in_state(AppState::Playing)));
+            .add_observer(on_movable_reached_destination);
     }
 }
 
-#[derive(Message, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct MoveToCommand {
     pub commandable_entity: Entity,
     pub grid_tile: IVec2,
 }
 
 fn execute_command(
+    event: On<MoveToCommand>,
     mut commands: Commands,
-    mut command_reader: MessageReader<MoveToCommand>,
     mut query: Query<(&Transform, &mut Movable, Option<&mut PathfindingTask>)>,
     arc_navmesh: Res<ArcNavmesh>,
     queue_counter: Res<AsyncQueueCounter>,
 ) {
-    for MoveToCommand {
+    let MoveToCommand {
         commandable_entity,
         grid_tile,
-    } in command_reader.read()
-    {
-        // println!("{:?}", MoveToCommand(entity, grid_tile));
-        match query.get_mut(*commandable_entity) {
-            Ok((transform, mut movable, mut maybe_pathfinding_task)) => {
-                movable.to_pathfinding_async(
-                    *commandable_entity,
-                    transform.translation.truncate().world_pos_to_grid(),
-                    *grid_tile,
-                    &arc_navmesh,
-                    &queue_counter,
-                    maybe_pathfinding_task.as_deref_mut(),
-                    &mut commands,
-                );
-                // commandable.change_state(CommandableState::Executing, *entity, &mut commands);
-            }
-            Err(err) => {
-                warn!("Failed to get query result: {:?}", err);
-                continue;
-            }
+    } = *event;
+
+    match query.get_mut(commandable_entity) {
+        Ok((transform, mut movable, mut maybe_pathfinding_task)) => {
+            movable.to_pathfinding_async(
+                commandable_entity,
+                transform.translation.truncate().world_pos_to_grid(),
+                grid_tile,
+                &arc_navmesh,
+                &queue_counter,
+                maybe_pathfinding_task.as_deref_mut(),
+                &mut commands,
+            );
+        }
+        Err(err) => {
+            warn!("Failed to get query result: {:?}", err);
         }
     }
 }
@@ -56,7 +51,10 @@ fn on_movable_reached_destination(
     mut commands: Commands,
     mut query: Query<&mut Commandable>,
 ) {
-    let MovableReachedDestinationEvent { entity, grid_tile: destination_tile } = *event;
+    let MovableReachedDestinationEvent {
+        entity,
+        grid_tile: destination_tile,
+    } = *event;
 
     // println!("{:?}", MovableReachedDestinationEvent(*entity, *destination_tile));
     let Ok(mut commandable) = query.get_mut(entity) else {
