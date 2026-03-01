@@ -123,5 +123,6 @@ pub fn close_on_esc(
 
         next_state.set(AppState::Quiting);
         event_writer.write(AppExit::Success);
+        std::process::exit(0);
     }
 }
