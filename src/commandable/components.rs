@@ -261,7 +261,7 @@ macro_rules! commandable_states {
                 _commands: &mut Commands
             ) -> CommandableState {
                 use std::mem;
-                log_state_change!("Commandable({:?}).state {:?} => {:?} executing={:?} queue={:?}", entity, self.state, new_state, self.executing, self.queue);
+                log_state_change!("Commandable({:?}) state {:?} => {:?} executing={:?} queue={:?}", entity, self.state, new_state, self.executing, self.queue);
 
                 // self.remove_old_state_component(commands, entity);
                 let prev_state = mem::replace(&mut self.state, new_state);

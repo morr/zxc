@@ -47,7 +47,7 @@ pub fn on_farm_tended(
 }
 
 pub fn progress_planted_and_tending_rest_timers(
-    time: Res<Time<Virtual>>,
+    time: Res<Time>,
     mut commands: Commands,
     mut query: Query<(Entity, &mut Farm), With<farm_state::Planted>>,
     mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
