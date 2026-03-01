@@ -75,10 +75,10 @@ pub fn generate(map_config: &MapGeneratorConfig) -> Vec<Vec<Tile>> {
             cell.props_noise = props_noise[noise_index];
 
             cell.kind = match cell.height_noise {
-                n if n < 0.1 => TileKind::DeepWater,
-                n if n < 0.15 => TileKind::ShallowWater,
-                n if n < 0.2 => TileKind::Sand,
-                n if n < 0.6 => TileKind::Grass,
+                n if n < 0.287 => TileKind::DeepWater,
+                n if n < 0.313 => TileKind::ShallowWater,
+                n if n < 0.34 => TileKind::Sand,
+                n if n < 0.553 => TileKind::Grass,
                 _ => TileKind::Forest,
                 //
                 // n if n < 0.2 => TileKind::DeepWater,
@@ -156,17 +156,19 @@ fn noise_value(
     let mut noise_value = 0.0;
     let mut amplitude = 1.0;
     let mut frequency = 1.0;
+    let mut total_amplitude = 0.0;
 
     // generate octaves of noise
     for _ in 0..generator_config.octaves {
         noise_value +=
             ::noise::NoiseFn::get(&noise, [nx * frequency, ny * frequency, 0.0]) * amplitude;
+        total_amplitude += amplitude;
         amplitude *= generator_config.persistence;
         frequency *= generator_config.lacunarity;
     }
 
     // normalize to 0.0 - 1.0
-    ((noise_value + 1.0) / 2.0) as f32
+    ((noise_value / total_amplitude + 1.0) / 2.0) as f32
 }
 
 #[cfg(feature = "bevy_egui")]
