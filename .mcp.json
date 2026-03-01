@@ -1,8 +1,13 @@
 {
   "mcpServers": {
-    "bevy-debugger": {
-      "command": "bevy-debugger-mcp",
-      "args": []
+    "language-server": {
+      "command": "mcp-language-server",
+      "args": [
+        "--workspace",
+        ".",
+        "--lsp",
+        "rust-analyzer"
+      ]
     }
   }
 }
