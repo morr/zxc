@@ -61,7 +61,7 @@ Debug UI via `bevy_egui` (behind `debug_ui` feature flag, enabled by default).
 
 ## Verification After Each Task
 
-After completing any task, always run these steps in order:
+After completing any task, run all these commands in parallel:
 
 ```bash
 cargo build --verbose
