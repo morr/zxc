@@ -23,11 +23,11 @@ fn execute_command(
 ) {
     let FeedCommand { commandable_entity } = *event;
 
-    if food_stock.amount.is_zero() {
-        return;
-    }
-
     if let Ok((mut commandable, mut feedable)) = commandable_query.get_mut(commandable_entity) {
+        if food_stock.amount.is_zero() {
+            commandable.complete_executing(commandable_entity, &mut commands);
+            return;
+        }
         let amount_before = food_stock.amount;
 
         commandable.complete_executing(commandable_entity, &mut commands);
