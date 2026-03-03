@@ -39,6 +39,13 @@ impl TasksQueue {
     pub fn is_empty(&self) -> bool {
         self.tasks.is_empty()
     }
+
+    pub fn remove_work_tasks(&mut self, entity: Entity, work_kind: WorkKind) {
+        self.tasks.retain(|task| {
+            !matches!(**task, TaskKind::Work { workable_entity, work_kind: ref wk }
+                if workable_entity == entity && wk == &work_kind)
+        });
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Reflect, Deref, DerefMut)]

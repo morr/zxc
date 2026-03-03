@@ -115,8 +115,14 @@ pub fn on_farm_state_change(
     mut commands: Commands,
     query: Query<(&Farm, &Transform)>,
     mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
+    mut tasks_queue: ResMut<TasksQueue>,
 ) {
     let EntityStateChangeEvent(workable_entity, ref state) = *event;
+
+    if matches!(state, FarmState::Grown) {
+        tasks_queue.remove_work_tasks(workable_entity, WorkKind::FarmTending);
+    }
+
     let maybe_task_kind = match state {
         FarmState::NotPlanted => Some(WorkKind::FarmPlanting),
         FarmState::Grown => Some(WorkKind::FarmHarvest),
