@@ -8,19 +8,10 @@ impl Plugin for NavigationPlugin {
         app.init_resource::<ArcNavmesh>()
             .add_observer(on_pathfinding_request)
             .add_observer(on_pathfinding_answer)
-            .add_message::<OccupationChangeMessage>()
-            // .add_systems(
-            //     FixedUpdate,
-            //     pathfinding_algo::measure_pathfinding.run_if(in_state(WorldState::Playing)),
-            // )
+            .add_observer(on_click_stage1)
             .add_systems(
                 Update,
-                (
-                    move_user_selected_pawn_on_click_stage_1,
-                    listen_for_pathfinding_async_tasks,
-                )
-                    .chain()
-                    .run_if(in_state(AppState::Playing)),
+                listen_for_pathfinding_async_tasks.run_if(in_state(AppState::Playing)),
             );
     }
 }

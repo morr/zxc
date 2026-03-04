@@ -6,10 +6,7 @@ pub struct InputPlugin;
 
 impl Plugin for InputPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<HoveredGridTile>()
-            .add_message::<HoverMessage>()
-            .add_message::<ClickMessageStage0>()
-            .add_message::<ClickMessageStage1>();
+        app.init_resource::<HoveredGridTile>();
 
         #[cfg(feature = "bevy_egui")]
         {
@@ -34,14 +31,14 @@ pub struct HoveredGridTile(pub Option<IVec2>);
 #[derive(Component, Default)]
 pub struct HoverMarker;
 
-#[derive(Message, Debug)]
-pub struct HoverMessage(pub IVec2);
+#[derive(Event, Debug)]
+pub struct HoverEvent(pub IVec2);
 
-#[derive(Message, Debug)]
-pub struct ClickMessageStage0(pub IVec2);
+#[derive(Event, Debug)]
+pub struct ClickStage0Event(pub IVec2);
 
-#[derive(Message, Debug)]
-pub struct ClickMessageStage1(pub IVec2);
+#[derive(Event, Debug)]
+pub struct ClickStage1Event(pub IVec2);
 
 #[derive(Resource, Deref, DerefMut, PartialEq, Eq, Default)]
 #[cfg(feature = "bevy_egui")]
@@ -64,19 +61,20 @@ fn check_egui_wants_focus(
 }
 
 pub fn mouse_input(
+    mut commands: Commands,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
-    // mut mouse_motion_evr: MessageReader<MouseMotion>,
     // query to get the window (so we can read the current cursor position)
-    // hovered_tile_pos: &mut ResMut<HoverMarkerTilePos>,
     q_window: Query<&Window, With<PrimaryWindow>>,
     // query to get camera transform
     q_camera: Query<(&Camera, &GlobalTransform), With<FloorCamera>>,
-    mut hover_event_writer: MessageWriter<HoverMessage>,
-    mut click_event_writer: MessageWriter<ClickMessageStage0>,
     mut prev_hovered_grid_tile: ResMut<HoveredGridTile>,
 ) {
-    let (camera, camera_transform) = q_camera.single().expect("Camera query failed in mouse_input");
-    let window = q_window.single().expect("PrimaryWindow query failed in mouse_input");
+    let (camera, camera_transform) = q_camera
+        .single()
+        .expect("Camera query failed in mouse_input");
+    let window = q_window
+        .single()
+        .expect("PrimaryWindow query failed in mouse_input");
     if let Some(world_position) = window
         .cursor_position()
         .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor).ok())
@@ -87,32 +85,32 @@ pub fn mouse_input(
             return;
         };
 
-        let event = HoverMessage(grid_tile);
-
         let is_new_hover = match prev_hovered_grid_tile.0 {
-            Some(vec) => vec != event.0,
+            Some(vec) => vec != grid_tile,
             None => true,
         };
 
         if is_new_hover {
-            prev_hovered_grid_tile.0 = Some(event.0);
-            hover_event_writer.write(log_message!(event));
+            prev_hovered_grid_tile.0 = Some(grid_tile);
+            commands.trigger(log_event!(HoverEvent(grid_tile)));
         }
     }
 
     if mouse_button_input.just_pressed(MouseButton::Left) {
-        let (camera, camera_transform) =
-            q_camera.single().expect("Camera query failed in mouse_input");
-        let window = q_window.single().expect("PrimaryWindow query failed in mouse_input");
-        // check if the cursor is inside the window and get its position
-        // then, ask bevy to convert into world coordinates, and truncate to discard Z
+        let (camera, camera_transform) = q_camera
+            .single()
+            .expect("Camera query failed in mouse_input");
+        let window = q_window
+            .single()
+            .expect("PrimaryWindow query failed in mouse_input");
         if let Some(world_position) = window
             .cursor_position()
             .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor).ok())
             .map(|ray| ray.origin.truncate())
         {
-            let event = ClickMessageStage0(world_position.world_pos_to_grid());
-            click_event_writer.write(log_message!(event));
+            commands.trigger(log_event!(ClickStage0Event(
+                world_position.world_pos_to_grid()
+            )));
         }
     }
 }

@@ -45,10 +45,10 @@ pub struct PathfindAnswerEvent {
     pub path: Option<Vec<IVec2>>,
 }
 
-#[derive(Message, Debug)]
-pub struct OccupationChangeMessage(pub Vec<IVec2>);
+#[derive(Event, Debug)]
+pub struct OccupationChangeEvent(pub Vec<IVec2>);
 
-impl OccupationChangeMessage {
+impl OccupationChangeEvent {
     pub fn new(grid_tile: IVec2) -> Self {
         Self(vec![grid_tile])
     }

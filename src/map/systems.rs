@@ -112,37 +112,23 @@ fn spawn_trees(
     }
 }
 
-pub fn track_hover(
+pub fn on_hover(
+    event: On<HoverEvent>,
     mut commands: Commands,
-    mut event_reader: MessageReader<HoverMessage>,
     arc_navmesh: Res<ArcNavmesh>,
     q_hover_markers: Query<(Entity, &Tile), With<HoverMarker>>,
-    // q_tiles: Query<(Entity, &Tile)>,
 ) {
-    for event in event_reader.read() {
-        // remove hover markers from other tiles
-        for (id, _tile) in q_hover_markers.iter() {
-            commands.entity(id).remove::<HoverMarker>();
-            // .remove::<ShowAabbGizmo>();
-        }
+    let HoverEvent(grid_tile) = *event;
 
-        let navmesh = arc_navmesh.read();
+    // remove hover markers from other tiles
+    for (id, _tile) in q_hover_markers.iter() {
+        commands.entity(id).remove::<HoverMarker>();
+    }
 
-        for id in navmesh.get_occupants::<Tile>(event.0.x, event.0.y) {
-            commands.entity(*id).insert(HoverMarker);
-            // .insert(ShowAabbGizmo {
-            //     color: Some(*Color::WHITE.clone().set_a(0.25)),
-            // });
-        }
-        // for (entity, tile) in q_tiles.iter() {
-        //     if tile.0 == event.0 {
-        //         commands.entity(entity).insert(HoverMarker);
-        //         // .insert(ShowAabbGizmo {
-        //         //     color: Some(*Color::WHITE.clone().set_a(0.25)),
-        //         // });
-        //         break;
-        //     }
-        // }
+    let navmesh = arc_navmesh.read();
+
+    for id in navmesh.get_occupants::<Tile>(grid_tile.x, grid_tile.y) {
+        commands.entity(*id).insert(HoverMarker);
     }
 }
 

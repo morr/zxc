@@ -12,7 +12,6 @@ pub fn spawn_pawns(
     // warehouse_query: Query<&Transform, With<Warehouse>>,
     farm_query: Query<&Transform, With<Farm>>,
     arc_navmesh: ResMut<ArcNavmesh>,
-    mut occupation_change_event_writer: MessageWriter<OccupationChangeMessage>,
     // mut user_selection_command_writer: MessageWriter<UserSelectionCommand>,
 ) {
     let mut rng = rand::rng();
@@ -81,7 +80,7 @@ pub fn spawn_pawns(
 
         let grid_tile = position.truncate().world_pos_to_grid();
         navmesh.add_occupant::<Pawn>(&pawn_id, grid_tile.x, grid_tile.y);
-        occupation_change_event_writer.write(log_message!(OccupationChangeMessage::new(grid_tile)));
+        commands.trigger(log_event!(OccupationChangeEvent::new(grid_tile)));
 
         // auto-select first pawn
         // if i.is_zero() {

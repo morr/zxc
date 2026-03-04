@@ -8,7 +8,6 @@ pub fn move_moving_entities(
     >,
     time: Res<Time>,
     arc_navmesh: Res<ArcNavmesh>,
-    mut occupation_change_event_writer: MessageWriter<OccupationChangeMessage>,
 ) {
     let mut occupant_changes: Vec<(Entity, IVec2, IVec2)> = Vec::new();
 
@@ -30,8 +29,7 @@ pub fn move_moving_entities(
                         occupant_changes.push((entity, current_tile, final_tile));
                     }
 
-                    occupation_change_event_writer
-                        .write(OccupationChangeMessage(vec![current_tile, final_tile]));
+                    commands.trigger(OccupationChangeEvent(vec![current_tile, final_tile]));
                 }
             }
             _ => {

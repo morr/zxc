@@ -2,9 +2,9 @@ use bevy::tasks::{block_on, futures_lite::future};
 
 use super::*;
 
-pub fn move_user_selected_pawn_on_click_stage_1(
+pub fn on_click_stage1(
+    event: On<ClickStage1Event>,
     mut commands: Commands,
-    mut click_event_reader: MessageReader<ClickMessageStage1>,
     user_selection: Res<CurrentUserSelection>,
     mut pawn_query: Query<
         &mut Commandable,
@@ -14,27 +14,26 @@ pub fn move_user_selected_pawn_on_click_stage_1(
         )>,
     >,
 ) {
-    for ClickMessageStage1(grid_tile) in click_event_reader.read() {
-        // println!("click {:?}", grid_tile);
-        let Some(UserSelectionData { entity, kind }) = &user_selection.0 else {
-            continue;
-        };
-        let UserSelectionKind::Pawn = kind else {
-            continue;
-        };
-        let Ok(mut commandable) = pawn_query.get_mut(*entity) else {
-            continue;
-        };
+    let ClickStage1Event(grid_tile) = *event;
 
-        commandable.set_queue(
-            CommandType::MoveTo(MoveToCommand {
-                commandable_entity: *entity,
-                grid_tile: *grid_tile,
-            }),
-            *entity,
-            &mut commands,
-        );
-    }
+    let Some(UserSelectionData { entity, kind }) = &user_selection.0 else {
+        return;
+    };
+    let UserSelectionKind::Pawn = kind else {
+        return;
+    };
+    let Ok(mut commandable) = pawn_query.get_mut(*entity) else {
+        return;
+    };
+
+    commandable.set_queue(
+        CommandType::MoveTo(MoveToCommand {
+            commandable_entity: *entity,
+            grid_tile,
+        }),
+        *entity,
+        &mut commands,
+    );
 }
 
 // pub fn pathfinding_on_click(

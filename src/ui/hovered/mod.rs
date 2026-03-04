@@ -8,10 +8,8 @@ pub struct UiHoveredPlugin;
 impl Plugin for UiHoveredPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnExit(AppState::Loading), render_hovered_ui)
-            .add_systems(
-                Update,
-                update_ui_on_hover_event.run_if(in_state(AppState::Playing)),
-            );
+            .add_observer(on_hover_update_ui)
+            .add_observer(on_occupation_change_update_ui);
     }
 }
 
@@ -32,11 +30,10 @@ fn render_hovered_ui(mut commands: Commands) {
 }
 
 #[allow(clippy::too_many_arguments)]
-fn update_ui_on_hover_event(
-    mut commands: Commands,
-    mut hover_event_reader: MessageReader<HoverMessage>,
+fn on_hover_update_ui(
+    _event: On<HoverEvent>,
+    commands: Commands,
     hovered_grid_tile: Res<HoveredGridTile>,
-    mut occupation_change_event_reader: MessageReader<OccupationChangeMessage>,
     hovered_root_ui_query: Query<Entity, With<HoveredUIRootMarker>>,
     pawn_query: Query<(&Pawn, &Movable, &Restable, &Feedable, &Commandable)>,
     farm_query: Query<(&Farm, &Workable)>,
@@ -47,26 +44,78 @@ fn update_ui_on_hover_event(
     arc_navmesh: ResMut<ArcNavmesh>,
     font_assets: Res<FontAssets>,
 ) {
-    // have to redraw hover ui either on hover event
-    let mut possibly_hovered_grid_tiles = hover_event_reader
-        .read()
-        .map(|v| v.0)
-        .collect::<Vec<IVec2>>();
-
-    // or if occupation has changed in navmesh
-    for event in occupation_change_event_reader.read() {
-        if let Some(grid_tile) = hovered_grid_tile.0
-            && event.0.contains(&grid_tile)
-        {
-            possibly_hovered_grid_tiles.push(grid_tile);
-        }
-    }
-
-    let Some(grid_tile) = possibly_hovered_grid_tiles.last() else {
+    let Some(grid_tile) = hovered_grid_tile.0 else {
         return;
     };
+    redraw_hovered_ui(
+        commands,
+        grid_tile,
+        hovered_root_ui_query,
+        pawn_query,
+        farm_query,
+        bed_query,
+        tile_query,
+        carryable_query,
+        storage_query,
+        arc_navmesh,
+        font_assets,
+    );
+}
 
-    let hovered_root_ui_id = hovered_root_ui_query.single().expect("HoveredUIRoot query failed");
+#[allow(clippy::too_many_arguments)]
+fn on_occupation_change_update_ui(
+    event: On<OccupationChangeEvent>,
+    commands: Commands,
+    hovered_grid_tile: Res<HoveredGridTile>,
+    hovered_root_ui_query: Query<Entity, With<HoveredUIRootMarker>>,
+    pawn_query: Query<(&Pawn, &Movable, &Restable, &Feedable, &Commandable)>,
+    farm_query: Query<(&Farm, &Workable)>,
+    bed_query: Query<&Bed>,
+    tile_query: Query<&Tile>,
+    carryable_query: Query<&Carryable>,
+    storage_query: Query<&Storage>,
+    arc_navmesh: ResMut<ArcNavmesh>,
+    font_assets: Res<FontAssets>,
+) {
+    let OccupationChangeEvent(changed_tiles) = &*event;
+    let Some(grid_tile) = hovered_grid_tile.0 else {
+        return;
+    };
+    if !changed_tiles.contains(&grid_tile) {
+        return;
+    }
+    redraw_hovered_ui(
+        commands,
+        grid_tile,
+        hovered_root_ui_query,
+        pawn_query,
+        farm_query,
+        bed_query,
+        tile_query,
+        carryable_query,
+        storage_query,
+        arc_navmesh,
+        font_assets,
+    );
+}
+
+#[allow(clippy::too_many_arguments)]
+fn redraw_hovered_ui(
+    mut commands: Commands,
+    grid_tile: IVec2,
+    hovered_root_ui_query: Query<Entity, With<HoveredUIRootMarker>>,
+    pawn_query: Query<(&Pawn, &Movable, &Restable, &Feedable, &Commandable)>,
+    farm_query: Query<(&Farm, &Workable)>,
+    bed_query: Query<&Bed>,
+    tile_query: Query<&Tile>,
+    carryable_query: Query<&Carryable>,
+    storage_query: Query<&Storage>,
+    arc_navmesh: ResMut<ArcNavmesh>,
+    font_assets: Res<FontAssets>,
+) {
+    let hovered_root_ui_id = hovered_root_ui_query
+        .single()
+        .expect("HoveredUIRoot query failed");
     let mut hovered_root_ui_commands = commands.entity(hovered_root_ui_id);
     hovered_root_ui_commands.despawn_related::<Children>();
 
@@ -79,7 +128,7 @@ fn update_ui_on_hover_event(
                 *tile_id,
                 &mut hovered_root_ui_commands,
                 tile,
-                *grid_tile,
+                grid_tile,
                 &font_assets,
                 UiOpacity::Medium,
             );
