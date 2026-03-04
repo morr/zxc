@@ -10,8 +10,8 @@ impl Plugin for FeedablePlugin {
     }
 }
 
-const HUNGER_FRESH: f32 = 0.;
-const HUNGER_OVERFLOW: f32 = 100.;
+const HUNGER_FULL: f32 = 100.;
+const HUNGER_DEATH: f32 = 0.;
 
 #[derive(Component, Debug, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
@@ -22,7 +22,7 @@ pub struct Feedable {
 impl Default for Feedable {
     fn default() -> Self {
         Self {
-            hunger: HUNGER_FRESH,
+            hunger: HUNGER_FULL,
         }
     }
 }
@@ -34,27 +34,24 @@ pub struct FoodConsumedEvent {
 
 impl Feedable {
     pub fn is_fresh(&self) -> bool {
-        self.hunger <= HUNGER_FRESH
+        self.hunger >= HUNGER_FULL
     }
 
     pub fn is_overflowed(&self) -> bool {
-        self.hunger >= HUNGER_OVERFLOW
+        self.hunger < HUNGER_FULL - config().feedable.hunger_per_food
     }
 
     pub fn is_death_starving(&self) -> bool {
-        self.hunger >= HUNGER_OVERFLOW * config().feedable.max_starvation_multiplier
+        self.hunger <= HUNGER_DEATH
     }
 
     pub fn progress_hunger(&mut self, time_amount: f32) {
-        let amount = time_amount * config().feedable.living_cost;
-        self.hunger = (self.hunger + amount).clamp(
-            HUNGER_FRESH,
-            HUNGER_OVERFLOW * config().feedable.max_starvation_multiplier,
-        );
+        let amount = time_amount * config().feedable.food_drain_per_hour;
+        self.hunger = (self.hunger - amount).clamp(HUNGER_DEATH, HUNGER_FULL);
     }
 
-    pub fn be_fed(&mut self) {
-        self.hunger = (self.hunger - HUNGER_OVERFLOW).max(HUNGER_FRESH);
+    pub fn consume_food(&mut self) {
+        self.hunger = (self.hunger + config().feedable.hunger_per_food).min(HUNGER_FULL);
     }
 }
 

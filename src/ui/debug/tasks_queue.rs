@@ -17,7 +17,9 @@ pub fn render_tasks_ui(
     root_ui_query: Query<Entity, With<DebugUiContainerarker>>,
     tasks_queue: Res<TasksQueue>,
 ) {
-    let root_ui_id = root_ui_query.single().expect("DebugUiContainer query failed");
+    let root_ui_id = root_ui_query
+        .single()
+        .expect("DebugUiContainer query failed");
     let mut root_ui_commands = commands.entity(root_ui_id);
 
     root_ui_commands.with_children(|parent| {

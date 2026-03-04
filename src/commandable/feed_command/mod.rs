@@ -33,7 +33,7 @@ fn execute_command(
         commandable.complete_executing(commandable_entity, &mut commands);
 
         while feedable.is_overflowed() && food_stock.amount > 0 {
-            feedable.be_fed();
+            feedable.consume_food();
             food_stock.amount -= 1;
         }
 

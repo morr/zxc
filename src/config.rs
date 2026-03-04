@@ -1,6 +1,6 @@
-pub use std::sync::LazyLock;
 use bevy::prelude::Resource;
 use serde::{Deserialize, Serialize};
+pub use std::sync::LazyLock;
 use std::{fs::File, io::Read, sync::OnceLock};
 
 use crate::DebugNoiseState;
@@ -34,7 +34,6 @@ pub fn apply_global_config(config: RootConfig) {
 pub fn config() -> &'static RootConfig {
     CONFIG.get().expect("Config not initialized")
 }
-
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct RootConfig {
@@ -224,14 +223,14 @@ impl RestableConfig {
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct FeedableConfig {
-    /// amount of saturation change per in-game hour
-    pub living_cost: f32,
-    /// how many starvation overflows pawn can survive
-    pub max_starvation_multiplier: f32,
+    /// saturation drained per in-game hour
+    pub food_drain_per_hour: f32,
+    /// how much saturation 1 food restores
+    pub hunger_per_food: f32,
 }
 
 impl FeedableConfig {
     pub fn calculate_derived_fields(&mut self, time: &TimeConfig) {
-        self.living_cost /= time.hour_duration;
+        self.food_drain_per_hour /= time.hour_duration;
     }
 }
