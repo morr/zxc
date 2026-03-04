@@ -50,7 +50,6 @@ pub fn progress_planted_and_tending_rest_timers(
     time: Res<Time>,
     mut commands: Commands,
     mut query: Query<(Entity, &mut Farm), With<farm_state::Planted>>,
-    mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
 ) {
     for (workable_entity, mut farm) in query.iter_mut() {
         let planted_state = match &mut farm.state {
@@ -78,10 +77,12 @@ pub fn progress_planted_and_tending_rest_timers(
                 // );
 
                 if planted_state.tending_rest_started_day != total_days(time.elapsed_secs()) {
-                    tasks_scheduler.write(ScheduleTaskMessage::push_back(Task(TaskKind::Work {
-                        workable_entity,
-                        work_kind: WorkKind::FarmTending,
-                    })));
+                    commands.trigger(log_event!(ScheduleTaskEvent::push_back(Task(
+                        TaskKind::Work {
+                            workable_entity,
+                            work_kind: WorkKind::FarmTending,
+                        }
+                    ))));
                 } else {
                     planted_state.is_tending_pending_for_next_day = true;
                 }
@@ -114,7 +115,6 @@ pub fn on_farm_state_change(
     event: On<EntityStateChangeEvent<FarmState>>,
     mut commands: Commands,
     query: Query<(&Farm, &Transform)>,
-    mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
     mut tasks_queue: ResMut<TasksQueue>,
 ) {
     let EntityStateChangeEvent(workable_entity, ref state) = *event;
@@ -135,10 +135,12 @@ pub fn on_farm_state_change(
         let grid_tile = transform.world_pos_to_grid();
 
         if let Some(work_kind) = maybe_task_kind {
-            tasks_scheduler.write(ScheduleTaskMessage::push_back(Task(TaskKind::Work {
-                workable_entity,
-                work_kind,
-            })));
+            commands.trigger(log_event!(ScheduleTaskEvent::push_back(Task(
+                TaskKind::Work {
+                    workable_entity,
+                    work_kind,
+                }
+            ))));
         }
 
         if let FarmState::Harvested(_) = state {
@@ -153,17 +155,19 @@ pub fn on_farm_state_change(
 
 pub fn on_new_day(
     _event: On<NewDayEvent>,
+    mut commands: Commands,
     mut query: Query<(Entity, &mut Farm), With<farm_state::Planted>>,
-    mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
 ) {
     for (workable_entity, mut farm) in query.iter_mut() {
         if let FarmState::Planted(planted_state) = &mut farm.state
             && planted_state.is_tending_pending_for_next_day
         {
-            tasks_scheduler.write(ScheduleTaskMessage::push_back(Task(TaskKind::Work {
-                workable_entity,
-                work_kind: WorkKind::FarmTending,
-            })));
+            commands.trigger(log_event!(ScheduleTaskEvent::push_back(Task(
+                TaskKind::Work {
+                    workable_entity,
+                    work_kind: WorkKind::FarmTending,
+                }
+            ))));
 
             planted_state.is_tending_pending_for_next_day = false;
         };

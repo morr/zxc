@@ -38,11 +38,8 @@ fn execute_command(
     commandable.complete_executing(commandable_entity, &mut commands);
 }
 
-fn on_release_resources(
-    event: On<ReleaseCommandResourcesEvent>,
-    mut tasks_scheduler: MessageWriter<ScheduleTaskMessage>,
-) {
+fn on_release_resources(event: On<ReleaseCommandResourcesEvent>, mut commands: Commands) {
     if let CommandType::CompleteTask(CompleteTaskCommand { task, .. }) = &event.command_type {
-        tasks_scheduler.write(ScheduleTaskMessage::push_front(task.clone()));
+        commands.trigger(log_event!(ScheduleTaskEvent::push_front(task.clone())));
     }
 }
