@@ -46,7 +46,7 @@ impl Feedable {
     }
 
     pub fn progress_hunger(&mut self, time_amount: f32) {
-        let amount = time_amount * config().feedable.food_drain_per_hour;
+        let amount = time_amount * config().feedable.hunger_drain_per_hour;
         self.hunger = (self.hunger - amount).clamp(HUNGER_DEATH, HUNGER_FULL);
     }
 

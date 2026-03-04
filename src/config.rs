@@ -223,14 +223,18 @@ impl RestableConfig {
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct FeedableConfig {
-    /// saturation drained per in-game hour
-    pub food_drain_per_hour: f32,
+    /// how many food units a pawn consumes per in-game day
+    pub food_consumption_per_day: f32,
     /// how much saturation 1 food restores
     pub hunger_per_food: f32,
+    /// saturation drained per real-time second (derived, not in RON)
+    #[serde(skip)]
+    pub hunger_drain_per_hour: f32,
 }
 
 impl FeedableConfig {
     pub fn calculate_derived_fields(&mut self, time: &TimeConfig) {
-        self.food_drain_per_hour /= time.hour_duration;
+        self.hunger_drain_per_hour =
+            self.food_consumption_per_day * self.hunger_per_food / 24.0 / time.hour_duration;
     }
 }

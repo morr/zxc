@@ -37,10 +37,10 @@ RootConfig(
     ),
     starting_scene: StartingSceneConfig(
         is_paused: true,
-        time_scale: 1.0,
+        time_scale: 25.0,
         day_hour: 8,
         pawns: 1,
-        farms: 3,
+        farms: 4,
         beds: 1,
         storages: 1,
         //time_scale: 15.0,
@@ -48,7 +48,7 @@ RootConfig(
         //time_scale: 300.0,
         //time_scale: 500.0
         //time_scale: 30000.0
-        food: 10,
+        food: 20,
     ),
     time: TimeConfig(
         day_duration: 60.0,
@@ -87,8 +87,7 @@ RootConfig(
         //activity_cost: -0.0002,
     ),
     feedable: FeedableConfig(
-        // 24 hours of living => 100% saturation drained (100 / 24 = 4.1666666667)
-        food_drain_per_hour: 4.1666666667,
+        food_consumption_per_day: 1.0,
         hunger_per_food: 25.0,
     ),
 )
