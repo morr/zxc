@@ -29,6 +29,7 @@ fn ai_idle_pawns(
     mut workable_query: Query<&Transform>,
     mut carryable_query: Query<&Transform>,
     mut tasks_queue: ResMut<TasksQueue>,
+    farm_query: Query<&Farm>,
     arc_navmesh: Res<ArcNavmesh>,
     food_stock: Res<FoodStock>,
 ) {
@@ -51,6 +52,21 @@ fn ai_idle_pawns(
                 &mut commands,
             );
         } else if let Some(task) = tasks_queue.get_task() {
+            if let TaskKind::Work {
+                workable_entity,
+                work_kind: WorkKind::FarmTending,
+            } = &task.0
+                && farm_query
+                    .get(*workable_entity)
+                    .is_ok_and(|farm| !matches!(farm.state, FarmState::Planted(_)))
+            {
+                warn!(
+                    "Discarding stale FarmTending task for farm {:?} (no longer Planted)",
+                    workable_entity
+                );
+                continue;
+            }
+
             let maybe_commands_sequence = match task.0 {
                 TaskKind::Work {
                     workable_entity,
