@@ -26,10 +26,10 @@ fn execute_command(
 
     match workable_query.get_mut(command.workable_entity) {
         Ok(mut workable) => {
-            if workable.work_kind.as_ref() != Some(&command.work_kind) {
-                interrupt_commandable_commands_queue!(commands, command.commandable_entity);
-                return;
-            }
+            // if workable.work_kind.as_ref() != Some(&command.work_kind) {
+            //     interrupt_commandable_commands_queue!(commands, command.commandable_entity);
+            //     return;
+            // }
 
             workable.change_state(
                 WorkableState::BeingWorked(command.clone()),
