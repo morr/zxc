@@ -35,7 +35,7 @@ macro_rules! farm_states {
             use bevy::prelude::*;
 
             $(
-                #[derive(Component)]
+                #[derive(Component, Default)]
                 pub struct $name;
             )*
         }
@@ -97,7 +97,7 @@ farm_states!(
 );
 
 #[derive(Component, Debug, Reflect)]
-#[require(Name)]
+#[require(Name = Name::new("Farm"), farm_state::NotPlanted)]
 pub struct Farm {
     pub state: FarmState,
     pub tendings_done: u32,
@@ -123,8 +123,7 @@ impl Farm {
         let farm_state = farm.state.clone(); // Clone the state here
         let workable = Workable::new(workable_props(&farm.state));
 
-        let mut entity_commands =
-            commands.spawn((farm, farm_state::NotPlanted, Name::new("Farm"), workable));
+        let mut entity_commands = commands.spawn((farm, workable));
 
         Farm::sync_sprite_bundle(grid_tile, &farm_state, &mut entity_commands, assets); // Use the cloned state
 

@@ -42,23 +42,13 @@ pub fn spawn_pawns(
                 PAWN_Z_INDEX,
             )
         };
-        let pawn = Pawn::default();
-        // let pawn_state_string = format!("{:?}", pawn.state);
-
         let pawn_id = commands
             .spawn((
                 (
-                    pawn,
-                    pawn_state::PawnStateIdleTag,
-                    Commandable::default(),
-                    Name::new("Pawn"),
-                    // state: PawnState::Idle,
+                    Pawn::default(),
                     Mesh2d(meshes_collection.pawn.clone()),
                     MeshMaterial2d(assets_collection.pawn_idle.clone()),
                     Transform::from_translation(position),
-                    Movable::new(config().pawn.speed * config().tile.size),
-                    Restable::default(),
-                    Feedable::default(),
                 ),
                 children![(
                     Text2d::new(""),

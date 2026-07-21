@@ -22,6 +22,7 @@ impl AvailableBeds {
 }
 
 #[derive(Component, Reflect, Default)]
+#[require(Name = Name::new("Bed"), Sprite, Transform)]
 pub struct Bed {
     pub owner: Option<Entity>,
 }
@@ -47,7 +48,6 @@ impl Bed {
         let id = commands
             .spawn((
                 Bed::default(),
-                Name::new("Bed"),
                 Sprite {
                     image: texture,
                     // custom_size: Some(size.grid_tile_edge_to_world()),

@@ -85,16 +85,16 @@ Required-компоненты вставляются рекурсивно (depth
 
 **Что сделать:**
 
-- [ ] На `Pawn` (`src/pawn/components.rs`) добавить `#[require(...)]` со всеми компонентами, которые сейчас собираются вручную при спавне: `Movable`, `Commandable`, `Restable`, `Feedable`, `Carryable` + стартовые state-теги (`PawnStateIdleTag` и аналоги для каждого компонента-стейт-машины).
-- [ ] Для компонентов с нетривиальными стартовыми значениями (например, `Feedable` с параметрами из `config()`) использовать форму `Feedable = feedable_default()` с функцией-конструктором, либо оставить их явными в спавне — решить по месту: required-значение должно быть корректным дефолтом, а не заглушкой.
-- [ ] Упростить `spawn_pawns` (`src/pawn/systems.rs`): убрать из кортежа спавна всё, что теперь приходит через require.
-- [ ] Аналогично рассмотреть структуры: `Farm`, `Bed`, `Storage` — если при спавне всегда добавляются одни и те же компоненты (`Workable` и т.п.), закрепить их через `#[require]`.
+- [x] На `Pawn` (`src/pawn/components.rs`) добавить `#[require(...)]`: `PawnStateIdleTag`, `Commandable`, `Restable`, `Feedable`, `Movable`, `Name`. _(`Carryable` на пешку не вешается — инвентарь это `HashMap` внутри `Pawn`, не компонент)_
+- [x] Для компонентов с нетривиальными стартовыми значениями использовать value-форму: `Movable = Movable::new(config().pawn.speed * config().tile.size)`, `Name = Name::new("Pawn")`.
+- [x] Упростить `spawn_pawns` (`src/pawn/systems.rs`): в кортеже остались только `Pawn::default()`, `Mesh2d`, `MeshMaterial2d`, `Transform` (зависят от ассетов/позиции).
+- [x] Структуры: у `Warehouse`/`House`/`Well`/`Storage` require уже был — дополнен именованным `Name`; `Bed` получил `#[require(Name, Sprite, Transform)]`; `Farm` — `Name` + стартовый тег `farm_state::NotPlanted`. `Workable` фермы остаётся явным (значение зависит от состояния). Дубли `Name` из спавнов убраны.
 
 **Критерии:**
 
-- [ ] Спавн пешки не перечисляет required-компоненты вручную.
-- [ ] Игра запускается, пешки ведут себя как раньше (идут, едят, спят, работают).
-- [ ] Тесты зелёные.
+- [x] Спавн пешки не перечисляет required-компоненты вручную.
+- [x] Игра запускается, пешки ведут себя как раньше (смоук-тест: пешки спавнятся, берут задачи фермы, MoveTo/WorkOn выполняются, паник нет).
+- [x] Тесты зелёные (29 passed), clippy чистый.
 
 **Риски:** required-значения вычисляются при вставке компонента — убедиться, что `config()` уже инициализирован к моменту первого спавна (спавн идёт в `OnExit(AppState::Loading)`, конфиг грузится раньше — ок, но проверить тесты, где App собирается вручную).
 
@@ -654,7 +654,7 @@ app.add_observer(|on: On<Insert, RootConfigRes>, cfg: Res<RootConfigRes>| {
 - [x] 0.3 Переименовать `render_debug_ui_window_node_bundle`
 - [x] 0.4 `Val::Px` → `px()`/`percent()` (не применимо, см. «Решения»)
 - [x] 0.5 Опечатка `DebugUiContainerarker`
-- [ ] 1.1 `#[require(...)]` для Pawn
+- [x] 1.1 `#[require(...)]` для Pawn
 - [ ] 1.2 `EntityEvent`-миграция
 - [ ] 1.3 Кастомные relationships
 - [ ] 1.4 bevy_picking

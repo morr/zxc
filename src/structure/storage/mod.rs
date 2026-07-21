@@ -9,7 +9,7 @@ impl Plugin for StoragePlugin {
 }
 
 #[derive(Component, Reflect, Default)]
-#[require(Name, Sprite, Transform)]
+#[require(Name = Name::new("Storage"), Sprite, Transform)]
 pub struct Storage;
 
 impl Storage {
@@ -32,7 +32,6 @@ impl Storage {
         let id = commands
             .spawn((
                 Storage,
-                Name::new("Storage"),
                 Sprite {
                     image: texture,
                     // custom_size: Some(size.grid_tile_edge_to_world()),

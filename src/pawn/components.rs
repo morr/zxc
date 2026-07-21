@@ -6,6 +6,14 @@ use rand::Rng;
 
 #[derive(Component, Debug, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
+#[require(
+    pawn_state::PawnStateIdleTag,
+    Commandable,
+    Restable,
+    Feedable,
+    Movable = Movable::new(config().pawn.speed * config().tile.size),
+    Name = Name::new("Pawn"),
+)]
 pub struct Pawn {
     pub state: PawnState,
 
@@ -135,7 +143,7 @@ macro_rules! pawn_states {
             use bevy::prelude::*;
 
             $(
-                #[derive(Component, Debug, Reflect)]
+                #[derive(Component, Debug, Default, Reflect)]
                 pub struct $state_component_name;
             )*
         }

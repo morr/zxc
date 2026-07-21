@@ -19,7 +19,6 @@ pub fn spawn_base(
 
     commands.spawn((
         Warehouse::default(),
-        Name::new("Warehouse"),
         Sprite {
             image: assets.castle.clone(),
             custom_size: Some(size.grid_tile_edge_to_world()),
@@ -62,12 +61,7 @@ pub fn spawn_farm(
                 grid_tile_start.y + FARM_TILE_SIZE * y,
             );
 
-            Farm::spawn(
-                grid_tile,
-                &mut commands,
-                &assets,
-                &mut navmesh,
-            );
+            Farm::spawn(grid_tile, &mut commands, &assets, &mut navmesh);
             farms_spawned += 1;
         }
     }
@@ -83,7 +77,6 @@ pub fn spawn_house(
 
     commands.spawn((
         House::default(),
-        Name::new("House"),
         Sprite {
             image: assets.house_3.clone(),
             custom_size: Some(size.grid_tile_edge_to_world()),
@@ -115,7 +108,6 @@ pub fn spawn_well(
 
     commands.spawn((
         Well::default(),
-        Name::new("well"),
         Sprite {
             image: assets.well.clone(),
             custom_size: Some(size.grid_tile_edge_to_world()),
