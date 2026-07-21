@@ -12,11 +12,11 @@ pub fn process_pending_commands(
         continue_unless!(CommandableState::PendingExecution, commandable.state);
 
         if let Some(command_type) = commandable.start_executing(entity, &mut commands) {
-            command_type.trigger(&mut commands);
-
             if let Some(mut pawn) = maybe_pawn {
                 pawn.change_state(PawnState::ExecutingCommand, entity, &mut commands);
             }
+
+            command_type.trigger(&mut commands);
         }
     }
 }
