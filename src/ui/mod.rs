@@ -103,8 +103,8 @@ fn headline_text_bundle(
     (
         Text(text),
         TextFont {
-            font: font_assets.fira.clone(),
-            font_size: 18.,
+            font: font_assets.fira.clone().into(),
+            font_size: FontSize::Px(18.),
             ..default()
         },
         TextColor(Color::WHITE),
@@ -118,8 +118,8 @@ fn property_text_bundle<T: Default>(
     (
         Text(text),
         TextFont {
-            font: font_assets.fira.clone(),
-            font_size: 16.,
+            font: font_assets.fira.clone().into(),
+            font_size: FontSize::Px(16.),
             ..default()
         },
         TextColor(Color::WHITE),

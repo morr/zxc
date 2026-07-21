@@ -64,8 +64,8 @@ pub fn spawn_pawns(
                 children![(
                     Text2d::new(""),
                     TextFont {
-                        font: font_assets.fira.clone(),
-                        font_size: 13.0,
+                        font: font_assets.fira.clone().into(),
+                        font_size: FontSize::Px(13.0),
                         ..default()
                     },
                     TextColor(Color::WHITE),

@@ -33,8 +33,8 @@ pub fn render_tasks_ui(
                 (
                     Text(format_details(&tasks_queue)),
                     TextFont {
-                        font: font_assets.fira.clone(),
-                        font_size: 12.,
+                        font: font_assets.fira.clone().into(),
+                        font_size: FontSize::Px(12.),
                         ..default()
                     },
                     TextColor(Color::WHITE),

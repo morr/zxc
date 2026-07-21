@@ -52,8 +52,8 @@ fn render_simulation_speed_ui(
             parent.spawn((
                 Text(format_simulation_speed_text(&time)),
                 TextFont {
-                    font: font_assets.fira.clone(),
-                    font_size: 24.,
+                    font: font_assets.fira.clone().into(),
+                    font_size: FontSize::Px(24.),
                     ..default()
                 },
                 TextColor(Color::WHITE),
@@ -62,8 +62,8 @@ fn render_simulation_speed_ui(
             parent.spawn((
                 Text(format_date_time_text(&time)),
                 TextFont {
-                    font: font_assets.fira.clone(),
-                    font_size: 18.,
+                    font: font_assets.fira.clone().into(),
+                    font_size: FontSize::Px(18.),
                     ..default()
                 },
                 TextColor(Color::WHITE),

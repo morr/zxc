@@ -35,7 +35,9 @@ pub fn render_debug_ui_info(
     root_ui_query: Query<Entity, With<DebugUiContainerarker>>,
     async_queue_counter: Res<AsyncQueueCounter>,
 ) {
-    let root_ui_id = root_ui_query.single().expect("DebugUiContainer query failed");
+    let root_ui_id = root_ui_query
+        .single()
+        .expect("DebugUiContainer query failed");
     let mut root_ui_commands = commands.entity(root_ui_id);
 
     root_ui_commands.with_children(|parent| {
@@ -58,8 +60,8 @@ pub fn render_debug_ui_info(
 \"m\" - toggle movepath",
                     ),
                     TextFont {
-                        font: font_assets.fira.clone(),
-                        font_size: 12.,
+                        font: font_assets.fira.clone().into(),
+                        font_size: FontSize::Px(12.),
                         ..default()
                     },
                     TextColor(Color::WHITE),

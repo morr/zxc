@@ -97,8 +97,8 @@ fn spawn_item<T: Component>(
                 (
                     Text(format_item_text(amount)),
                     TextFont {
-                        font,
-                        font_size: 20.,
+                        font: font.into(),
+                        font_size: FontSize::Px(20.),
                         ..default()
                     },
                     TextColor(Color::WHITE),

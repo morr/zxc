@@ -53,7 +53,7 @@ fn check_egui_wants_focus(
     let ctx = contexts.iter_mut().next();
     let new_wants_focus = if let Some(ctx) = ctx {
         let ctx = ctx.into_inner().get_mut();
-        ctx.wants_pointer_input() || ctx.wants_keyboard_input()
+        ctx.egui_wants_pointer_input() || ctx.egui_wants_keyboard_input()
     } else {
         false
     };
