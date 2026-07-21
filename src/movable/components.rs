@@ -109,27 +109,6 @@ impl Movable {
         }
     }
 
-    // pub fn to_pathfinding(
-    //     &mut self,
-    //     entity: Entity,
-    //     start_tile: IVec2,
-    //     end_tile: IVec2,
-    //     commands: &mut Commands,
-    //     pathfind_event_writer: &mut MessageWriter<PathfindRequestEvent>,
-    // ) {
-    //     if self.state == MovableState::Moving {
-    //         self.stop_moving(entity, commands);
-    //     }
-    //
-    //     self.state = MovableState::Pathfinding(end_tile);
-    //     pathfind_event_writer.write(log_message!(PathfindRequestEvent {
-    //         start_tile,
-    //         end_tile,
-    //         entity,
-    //     }));
-    //     commands.write(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
-    // }
-
     pub fn to_pathfinding_error(
         &mut self,
         entity: Entity,

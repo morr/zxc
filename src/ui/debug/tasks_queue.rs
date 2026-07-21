@@ -14,7 +14,7 @@ pub struct DebugTasksQueueDetailsUIMarker {}
 pub fn render_tasks_ui(
     mut commands: Commands,
     font_assets: Res<FontAssets>,
-    root_ui_query: Query<Entity, With<DebugUiContainerarker>>,
+    root_ui_query: Query<Entity, With<DebugUiContainerMarker>>,
     tasks_queue: Res<TasksQueue>,
 ) {
     let root_ui_id = root_ui_query
@@ -24,7 +24,7 @@ pub fn render_tasks_ui(
 
     root_ui_commands.with_children(|parent| {
         parent.spawn((
-            render_debug_ui_window_node_bundle::<DebugTasksUIMarker>(),
+            debug_ui_window_node::<DebugTasksUIMarker>(),
             children![
                 (
                     headline_text_bundle(format_headline(&tasks_queue), &font_assets),

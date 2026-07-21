@@ -30,7 +30,7 @@ impl Plugin for UiDebugPlugin {
     }
 }
 
-pub fn render_debug_ui_window_node_bundle<T: Default>() -> (Node, BackgroundColor, T) {
+pub fn debug_ui_window_node<T: Default>() -> (Node, BackgroundColor, T) {
     (
         Node {
             display: Display::Flex,

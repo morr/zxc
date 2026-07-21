@@ -6,7 +6,6 @@ pub struct RestablePlugin;
 impl Plugin for RestablePlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Restable>()
-            // .add_message::<RestCompleteEvent>()
             .add_systems(Update, progress_fatigue.run_if(in_state(AppState::Playing)));
     }
 }
@@ -88,7 +87,6 @@ fn progress_fatigue(
     time: Res<Time>,
     mut tick_acc: Local<f32>,
     mut query: Query<(Entity, &mut Restable, &mut Commandable)>,
-    // mut event_writer: MessageWriter<RestCompleteEvent>,
 ) {
     *tick_acc += time.delta_secs();
     if *tick_acc < NEEDS_TICK_INTERVAL {
@@ -115,7 +113,6 @@ fn progress_fatigue(
             commands.trigger(log_event!(RestCompleteEvent {
                 entity: commandable_entity
             }))
-            // event_writer.write(log_message!(RestCompleteEvent { commandable_entity }));
         }
     }
 }

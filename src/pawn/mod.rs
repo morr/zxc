@@ -7,7 +7,6 @@ pub struct PawnPlugin;
 impl Plugin for PawnPlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Pawn>()
-            // .add_message::<PawnBirthdayEvent>()
             .add_observer(self::systems::on_pawn_death)
             .add_observer(self::systems::on_new_day)
             .add_observer(on_pawn_entity_state_change)

@@ -45,18 +45,12 @@ impl Workable {
         props: (Option<WorkKind>, f32),
         entity: Entity,
         commands: &mut Commands,
-        // commandable_interrupt_writer: &mut MessageWriter<InterruptCommandEvent>,
     ) {
         self.work_kind = props.0;
         self.amount_total = props.1;
         self.amount_done = 0.;
         let prev_state = self.change_state(WorkableState::Idle, entity, commands);
 
-        // if let WorkableState::BeingWorked(command) = prev_state {
-        //     // println!("reseting workable in WorkableState::BeingWorked state");
-        //     commandable_interrupt_writer.write(log_message!(InterruptCommandEvent(CommandType::WorkOn(command))));
-        // }
-        // println!("workable reset");
         if let WorkableState::BeingWorked(command) = prev_state {
             // println!("{:?}", ExternalCommandInterruptEvent(command.commandable_entity));
             // println!("reseting workable in WorkableState::BeingWorked state");

@@ -78,24 +78,13 @@ fn on_internal_interrupt(
     mut commands: Commands,
     // mut commandable_query: Query<&mut Commandable>,
     mut workable_query: Query<&mut Workable>,
-    // mut tasks_scheduler: MessageWriter<ScheduleTaskEvent>,
-    // mut work_complete_event_writer: MessageWriter<WorkCompleteEvent>,
 ) {
     if let CommandType::WorkOn(ref interrupted_command) = event.command_type {
-        // let Task(TaskKind::Work {
-        //     workable_entity, ..
-        // }) = interrupted_command.task
-        // else {
-        //     panic!("Task kind must be TaskKind::Work");
-        // };
-
         // Handle the workable entity
         if let Ok(mut workable) = workable_query.get_mut(interrupted_command.workable_entity)
             && let WorkableState::BeingWorked(ref worked_command) = workable.state
             && interrupted_command == worked_command
         {
-            // tasks_scheduler
-            //     .send(ScheduleTaskEvent::push_front(worked_command.task.clone()));
             workable.change_state(
                 WorkableState::Idle,
                 interrupted_command.workable_entity,
@@ -104,14 +93,3 @@ fn on_internal_interrupt(
         }
     }
 }
-
-// fn on_release_resources(
-//     event: On<ReleaseCommandResourcesEvent>,
-//     mut tasks_scheduler: MessageWriter<ScheduleTaskEvent>,
-// ) {
-//     for ReleaseCommandResourcesEvent(interrupted_command_type) in event_reader.read() {
-//         if let CommandType::WorkOn(WorkOnCommand { task, .. }) = interrupted_command_type {
-//             tasks_scheduler.send(ScheduleTaskEvent::push_front(task.clone()));
-//         }
-//     }
-// }

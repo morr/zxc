@@ -36,27 +36,6 @@ pub fn on_click_stage1(
     );
 }
 
-// pub fn pathfinding_on_click(
-//     mut commands: Commands,
-//     mut click_event_reader: MessageReader<ClickTileEvent>,
-//     mut query_pawns: Query<(Entity, &Transform, &mut Movable), With<Movable>>,
-//     mut pathfind_event_writer: MessageWriter<PathfindRequestEvent>,
-//     mut movable_state_event_writer: MessageWriter<EntityStateChangeMessage<MovableState>>,
-// ) {
-//     for click_event in click_event_reader.read() {
-//         for (entity, transform, mut movable) in &mut query_pawns {
-//             movable.to_pathfinding(
-//                 entity,
-//                 transform.translation.truncate().world_pos_to_grid(),
-//                 click_event.0,
-//                 &mut commands,
-//                 &mut pathfind_event_writer,
-//                 &mut movable_state_event_writer,
-//             );
-//         }
-//     }
-// }
-
 pub fn on_pathfinding_request(
     event: On<PathfindRequestEvent>,
     mut commands: Commands,
@@ -96,7 +75,6 @@ pub fn listen_for_pathfinding_async_tasks(
                         // then it means that we are pathfinding path to our
                         // current location. no movement needed
                         if path.len() == 1 {
-                            // println!("MessageWriter<MovableReachedDestinationEvent> from listen_for_pathfinding_async_tasks");
                             movable.to_idle(entity, &mut commands, true);
                         } else {
                             movable.to_moving(
@@ -151,7 +129,6 @@ pub fn on_pathfinding_answer(
             // then it means that we are pathfinding path to our
             // current location. no movement needed
             if path.len() == 1 {
-                // println!("MessageWriter<MovableReachedDestinationEvent> from listen_for_pathfinding_answers");
                 movable.to_idle(entity, &mut commands, true);
             } else {
                 movable.to_moving(

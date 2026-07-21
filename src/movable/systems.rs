@@ -68,14 +68,6 @@ fn move_to_target_location(
             }
             _ => false,
         };
-        // println!(
-        //     "MessageWriter<MovableReachedDestinationEvent> current_tile:{:?}, target_tile:{:?}",
-        //     current_tile,
-        //     match movable.state {
-        //         MovableState::Moving(target_tile) => Some(target_tile),
-        //         _ => None,
-        //     }
-        // );
         movable.to_idle(entity, commands, is_destination_reached);
         return current_tile;
     }

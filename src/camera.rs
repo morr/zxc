@@ -44,12 +44,6 @@ fn spawn_camera(mut commands: Commands) {
             Msaa::Off,
         ))
         // .insert(SpriteCamera)
-        // .spawn({
-        //     let mut camera = Camera2dBundle::default();
-        //     println!("{:?}", camera.projection);
-        //     camera.projection.scaling_mode = ScalingMode::FixedVertical(20.0);
-        //     camera
-        // })
         .insert(PanCam {
             grab_buttons: vec![MouseButton::Left, MouseButton::Middle],
             move_keys: bevy_pancam::DirectionKeys {

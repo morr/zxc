@@ -6,7 +6,7 @@ use super::*;
 pub struct DebugInfoUIMarker {}
 
 #[derive(Component, Default)]
-pub struct DebugUiContainerarker {}
+pub struct DebugUiContainerMarker {}
 
 #[derive(Component, Default)]
 pub struct DebugUiHeadlineUIMarker {}
@@ -25,14 +25,14 @@ pub fn render_debug_ui_container(mut commands: Commands) {
             right: px(0.0),
             ..default()
         },
-        DebugUiContainerarker::default(),
+        DebugUiContainerMarker::default(),
     ));
 }
 
 pub fn render_debug_ui_info(
     mut commands: Commands,
     font_assets: Res<FontAssets>,
-    root_ui_query: Query<Entity, With<DebugUiContainerarker>>,
+    root_ui_query: Query<Entity, With<DebugUiContainerMarker>>,
     async_queue_counter: Res<AsyncQueueCounter>,
 ) {
     let root_ui_id = root_ui_query
@@ -42,7 +42,7 @@ pub fn render_debug_ui_info(
 
     root_ui_commands.with_children(|parent| {
         parent.spawn((
-            (render_debug_ui_window_node_bundle::<DebugInfoUIMarker>()),
+            (debug_ui_window_node::<DebugInfoUIMarker>()),
             children![
                 (
                     headline_text_bundle(format_headline(&async_queue_counter), &font_assets),
@@ -112,7 +112,6 @@ pub fn handle_debug_info_keys(
 
     debug_movepath_state: Res<State<DebugMovepathState>>,
     mut next_debug_movepath_state: ResMut<NextState<DebugMovepathState>>,
-    // mut rebuild_map_event_writer: MessageWriter<RebuildMapEvent>,
 ) {
     if keys.just_pressed(KeyCode::KeyH) {
         let (mut visibility, mut style) = query.single_mut().expect("DebugHelpBlock query failed");
@@ -155,10 +154,6 @@ pub fn handle_debug_info_keys(
         next_debug_noise_state.set(new_state.clone());
         commands.trigger(log_event!(StateChangeEvent(new_state)));
     }
-
-    // if keys.just_pressed(KeyCode::KeyR) {
-    //     rebuild_map_event_writer.write(log_message!(RebuildMapEvent));
-    // }
 
     if keys.just_pressed(KeyCode::KeyM) {
         match debug_movepath_state.get() {

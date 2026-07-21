@@ -206,11 +206,7 @@ impl Commandable {
     //     );
     // }
 
-    fn drain_queue(
-        &mut self,
-        commands: &mut Commands,
-        // tasks_scheduler: &mut MessageWriter<ScheduleTaskEvent>,
-    ) {
+    fn drain_queue(&mut self, commands: &mut Commands) {
         if let Some(command_type) = self.executing.take() {
             commands.trigger(log_event!(InternalCommandInterruptEvent { command_type }));
         }

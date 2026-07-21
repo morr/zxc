@@ -12,7 +12,6 @@ pub fn spawn_pawns(
     // warehouse_query: Query<&Transform, With<Warehouse>>,
     farm_query: Query<&Transform, With<Farm>>,
     arc_navmesh: ResMut<ArcNavmesh>,
-    // mut user_selection_command_writer: MessageWriter<UserSelectionCommand>,
 ) {
     let mut rng = rand::rng();
     let radius = config().tile.size * i32::max(BASE_WIDTH, BASE_HEIGHT) as f32;
@@ -81,45 +80,8 @@ pub fn spawn_pawns(
         let grid_tile = position.truncate().world_pos_to_grid();
         navmesh.add_occupant::<Pawn>(&pawn_id, grid_tile.x, grid_tile.y);
         commands.trigger(log_event!(OccupationChangeEvent::new(grid_tile)));
-
-        // auto-select first pawn
-        // if i.is_zero() {
-        //     user_selection_command_writer.write(log_message!(UserSelectionCommand(Some(
-        //         UserSelectionData {
-        //             entity: pawn_id,
-        //             kind: UserSelectionKind::Pawn,
-        //         }
-        //     ))));
-        // }
     }
 }
-
-// pub fn update_pawn_color(// assets_collection: Res<AssetsCollection>,
-//     // mut movable_event_reader: MessageReader<EntityStateChangeMessage<MovableState>>,
-//     // mut pawn_event_reader: MessageReader<EntityStateChangeMessage<PawnState>>,
-//     // mut query: Query<&mut Handle<ColorMaterial>>,
-// ) {
-//     // for event in movable_event_reader.read() {
-//     //     if let Ok(mut material_handle) = query.get_mut(event.0) {
-//     //         *material_handle = match event.1 {
-//     //             MovableState::Idle => assets_collection.pawn_idle.clone(),
-//     //             MovableState::Moving => assets_collection.pawn_moving.clone(),
-//     //             MovableState::Pathfinding(_end_tile) => assets_collection.pawn_pathfinding.clone(),
-//     //             MovableState::PathfindingError => assets_collection.pawn_pathfinding_error.clone(),
-//     //         };
-//     //     }
-//     // }
-//     //
-//     // for event in pawn_event_reader.read() {
-//     //     if let Ok(mut material_handle) = query.get_mut(event.0) {
-//     //         match event.1 {
-//     //             PawnState::Working(_) => *material_handle = assets_collection.pawn_working.clone(),
-//     //             PawnState::Dead => *material_handle = assets_collection.pawn_dead.clone(),
-//     //             _ => {}
-//     //         };
-//     //     }
-//     // }
-// }
 
 pub fn on_pawn_entity_state_change(
     event: On<EntityStateChangeEvent<PawnState>>,
@@ -170,7 +132,6 @@ pub fn on_new_day(
     for (entity, mut pawn) in query.iter_mut() {
         if pawn.is_birthday(event.0) {
             pawn.age += 1;
-            // event_writer.write(log_message!(PawnBirthdayEvent(entity)));
         }
         pawn.decrease_lifetime(config().time.day_duration);
 
