@@ -134,20 +134,18 @@ Propagation (если понадобится всплытие по иерарх�
 
 **Что сделать:**
 
-- [ ] Инвентаризация: разделить события на две группы.
-  - **Entity-таргетированные** (есть целевая сущность): все `*Command` из `commandable/`, `EntityStateChangeEvent<T>`, `PawnDeathEvent`, `CommandCompleteEvent`, `InternalCommandInterruptEvent`/`ExternalCommandInterruptEvent`, `ReleaseCommandResourcesEvent`, `FarmProgressEvent`, `FarmTendedEvent`, `WorkCompleteEvent`, `RestCompleteEvent`, `FoodConsumedEvent` и т.п.
-  - **Глобальные** (нет одной целевой сущности): `NewDayEvent`, `RebuildMapEvent`/`RebuildMapCompleteEvent`, `ScheduleTaskEvent`, `StateChangeEvent<T>`, `SpawnCarryableEvent` и т.п. — остаются `#[derive(Event)]`.
-- [ ] Для entity-таргетированных: `#[derive(Event)]` → `#[derive(EntityEvent)]`; поле с целью привести к имени `entity` либо пометить `#[event_target]`; убрать дублирующие Entity-поля.
-- [ ] Обновить `commands.trigger(...)` и наблюдателей: чтение цели через поле события.
-- [ ] Обновить `CommandType::trigger(&mut commands)` (`src/commandable/components.rs:20-30`).
-- [ ] Там, где наблюдатель обслуживает одну конкретную сущность, рассмотреть entity-scoped регистрацию `commands.entity(e).observe(...)` вместо глобального `add_observer` (например, наблюдатели структур: ферма/кровать/склад).
-- [ ] Обновить skill `.claude/skills/message-to-event/SKILL.md`: дополнить паттерном Event vs EntityEvent.
+- [x] Инвентаризация выполнена. **Стали `EntityEvent` (21):** 8 `*Command` (target `commandable_entity`), `PawnDeathEvent`, `EntityStateChangeEvent<T>` (tuple, `#[event_target]` на поле 0), `CommandCompleteEvent`, `ExternalCommandInterruptEvent`, `WorkCompleteEvent` (target `workable_entity` — чтобы ферма могла наблюдать себя), `RestCompleteEvent`, `MovableReachedDestinationEvent`, `PathfindRequestEvent`, `PathfindAnswerEvent`, `FarmProgressEvent`, `FarmTendedEvent`, `StoreCarryableEvent`, `MergeCarryablesEvent` (target `entity_to_merge`). **Остались `Event` (15):** Hover/ClickStage0/ClickStage1 (координаты), `StateChangeEvent<T>`, `FoodConsumedEvent` (только amount), `OccupationChangeEvent`, `ScheduleTaskEvent`, `UserSelectionEvent`, `UserSelectionCommand` (нет entity), Rebuild/NewDay/NewSeason/NewYear, `SpawnCarryableEvent`, а также `InternalCommandInterruptEvent`/`ReleaseCommandResourcesEvent` (несут целый `CommandType`, не entity).
+- [x] Derive-переключение + `#[event_target]` там, где поле называется не `entity`. Поля НЕ переименовывались — существующие имена (`commandable_entity` и т.п.) остались, дублей не было.
+- [x] `commands.trigger(...)` и наблюдатели не потребовали изменений — `On<E>` дерефится к событию, чтение цели через поле работает как раньше.
+- [x] `CommandType::trigger` работает без правок (диспатчит те же структуры).
+- [x] Entity-scoped `.observe()` — отложено осознанно: все текущие наблюдатели глобальные и фильтруют по полю события; переводить на per-entity регистрацию имеет смысл вместе с 1.3 (relationships), когда появятся структурные связи. Возможность открыта самой миграцией.
+- [x] Skill `.claude/skills/message-to-event/SKILL.md` дополнен разделом «Event vs EntityEvent» с правилами выбора target-поля.
 
 **Критерии:**
 
-- [ ] Все события с целевой сущностью — `EntityEvent`.
-- [ ] Ни одно событие не несёт `Entity`-поле, дублирующее target.
-- [ ] Поведение игры без изменений (команды, смерть пешки, прерывания).
+- [x] Все события с целевой сущностью — `EntityEvent` (21 шт.).
+- [x] Ни одно событие не несёт `Entity`-поле, дублирующее target.
+- [x] Поведение игры без изменений — смоук-тест: полная цепочка `MoveToCommand → MovableReachedDestination → WorkOn → WorkComplete → FarmProgress → CommandComplete` + прерывания в логе, паник нет; подтверждено пользователем.
 
 **Риски:** самая объёмная задача фазы. Делать по образцу прошлой миграции — по одному событию/команде на коммит (см. историю `b9add30`...`299b0ab`). Начать с одного простого (`PawnDeathEvent`), отладить паттерн, затем катить остальные.
 
@@ -655,7 +653,7 @@ app.add_observer(|on: On<Insert, RootConfigRes>, cfg: Res<RootConfigRes>| {
 - [x] 0.4 `Val::Px` → `px()`/`percent()` (не применимо, см. «Решения»)
 - [x] 0.5 Опечатка `DebugUiContainerarker`
 - [x] 1.1 `#[require(...)]` для Pawn
-- [ ] 1.2 `EntityEvent`-миграция
+- [x] 1.2 `EntityEvent`-миграция
 - [ ] 1.3 Кастомные relationships
 - [ ] 1.4 bevy_picking
 - [x] 1.5 Fallible systems + `Single<T>`
