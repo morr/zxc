@@ -59,21 +59,22 @@ pub fn on_debug_noise_state_change(
     tile_query: Query<&Tile>,
     mut images: ResMut<Assets<Image>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-) {
+) -> Result {
     despawn_noise_texture(&mut commands, &query_mesh);
 
     let noise_visual = match event.0 {
         DebugNoiseState::HeightNoise => &mut noise_visuals.height_noise,
         DebugNoiseState::HumidityNoise => &mut noise_visuals.humidity_noise,
         DebugNoiseState::PropsNoise => &mut noise_visuals.props_noise,
-        DebugNoiseState::Hidden => return
+        DebugNoiseState::Hidden => return Ok(()),
     };
 
     if !noise_visual.is_synced {
-        sync_noise_texture(noise_visual, &tile_query, &mut images, &mut materials);
+        sync_noise_texture(noise_visual, &tile_query, &mut images, &mut materials)?;
     }
 
     spawn_noise_mesh(&mut commands, noise_visual);
+    Ok(())
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -87,7 +88,7 @@ pub fn on_rebuild_map_complete(
     tile_query: Query<&Tile>,
     mut images: ResMut<Assets<Image>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-) {
+) -> Result {
     noise_visuals.height_noise.is_synced = false;
     noise_visuals.humidity_noise.is_synced = false;
     noise_visuals.props_noise.is_synced = false;
@@ -96,12 +97,13 @@ pub fn on_rebuild_map_complete(
         DebugNoiseState::HeightNoise => &mut noise_visuals.height_noise,
         DebugNoiseState::HumidityNoise => &mut noise_visuals.humidity_noise,
         DebugNoiseState::PropsNoise => &mut noise_visuals.props_noise,
-        DebugNoiseState::Hidden => return
+        DebugNoiseState::Hidden => return Ok(()),
     };
 
     despawn_noise_texture(&mut commands, &query_mesh);
-    sync_noise_texture(noise_visual, &tile_query, &mut images, &mut materials);
+    sync_noise_texture(noise_visual, &tile_query, &mut images, &mut materials)?;
     spawn_noise_mesh(&mut commands, noise_visual);
+    Ok(())
 }
 
 fn despawn_noise_texture(commands: &mut Commands, query_mesh: &Query<Entity, With<DebugNoise>>) {
@@ -115,15 +117,20 @@ pub fn sync_noise_texture(
     tile_query: &Query<&Tile>,
     images: &mut ResMut<Assets<Image>>,
     materials: &mut ResMut<Assets<ColorMaterial>>,
-) {
+) -> Result {
     let noise_map = extract_tile_noise_map(tile_query, &noise_visual.noise_type);
     let texture = render_noise_to_texture(&noise_map, &noise_visual.noise_type);
     let material = ColorMaterial::from(noise_visual.texture_handle.clone());
 
-    *images.get_mut(&noise_visual.texture_handle).unwrap() = texture;
-    *materials.get_mut(&noise_visual.material_handle).unwrap() = material;
+    *images
+        .get_mut(&noise_visual.texture_handle)
+        .ok_or("noise texture asset missing")? = texture;
+    *materials
+        .get_mut(&noise_visual.material_handle)
+        .ok_or("noise material asset missing")? = material;
 
-    noise_visual.is_synced = true
+    noise_visual.is_synced = true;
+    Ok(())
 }
 
 fn spawn_noise_mesh(commands: &mut Commands, noise_visual: &NoiseVisual) {

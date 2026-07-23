@@ -32,13 +32,10 @@ pub fn render_debug_ui_container(mut commands: Commands) {
 pub fn render_debug_ui_info(
     mut commands: Commands,
     font_assets: Res<FontAssets>,
-    root_ui_query: Query<Entity, With<DebugUiContainerMarker>>,
+    root_ui_id: Single<Entity, With<DebugUiContainerMarker>>,
     async_queue_counter: Res<AsyncQueueCounter>,
 ) {
-    let root_ui_id = root_ui_query
-        .single()
-        .expect("DebugUiContainer query failed");
-    let mut root_ui_commands = commands.entity(root_ui_id);
+    let mut root_ui_commands = commands.entity(*root_ui_id);
 
     root_ui_commands.with_children(|parent| {
         parent.spawn((
@@ -83,11 +80,10 @@ pub fn render_debug_ui_info(
 
 pub fn update_debug_ui_headline(
     async_queue_counter: Res<AsyncQueueCounter>,
-    text_query: Query<Entity, With<DebugUiHeadlineUIMarker>>,
+    text_entity: Single<Entity, With<DebugUiHeadlineUIMarker>>,
     mut writer: TextUiWriter,
 ) {
-    let text_entity = text_query.single().expect("DebugUiHeadline query failed");
-    *writer.text(text_entity, 0) = format_headline(&async_queue_counter);
+    *writer.text(*text_entity, 0) = format_headline(&async_queue_counter);
 }
 
 fn format_headline(async_queue_counter: &Res<AsyncQueueCounter>) -> String {
@@ -113,9 +109,9 @@ pub fn handle_debug_info_keys(
     debug_movepath_state: Res<State<DebugMovepathState>>,
     mut next_debug_movepath_state: ResMut<NextState<DebugMovepathState>>,
 ) {
-    if keys.just_pressed(KeyCode::KeyH) {
-        let (mut visibility, mut style) = query.single_mut().expect("DebugHelpBlock query failed");
-
+    if keys.just_pressed(KeyCode::KeyH)
+        && let Ok((mut visibility, mut style)) = query.single_mut()
+    {
         match *visibility {
             Visibility::Hidden => {
                 *visibility = Visibility::Visible;

@@ -73,12 +73,11 @@ fn render_simulation_speed_ui(
 }
 
 fn update_simulation_speed_text(
-    query: Query<Entity, With<SimulationSpeedTextUIMarker>>,
+    entity: Single<Entity, With<SimulationSpeedTextUIMarker>>,
     time: Res<Time<Virtual>>,
     mut writer: TextUiWriter,
 ) {
-    let entity = query.single().expect("SimulationSpeedText query failed");
-    *writer.text(entity, 0) = format_simulation_speed_text(&time);
+    *writer.text(*entity, 0) = format_simulation_speed_text(&time);
 }
 
 fn format_simulation_speed_text(time: &Res<Time<Virtual>>) -> String {
@@ -90,12 +89,11 @@ fn format_simulation_speed_text(time: &Res<Time<Virtual>>) -> String {
 }
 
 fn update_simulation_date_time_text(
-    query: Query<Entity, With<SimulationDateTimeTextUIMarker>>,
+    entity: Single<Entity, With<SimulationDateTimeTextUIMarker>>,
     time: Res<Time<Virtual>>,
     mut writer: TextUiWriter,
 ) {
-    let entity = query.single().expect("SimulationDateTimeText query failed");
-    *writer.text(entity, 0) = format_date_time_text(&time);
+    *writer.text(*entity, 0) = format_date_time_text(&time);
 }
 
 fn format_date_time_text(time: &Res<Time<Virtual>>) -> String {

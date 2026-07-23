@@ -14,13 +14,10 @@ pub struct DebugTasksQueueDetailsUIMarker {}
 pub fn render_tasks_ui(
     mut commands: Commands,
     font_assets: Res<FontAssets>,
-    root_ui_query: Query<Entity, With<DebugUiContainerMarker>>,
+    root_ui_id: Single<Entity, With<DebugUiContainerMarker>>,
     tasks_queue: Res<TasksQueue>,
 ) {
-    let root_ui_id = root_ui_query
-        .single()
-        .expect("DebugUiContainer query failed");
-    let mut root_ui_commands = commands.entity(root_ui_id);
+    let mut root_ui_commands = commands.entity(*root_ui_id);
 
     root_ui_commands.with_children(|parent| {
         parent.spawn((
@@ -55,7 +52,7 @@ pub fn render_tasks_ui(
 }
 
 pub fn update_debug_tasks_queue(
-    ui_query: Query<Entity, With<DebugTasksUIMarker>>,
+    ui_id: Single<Entity, With<DebugTasksUIMarker>>,
     texts_query: Query<
         (
             Entity,
@@ -71,9 +68,7 @@ pub fn update_debug_tasks_queue(
     children_query: Query<&Children>,
     mut writer: TextUiWriter,
 ) {
-    let ui_id = ui_query.single().expect("DebugTasksUI query failed");
-
-    if let Ok(children) = children_query.get(ui_id) {
+    if let Ok(children) = children_query.get(*ui_id) {
         for child in children.iter() {
             update_text_markers_recursive(
                 child,

@@ -36,9 +36,9 @@ fn on_user_selection(
     farm_query: Query<(&Farm, &Workable)>,
     font_assets: Res<FontAssets>,
 ) {
-    let selected_root_ui_id = user_selected_root_ui_query
-        .single()
-        .expect("UserSelectedRootUI query failed");
+    let Ok(selected_root_ui_id) = user_selected_root_ui_query.single() else {
+        return;
+    };
     let mut user_selected_root_ui_commands = commands.entity(selected_root_ui_id);
     user_selected_root_ui_commands.despawn_related::<Children>();
 

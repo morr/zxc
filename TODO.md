@@ -257,16 +257,16 @@ fn sys(assets: Res<Assets<ColorMaterial>>, q: Query<&Handle<ColorMaterial>>) -> 
 
 **Что сделать:**
 
-- [ ] Найти все ~7 мест `.single().expect(...)`: `src/ui/simulation_state/mod.rs:80`, `src/ui/items_stock/mod.rs:117`, `src/ui/debug/info.rs:89` и остальные (`grep -rn 'single().expect\|single_mut().expect' src/`).
-- [ ] Для систем «ровно одна сущность с маркером» — заменить `Query<..., With<Marker>>` + `.single()` на параметр `Single<..., With<Marker>>`.
-- [ ] Там, где `Single` не подходит (нужна ветвящаяся логика) — система возвращает `Result`, внутри `?` на `single()`.
-- [ ] Пройтись по `.unwrap()` на `Assets` (`src/ui/debug/noise/systems.rs:123-124`) — перевести на `?` в fallible-системе.
-- [ ] Единственный `.single_mut()` (`src/ui/debug/info.rs:118`) — та же схема.
+- [x] Найдены все места `.single().expect(...)` — их оказалось 12 (simulation_state ×2, items_stock ×2, debug/info ×2, debug/tasks_queue ×2, hovered, user_select, input ×2-кратный дубль camera/window).
+- [x] Update-системы с маркером → параметр `Single<Entity, With<Marker>>` (8 систем). В `mouse_input` `Single` для камеры и окна заодно убрал дублирование запросов в click-ветке.
+- [x] Наблюдатели (`on_hover` в hovered, `on_user_selection` в user_select) — явный `let Ok(..) = query.single() else { return }` вместо `Single`-магии в observer-параметрах.
+- [x] `.unwrap()` на `Assets` в noise → `sync_noise_texture` возвращает `Result`, обе вызывающие системы стали fallible (`-> Result` + `?`), `.ok_or(...)?` вместо unwrap.
+- [x] `.single_mut()` в `debug/info.rs` (KeyH) → `if ... && let Ok(..)` — при отсутствии help-блока остальные клавиши продолжают работать.
 
 **Критерии:**
 
-- [ ] `grep -rn '\.expect(' src/` в системах по Query — 0 (допустимы expect в setup-коде с осмысленным сообщением).
-- [ ] Поведение UI не изменилось.
+- [x] `.expect(` на Query-результатах — 0.
+- [x] Поведение UI не изменилось (смоук-тест: hover/click/selection-события и панели работают, clippy чистый, 29 тестов зелёные).
 
 ### 1.6. Component hooks + immutable components для `*Tag`-стейт-машин
 
@@ -658,7 +658,7 @@ app.add_observer(|on: On<Insert, RootConfigRes>, cfg: Res<RootConfigRes>| {
 - [ ] 1.2 `EntityEvent`-миграция
 - [ ] 1.3 Кастомные relationships
 - [ ] 1.4 bevy_picking
-- [ ] 1.5 Fallible systems + `Single<T>`
+- [x] 1.5 Fallible systems + `Single<T>`
 - [ ] 1.6 Hooks + immutable для `*Tag`
 - [ ] 2.1 `DespawnOnExit` для debug-слоёв
 - [ ] 2.2 Аудит `NextState` (поведение 0.18)

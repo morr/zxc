@@ -63,18 +63,13 @@ fn check_egui_wants_focus(
 pub fn mouse_input(
     mut commands: Commands,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
-    // query to get the window (so we can read the current cursor position)
-    q_window: Query<&Window, With<PrimaryWindow>>,
-    // query to get camera transform
-    q_camera: Query<(&Camera, &GlobalTransform), With<FloorCamera>>,
+    // the window (so we can read the current cursor position)
+    window: Single<&Window, With<PrimaryWindow>>,
+    // camera transform
+    camera_single: Single<(&Camera, &GlobalTransform), With<FloorCamera>>,
     mut prev_hovered_grid_tile: ResMut<HoveredGridTile>,
 ) {
-    let (camera, camera_transform) = q_camera
-        .single()
-        .expect("Camera query failed in mouse_input");
-    let window = q_window
-        .single()
-        .expect("PrimaryWindow query failed in mouse_input");
+    let (camera, camera_transform) = *camera_single;
     if let Some(world_position) = window
         .cursor_position()
         .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor).ok())
@@ -96,21 +91,14 @@ pub fn mouse_input(
         }
     }
 
-    if mouse_button_input.just_pressed(MouseButton::Left) {
-        let (camera, camera_transform) = q_camera
-            .single()
-            .expect("Camera query failed in mouse_input");
-        let window = q_window
-            .single()
-            .expect("PrimaryWindow query failed in mouse_input");
-        if let Some(world_position) = window
+    if mouse_button_input.just_pressed(MouseButton::Left)
+        && let Some(world_position) = window
             .cursor_position()
             .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor).ok())
             .map(|ray| ray.origin.truncate())
-        {
-            commands.trigger(log_event!(ClickStage0Event(
-                world_position.world_pos_to_grid()
-            )));
-        }
+    {
+        commands.trigger(log_event!(ClickStage0Event(
+            world_position.world_pos_to_grid()
+        )));
     }
 }

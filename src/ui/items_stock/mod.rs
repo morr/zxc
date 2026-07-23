@@ -110,12 +110,11 @@ fn spawn_item<T: Component>(
 }
 
 fn update_food_stock_text(
-    query: Query<Entity, With<FoodStockTextUIMarker>>,
+    entity: Single<Entity, With<FoodStockTextUIMarker>>,
     mut writer: TextUiWriter,
     food_stock: Res<FoodStock>,
 ) {
-    let entity = query.single().expect("FoodStockText query failed");
-    *writer.text(entity, 0) = format_item_text(food_stock.amount);
+    *writer.text(*entity, 0) = format_item_text(food_stock.amount);
 }
 
 fn format_item_text(amount: u32) -> String {
@@ -123,10 +122,9 @@ fn format_item_text(amount: u32) -> String {
 }
 
 fn update_pawn_stock_text(
-    text_query: Query<Entity, With<PawnStockTextUIMarker>>,
+    entity: Single<Entity, With<PawnStockTextUIMarker>>,
     mut writer: TextUiWriter,
     pawns_query: Query<&Pawn>,
 ) {
-    let entity = text_query.single().expect("PawnStockText query failed");
-    *writer.text(entity, 0) = format_item_text(pawns_query.iter().count() as u32)
+    *writer.text(*entity, 0) = format_item_text(pawns_query.iter().count() as u32)
 }
