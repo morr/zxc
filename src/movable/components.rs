@@ -23,7 +23,7 @@ pub struct Movable {
     pub state: MovableState,
 }
 
-#[derive(Event, Debug, Clone)]
+#[derive(EntityEvent, Debug, Clone)]
 pub struct MovableReachedDestinationEvent {
     pub entity: Entity,
     pub grid_tile: IVec2,

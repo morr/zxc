@@ -30,14 +30,14 @@ impl PathfindingTask {
     }
 }
 
-#[derive(Event, Debug)]
+#[derive(EntityEvent, Debug)]
 pub struct PathfindRequestEvent {
     pub entity: Entity,
     pub start_tile: IVec2,
     pub end_tile: IVec2,
 }
 
-#[derive(Event, Debug)]
+#[derive(EntityEvent, Debug)]
 pub struct PathfindAnswerEvent {
     pub entity: Entity,
     pub start_tile: IVec2,

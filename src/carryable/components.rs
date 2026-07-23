@@ -59,13 +59,14 @@ pub struct SpawnCarryableEvent {
     pub grid_tile: IVec2,
 }
 
-#[derive(Event, Debug)]
+#[derive(EntityEvent, Debug)]
 pub struct StoreCarryableEvent {
     pub entity: Entity,
 }
 
-#[derive(Event, Debug)]
+#[derive(EntityEvent, Debug)]
 pub struct MergeCarryablesEvent {
+    #[event_target]
     pub entity_to_merge: Entity,
     pub carryable_to_merge: Carryable,
     pub grid_tile: IVec2,

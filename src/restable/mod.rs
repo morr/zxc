@@ -17,7 +17,7 @@ pub struct Restable {
     pub state: RestableState,
 }
 
-#[derive(Event, Debug)]
+#[derive(EntityEvent, Debug)]
 pub struct RestCompleteEvent {
     pub entity: Entity,
 }
