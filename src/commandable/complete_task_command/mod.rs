@@ -9,8 +9,9 @@ impl Plugin for CompleteTaskCommandPlugin {
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(EntityEvent, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct CompleteTaskCommand {
+    #[event_target]
     pub commandable_entity: Entity,
     pub task: Task,
 }

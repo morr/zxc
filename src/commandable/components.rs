@@ -59,12 +59,12 @@ impl Default for Commandable {
     }
 }
 
-#[derive(Event, Debug)]
+#[derive(EntityEvent, Debug)]
 pub struct CommandCompleteEvent {
     pub entity: Entity,
 }
 
-#[derive(Event, Debug)]
+#[derive(EntityEvent, Debug)]
 /// Event to interrupt command initiated by an external entity
 pub struct ExternalCommandInterruptEvent {
     pub entity: Entity,

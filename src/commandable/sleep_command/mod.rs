@@ -10,8 +10,9 @@ impl Plugin for SleepCommandPlugin {
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(EntityEvent, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct SleepCommand {
+    #[event_target]
     pub commandable_entity: Entity,
     pub is_sleep_in_bed: bool,
 }

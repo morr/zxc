@@ -10,8 +10,9 @@ impl Plugin for MoveToCommandPlugin {
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(EntityEvent, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct MoveToCommand {
+    #[event_target]
     pub commandable_entity: Entity,
     pub grid_tile: IVec2,
 }

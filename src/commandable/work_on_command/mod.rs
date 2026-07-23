@@ -10,8 +10,9 @@ impl Plugin for WorkOnCommandPlugin {
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(EntityEvent, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct WorkOnCommand {
+    #[event_target]
     pub commandable_entity: Entity,
     pub workable_entity: Entity,
     pub work_kind: WorkKind,

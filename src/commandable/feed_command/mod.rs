@@ -10,8 +10,9 @@ impl Plugin for FeedCommandPlugin {
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(EntityEvent, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct FeedCommand {
+    #[event_target]
     pub commandable_entity: Entity,
 }
 

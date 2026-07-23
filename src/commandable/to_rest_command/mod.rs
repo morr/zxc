@@ -8,8 +8,9 @@ impl Plugin for ToRestCommandPlugin {
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(EntityEvent, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct ToRestCommand {
+    #[event_target]
     pub commandable_entity: Entity,
 }
 

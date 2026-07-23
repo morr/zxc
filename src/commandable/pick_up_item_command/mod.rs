@@ -8,8 +8,9 @@ impl Plugin for PickUpItemCommandPlugin {
     }
 }
 
-#[derive(Event, Debug, Clone, Reflect, PartialEq, Eq)]
+#[derive(EntityEvent, Debug, Clone, Reflect, PartialEq, Eq)]
 pub struct PickUpItemCommand {
+    #[event_target]
     pub commandable_entity: Entity,
     pub carryable_entity: Entity,
 }
