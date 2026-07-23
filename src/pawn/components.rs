@@ -195,7 +195,7 @@ pawn_states!(
 #[derive(Component)]
 pub struct PawnStateText;
 
-#[derive(Event, Debug)]
+#[derive(EntityEvent, Debug)]
 pub struct PawnDeathEvent {
     pub entity: Entity,
     pub reason: PawnDeathReason,
