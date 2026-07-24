@@ -32,12 +32,7 @@ macro_rules! farm_states {
         )?)*
 
         pub mod farm_state {
-            use bevy::prelude::*;
-
-            $(
-                #[derive(Component, Default)]
-                pub struct $name;
-            )*
+            $crate::exclusive_state_tags!($($name),*);
         }
 
         impl Farm {
@@ -47,22 +42,14 @@ macro_rules! farm_states {
                 entity: Entity,
                 commands: &mut Commands,
             ) {
-                self.remove_old_state_component(commands, entity);
                 self.state = new_state;
+                // the on_add hook of the new tag removes the old one
                 self.add_new_state_component(commands, entity);
                 commands.trigger(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
             }
         }
 
         impl Farm {
-            fn remove_old_state_component(&self, commands: &mut Commands, entity: Entity) {
-                match &self.state {
-                    $(FarmState::$name $( ($match_field) )? => {
-                        commands.entity(entity).remove::<farm_state::$name>();
-                    },)*
-                }
-            }
-
             fn add_new_state_component(&self, commands: &mut Commands, entity: Entity) {
                 match &self.state {
                     $(FarmState::$name $( ($match_field) )? => {

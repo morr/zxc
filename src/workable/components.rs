@@ -77,12 +77,7 @@ macro_rules! workable_states {
         }
 
         pub mod workable_state {
-            use bevy::prelude::*;
-
-            $(
-                #[derive(Component, Debug, Reflect)]
-                pub struct $state_component_name;
-            )*
+            $crate::exclusive_state_tags!($($state_component_name),*);
         }
 
         impl Workable {
@@ -95,20 +90,12 @@ macro_rules! workable_states {
                 use std::mem;
                 log_state_change!("Workable({:?}).state {:?} => {:?}", entity, self.state, new_state);
 
-                self.remove_old_state_component(commands, entity);
                 let prev_state = mem::replace(&mut self.state, new_state);
+                // the on_add hook of the new tag removes the old one
                 self.add_new_state_component(commands, entity);
                 // commands.trigger(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
 
                 prev_state
-            }
-
-            fn remove_old_state_component(&self, commands: &mut Commands, entity: Entity) {
-                match &self.state {
-                    $(WorkableState::$name $( ( $($match_field),* ) )? => {
-                        commands.entity(entity).remove::<workable_state::$state_component_name>();
-                    },)*
-                }
             }
 
             fn add_new_state_component(&self, commands: &mut Commands, entity: Entity) {

@@ -12,7 +12,8 @@ pub enum MovableState {
     PathfindingError(IVec2),
 }
 
-#[derive(Component, Reflect)]
+#[derive(Component, Default, Reflect)]
+#[component(immutable)]
 pub struct MovableStateMovingTag;
 
 #[derive(Component, Debug, InspectorOptions, Reflect)]

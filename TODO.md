@@ -295,16 +295,16 @@ fn on_add_idle_tag(mut world: DeferredWorld, ctx: HookContext) {
 
 **Что сделать:**
 
-- [ ] Инвентаризация тегов: `PawnState*Tag`, `MovableState*Tag`, `CommandableState*Tag` и др. (`grep -rn 'Tag;' src/`).
-- [ ] Для каждой группы тегов добавить `on_add`-хук, снимающий остальные теги группы (одна функция или макрос на группу — по образцу из справки).
-- [ ] Пометить теги `#[component(immutable)]` — у них нет данных, мутировать нечего.
-- [ ] Удалить ручные `remove::<OldTag>()` в системах переходов, где их теперь делает хук. Внимание: `log_state_change!` — если логирование привязано к ручному переходу, оставить его в системах или перенести в хук.
-- [ ] Проверить взаимодействие с `ensure_state!`/`continue_unless!` — они читают теги, менять не нужно.
+- [x] Инвентаризация: группы `pawn_state` (3 тега), `workable_state` (2), `farm_state` (4) — все генерятся макросами; одиночный `MovableStateMovingTag`. У `Commandable` тегов нет (только поле state).
+- [x] Написан общий макрос `exclusive_state_tags!` (`src/lib.rs`, tt-muncher): для каждого тега генерит `#[component(immutable, on_add = ...)]`-хук, снимающий всех соседей группы через `DeferredWorld::commands()`. Все три state-мода переведены на него — дублировавшиеся объявления тегов в трёх макросах исчезли.
+- [x] Все теги — `#[component(immutable)]`, включая одиночный `MovableStateMovingTag`.
+- [x] `remove_old_state_component` удалён из всех трёх `change_state` — старый тег снимает хук нового. `log_state_change!` остался в `change_state` (он логирует enum-переход, не тег).
+- [x] `ensure_state!`/`continue_unless!` не потребовали изменений (читают enum-поле, не теги).
 
 **Критерии:**
 
-- [ ] Невозможно получить сущность с двумя тегами одной группы (добавить unit-тест: вставить второй тег, убедиться, что первый снят).
-- [ ] Существующие переходы состояний работают, логи состояний сохранились.
+- [x] Невозможно получить сущность с двумя тегами одной группы — unit-тест `state_tags_are_exclusive` в `src/pawn/components.rs` (30-й тест).
+- [x] Существующие переходы работают: смоук-запуск — 569 переходов состояний в логе, 0 паник; same-state ре-вставки (re-insert immutable-тега) легальны, `on_add` при них не дёргается.
 
 **Риски:** хук срабатывает немедленно при вставке — убедиться, что наблюдатели `EntityStateChangeEvent` не зависят от наличия старого тега после вставки нового.
 
@@ -662,7 +662,7 @@ app.add_observer(|on: On<Insert, RootConfigRes>, cfg: Res<RootConfigRes>| {
 - [x] 1.3 Кастомные relationships
 - [x] 1.4 bevy_picking — закрыто как не применимо (тайловая интеракция, см. пункт 1.4)
 - [x] 1.5 Fallible systems + `Single<T>`
-- [ ] 1.6 Hooks + immutable для `*Tag`
+- [x] 1.6 Hooks + immutable для `*Tag`
 - [ ] 2.1 `DespawnOnExit` для debug-слоёв
 - [ ] 2.2 Аудит `NextState` (поведение 0.18)
 - [ ] 2.3 `TilemapChunk`

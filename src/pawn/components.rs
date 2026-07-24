@@ -69,12 +69,7 @@ macro_rules! pawn_states {
         }
 
         pub mod pawn_state {
-            use bevy::prelude::*;
-
-            $(
-                #[derive(Component, Debug, Default, Reflect)]
-                pub struct $state_component_name;
-            )*
+            $crate::exclusive_state_tags!($($state_component_name),*);
         }
 
         impl Pawn {
@@ -87,20 +82,12 @@ macro_rules! pawn_states {
                 use std::mem;
                 log_state_change!("Pawn({:?}).state {:?} => {:?}", entity, self.state, new_state);
 
-                self.remove_old_state_component(commands, entity);
                 let prev_state = mem::replace(&mut self.state, new_state);
+                // the on_add hook of the new tag removes the old one
                 self.add_new_state_component(commands, entity);
                 commands.trigger(log_event!(EntityStateChangeEvent(entity, self.state.clone())));
 
                 prev_state
-            }
-
-            fn remove_old_state_component(&self, commands: &mut Commands, entity: Entity) {
-                match &self.state {
-                    $(PawnState::$name => {
-                        commands.entity(entity).remove::<pawn_state::$state_component_name>();
-                    },)*
-                }
             }
 
             fn add_new_state_component(&self, commands: &mut Commands, entity: Entity) {
@@ -134,4 +121,47 @@ pub struct PawnDeathEvent {
 pub enum PawnDeathReason {
     OldAge,
     Starvation,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn state_tags_are_exclusive() {
+        let mut world = World::new();
+
+        let entity = world.spawn(pawn_state::PawnStateIdleTag).id();
+        world
+            .entity_mut(entity)
+            .insert(pawn_state::PawnStateExecutingCommandTag);
+        world.flush();
+
+        assert!(
+            !world
+                .entity(entity)
+                .contains::<pawn_state::PawnStateIdleTag>()
+        );
+        assert!(
+            world
+                .entity(entity)
+                .contains::<pawn_state::PawnStateExecutingCommandTag>()
+        );
+
+        world
+            .entity_mut(entity)
+            .insert(pawn_state::PawnStateDeadTag);
+        world.flush();
+
+        assert!(
+            !world
+                .entity(entity)
+                .contains::<pawn_state::PawnStateExecutingCommandTag>()
+        );
+        assert!(
+            world
+                .entity(entity)
+                .contains::<pawn_state::PawnStateDeadTag>()
+        );
+    }
 }

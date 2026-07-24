@@ -145,6 +145,37 @@ macro_rules! return_unless {
     };
 }
 
+/// Generates unit tag components for a state machine group where at most one
+/// tag may be present on an entity at a time. Inserting any tag of the group
+/// removes its siblings via an `on_add` component hook, so the invariant holds
+/// at the ECS level no matter who inserts the tag. Tags are `immutable`.
+#[macro_export]
+macro_rules! exclusive_state_tags {
+    ($($tag:ident),+ $(,)?) => {
+        $crate::exclusive_state_tags!(@step [] | $($tag),+);
+    };
+    (@step [$($before:ident)*] | $cur:ident $(, $rest:ident)*) => {
+        #[derive(bevy::prelude::Component, Debug, Default, bevy::prelude::Reflect)]
+        #[component(immutable, on_add = $cur::remove_sibling_tags)]
+        pub struct $cur;
+
+        impl $cur {
+            fn remove_sibling_tags(
+                mut world: bevy::ecs::world::DeferredWorld,
+                ctx: bevy::ecs::lifecycle::HookContext,
+            ) {
+                world
+                    .commands()
+                    .entity(ctx.entity)
+                    .remove::<($($before,)* $($rest,)*)>();
+            }
+        }
+
+        $crate::exclusive_state_tags!(@step [$($before)* $cur] | $($rest),*);
+    };
+    (@step [$($before:ident)*] |) => {};
+}
+
 #[macro_export]
 macro_rules! log_state_change {
     ($($arg:tt)+) => {
