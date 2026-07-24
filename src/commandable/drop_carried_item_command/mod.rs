@@ -20,8 +20,8 @@ pub struct DropCarriedItemCommand {
 fn execute_command(
     event: On<DropCarriedItemCommand>,
     mut commands: Commands,
-    mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
-    mut carryable_query: Query<&mut Carryable>,
+    mut commandable_query: Query<(&mut Commandable, &Transform), With<Pawn>>,
+    carryable_query: Query<(&Carryable, Option<&CarriedBy>)>,
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
     arc_navmesh: ResMut<ArcNavmesh>,
@@ -32,9 +32,8 @@ fn execute_command(
         carryable_entity,
     } = *event;
 
-    let (mut pawn, mut commandable, transform) = match commandable_query.get_mut(commandable_entity)
-    {
-        Ok((pawn, commandable, transform)) => (pawn, commandable, transform),
+    let (mut commandable, transform) = match commandable_query.get_mut(commandable_entity) {
+        Ok((commandable, transform)) => (commandable, transform),
         Err(err) => {
             warn!(
                 "Failed to get query result for commandable_entity {:?}: {:?}",
@@ -44,8 +43,8 @@ fn execute_command(
         }
     };
 
-    let mut carryable = match carryable_query.get_mut(carryable_entity) {
-        Ok(carryable) => carryable,
+    let (carryable, carried_by) = match carryable_query.get(carryable_entity) {
+        Ok(result) => result,
         Err(err) => {
             warn!(
                 "Failed to get query result for carryable_entity {:?}: {:?}",
@@ -56,9 +55,10 @@ fn execute_command(
         }
     };
 
-    pawn.drop_item(
+    carryable.drop_off(
         carryable_entity,
-        &mut carryable,
+        carried_by,
+        commandable_entity,
         transform.world_pos_to_grid(),
         &mut commands,
         &assets_collection,
@@ -82,8 +82,8 @@ fn execute_command(
 fn on_release_resources(
     event: On<ReleaseCommandResourcesEvent>,
     mut commands: Commands,
-    mut commandable_query: Query<(&mut Pawn, &Transform)>,
-    mut carryable_query: Query<&mut Carryable>,
+    commandable_query: Query<(&Transform, Option<&Carrying>), With<Pawn>>,
+    carryable_query: Query<(&Carryable, Option<&CarriedBy>)>,
     assets_collection: Res<AssetsCollection>,
     meshes_collection: Res<MeshesCollection>,
     arc_navmesh: ResMut<ArcNavmesh>,
@@ -94,29 +94,30 @@ fn on_release_resources(
         carryable_entity,
     }) = event.command_type
     {
-        let (mut pawn, transform) = commandable_query
-            .get_mut(commandable_entity)
-            .unwrap_or_else(|err| {
+        let (transform, carrying) =
+            commandable_query
+                .get(commandable_entity)
+                .unwrap_or_else(|err| {
+                    panic!(
+                        "Failed to get query result for commandable_entity {:?} {:?}",
+                        commandable_entity, err
+                    )
+                });
+        let Ok((carryable, carried_by)) = carryable_query.get(carryable_entity) else {
+            if carrying.is_some_and(|carrying| carrying.contains(carryable_entity)) {
                 panic!(
-                    "Failed to get query result for commandable_entity {:?} {:?}",
-                    commandable_entity, err
-                )
-            });
-        let maybe_carryable = carryable_query.get_mut(carryable_entity);
-        let Ok(mut carryable) = maybe_carryable else {
-            if pawn.inventory.contains_key(&carryable_entity) {
-                panic!(
-                    "Failed to get query result for carryable_entity {:?} while pawn {:?} has it in inventory",
-                    carryable_entity, pawn
+                    "Failed to get query result for carryable_entity {:?} while pawn {:?} is carrying it",
+                    carryable_entity, commandable_entity
                 )
             } else {
                 return;
             }
         };
 
-        pawn.drop_item(
+        carryable.drop_off(
             carryable_entity,
-            &mut carryable,
+            carried_by,
+            commandable_entity,
             transform.world_pos_to_grid(),
             &mut commands,
             &assets_collection,

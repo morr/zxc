@@ -149,27 +149,27 @@ pub fn progress_pawn_dying(
     }
 }
 
-#[allow(clippy::too_many_arguments)]
 pub fn on_pawn_death(
     event: On<PawnDeathEvent>,
     mut commands: Commands,
-    mut pawn_query: Query<(&mut Pawn, &mut Restable, &mut Commandable)>,
-    mut bed_query: Query<&mut Bed>,
-    mut available_beds: ResMut<AvailableBeds>,
+    mut pawn_query: Query<(
+        &mut Pawn,
+        &mut Restable,
+        &mut Commandable,
+        Option<&OwnedBed>,
+    )>,
 ) {
     let PawnDeathEvent { entity, .. } = *event;
     match pawn_query.get_mut(entity) {
-        Ok((mut pawn, mut restable, mut commandable)) => {
+        Ok((mut pawn, mut restable, mut commandable, owned_bed)) => {
             pawn.change_state(PawnState::Dead, entity, &mut commands);
 
             restable.change_state(RestableState::Dead, entity);
             commandable.clear_queue(entity, &mut commands);
 
-            if let Some(bed_entity) = pawn.owned_bed {
-                let mut bed = bed_query
-                    .get_mut(bed_entity)
-                    .expect("on_pawn_death: Bed entity query failed");
-                bed.unclaim_by(&mut pawn, &mut available_beds);
+            // dead pawns are not despawned, so release the bed explicitly
+            if let Some(bed_entity) = owned_bed.and_then(OwnedBed::bed) {
+                commands.entity(bed_entity).remove::<BedOwnedBy>();
             }
         }
         Err(err) => {

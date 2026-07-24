@@ -98,15 +98,16 @@ fn progress_hunger(
 fn on_food_consumed(
     event: On<FoodConsumedEvent>,
     mut commands: Commands,
-    mut carryable_query: Query<(Entity, &mut Carryable, &Transform), With<CarryableFoodMarker>>,
+    mut carryable_query: Query<
+        (Entity, &mut Carryable, &Transform),
+        (With<CarryableFoodMarker>, Without<CarriedBy>),
+    >,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     let FoodConsumedEvent { amount } = *event;
     let mut amount_consumed = amount;
 
     for (entity, mut carryable, transform) in carryable_query.iter_mut() {
-        continue_unless!(CarryableKind::Food, carryable.kind);
-
         if amount_consumed < carryable.amount {
             carryable.amount -= amount_consumed;
             break;

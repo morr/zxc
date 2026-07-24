@@ -18,20 +18,22 @@ pub struct ToRestCommand {
 fn execute_command(
     event: On<ToRestCommand>,
     mut commands: Commands,
-    mut bed_query: Query<(Entity, &Transform, &mut Bed)>,
-    mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
-    mut available_beds: ResMut<AvailableBeds>,
+    bed_query: Query<(Entity, &Transform, Has<BedOwnedBy>), With<Bed>>,
+    mut commandable_query: Query<(&mut Commandable, &Transform, Option<&OwnedBed>)>,
+    available_beds: Res<AvailableBeds>,
     arc_navmesh: Res<ArcNavmesh>,
 ) {
     let ToRestCommand { commandable_entity } = *event;
 
     match commandable_query.get_mut(commandable_entity) {
-        Ok((mut pawn, mut commandable, pawn_transform)) => {
+        Ok((mut commandable, pawn_transform, owned_bed)) => {
             commandable.complete_executing(commandable_entity, &mut commands);
 
-            let (grid_tile, is_sleep_in_bed) = if let Some(bed_entity) = pawn.owned_bed {
+            let (grid_tile, is_sleep_in_bed) = if let Some(bed_entity) =
+                owned_bed.and_then(OwnedBed::bed)
+            {
                 // move to claimed bed
-                let (_entity, bed_transform, _bed) = bed_query
+                let (_entity, bed_transform, _) = bed_query
                     .get(bed_entity)
                     .expect("to_rest_command: Owned bed query failed");
 
@@ -40,18 +42,16 @@ fn execute_command(
                     true,
                 )
             } else if available_beds.0 > 0 {
-                // or claim fee bed
+                // or claim a free bed
                 let mut found_bed_tile = None;
-                for (bed_entity, bed_transform, mut bed) in bed_query.iter_mut() {
-                    if bed.owner.is_some() {
+                for (bed_entity, bed_transform, is_claimed) in bed_query.iter() {
+                    if is_claimed {
                         continue;
                     }
-                    bed.claim_by(
-                        bed_entity,
-                        commandable_entity,
-                        &mut pawn,
-                        &mut available_beds,
-                    );
+                    // AvailableBeds is updated by the BedOwnedBy add/remove observers
+                    commands
+                        .entity(bed_entity)
+                        .insert(BedOwnedBy(commandable_entity));
                     found_bed_tile = Some(bed_transform.translation.truncate().world_pos_to_grid());
                     break;
                 }

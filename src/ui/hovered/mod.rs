@@ -35,9 +35,16 @@ fn on_hover_update_ui(
     commands: Commands,
     hovered_grid_tile: Res<HoveredGridTile>,
     hovered_root_ui_query: Query<Entity, With<HoveredUIRootMarker>>,
-    pawn_query: Query<(&Pawn, &Movable, &Restable, &Feedable, &Commandable)>,
+    pawn_query: Query<(
+        &Pawn,
+        &Movable,
+        &Restable,
+        &Feedable,
+        &Commandable,
+        Option<&Carrying>,
+    )>,
     farm_query: Query<(&Farm, &Workable)>,
-    bed_query: Query<&Bed>,
+    bed_query: Query<Option<&BedOwnedBy>, With<Bed>>,
     tile_query: Query<&Tile>,
     carryable_query: Query<&Carryable>,
     storage_query: Query<&Storage>,
@@ -68,9 +75,16 @@ fn on_occupation_change_update_ui(
     commands: Commands,
     hovered_grid_tile: Res<HoveredGridTile>,
     hovered_root_ui_query: Query<Entity, With<HoveredUIRootMarker>>,
-    pawn_query: Query<(&Pawn, &Movable, &Restable, &Feedable, &Commandable)>,
+    pawn_query: Query<(
+        &Pawn,
+        &Movable,
+        &Restable,
+        &Feedable,
+        &Commandable,
+        Option<&Carrying>,
+    )>,
     farm_query: Query<(&Farm, &Workable)>,
-    bed_query: Query<&Bed>,
+    bed_query: Query<Option<&BedOwnedBy>, With<Bed>>,
     tile_query: Query<&Tile>,
     carryable_query: Query<&Carryable>,
     storage_query: Query<&Storage>,
@@ -104,9 +118,16 @@ fn redraw_hovered_ui(
     mut commands: Commands,
     grid_tile: IVec2,
     hovered_root_ui_query: Query<Entity, With<HoveredUIRootMarker>>,
-    pawn_query: Query<(&Pawn, &Movable, &Restable, &Feedable, &Commandable)>,
+    pawn_query: Query<(
+        &Pawn,
+        &Movable,
+        &Restable,
+        &Feedable,
+        &Commandable,
+        Option<&Carrying>,
+    )>,
     farm_query: Query<(&Farm, &Workable)>,
-    bed_query: Query<&Bed>,
+    bed_query: Query<Option<&BedOwnedBy>, With<Bed>>,
     tile_query: Query<&Tile>,
     carryable_query: Query<&Carryable>,
     storage_query: Query<&Storage>,
@@ -137,11 +158,11 @@ fn redraw_hovered_ui(
 
     // hover over Bed
     for bed_id in navmesh.get_occupants::<Bed>(grid_tile.x, grid_tile.y) {
-        if let Ok(bed) = bed_query.get(*bed_id) {
+        if let Ok(owned_by) = bed_query.get(*bed_id) {
             render_bed_ui(
                 *bed_id,
                 &mut hovered_root_ui_commands,
-                bed,
+                owned_by.map(|owned_by| owned_by.0),
                 &font_assets,
                 UiOpacity::Medium,
             );
@@ -163,7 +184,9 @@ fn redraw_hovered_ui(
 
     // hover over Pawn
     for pawn_id in navmesh.get_occupants::<Pawn>(grid_tile.x, grid_tile.y) {
-        if let Ok((pawn, movable, restable, feedable, commandable)) = pawn_query.get(*pawn_id) {
+        if let Ok((pawn, movable, restable, feedable, commandable, carrying)) =
+            pawn_query.get(*pawn_id)
+        {
             render_pawn_ui(
                 *pawn_id,
                 &mut hovered_root_ui_commands,
@@ -172,6 +195,7 @@ fn redraw_hovered_ui(
                 restable,
                 feedable,
                 commandable,
+                carrying,
                 &font_assets,
                 UiOpacity::Medium,
             );

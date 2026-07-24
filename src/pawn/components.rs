@@ -1,4 +1,3 @@
-use bevy_platform::collections::HashMap;
 use std::ops::RangeInclusive;
 
 use super::*;
@@ -22,9 +21,6 @@ pub struct Pawn {
 
     /// in seconds
     pub lifetime: f32,
-
-    pub owned_bed: Option<Entity>,
-    pub inventory: HashMap<Entity, Carryable>,
 }
 
 #[derive(Component)]
@@ -49,8 +45,6 @@ impl Default for Pawn {
             age,
             birth_year_day: rng.random_range(1..=config().time.days_in_year),
             lifetime,
-            owned_bed: None,
-            inventory: HashMap::new(),
         }
     }
 }
@@ -62,71 +56,6 @@ impl Pawn {
 
     pub fn decrease_lifetime(&mut self, amount: f32) {
         self.lifetime = f32::max(self.lifetime - amount, 0.0);
-    }
-
-    pub fn pick_up_item(
-        &mut self,
-        carryable_entity: Entity,
-        carryable: &mut Carryable,
-        grid_tile: IVec2,
-        commands: &mut Commands,
-        navmesh: &mut Navmesh,
-        food_stock: &mut ResMut<FoodStock>,
-    ) {
-        self.inventory.insert(carryable_entity, carryable.clone());
-        carryable.to_inventory(food_stock);
-
-        commands
-            .entity(carryable_entity)
-            .remove::<Mesh2d>()
-            .remove::<MeshMaterial2d<ColorMaterial>>()
-            .remove::<Transform>();
-
-        navmesh.remove_occupant::<Carryable>(&carryable_entity, grid_tile.x, grid_tile.y);
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    pub fn drop_item(
-        &mut self,
-        carryable_entity: Entity,
-        carryable: &mut Carryable,
-        grid_tile: IVec2,
-        commands: &mut Commands,
-        assets_collection: &Res<AssetsCollection>,
-        meshes_collection: &Res<MeshesCollection>,
-        navmesh: &mut Navmesh,
-        food_stock: &mut ResMut<FoodStock>,
-    ) {
-        // it can be not in inventory if command chain is interrupted before
-        // item picked up into inventory
-        let Some(Carryable { kind, amount }) = self.inventory.remove(&carryable_entity) else {
-            return;
-        };
-        carryable.from_inventory(kind, amount, food_stock);
-
-        let tile_occupants = navmesh
-            .get_occupants::<Carryable>(grid_tile.x, grid_tile.y)
-            .copied()
-            .collect::<Vec<_>>();
-
-        if tile_occupants.is_empty() {
-            commands
-                .entity(carryable_entity)
-                .insert(Carryable::spawn_mesh_bundle(
-                    grid_tile,
-                    assets_collection,
-                    meshes_collection,
-                ));
-
-            navmesh.add_occupant::<Carryable>(&carryable_entity, grid_tile.x, grid_tile.y);
-        } else {
-            commands.trigger(log_event!(MergeCarryablesEvent {
-                entity_to_merge: carryable_entity,
-                carryable_to_merge: carryable.clone(),
-                grid_tile,
-                merge_into_entities: tile_occupants,
-            }));
-        }
     }
 }
 

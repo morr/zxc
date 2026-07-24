@@ -34,7 +34,7 @@ impl Plugin for UiBedPlugin {
 pub fn render_bed_ui(
     bed_id: Entity,
     container_ui_commands: &mut EntityCommands,
-    bed: &Bed,
+    owner: Option<Entity>,
     font_assets: &Res<FontAssets>,
     opacity: UiOpacity,
 ) {
@@ -45,7 +45,7 @@ pub fn render_bed_ui(
                 render_entity_component_node_bunlde::<BedComponentUIMarker>(),
                 children![
                     headline_text_bundle(format!("Bed {:?}", bed_id), font_assets,),
-                    property_text_bundle::<BedOwnerUIMarker>(bed_owner_text(bed), font_assets,),
+                    property_text_bundle::<BedOwnerUIMarker>(bed_owner_text(owner), font_assets,),
                 ],
             ),],
         ));
@@ -56,17 +56,18 @@ fn update_bed_ui(
     ui_query: Query<(Entity, &BedUIMarker)>,
     texts_query: Query<(Entity, Option<&BedOwnerUIMarker>), Or<(With<BedOwnerUIMarker>,)>>,
     mut writer: TextUiWriter,
-    components_query: Query<&Bed>,
+    components_query: Query<Option<&BedOwnedBy>, With<Bed>>,
     children_query: Query<&Children>,
 ) {
     for (ui_id, ui_marker) in ui_query.iter() {
-        if let Ok(bed) = components_query.get(ui_marker.bed_id)
+        if let Ok(owned_by) = components_query.get(ui_marker.bed_id)
             && let Ok(children) = children_query.get(ui_id)
         {
+            let owner = owned_by.map(|owned_by| owned_by.0);
             for child in children.iter() {
                 update_text_markers_recursive(
                     child,
-                    bed,
+                    owner,
                     &mut writer,
                     &texts_query,
                     &children_query,
@@ -78,7 +79,7 @@ fn update_bed_ui(
 
 fn update_text_markers_recursive(
     entity: Entity,
-    bed: &Bed,
+    owner: Option<Entity>,
     writer: &mut TextUiWriter,
     texts_query: &Query<(Entity, Option<&BedOwnerUIMarker>), Or<(With<BedOwnerUIMarker>,)>>,
     children_query: &Query<&Children>,
@@ -86,16 +87,16 @@ fn update_text_markers_recursive(
     if let Ok((bed_entity, bed_owner_marker)) = texts_query.get(entity)
         && bed_owner_marker.is_some()
     {
-        *writer.text(bed_entity, 0) = bed_owner_text(bed);
+        *writer.text(bed_entity, 0) = bed_owner_text(owner);
     }
 
     if let Ok(children) = children_query.get(entity) {
         for child in children.iter() {
-            update_text_markers_recursive(child, bed, writer, texts_query, children_query);
+            update_text_markers_recursive(child, owner, writer, texts_query, children_query);
         }
     }
 }
 
-fn bed_owner_text(bed: &Bed) -> String {
-    format!("owner: {:?}", bed.owner)
+fn bed_owner_text(owner: Option<Entity>) -> String {
+    format!("owner: {:?}", owner)
 }

@@ -172,18 +172,16 @@ pub struct Carrying(Vec<Entity>);        // обратная сторона, п�
 
 **Что сделать:**
 
-- [ ] Инвентаризация `Entity`-полей в компонентах/ресурсах: `grep -rn ': Entity\|<Entity>' src/ --include='components.rs'` + просмотр `tasks_queue`, `carryable`, `commandable`, `navigation/occupation`.
-- [ ] Кандидаты на пары relationship/relationship_target:
-  - **pawn ↔ task**: назначенная задача ↔ исполнитель (`AssignedTo` / `AssignedTasks`).
-  - **carryable ↔ carrier/storage**: предмет в руках/на складе (`CarriedBy` / `Carrying`, `StoredIn` / `Stores`).
-  - **occupation**: сущность ↔ занимаемый тайл, если тайлы — сущности; если тайлы в ресурсе `Navmesh` — не трогать.
-- [ ] Для каждой пары: завести компоненты-связи, заменить ручные вставки/удаления, удалить ставший ненужным код зачистки (в т.ч. проверить, что покрывает `ReleaseCommandResourcesEvent`, и сократить его зону ответственности).
-- [ ] Проверить сценарий «смерть пешки с активной задачей и предметом в руках»: задача должна вернуться в очередь (это бизнес-логика — оставить наблюдателю), связь — очиститься автоматически.
+- [x] Инвентаризация выполнена. Реальные Entity↔Entity связи: **bed↔pawn** (`Bed.owner` + `Pawn.owned_bed`) и **carryable↔pawn** (`Pawn.inventory: HashMap`). НЕ применимо: pawn↔task (Task — value-объект в ресурсе `TasksQueue`, не сущность), occupation (данные в ресурсе `Navmesh`), storage↔item (склад — точка на карте, предметы лежат тайлом, связи-компонента нет).
+- [x] **Bed↔Pawn**: пара `BedOwnedBy(Entity)` (на кровати) ↔ `OwnedBed` (на пешке). `claim_by`/`unclaim_by` удалены — claim это `insert(BedOwnedBy(pawn))`. Счётчик `AvailableBeds` ведётся наблюдателями `On<Add/Remove, BedOwnedBy>` — не дрейфует, кто бы ни снял связь. Ручная зачистка в `on_pawn_death` сведена к `remove::<BedOwnedBy>` (мёртвые пешки не despawn'ятся, поэтому явный remove нужен); `.expect` на bed-запросе исчез.
+- [x] **Carryable↔Pawn**: пара `CarriedBy(Entity)` ↔ `Carrying`. `Pawn.inventory: HashMap<Entity, Carryable>` удалён целиком — kind/amount больше не зануляются при подборе, «в инвентаре» = наличие `CarriedBy`. Вариант `CarryableKind::InInventory` удалён. `pick_up_item`/`drop_item` переехали с `Pawn` на `Carryable::pick_up`/`drop_off`. `on_food_consumed` теперь явно исключает несомые предметы через `Without<CarriedBy>`.
+- [x] Сценарий «смерть пешки с предметом»: как и раньше — очередь команд чистится, отложенный `DropCarriedItem` дропает предмет через `on_release_resources` (guard переписан на `Carrying::contains`). Despawn любой стороны рвёт связь автоматически.
+- [x] Зафиксирована остаточная гонка claim'а кроватей: два `ToRestCommand` в одном флаше могут выбрать одну кровать — победит последний insert, проигравший переклеймит в следующий цикл отдыха; счётчик не дрейфует (комментарий в `src/structure/bed/mod.rs`). Старый код был immediate и без гонки, но с ручной синхронизацией двух полей.
 
 **Критерии:**
 
-- [ ] Despawn пешки/предмета не оставляет висячих `Entity`-ссылок (класс багов типа коммита `d70286b`).
-- [ ] Ручные системы очистки удалены или сокращены.
+- [x] Despawn пешки/предмета не оставляет висячих `Entity`-ссылок (класс багов типа коммита `d70286b`).
+- [x] Ручные системы очистки удалены или сокращены (`claim_by`/`unclaim_by`, HashMap-стэш, `.expect` на bed-запросе).
 
 **Риски:** немутабельность relationship-компонентов — учесть в местах «переложить предмет» (re-insert, а не мутация). Семантику `linked_spawn` не включать без осознанного решения (см. справку).
 
@@ -654,7 +652,7 @@ app.add_observer(|on: On<Insert, RootConfigRes>, cfg: Res<RootConfigRes>| {
 - [x] 0.5 Опечатка `DebugUiContainerarker`
 - [x] 1.1 `#[require(...)]` для Pawn
 - [x] 1.2 `EntityEvent`-миграция
-- [ ] 1.3 Кастомные relationships
+- [x] 1.3 Кастомные relationships
 - [ ] 1.4 bevy_picking
 - [x] 1.5 Fallible systems + `Single<T>`
 - [ ] 1.6 Hooks + immutable для `*Tag`

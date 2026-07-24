@@ -21,9 +21,6 @@ pub fn on_spawn_carryable(
             },
             CarryableFoodMarker,
         ),
-        CarryableKind::InInventory => {
-            panic!("Cannot spawn CarryableKind::InInventory")
-        }
     };
 
     let carryable_id = commands

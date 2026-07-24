@@ -19,8 +19,8 @@ pub struct PickUpItemCommand {
 fn execute_command(
     event: On<PickUpItemCommand>,
     mut commands: Commands,
-    mut commandable_query: Query<(&mut Pawn, &mut Commandable, &Transform)>,
-    mut carryable_query: Query<(&mut Carryable, &Transform)>,
+    mut commandable_query: Query<(&mut Commandable, &Transform), With<Pawn>>,
+    carryable_query: Query<(&Carryable, &Transform)>,
     arc_navmesh: ResMut<ArcNavmesh>,
     mut food_stock: ResMut<FoodStock>,
 ) {
@@ -29,9 +29,9 @@ fn execute_command(
         carryable_entity,
     } = *event;
 
-    let (mut pawn, mut commandable, commandable_transform) =
+    let (mut commandable, commandable_transform) =
         match commandable_query.get_mut(commandable_entity) {
-            Ok((pawn, commandable, transform)) => (pawn, commandable, transform),
+            Ok((commandable, transform)) => (commandable, transform),
             Err(err) => {
                 warn!(
                     "Failed to get query result for commandable_entity {:?}: {:?}",
@@ -41,7 +41,7 @@ fn execute_command(
             }
         };
 
-    let (mut carryable, carryable_transform) = match carryable_query.get_mut(carryable_entity) {
+    let (carryable, carryable_transform) = match carryable_query.get(carryable_entity) {
         Ok((carryable, transform)) => (carryable, transform),
         Err(err) => {
             warn!(
@@ -62,9 +62,9 @@ fn execute_command(
         return;
     }
 
-    pawn.pick_up_item(
+    carryable.pick_up(
         carryable_entity,
-        &mut carryable,
+        commandable_entity,
         commandable_grid_tile,
         &mut commands,
         &mut arc_navmesh.write(),

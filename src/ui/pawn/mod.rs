@@ -109,12 +109,19 @@ fn update_pawn_ui(
             With<CommandableQueueTextUIMarker>,
         )>,
     >,
-    components_query: Query<(&Pawn, &Movable, &Restable, &Feedable, &Commandable)>,
+    components_query: Query<(
+        &Pawn,
+        &Movable,
+        &Restable,
+        &Feedable,
+        &Commandable,
+        Option<&Carrying>,
+    )>,
     children_query: Query<&Children>,
     mut writer: TextUiWriter,
 ) {
     for (ui_id, ui_marker) in ui_query.iter() {
-        if let Ok((pawn, movable, restable, feedable, commandable)) =
+        if let Ok((pawn, movable, restable, feedable, commandable, carrying)) =
             components_query.get(ui_marker.pawn_id)
             && let Ok(children) = children_query.get(ui_id)
         {
@@ -126,6 +133,7 @@ fn update_pawn_ui(
                     restable,
                     feedable,
                     commandable,
+                    carrying,
                     &texts_query,
                     &children_query,
                     &mut writer,
@@ -143,6 +151,7 @@ fn update_text_markers_recursive(
     restable: &Restable,
     feedable: &Feedable,
     commandable: &Commandable,
+    carrying: Option<&Carrying>,
     texts_query: &Query<
         (
             Entity,
@@ -212,7 +221,7 @@ fn update_text_markers_recursive(
             *writer.text(text_entity, 0) = pawn_state_text(pawn);
         }
         if pwan_inventory_marker.is_some() {
-            *writer.text(text_entity, 0) = pawn_inventory_text(pawn);
+            *writer.text(text_entity, 0) = pawn_inventory_text(carrying);
         }
         if movable_speed_marker.is_some() {
             *writer.text(text_entity, 0) = movable_speed_text(movable);
@@ -252,6 +261,7 @@ fn update_text_markers_recursive(
                 restable,
                 feedable,
                 commandable,
+                carrying,
                 texts_query,
                 children_query,
                 writer,
@@ -269,6 +279,7 @@ pub fn render_pawn_ui(
     restable: &Restable,
     feedable: &Feedable,
     commandable: &Commandable,
+    carrying: Option<&Carrying>,
     font_assets: &Res<FontAssets>,
     opacity: UiOpacity,
 ) {
@@ -297,7 +308,7 @@ pub fn render_pawn_ui(
                             font_assets,
                         ),
                         property_text_bundle::<PawnInventoryTextUIMarker>(
-                            pawn_inventory_text(pawn),
+                            pawn_inventory_text(carrying),
                             font_assets,
                         ),
                     ],
@@ -402,8 +413,11 @@ fn pawn_state_text(pawn: &Pawn) -> String {
     // }
     format!("state: {:?}", pawn.state)
 }
-fn pawn_inventory_text(pawn: &Pawn) -> String {
-    format!("inventory: {:?}", pawn.inventory)
+fn pawn_inventory_text(carrying: Option<&Carrying>) -> String {
+    format!(
+        "carrying: {:?}",
+        carrying.map(Carrying::entities).unwrap_or_default()
+    )
 }
 
 fn movable_speed_text(movable: &Movable) -> String {

@@ -4,8 +4,19 @@ pub struct BedPlugin;
 
 impl Plugin for BedPlugin {
     fn build(&self, app: &mut App) {
-        app.register_type::<Bed>().init_resource::<AvailableBeds>();
+        app.register_type::<Bed>()
+            .init_resource::<AvailableBeds>()
+            .add_observer(on_bed_claimed)
+            .add_observer(on_bed_unclaimed);
     }
+}
+
+fn on_bed_claimed(_event: On<Add, BedOwnedBy>, mut available_beds: ResMut<AvailableBeds>) {
+    available_beds.decrement();
+}
+
+fn on_bed_unclaimed(_event: On<Remove, BedOwnedBy>, mut available_beds: ResMut<AvailableBeds>) {
+    available_beds.increment();
 }
 
 #[derive(Resource, Debug, Deref, DerefMut, Default)]
@@ -23,8 +34,29 @@ impl AvailableBeds {
 
 #[derive(Component, Reflect, Default)]
 #[require(Name = Name::new("Bed"), Sprite, Transform)]
-pub struct Bed {
-    pub owner: Option<Entity>,
+pub struct Bed {}
+
+/// On a Bed: points to the Pawn that claimed it. Claim/unclaim by
+/// inserting/removing this component; `AvailableBeds` is kept in sync by
+/// the `Add`/`Remove` observers in `BedPlugin`, and despawning either side
+/// cleans the relationship up automatically.
+///
+/// Claims go through `Commands`, so two pawns resting in the same command
+/// flush can race for one bed; the later insert wins and the loser simply
+/// re-claims on its next rest cycle.
+#[derive(Component, Reflect)]
+#[relationship(relationship_target = OwnedBed)]
+pub struct BedOwnedBy(pub Entity);
+
+/// On a Pawn: the bed claimed by it (at most one in practice).
+#[derive(Component, Reflect, Debug)]
+#[relationship_target(relationship = BedOwnedBy)]
+pub struct OwnedBed(Vec<Entity>);
+
+impl OwnedBed {
+    pub fn bed(&self) -> Option<Entity> {
+        self.0.first().copied()
+    }
 }
 
 impl Bed {
@@ -73,24 +105,6 @@ impl Bed {
         // navmesh.add_occupant::<Bed>(&id, grid_tile.x, grid_tile.y);
         tile_item.sync_navmesh::<Bed>(id, navmesh);
 
-        available_beds.increment();
-    }
-
-    pub fn claim_by(
-        &mut self,
-        bed_entity: Entity,
-        pawn_entity: Entity,
-        pawn: &mut Pawn,
-        available_beds: &mut ResMut<AvailableBeds>,
-    ) {
-        self.owner = Some(pawn_entity);
-        pawn.owned_bed = Some(bed_entity);
-        available_beds.decrement();
-    }
-
-    pub fn unclaim_by(&mut self, pawn: &mut Pawn, available_beds: &mut ResMut<AvailableBeds>) {
-        self.owner = None;
-        pawn.owned_bed = None;
         available_beds.increment();
     }
 }

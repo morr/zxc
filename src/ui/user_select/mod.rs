@@ -32,7 +32,14 @@ fn on_user_selection(
     mut commands: Commands,
     user_selected_root_ui_query: Query<Entity, With<UserSelectedRootUIMarker>>,
     user_selection: Res<CurrentUserSelection>,
-    pawn_query: Query<(&Pawn, &Movable, &Restable, &Feedable, &Commandable)>,
+    pawn_query: Query<(
+        &Pawn,
+        &Movable,
+        &Restable,
+        &Feedable,
+        &Commandable,
+        Option<&Carrying>,
+    )>,
     farm_query: Query<(&Farm, &Workable)>,
     font_assets: Res<FontAssets>,
 ) {
@@ -45,7 +52,9 @@ fn on_user_selection(
     if let Some(UserSelectionData { entity: id, kind }) = &user_selection.0 {
         match kind {
             UserSelectionKind::Pawn => {
-                if let Ok((pawn, movable, restable, feedable, commandable)) = pawn_query.get(*id) {
+                if let Ok((pawn, movable, restable, feedable, commandable, carrying)) =
+                    pawn_query.get(*id)
+                {
                     render_pawn_ui(
                         *id,
                         &mut user_selected_root_ui_commands,
@@ -54,6 +63,7 @@ fn on_user_selection(
                         restable,
                         feedable,
                         commandable,
+                        carrying,
                         &font_assets,
                         UiOpacity::Heavy,
                     );
