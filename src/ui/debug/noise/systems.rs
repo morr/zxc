@@ -49,19 +49,16 @@ pub fn insert_unsynced_noise_texture(
     });
 }
 
-#[allow(clippy::too_many_arguments)]
 pub fn on_debug_noise_state_change(
     event: On<StateChangeEvent<DebugNoiseState>>,
     mut commands: Commands,
-    query_mesh: Query<Entity, With<DebugNoise>>,
     mut noise_visuals: ResMut<NoiseVisuals>,
     // for sync_noise_texture
     tile_query: Query<&Tile>,
     mut images: ResMut<Assets<Image>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) -> Result {
-    despawn_noise_texture(&mut commands, &query_mesh);
-
+    // the previous state's mesh is despawned by its DespawnOnExit
     let noise_visual = match event.0 {
         DebugNoiseState::HeightNoise => &mut noise_visuals.height_noise,
         DebugNoiseState::HumidityNoise => &mut noise_visuals.humidity_noise,
@@ -73,17 +70,14 @@ pub fn on_debug_noise_state_change(
         sync_noise_texture(noise_visual, &tile_query, &mut images, &mut materials)?;
     }
 
-    spawn_noise_mesh(&mut commands, noise_visual);
+    spawn_noise_mesh(&mut commands, noise_visual, event.0.clone());
     Ok(())
 }
 
-#[allow(clippy::too_many_arguments)]
 pub fn on_rebuild_map_complete(
     _event: On<RebuildMapCompleteEvent>,
-    mut commands: Commands,
     mut noise_visuals: ResMut<NoiseVisuals>,
     state: Res<State<DebugNoiseState>>,
-    query_mesh: Query<Entity, With<DebugNoise>>,
     // for sync_noise_texture
     tile_query: Query<&Tile>,
     mut images: ResMut<Assets<Image>>,
@@ -100,16 +94,10 @@ pub fn on_rebuild_map_complete(
         DebugNoiseState::Hidden => return Ok(()),
     };
 
-    despawn_noise_texture(&mut commands, &query_mesh);
+    // handles are stable, so mutating the assets updates the visible mesh
+    // in place — no despawn/respawn needed
     sync_noise_texture(noise_visual, &tile_query, &mut images, &mut materials)?;
-    spawn_noise_mesh(&mut commands, noise_visual);
     Ok(())
-}
-
-fn despawn_noise_texture(commands: &mut Commands, query_mesh: &Query<Entity, With<DebugNoise>>) {
-    if let Ok(entity) = query_mesh.single() {
-        commands.entity(entity).despawn();
-    }
 }
 
 pub fn sync_noise_texture(
@@ -133,11 +121,12 @@ pub fn sync_noise_texture(
     Ok(())
 }
 
-fn spawn_noise_mesh(commands: &mut Commands, noise_visual: &NoiseVisual) {
+fn spawn_noise_mesh(commands: &mut Commands, noise_visual: &NoiseVisual, state: DebugNoiseState) {
     commands.spawn((
+        DebugNoise,
+        DespawnOnExit(state),
         Mesh2d(noise_visual.mesh_handle.clone()),
         MeshMaterial2d(noise_visual.material_handle.clone()),
         Transform::from_xyz(0.0, 0.0, TILE_Z_INDEX + 2.0),
-        DebugNoise,
     ));
 }

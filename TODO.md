@@ -322,15 +322,15 @@ commands.spawn((DespawnOnExit(DebugNavmeshState::On), Sprite { .. }, ...));
 
 **Что сделать:**
 
-- [ ] При спавне debug-сущностей добавлять `DespawnOnExit(State::On)`:
-  - navmesh-тайлы (`src/ui/debug/navmesh.rs`, спавн + ручной despawn `:38`, `:64`);
-  - noise-mesh (`src/ui/debug/noise/systems.rs:56/85/107` — `despawn_noise_texture`);
-  - grid — если рисуется gizmos, не трогать (gizmos не сущности).
-- [ ] Удалить ручные despawn-системы/функции и их регистрацию.
+- [x] Navmesh-тайлы спавнятся с `DespawnOnExit(DebugNavmeshState::Visible)`; Hidden-ветка наблюдателя с ручным despawn-циклом удалена.
+- [x] Noise-mesh спавнится с `DespawnOnExit(<текущее состояние>)` — при переключении Height→Humidity→Props→Hidden старый меш снимает state-машина. `despawn_noise_texture` удалена целиком.
+- [x] Бонус: `on_rebuild_map_complete` больше не делает despawn+respawn меша — хэндлы текстуры/материала стабильны, мутация ассетов обновляет видимый меш на месте.
+- [x] Grid и movepath — gizmos (не сущности), не трогались.
+- [x] Нюанс задокументирован: спавн идёт в наблюдателе `StateChangeEvent` (немедленно при флаше), а `DespawnOnExit` срабатывает в `StateTransition`-расписании — при переключении между noise-слоями старый и новый меш сосуществуют один кадр (незаметно для debug-слоя).
 
 **Критерии:**
 
-- [ ] Тумблеры debug-слоёв работают, ручных despawn-систем для них нет.
+- [x] Ручных despawn-систем для debug-слоёв нет; clippy/тесты зелёные, старт без паник. Тумблеры g/n/p — проверить вручную в игре (клавиатурные пути не покрываются headless-смоуком).
 
 ### 2.2. Аудит `NextState` после поведенческого изменения 0.18
 
@@ -348,13 +348,14 @@ next_state.set_if_neq(s);  // пропускает transition-схедулы, е
 
 **Что сделать:**
 
-- [ ] Проверить все места записи `NextState` (`src/ui/debug/info.rs:105-114`, inline-замыкания в `src/ui/debug/noise/mod.rs:20`, `src/ui/debug/navmesh.rs:22`, `src/main.rs:95`).
-- [ ] Где повторная установка того же значения возможна (тумблеры, вызовы из UI каждый клик) — `set_if_neq` либо гарантированное переключение (`match current { On => Off, Off => On }` — уже безопасно).
-- [ ] Особо: `AppState::Quiting` в `main.rs:95` — если Esc можно нажать дважды, повторный `OnEnter(Quiting)` не должен ломать выход.
+- [x] Проверены все 7 мест записи `NextState`. Итог: **код не требует изменений.**
+  - Тумблеры в `debug/info.rs` (g/n/p/m) — все через `match current { A => set(B), B => set(A) }`, значение всегда другое.
+  - Init-замыкания в `noise/mod.rs` и `navmesh.rs` (`OnExit(AppState::Loading)`) — одноразовые, переводят из дефолтного Hidden.
+  - `AppState::Quiting` в `main.rs:126` — сразу за ним `AppExit` + `std::process::exit(0)`, второй Esc физически невозможен.
 
 **Критерии:**
 
-- [ ] Повторное «включение включённого» debug-слоя не пересоздаёт сущности и не дублирует спавн.
+- [x] Повторное «включение включённого» невозможно по построению (все записи — переключения); `set_if_neq` не понадобился.
 
 ### 2.3. `TilemapChunk` для рендера карты
 
@@ -663,8 +664,8 @@ app.add_observer(|on: On<Insert, RootConfigRes>, cfg: Res<RootConfigRes>| {
 - [x] 1.4 bevy_picking — закрыто как не применимо (тайловая интеракция, см. пункт 1.4)
 - [x] 1.5 Fallible systems + `Single<T>`
 - [x] 1.6 Hooks + immutable для `*Tag`
-- [ ] 2.1 `DespawnOnExit` для debug-слоёв
-- [ ] 2.2 Аудит `NextState` (поведение 0.18)
+- [x] 2.1 `DespawnOnExit` для debug-слоёв
+- [x] 2.2 Аудит `NextState` (поведение 0.18) — изменений не потребовалось
 - [ ] 2.3 `TilemapChunk`
 - [ ] 2.4 Reflect auto-registration
 - [ ] 2.5 `children![...]`
