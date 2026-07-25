@@ -405,14 +405,15 @@ commands.spawn((
 
 **Что сделать:**
 
-- [ ] Удалить вызовы `.register_type::<T>()` для конкретных (не generic) типов (`grep -rn 'register_type' src/` — сейчас 16 вызовов).
-- [ ] Оставить (с комментарием) только generic-конкретизации.
-- [ ] Проверить, что инспектор `bevy-inspector-egui` видит компоненты и `bevy_remote` отдаёт типы.
-- [ ] Проверить, что фича не отвалилась, если 2.8 (feature-коллекции) уже сделана: `reflect_auto_register` должна остаться в наборе.
+- [x] Удалены все 14 активных вызовов `.register_type::<T>()` (12 файлов) — все были для конкретных типов.
+- [x] Generic-конкретизаций, требующих ручной регистрации, не оказалось (`EntityStateChangeEvent<T>` — событие, не компонент, в реестре типов не нуждается).
+- [x] Проверено через BRP (`world.query` по строковым именам типов): `Pawn`, `Feedable`, `Bed`, `Carryable`, `BedOwnedBy`, `Tile` (250k строк) резолвятся — реестр типов полный; инспектор использует тот же `TypeRegistry`. Заодно подтверждено, что BRP-методы в 0.19 переименованы: `bevy/query` → `world.query`.
+- [x] Попутно удалён опустевший `StoragePlugin` (в нём оставался только register_type).
+- [x] Для 2.8: `reflect_auto_register` входит в `default_app`, который входит в `2d` — не потеряется.
 
 **Критерии:**
 
-- [ ] Инспектор и BRP работают как раньше; ручных `register_type` — минимум (только generic-конкретизации).
+- [x] BRP работает (проверено запросами), ручных `register_type` — 0.
 
 ### 2.5. `children![...]` вместо `with_children`-замыканий
 
@@ -667,7 +668,7 @@ app.add_observer(|on: On<Insert, RootConfigRes>, cfg: Res<RootConfigRes>| {
 - [x] 2.1 `DespawnOnExit` для debug-слоёв
 - [x] 2.2 Аудит `NextState` (поведение 0.18) — изменений не потребовалось
 - [ ] 2.3 `TilemapChunk`
-- [ ] 2.4 Reflect auto-registration
+- [x] 2.4 Reflect auto-registration
 - [ ] 2.5 `children![...]`
 - [ ] 2.6 `Gizmos::text_2d` + `FpsOverlayPlugin`
 - [ ] 2.7 Run conditions на наблюдателях

@@ -4,8 +4,7 @@ pub struct BedPlugin;
 
 impl Plugin for BedPlugin {
     fn build(&self, app: &mut App) {
-        app.register_type::<Bed>()
-            .init_resource::<AvailableBeds>()
+        app.init_resource::<AvailableBeds>()
             .add_observer(on_bed_claimed)
             .add_observer(on_bed_unclaimed);
     }

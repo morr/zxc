@@ -4,8 +4,7 @@ pub struct FeedablePlugin;
 
 impl Plugin for FeedablePlugin {
     fn build(&self, app: &mut App) {
-        app.register_type::<Feedable>()
-            .add_observer(on_food_consumed)
+        app.add_observer(on_food_consumed)
             .add_systems(Update, progress_hunger.run_if(in_state(AppState::Playing)));
     }
 }

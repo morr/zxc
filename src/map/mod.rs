@@ -7,7 +7,6 @@ pub struct MapPlugin;
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(config().map_generator.clone())
-            .register_type::<Tile>()
             .add_observer(on_rebuild_map)
             .add_observer(on_hover)
             .add_systems(OnExit(AppState::Loading), generate_map)

@@ -18,24 +18,23 @@ pub struct CommandablePlugin;
 
 impl Plugin for CommandablePlugin {
     fn build(&self, app: &mut App) {
-        app.register_type::<Commandable>()
-            .add_plugins((
-                CompleteTaskCommandPlugin,
-                DropCarriedItemCommandPlugin,
-                FeedCommandPlugin,
-                MoveToCommandPlugin,
-                SleepCommandPlugin,
-                PickUpItemCommandPlugin,
-                ToRestCommandPlugin,
-                UserSelectionCommandPlugin,
-                WorkOnCommandPlugin,
-            ))
-            .add_observer(on_command_complete)
-            .add_observer(on_interrupt_command)
-            .add_systems(
-                Update,
-                process_pending_commands.run_if(in_state(AppState::Playing)),
-            );
+        app.add_plugins((
+            CompleteTaskCommandPlugin,
+            DropCarriedItemCommandPlugin,
+            FeedCommandPlugin,
+            MoveToCommandPlugin,
+            SleepCommandPlugin,
+            PickUpItemCommandPlugin,
+            ToRestCommandPlugin,
+            UserSelectionCommandPlugin,
+            WorkOnCommandPlugin,
+        ))
+        .add_observer(on_command_complete)
+        .add_observer(on_interrupt_command)
+        .add_systems(
+            Update,
+            process_pending_commands.run_if(in_state(AppState::Playing)),
+        );
     }
 }
 

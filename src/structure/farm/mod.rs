@@ -6,8 +6,7 @@ pub struct FarmPlugin;
 
 impl Plugin for FarmPlugin {
     fn build(&self, app: &mut App) {
-        app.register_type::<Farm>()
-            .add_observer(self::systems::on_new_day)
+        app.add_observer(self::systems::on_new_day)
             .add_observer(on_farm_state_change)
             .add_observer(on_farm_tended)
             .add_observer(on_farm_progress)
