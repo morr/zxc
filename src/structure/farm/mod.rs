@@ -6,10 +6,10 @@ pub struct FarmPlugin;
 
 impl Plugin for FarmPlugin {
     fn build(&self, app: &mut App) {
-        app.add_observer(self::systems::on_new_day)
-            .add_observer(on_farm_state_change)
-            .add_observer(on_farm_tended)
-            .add_observer(on_farm_progress)
+        app.add_observer(self::systems::on_new_day.run_if(in_state(AppState::Playing)))
+            .add_observer(on_farm_state_change.run_if(in_state(AppState::Playing)))
+            .add_observer(on_farm_tended.run_if(in_state(AppState::Playing)))
+            .add_observer(on_farm_progress.run_if(in_state(AppState::Playing)))
             .add_systems(
                 FixedUpdate,
                 (

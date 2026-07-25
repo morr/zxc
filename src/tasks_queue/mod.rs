@@ -6,7 +6,7 @@ pub struct TasksQueuePlugin;
 impl Plugin for TasksQueuePlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<TasksQueue>()
-            .add_observer(on_schedule_task);
+            .add_observer(on_schedule_task.run_if(in_state(AppState::Playing)));
     }
 }
 

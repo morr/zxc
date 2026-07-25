@@ -50,12 +50,15 @@ mod pawn {
             MinimalPlugins,
             AssetPlugin::default(),
             bevy::text::TextPlugin,
+            bevy::state::app::StatesPlugin,
             BedPlugin,
             WorkablePlugin,
             RestablePlugin,
             CommandablePlugin,
             PawnPlugin,
-        ));
+        ))
+        // gameplay observers run only in AppState::Playing
+        .insert_state(AppState::Playing);
 
         let pawn_id = app
             .world_mut()

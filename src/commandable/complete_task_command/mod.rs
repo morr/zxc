@@ -4,8 +4,8 @@ pub struct CompleteTaskCommandPlugin;
 
 impl Plugin for CompleteTaskCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_observer(execute_command)
-            .add_observer(on_release_resources);
+        app.add_observer(execute_command.run_if(in_state(AppState::Playing)))
+            .add_observer(on_release_resources.run_if(in_state(AppState::Playing)));
     }
 }
 

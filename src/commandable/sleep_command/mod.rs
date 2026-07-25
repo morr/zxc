@@ -4,9 +4,9 @@ pub struct SleepCommandPlugin;
 
 impl Plugin for SleepCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_observer(execute_command)
-            .add_observer(on_rest_complete)
-            .add_observer(on_internal_interrupt);
+        app.add_observer(execute_command.run_if(in_state(AppState::Playing)))
+            .add_observer(on_rest_complete.run_if(in_state(AppState::Playing)))
+            .add_observer(on_internal_interrupt.run_if(in_state(AppState::Playing)));
     }
 }
 

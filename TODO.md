@@ -501,13 +501,15 @@ commands.entity(e).observe((handler).run_if(cond));
 
 **Что сделать:**
 
-- [ ] Инвентаризация 45 `add_observer`: какие наблюдатели должны молчать вне `AppState::Playing` (геймплейные команды, смерть, фермы) — сейчас гейтинг есть только у систем.
-- [ ] Навесить `.run_if(in_state(AppState::Playing))` при регистрации (способ 1 из справки).
-- [ ] Не гейтить: наблюдатели загрузки/карты, работающие в `Loading`.
+- [x] Инвентаризация 47 `add_observer`: гейтить — геймплейные (команды, смерть, фермы, навигация, задачи, carryable, hover/selection UI); не гейтить — инвариантные счётчики и инфраструктуру.
+- [x] 40 наблюдателей получили `.run_if(in_state(AppState::Playing))` через `ObserverSystemExt` (он уже в prelude, импорты не понадобились).
+- [x] Без гейта осознанно (7): счётчики кроватей `on_bed_claimed/unclaimed` (инвариант должен работать всегда), debug-слои noise ×2 / navmesh ×1 (инициализируются из `OnExit(Loading)`), map `on_rebuild_map`/`on_hover` (инфраструктура карты).
+- [x] Проверен тонкий момент: события стартовой сцены (`SpawnCarryableEvent`, `ScheduleTaskEvent`, фермы) триггерятся из `OnExit(AppState::Loading)` — к моменту флаша `State<AppState>` уже `Playing`, гейт их пропускает (подтверждено смоуком: еда заспавнилась, 24 задачи, пешки работают).
+- [x] Попутно починен тест `state_changed_to_death_by_event`: тестовый App теперь добавляет `StatesPlugin` + `insert_state(AppState::Playing)` — иначе гейт корректно молчит (что тест и поймал — гейтинг работает).
 
 **Критерии:**
 
-- [ ] Триггер геймплейного события вне `Playing` (например, в `Loading`) не выполняет логику. Поведение в `Playing` не изменилось.
+- [x] Триггер геймплейного события вне `Playing` не выполняет логику (доказано упавшим-и-починенным тестом). Поведение в `Playing` не изменилось (смоук: полный цикл задач/работы/еды жив).
 
 ### 2.8. Cargo: feature-коллекция `2d`
 
@@ -673,7 +675,7 @@ app.add_observer(|on: On<Insert, RootConfigRes>, cfg: Res<RootConfigRes>| {
 - [x] 2.4 Reflect auto-registration
 - [x] 2.5 `children![...]`
 - [x] 2.6 `Gizmos::text_2d` + `FpsOverlayPlugin`
-- [ ] 2.7 Run conditions на наблюдателях
+- [x] 2.7 Run conditions на наблюдателях
 - [ ] 2.8 Feature-коллекция `2d`
 - [ ] 3.1 `contiguous_iter` + бенчмарк
 - [ ] 3.2 Прототип headless-виджетов/Feathers

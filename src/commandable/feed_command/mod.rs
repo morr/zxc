@@ -6,7 +6,7 @@ pub struct FeedCommandPlugin;
 
 impl Plugin for FeedCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_observer(execute_command);
+        app.add_observer(execute_command.run_if(in_state(AppState::Playing)));
     }
 }
 

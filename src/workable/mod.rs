@@ -6,9 +6,10 @@ pub struct WorkablePlugin;
 
 impl Plugin for WorkablePlugin {
     fn build(&self, app: &mut App) {
-        app.add_observer(on_work_complete).add_systems(
-            FixedUpdate,
-            progress_work.run_if(in_state(AppState::Playing)),
-        );
+        app.add_observer(on_work_complete.run_if(in_state(AppState::Playing)))
+            .add_systems(
+                FixedUpdate,
+                progress_work.run_if(in_state(AppState::Playing)),
+            );
     }
 }

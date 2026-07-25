@@ -8,8 +8,8 @@ pub struct UiHoveredPlugin;
 impl Plugin for UiHoveredPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnExit(AppState::Loading), render_hovered_ui)
-            .add_observer(on_hover_update_ui)
-            .add_observer(on_occupation_change_update_ui);
+            .add_observer(on_hover_update_ui.run_if(in_state(AppState::Playing)))
+            .add_observer(on_occupation_change_update_ui.run_if(in_state(AppState::Playing)));
     }
 }
 

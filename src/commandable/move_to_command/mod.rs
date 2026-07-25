@@ -4,9 +4,9 @@ pub struct MoveToCommandPlugin;
 
 impl Plugin for MoveToCommandPlugin {
     fn build(&self, app: &mut App) {
-        app.add_observer(execute_command)
-            .add_observer(on_internal_interrupt)
-            .add_observer(on_movable_reached_destination);
+        app.add_observer(execute_command.run_if(in_state(AppState::Playing)))
+            .add_observer(on_internal_interrupt.run_if(in_state(AppState::Playing)))
+            .add_observer(on_movable_reached_destination.run_if(in_state(AppState::Playing)));
     }
 }
 

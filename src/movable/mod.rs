@@ -6,9 +6,10 @@ pub struct MovablePlugin;
 
 impl Plugin for MovablePlugin {
     fn build(&self, app: &mut App) {
-        app.add_observer(self::systems::on_pawn_death).add_systems(
-            Update,
-            move_moving_entities.run_if(in_state(AppState::Playing)),
-        );
+        app.add_observer(self::systems::on_pawn_death.run_if(in_state(AppState::Playing)))
+            .add_systems(
+                Update,
+                move_moving_entities.run_if(in_state(AppState::Playing)),
+            );
     }
 }

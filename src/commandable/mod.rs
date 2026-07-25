@@ -29,8 +29,8 @@ impl Plugin for CommandablePlugin {
             UserSelectionCommandPlugin,
             WorkOnCommandPlugin,
         ))
-        .add_observer(on_command_complete)
-        .add_observer(on_interrupt_command)
+        .add_observer(on_command_complete.run_if(in_state(AppState::Playing)))
+        .add_observer(on_interrupt_command.run_if(in_state(AppState::Playing)))
         .add_systems(
             Update,
             process_pending_commands.run_if(in_state(AppState::Playing)),

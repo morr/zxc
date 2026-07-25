@@ -8,7 +8,7 @@ pub struct UiUserSelectedPlugin;
 impl Plugin for UiUserSelectedPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnExit(AppState::Loading), render_selected_ui)
-            .add_observer(on_user_selection);
+            .add_observer(on_user_selection.run_if(in_state(AppState::Playing)));
     }
 }
 
