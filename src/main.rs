@@ -1,12 +1,14 @@
 use bevy::app::AppExit;
+#[cfg(feature = "debug_ui")]
+use bevy::dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin};
 use bevy::remote::{RemotePlugin, http::RemoteHttpPlugin};
-// use bevy::dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin};
 use zxc::*;
 
 fn main() {
     apply_global_config(load_config());
 
-    App::new()
+    let mut app = App::new();
+    app
         // .insert_resource(CONFIG.get().unwrap().clone())
         .add_plugins(
             DefaultPlugins
@@ -28,17 +30,6 @@ fn main() {
                     ..default()
                 }),
         )
-        // .add_plugins(FpsOverlayPlugin {
-        //     config: FpsOverlayConfig {
-        //         text_config: TextFont {
-        //             font_size: 14.0,
-        //             font: default(),
-        //             font_smoothing: bevy::text::FontSmoothing::default(),
-        //         },
-        //         text_color: Color::srgba(1.0, 1.0, 1.0, 0.75),
-        //         enabled: true,
-        //     },
-        // })
         .add_plugins(bevy_inspector_egui::bevy_egui::EguiPlugin::default())
         .add_plugins(bevy_inspector_egui::quick::FilterQueryInspectorPlugin::<
             With<Commandable>,
@@ -59,6 +50,15 @@ fn main() {
             structure::StructurePlugin,
             #[cfg(feature = "debug_ui")]
             ui::UiPlugin,
+            #[cfg(feature = "debug_ui")]
+            FpsOverlayPlugin {
+                config: FpsOverlayConfig {
+                    text_config: TextFont::from_font_size(14.0),
+                    text_color: Color::srgba(1.0, 1.0, 1.0, 0.75),
+                    enabled: true,
+                    ..default()
+                },
+            },
             input::InputPlugin,
             tasks_queue::TasksQueuePlugin,
         ))
@@ -73,8 +73,26 @@ fn main() {
             carryable::CarryablePlugin,
         ))
         .add_plugins((RemotePlugin::default(), RemoteHttpPlugin::default())) // bevy_debugger_mcp
-        .add_systems(Update, close_on_esc)
-        .run();
+        .add_systems(Update, close_on_esc);
+
+    #[cfg(feature = "debug_ui")]
+    app.add_systems(PostStartup, offset_fps_overlay);
+
+    app.run();
+}
+
+/// The overlay has no position config; nudge its root node right so it does
+/// not overlap the items stock panel in the top-left corner.
+#[cfg(feature = "debug_ui")]
+fn offset_fps_overlay(mut query: Query<(&mut Node, &GlobalZIndex)>) {
+    use bevy::dev_tools::fps_overlay::FPS_OVERLAY_ZINDEX;
+
+    for (mut node, z_index) in query.iter_mut() {
+        if z_index.0 == FPS_OVERLAY_ZINDEX {
+            node.left = px(100.);
+            node.top = px(10.);
+        }
+    }
 }
 
 pub fn close_on_esc(

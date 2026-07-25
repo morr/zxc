@@ -473,12 +473,13 @@ app.add_plugins(FpsOverlayPlugin::default());
 
 **Что сделать:**
 
-- [ ] Debug-подписи в мире — через `Gizmos::text_2d()` вместо Text2d-сущностей. Проверить текущие `Text2d` (`src/pawn/systems.rs:65/129`): если это игровой UI (имя/статус пешки) — НЕ трогать; если чисто отладочный — перевести.
-- [ ] Раскомментировать и включить `FpsOverlayPlugin` (`src/main.rs:31-41`) за фичей `debug_ui`; выкинуть устаревшие куски закомментированной конфигурации, если не компилируются.
+- [x] `Text2d` над пешками — решено НЕ переводить на `Gizmos::text_2d`: это игровой UI (всегда включён, кастомный шрифт fira, событийное обновление через `Text2dWriter`), а гизмос-текст — ASCII stroke-шрифт с перерисовкой каждый кадр, т.е. даунгрейд. API `gizmos.text_2d(...)` остаётся в справке для будущих чисто отладочных подписей.
+- [x] `FpsOverlayPlugin` включён за фичей `debug_ui` (14px, полупрозрачный белый, `..default()` для новых полей 0.19 — `refresh_interval`, `frame_time_graph_config`). Мёртвый закомментированный блок удалён.
+- [x] Дополнительно по просьбе пользователя: оверлей сдвинут на 100px вправо и 10px вниз (у `FpsOverlayConfig` нет поля позиции — система `offset_fps_overlay` в `PostStartup` находит корень по `GlobalZIndex == FPS_OVERLAY_ZINDEX` и ставит `left`/`top`). Проверено пользователем визуально.
 
 **Критерии:**
 
-- [ ] FPS-оверлей включается в debug-сборке; мёртвый закомментированный код удалён.
+- [x] FPS-оверлей включается в debug-сборке (проверено BRP: нода оверлея существует, `left = 100px`); мёртвый закомментированный код удалён.
 
 ### 2.7. Run conditions на наблюдателях
 
@@ -671,7 +672,7 @@ app.add_observer(|on: On<Insert, RootConfigRes>, cfg: Res<RootConfigRes>| {
 - [ ] 2.3 `TilemapChunk`
 - [x] 2.4 Reflect auto-registration
 - [x] 2.5 `children![...]`
-- [ ] 2.6 `Gizmos::text_2d` + `FpsOverlayPlugin`
+- [x] 2.6 `Gizmos::text_2d` + `FpsOverlayPlugin`
 - [ ] 2.7 Run conditions на наблюдателях
 - [ ] 2.8 Feature-коллекция `2d`
 - [ ] 3.1 `contiguous_iter` + бенчмарк
