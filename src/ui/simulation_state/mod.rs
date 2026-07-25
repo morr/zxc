@@ -28,28 +28,26 @@ fn render_simulation_speed_ui(
     font_assets: Res<FontAssets>,
     time: Res<Time<Virtual>>,
 ) {
-    commands
-        .spawn((
-            Node {
-                position_type: PositionType::Absolute,
-                top: px(0.),
-                right: px(0.),
-                display: Display::Flex,
-                flex_direction: FlexDirection::Column,
-                min_width: px(270.),
-                row_gap: px(3.),
-                padding: UiRect {
-                    top: px(25.),
-                    right: px(25.),
-                    bottom: px(10.),
-                    left: px(10.),
-                },
-                ..default()
+    commands.spawn((
+        Node {
+            position_type: PositionType::Absolute,
+            top: px(0.),
+            right: px(0.),
+            display: Display::Flex,
+            flex_direction: FlexDirection::Column,
+            min_width: px(270.),
+            row_gap: px(3.),
+            padding: UiRect {
+                top: px(25.),
+                right: px(25.),
+                bottom: px(10.),
+                left: px(10.),
             },
-            BackgroundColor(ui_color(UiOpacity::Medium)),
-        ))
-        .with_children(|parent| {
-            parent.spawn((
+            ..default()
+        },
+        BackgroundColor(ui_color(UiOpacity::Medium)),
+        children![
+            (
                 Text(format_simulation_speed_text(&time)),
                 TextFont {
                     font: font_assets.fira.clone().into(),
@@ -58,8 +56,8 @@ fn render_simulation_speed_ui(
                 },
                 TextColor(Color::WHITE),
                 SimulationSpeedTextUIMarker::default(),
-            ));
-            parent.spawn((
+            ),
+            (
                 Text(format_date_time_text(&time)),
                 TextFont {
                     font: font_assets.fira.clone().into(),
@@ -68,8 +66,9 @@ fn render_simulation_speed_ui(
                 },
                 TextColor(Color::WHITE),
                 SimulationDateTimeTextUIMarker::default(),
-            ));
-        });
+            ),
+        ],
+    ));
 }
 
 fn update_simulation_speed_text(

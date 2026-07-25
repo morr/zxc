@@ -39,26 +39,16 @@ pub fn render_storage_ui(
     opacity: UiOpacity,
 ) {
     container_ui_commands.with_children(|parent| {
-        parent
-            .spawn(render_entity_node_bunlde::<StorageUIMarker>(
-                storage_id, opacity,
-            ))
-            .with_children(|parent| {
-                parent
-                    .spawn(render_entity_component_node_bunlde::<
-                        StorageComponentUIMarker,
-                    >())
-                    .with_children(|parent| {
-                        parent.spawn(headline_text_bundle(
-                            format!("Storage {:?}", storage_id),
-                            font_assets,
-                        ));
-                        // parent.spawn(property_text_bundle::<StorageOwnerUIMarker>(
-                        //     storage_owner_text(storage),
-                        //     font_assets,
-                        // ));
-                    });
-            });
+        parent.spawn((
+            render_entity_node_bunlde::<StorageUIMarker>(storage_id, opacity),
+            children![(
+                render_entity_component_node_bunlde::<StorageComponentUIMarker>(),
+                children![headline_text_bundle(
+                    format!("Storage {:?}", storage_id),
+                    font_assets,
+                )],
+            )],
+        ));
     });
 }
 

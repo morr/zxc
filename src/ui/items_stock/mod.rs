@@ -1,5 +1,4 @@
 use super::*;
-use bevy::ecs::system::EntityCommands;
 
 #[derive(Component, Default)]
 struct PawnStockTextUIMarker {}
@@ -28,85 +27,80 @@ fn render_items_stock_ui(
     font_assets: Res<FontAssets>,
     food: Res<FoodStock>,
 ) {
-    let mut root = commands.spawn(Node {
-        position_type: PositionType::Absolute,
-        display: Display::Flex,
-        flex_direction: FlexDirection::Column,
-        row_gap: px(8.),
-        top: UI_SCREEN_EDGE_PX_OFFSET,
-        left: UI_SCREEN_EDGE_PX_OFFSET,
-        ..default()
-    });
-
-    spawn_item::<PawnStockTextUIMarker>(
-        &mut root,
-        PawnStockTextUIMarker::default(),
-        pawns_query.iter().count() as u32,
-        font_assets.fira.clone(),
-        icon_assets.pawns.clone(),
-    );
-
-    spawn_item::<FoodStockTextUIMarker>(
-        &mut root,
-        FoodStockTextUIMarker::default(),
-        food.amount,
-        font_assets.fira.clone(),
-        icon_assets.bread.clone(),
-    );
+    commands.spawn((
+        Node {
+            position_type: PositionType::Absolute,
+            display: Display::Flex,
+            flex_direction: FlexDirection::Column,
+            row_gap: px(8.),
+            top: UI_SCREEN_EDGE_PX_OFFSET,
+            left: UI_SCREEN_EDGE_PX_OFFSET,
+            ..default()
+        },
+        children![
+            item_node(
+                PawnStockTextUIMarker::default(),
+                pawns_query.iter().count() as u32,
+                font_assets.fira.clone(),
+                icon_assets.pawns.clone(),
+            ),
+            item_node(
+                FoodStockTextUIMarker::default(),
+                food.amount,
+                font_assets.fira.clone(),
+                icon_assets.bread.clone(),
+            ),
+        ],
+    ));
 }
 
-fn spawn_item<T: Component>(
-    root: &mut EntityCommands,
+fn item_node<T: Component>(
     marker_component: T,
     amount: u32,
     font: Handle<Font>,
     image: Handle<Image>,
-) {
-    root.with_children(|parent| {
-        parent.spawn((
+) -> impl Bundle {
+    (
+        Node {
+            display: Display::Flex,
+            flex_direction: FlexDirection::Row,
+            align_items: AlignItems::Center,
+            padding: UiRect {
+                top: px(3.),
+                right: px(10.),
+                bottom: px(3.),
+                left: px(10.),
+            },
+            ..default()
+        },
+        BackgroundColor(ui_color(UiOpacity::Heavy)),
+        children![
             (
+                ImageNode::new(image),
                 Node {
-                    display: Display::Flex,
-                    flex_direction: FlexDirection::Row,
-                    align_items: AlignItems::Center,
-                    padding: UiRect {
-                        top: px(3.),
-                        right: px(10.),
-                        bottom: px(3.),
-                        left: px(10.),
+                    width: px(28.),
+                    height: px(28.),
+                    margin: UiRect {
+                        top: px(0.),
+                        right: px(8.),
+                        bottom: px(0.),
+                        left: px(0.),
                     },
                     ..default()
                 },
-                BackgroundColor(ui_color(UiOpacity::Heavy)),
             ),
-            children![
-                (
-                    ImageNode::new(image),
-                    Node {
-                        width: px(28.),
-                        height: px(28.),
-                        margin: UiRect {
-                            top: px(0.),
-                            right: px(8.),
-                            bottom: px(0.),
-                            left: px(0.),
-                        },
-                        ..default()
-                    },
-                ),
-                (
-                    Text(format_item_text(amount)),
-                    TextFont {
-                        font: font.into(),
-                        font_size: FontSize::Px(20.),
-                        ..default()
-                    },
-                    TextColor(Color::WHITE),
-                    marker_component,
-                ),
-            ],
-        ));
-    });
+            (
+                Text(format_item_text(amount)),
+                TextFont {
+                    font: font.into(),
+                    font_size: FontSize::Px(20.),
+                    ..default()
+                },
+                TextColor(Color::WHITE),
+                marker_component,
+            ),
+        ],
+    )
 }
 
 fn update_food_stock_text(
