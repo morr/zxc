@@ -525,14 +525,15 @@ default_app = ["async_executor", "bevy_asset", "bevy_log", "bevy_state", "reflec
 
 **Что сделать:**
 
-- [ ] В `Cargo.toml`: `default-features = false`, `features = ["2d", "ui", "audio"?]` + явно нужные: `dynamic_linking`, `bevy_dev_tools`, `bevy_remote`, `sprite_picking` (после 1.4), `bevy_gizmos`-рендер входит в `2d_bevy_render`. `audio` — только если звук реально используется.
-- [ ] Подобрать минимальный набор итеративно: собирать и добавлять недостающее по ошибкам компиляции.
-- [ ] Проверить сторонние крейты: `cargo tree -e features` — bevy_pancam, bevy_asset_loader, bevy-inspector-egui, bevy_egui могут тянуть свои bevy-фичи.
-- [ ] Замерить время чистой сборки до/после (`cargo build --timings`), зафиксировать в описании коммита и в разделе «Решения».
+- [x] `bevy`: `default-features = false`, `features = ["2d", "ui", "dynamic_linking", "bevy_dev_tools", "bevy_remote"]`. Выброшены `3d` и `audio` (звука в проекте нет). `sprite_picking` не включён (1.4 закрыт); гизмосы/png/шрифты/winit/state приходят внутри `2d`+`ui`.
+- [x] Ничего доключать не пришлось — `2d`+`ui` покрыли всё с первой сборки.
+- [x] Сторонние крейты проверены: `bevy-inspector-egui` дефолтами тянул весь 3d-стек (`bevy_pbr`) через свою фичу `bevy` — переведён на `default-features = false, features = ["2d", "bevy_gizmos", "documentation", "egui_clipboard"]`. Остальные (pancam, asset_loader, egui) чисты.
+- [x] Известное ограничение: `bevy_pbr` всё же остаётся в графе — это **жёсткая** (не optional) зависимость `bevy_dev_tools` 0.19; уйдёт только вместе с FPS-оверлеем.
+- [x] Замер: граф зависимостей 585 → 551 крейта (−34, включая bevy_audio, bevy_gltf, rodio-стек). Полная пересборка после смены фич — 6м00с (M1 Max, dev + opt-level 3 для зависимостей). Честного replaу «до» нет — базовую чистую сборку прервал пользователь как слишком долгую; сопоставимая метрика — число крейтов.
 
 **Критерии:**
 
-- [ ] Игра собирается и работает (окно, рендер, egui, инспектор, BRP); 3D-стек не компилируется.
+- [x] Игра собирается и работает: смоук — окно/рендер/egui/BRP живые, еда спавнится, пешки берут задачи и работают (7 `Idle => BeingWorked`), 15 UI-нод, паник нет. 3D-стек вырезан из bevy и инспектора (кроме `bevy_pbr`, приколоченного к dev_tools).
 
 ---
 
@@ -676,7 +677,7 @@ app.add_observer(|on: On<Insert, RootConfigRes>, cfg: Res<RootConfigRes>| {
 - [x] 2.5 `children![...]`
 - [x] 2.6 `Gizmos::text_2d` + `FpsOverlayPlugin`
 - [x] 2.7 Run conditions на наблюдателях
-- [ ] 2.8 Feature-коллекция `2d`
+- [x] 2.8 Feature-коллекция `2d`
 - [ ] 3.1 `contiguous_iter` + бенчмарк
 - [ ] 3.2 Прототип headless-виджетов/Feathers
 - [ ] 3.3 Resources-as-entities для `RootConfig`
@@ -686,4 +687,6 @@ app.add_observer(|on: On<Insert, RootConfigRes>, cfg: Res<RootConfigRes>| {
 - **1.4 (bevy_picking)**: закрыто как не применимо — интеракция в игре тайловая (navmesh-индекс), «ручного hit-test» для замены не существует, а picking по тайлам конфликтует с 2.3. Подробное обоснование в теле пункта 1.4.
 - **0.4 (Val::Px → px())**: не применимо для статиков `UI_SCREEN_EDGE_PX_OFFSET`/`UI_WINDOWS_GAP` — `px()` не является `const fn`, статики требуют const-инициализатор. `Val::Px` там остаётся намеренно. Остальной UI-код уже использует `px()`.
 
-_(далее по ходу работ: вердикт по Feathers (3.2), семантика static vs Resource (3.3), результаты бенчмарка (3.1), замер сборки (2.8))_
+- **2.8 (features)**: зависимости 585 → 551 крейта; выброшены 3d (кроме `bevy_pbr` — жёсткая зависимость dev_tools) и audio. Пересборка после смены фич: 6м00с.
+
+_(далее по ходу работ: вердикт по Feathers (3.2), семантика static vs Resource (3.3), результаты бенчмарка (3.1))_
