@@ -1,6 +1,6 @@
 use crate::*;
 
-expose_submodules!(grid, movepath, navmesh, noise, info, tasks_queue);
+expose_submodules!(grid, movepath, navmesh, noise, info, tasks_queue, toggles);
 
 pub struct UiDebugPlugin;
 
@@ -13,7 +13,7 @@ impl Plugin for UiDebugPlugin {
             .add_systems(OnExit(AppState::Loading), render_debug_ui_container)
             .add_systems(
                 OnExit(AppState::Loading),
-                (render_tasks_ui, render_debug_ui_info)
+                (render_tasks_ui, render_debug_ui_info, render_debug_toggles)
                     .chain()
                     .after(render_debug_ui_container),
             )
@@ -25,7 +25,7 @@ impl Plugin for UiDebugPlugin {
             )
             .add_systems(
                 Update,
-                handle_debug_info_keys.run_if(in_state(AppState::Playing)),
+                (handle_debug_info_keys, update_toggle_buttons).run_if(in_state(AppState::Playing)),
             );
     }
 }
