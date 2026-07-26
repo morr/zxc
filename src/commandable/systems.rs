@@ -1,5 +1,10 @@
-use super::*;
-
+use crate::commandable::CommandCompleteEvent;
+use crate::commandable::Commandable;
+use crate::commandable::CommandableState;
+use crate::commandable::ExternalCommandInterruptEvent;
+use crate::pawn::Pawn;
+use crate::pawn::PawnState;
+use crate::prelude::*;
 pub fn process_pending_commands(
     mut commands: Commands,
     mut commandable_query: Query<

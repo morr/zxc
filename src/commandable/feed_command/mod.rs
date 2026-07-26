@@ -1,7 +1,10 @@
 use rand_distr::num_traits::Zero;
 
-use super::*;
-
+use crate::carryable::FoodStock;
+use crate::commandable::Commandable;
+use crate::feedable::Feedable;
+use crate::feedable::FoodConsumedEvent;
+use crate::prelude::*;
 pub struct FeedCommandPlugin;
 
 impl Plugin for FeedCommandPlugin {

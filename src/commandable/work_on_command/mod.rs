@@ -1,5 +1,11 @@
-use super::*;
-
+use crate::commandable::CommandType;
+use crate::commandable::Commandable;
+use crate::commandable::InternalCommandInterruptEvent;
+use crate::prelude::*;
+use crate::workable::WorkCompleteEvent;
+use crate::workable::WorkKind;
+use crate::workable::Workable;
+use crate::workable::WorkableState;
 pub struct WorkOnCommandPlugin;
 
 impl Plugin for WorkOnCommandPlugin {
