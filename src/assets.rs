@@ -149,7 +149,6 @@ pub struct TreeAssets {
 
     #[asset(path = "sprites/tree/3x4_2.png")]
     pub tree_3x4_2: Handle<Image>,
-
 }
 impl TreeAssets {
     pub const ASPECT_RATIO_1X2: f32 = 512.0 / 1024.0;

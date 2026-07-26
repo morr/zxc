@@ -153,7 +153,9 @@ fn tile_successors(x: i32, y: i32, navtiles: &Navtiles) -> Vec<(IVec2, i32)> {
                 || (navtiles.get_passable(x, ny).is_some()
                     && navtiles.get_passable(nx, y).is_some())
             {
-                let tile_cost = navtile.cost.expect("Navtile cost is None after passability check");
+                let tile_cost = navtile
+                    .cost
+                    .expect("Navtile cost is None after passability check");
                 Some((
                     IVec2 { x: nx, y: ny },
                     if is_diagonal_movable {

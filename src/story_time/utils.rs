@@ -79,7 +79,8 @@ pub fn current_day_hour(elapsed_seconds: f32) -> u32 {
 
 pub fn current_hour_minute(elapsed_seconds: f32) -> u32 {
     (((total_seconds(elapsed_seconds) % config().time.day_duration) % config().time.hour_duration)
-        / config().time.minute_duration + EPSILON)
+        / config().time.minute_duration
+        + EPSILON)
         .floor() as u32
 }
 // }
