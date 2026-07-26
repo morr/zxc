@@ -54,7 +54,7 @@ pub fn on_debug_noise_state_change(
     mut commands: Commands,
     mut noise_visuals: ResMut<NoiseVisuals>,
     // for sync_noise_texture
-    tile_query: Query<&Tile>,
+    tile_grid: Res<TileGrid>,
     mut images: ResMut<Assets<Image>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) -> Result {
@@ -67,7 +67,7 @@ pub fn on_debug_noise_state_change(
     };
 
     if !noise_visual.is_synced {
-        sync_noise_texture(noise_visual, &tile_query, &mut images, &mut materials)?;
+        sync_noise_texture(noise_visual, &tile_grid, &mut images, &mut materials)?;
     }
 
     spawn_noise_mesh(&mut commands, noise_visual, event.0.clone());
@@ -79,7 +79,7 @@ pub fn on_rebuild_map_complete(
     mut noise_visuals: ResMut<NoiseVisuals>,
     state: Res<State<DebugNoiseState>>,
     // for sync_noise_texture
-    tile_query: Query<&Tile>,
+    tile_grid: Res<TileGrid>,
     mut images: ResMut<Assets<Image>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) -> Result {
@@ -96,17 +96,17 @@ pub fn on_rebuild_map_complete(
 
     // handles are stable, so mutating the assets updates the visible mesh
     // in place — no despawn/respawn needed
-    sync_noise_texture(noise_visual, &tile_query, &mut images, &mut materials)?;
+    sync_noise_texture(noise_visual, &tile_grid, &mut images, &mut materials)?;
     Ok(())
 }
 
 pub fn sync_noise_texture(
     noise_visual: &mut NoiseVisual,
-    tile_query: &Query<&Tile>,
+    tile_grid: &TileGrid,
     images: &mut ResMut<Assets<Image>>,
     materials: &mut ResMut<Assets<ColorMaterial>>,
 ) -> Result {
-    let noise_map = extract_tile_noise_map(tile_query, &noise_visual.noise_type);
+    let noise_map = extract_tile_noise_map(tile_grid, &noise_visual.noise_type);
     let texture = render_noise_to_texture(&noise_map, &noise_visual.noise_type);
     let material = ColorMaterial::from(noise_visual.texture_handle.clone());
 

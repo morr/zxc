@@ -8,13 +8,13 @@ use bevy::{
 use bevy_platform::collections::HashMap;
 
 pub fn extract_tile_noise_map(
-    tile_query: &Query<&Tile>,
+    tile_grid: &TileGrid,
     noise_type: &NoiseType,
 ) -> HashMap<(usize, usize), f32> {
     let size = config().grid.size as usize;
     let mut noise_map = HashMap::new();
 
-    for tile in tile_query.iter() {
+    for tile in tile_grid.iter() {
         let grid_pos = tile.grid_tile;
         // Convert from grid coordinates to noise texture coordinates
         let x = grid_tile_to_navmesh_index(grid_pos.x);

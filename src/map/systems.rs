@@ -1,48 +1,97 @@
-use super::*;
+use bevy::sprite_render::{AlphaMode2d, TileData, TilemapChunk, TilemapChunkTileData};
 use rand::Rng;
+
+use super::*;
+
+/// The map is split into square render chunks of this many tiles per side.
+/// Must divide `config().grid.size` evenly.
+pub const MAP_CHUNK_SIZE: usize = 25;
+
+/// Marker with the chunk position in chunk coordinates, used to rebuild
+/// `TilemapChunkTileData` from `TileGrid` in place.
+#[derive(Component)]
+pub struct MapChunk {
+    pub chunk_x: usize,
+    pub chunk_y: usize,
+}
 
 pub fn generate_map(
     mut commands: Commands,
-    texture_assets: Res<TextureAssets>,
     tree_assets: Res<TreeAssets>,
     map_config: Res<MapGeneratorConfig>,
+    tileset: Res<TilesetHandle>,
     arc_navmesh: ResMut<ArcNavmesh>,
 ) {
     let mut navmesh = arc_navmesh.write();
     let grid = generator::perlin_noise::generate(&map_config);
+    let tile_grid = TileGrid::from_grid(&grid);
 
-    spawn_tiles(&mut commands, &texture_assets, &mut navmesh, &grid);
+    spawn_chunks(&mut commands, &tileset, &tile_grid);
     spawn_trees(&mut commands, &tree_assets, &mut navmesh, &grid);
+
+    commands.insert_resource(tile_grid);
 }
 
-fn spawn_tiles(
-    commands: &mut Commands,
-    assets: &Res<TextureAssets>,
-    navmesh: &mut Navmesh,
-    grid: &[Vec<Tile>],
-) {
-    for row in grid.iter() {
-        for tile in row.iter() {
-            let id = commands
-                .spawn((
-                    Sprite {
-                        image: tile.texture(assets),
-                        custom_size: Some(Vec2::new(config().tile.size, config().tile.size)),
-                        ..default()
-                    },
-                    Transform::from_xyz(
-                        grid_tile_edge_to_world(tile.grid_tile.x) + config().tile.size / 2.,
-                        grid_tile_edge_to_world(tile.grid_tile.y) + config().tile.size / 2.,
-                        TILE_Z_INDEX,
-                    ),
-                ))
-                .insert(*tile)
-                .id();
+fn spawn_chunks(commands: &mut Commands, tileset: &TilesetHandle, tile_grid: &TileGrid) {
+    let grid_size = config().grid.size as usize;
+    assert_eq!(
+        grid_size % MAP_CHUNK_SIZE,
+        0,
+        "grid.size must be divisible by MAP_CHUNK_SIZE"
+    );
+    let chunks_per_side = grid_size / MAP_CHUNK_SIZE;
+    let tile_size = config().tile.size;
+    let chunk_world_size = MAP_CHUNK_SIZE as f32 * tile_size;
 
-            navmesh.add_occupant::<Tile>(&id, tile.grid_tile.x, tile.grid_tile.y);
-            // no need to inform about occupation change for spawned empty map tiles
+    for chunk_x in 0..chunks_per_side {
+        for chunk_y in 0..chunks_per_side {
+            // chunk mesh is centered on its transform
+            let left =
+                grid_tile_edge_to_world(navmesh_index_to_grid_tile(chunk_x * MAP_CHUNK_SIZE));
+            let bottom =
+                grid_tile_edge_to_world(navmesh_index_to_grid_tile(chunk_y * MAP_CHUNK_SIZE));
+
+            commands.spawn((
+                MapChunk { chunk_x, chunk_y },
+                TilemapChunk {
+                    chunk_size: UVec2::splat(MAP_CHUNK_SIZE as u32),
+                    tile_display_size: UVec2::splat(tile_size as u32),
+                    tileset: tileset.0.clone(),
+                    alpha_mode: AlphaMode2d::Opaque,
+                },
+                chunk_tile_data(tile_grid, chunk_x, chunk_y),
+                Transform::from_xyz(
+                    left + chunk_world_size / 2.,
+                    bottom + chunk_world_size / 2.,
+                    TILE_Z_INDEX,
+                ),
+            ));
         }
     }
+}
+
+/// Builds chunk data from the tile grid. Data is row-major starting from the
+/// BOTTOM-LEFT tile of the chunk (verified empirically: the chunk origin is
+/// bottom-left since bevy 0.18).
+fn chunk_tile_data(tile_grid: &TileGrid, chunk_x: usize, chunk_y: usize) -> TilemapChunkTileData {
+    let mut data = Vec::with_capacity(MAP_CHUNK_SIZE * MAP_CHUNK_SIZE);
+
+    for row in 0..MAP_CHUNK_SIZE {
+        for col in 0..MAP_CHUNK_SIZE {
+            let grid_tile = IVec2::new(
+                navmesh_index_to_grid_tile(chunk_x * MAP_CHUNK_SIZE + col),
+                navmesh_index_to_grid_tile(chunk_y * MAP_CHUNK_SIZE + row),
+            );
+            let tile = tile_grid
+                .get(grid_tile)
+                .expect("chunk tile out of tile grid range");
+            data.push(Some(TileData::from_tileset_index(
+                tile.kind.tileset_index(),
+            )));
+        }
+    }
+
+    TilemapChunkTileData(data)
 }
 
 fn spawn_trees(
@@ -111,46 +160,24 @@ fn spawn_trees(
     }
 }
 
-pub fn on_hover(
-    event: On<HoverEvent>,
-    mut commands: Commands,
-    arc_navmesh: Res<ArcNavmesh>,
-    q_hover_markers: Query<(Entity, &Tile), With<HoverMarker>>,
-) {
-    let HoverEvent(grid_tile) = *event;
-
-    // remove hover markers from other tiles
-    for (id, _tile) in q_hover_markers.iter() {
-        commands.entity(id).remove::<HoverMarker>();
-    }
-
-    let navmesh = arc_navmesh.read();
-
-    for id in navmesh.get_occupants::<Tile>(grid_tile.x, grid_tile.y) {
-        commands.entity(*id).insert(HoverMarker);
-    }
-}
-
 pub fn on_rebuild_map(
     event: On<RebuildMapEvent>,
     mut commands: Commands,
-    assets: Res<TextureAssets>,
-    arc_navmesh: ResMut<ArcNavmesh>,
     map_config: Res<MapGeneratorConfig>,
-    tiles_query: Query<(Entity, &Tile)>,
+    mut tile_grid: ResMut<TileGrid>,
+    mut chunks_query: Query<(&MapChunk, &mut TilemapChunkTileData)>,
 ) {
     let RebuildMapEvent { generator_kind } = *event;
-    let mut navmesh = arc_navmesh.write();
-
-    for (entity, tile) in tiles_query.iter() {
-        navmesh.remove_occupant::<Tile>(&entity, tile.grid_tile.x, tile.grid_tile.y);
-        commands.entity(entity).despawn();
-    }
 
     let grid = match generator_kind {
         GeneratorKind::PerlinNoise => generator::perlin_noise::generate(&map_config),
     };
+    *tile_grid = TileGrid::from_grid(&grid);
 
-    spawn_tiles(&mut commands, &assets, &mut navmesh, &grid);
+    // chunk entities live forever; rebuilding only mutates their tile data
+    for (map_chunk, mut tile_data) in chunks_query.iter_mut() {
+        *tile_data = chunk_tile_data(&tile_grid, map_chunk.chunk_x, map_chunk.chunk_y);
+    }
+
     commands.trigger(log_event!(RebuildMapCompleteEvent));
 }

@@ -85,6 +85,26 @@ fn render_entity_node_bunlde<T: TargetEntityUiMarker>(
     )
 }
 
+fn render_node_bunlde<T: Default>(opacity: UiOpacity) -> (Node, BackgroundColor, T) {
+    (
+        Node {
+            display: Display::Flex,
+            flex_direction: FlexDirection::Column,
+            row_gap: px(10.),
+            padding: UiRect {
+                top: px(10.),
+                right: px(10.),
+                bottom: px(10.),
+                left: px(10.),
+            },
+            width: px(300.),
+            ..default()
+        },
+        BackgroundColor(ui_color(opacity)),
+        T::default(),
+    )
+}
+
 fn render_entity_component_node_bunlde<T: Default>() -> (Node, T) {
     (
         Node {

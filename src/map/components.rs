@@ -13,7 +13,7 @@ pub enum TileKind {
     FertileDirt,
 }
 
-#[derive(Component, Debug, Clone, Copy, Reflect)]
+#[derive(Debug, Clone, Copy, Reflect)]
 pub struct Tile {
     pub grid_tile: IVec2,
     pub kind: TileKind,
@@ -22,19 +22,57 @@ pub struct Tile {
     pub props_noise: f32,
 }
 
-impl Tile {
-    pub fn texture(&self, assets: &Res<TextureAssets>) -> Handle<Image> {
-        match self.kind {
-            TileKind::ShallowWater => assets.shallow_water.clone(),
-            TileKind::DeepWater => assets.deep_water.clone(),
-            TileKind::Sand => assets.sand.clone(),
-            TileKind::Grass => assets.grass.clone(),
-            TileKind::Forest => assets.forest.clone(),
-            TileKind::Mountain => assets.mountain.clone(),
-            TileKind::RockyDirt => assets.rocky_dirt.clone(),
-            TileKind::Dirt => assets.dirt.clone(),
-            TileKind::FertileDirt => assets.fertile_dirt.clone(),
+/// All map tiles as plain data, indexed by grid coordinates. Tiles are not
+/// entities: rendering is done by `TilemapChunk` chunks, and tile lookups
+/// (hover UI, noise debug) read this resource.
+#[derive(Resource)]
+pub struct TileGrid {
+    size: usize,
+    tiles: Vec<Tile>,
+}
+
+impl TileGrid {
+    pub fn from_grid(grid: &[Vec<Tile>]) -> Self {
+        let size = config().grid.size as usize;
+        let mut tiles = Vec::with_capacity(size * size);
+        // placeholder to allow index-based writes
+        tiles.resize(
+            size * size,
+            Tile {
+                grid_tile: IVec2::ZERO,
+                kind: TileKind::DeepWater,
+                height_noise: 0.,
+                humidity_noise: 0.,
+                props_noise: 0.,
+            },
+        );
+
+        let mut result = Self { size, tiles };
+        for row in grid.iter() {
+            for tile in row.iter() {
+                let index = result.index_of(tile.grid_tile);
+                result.tiles[index] = *tile;
+            }
         }
+        result
+    }
+
+    fn index_of(&self, grid_tile: IVec2) -> usize {
+        grid_tile_to_navmesh_index(grid_tile.x) * self.size
+            + grid_tile_to_navmesh_index(grid_tile.y)
+    }
+
+    pub fn get(&self, grid_tile: IVec2) -> Option<&Tile> {
+        let x = grid_tile.x + config().grid.half_size;
+        let y = grid_tile.y + config().grid.half_size;
+        if x < 0 || y < 0 || x >= self.size as i32 || y >= self.size as i32 {
+            return None;
+        }
+        self.tiles.get(x as usize * self.size + y as usize)
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &Tile> {
+        self.tiles.iter()
     }
 }
 

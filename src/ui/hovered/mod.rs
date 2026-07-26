@@ -45,7 +45,7 @@ fn on_hover_update_ui(
     )>,
     farm_query: Query<(&Farm, &Workable)>,
     bed_query: Query<Option<&BedOwnedBy>, With<Bed>>,
-    tile_query: Query<&Tile>,
+    tile_grid: Option<Res<TileGrid>>,
     carryable_query: Query<&Carryable>,
     storage_query: Query<&Storage>,
     arc_navmesh: ResMut<ArcNavmesh>,
@@ -61,7 +61,7 @@ fn on_hover_update_ui(
         pawn_query,
         farm_query,
         bed_query,
-        tile_query,
+        tile_grid,
         carryable_query,
         storage_query,
         arc_navmesh,
@@ -85,7 +85,7 @@ fn on_occupation_change_update_ui(
     )>,
     farm_query: Query<(&Farm, &Workable)>,
     bed_query: Query<Option<&BedOwnedBy>, With<Bed>>,
-    tile_query: Query<&Tile>,
+    tile_grid: Option<Res<TileGrid>>,
     carryable_query: Query<&Carryable>,
     storage_query: Query<&Storage>,
     arc_navmesh: ResMut<ArcNavmesh>,
@@ -105,7 +105,7 @@ fn on_occupation_change_update_ui(
         pawn_query,
         farm_query,
         bed_query,
-        tile_query,
+        tile_grid,
         carryable_query,
         storage_query,
         arc_navmesh,
@@ -128,7 +128,7 @@ fn redraw_hovered_ui(
     )>,
     farm_query: Query<(&Farm, &Workable)>,
     bed_query: Query<Option<&BedOwnedBy>, With<Bed>>,
-    tile_query: Query<&Tile>,
+    tile_grid: Option<Res<TileGrid>>,
     carryable_query: Query<&Carryable>,
     storage_query: Query<&Storage>,
     arc_navmesh: ResMut<ArcNavmesh>,
@@ -143,17 +143,18 @@ fn redraw_hovered_ui(
     let navmesh = arc_navmesh.read();
 
     // hover over Tile
-    for tile_id in navmesh.get_occupants::<Tile>(grid_tile.x, grid_tile.y) {
-        if let Ok(tile) = tile_query.get(*tile_id) {
-            render_tile_ui(
-                *tile_id,
-                &mut hovered_root_ui_commands,
-                tile,
-                grid_tile,
-                &font_assets,
-                UiOpacity::Medium,
-            );
-        }
+    // TileGrid is absent until generate_map's commands apply during world setup
+    if let Some(tile) = tile_grid
+        .as_ref()
+        .and_then(|tile_grid| tile_grid.get(grid_tile))
+    {
+        render_tile_ui(
+            &mut hovered_root_ui_commands,
+            tile,
+            grid_tile,
+            &font_assets,
+            UiOpacity::Medium,
+        );
     }
 
     // hover over Bed

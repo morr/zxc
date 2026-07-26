@@ -388,12 +388,12 @@ commands.spawn((
 **План (детализирован 2026-07-26, по коммиту на шаг):**
 
 - [x] **Шаг 0 — разведка:** (а) tile-occupants в логике занятости: единственный логический потребитель — `has_occupants_except_of::<Pawn>` в to_rest, и из-за вездесущих `Tile` он **всегда true** (латентный баг: ветка «спать на месте» недостижима); `find_empty_grid_tile` работает по `is_passable`, occupants не смотрит. Удаление Tile-occupants безопасно и чинит баг (поведенческое изменение: пешка сможет спать на месте, если клетка реально пуста). Прочие `get_occupants::<Tile>` — только hover-панель и `on_hover` (мигрируют на ресурс). (б) `HoverMarker` вешается/снимается, но не имеет ни одного потребителя — мёртвый механизм, удаляем вместе с `map::on_hover`. **Выбран вариант B.**
-- [ ] **Шаг 1 — хранилище тайлов:** вариант B (целевой) — ресурс `TileGrid` (`Vec<Tile>` по grid-координатам), тайл-сущности удаляются (−250k), `add_occupant::<Tile>` уходит из navmesh. Вариант A (запасной, если занятость неразделима) — сущности без рендера + чанки только для рисования.
-- [ ] **Шаг 2 — тайлсет:** собрать 9 png `TileKind` в array texture (стопка + `reinterpret_stacked_2d_as_array(9)`), `TileKind as u16` = слой; хэндл в ресурс.
-- [ ] **Шаг 3 — чанки:** `TilemapChunkPlugin`; `spawn_tiles` → `spawn_chunks` (500×500 / 25×25 = 400 чанков, тюнить); `TilemapChunk` + `TilemapChunkTileData` + `Transform` на `TILE_Z_INDEX`; origin чанка bottom-left (0.18!), сетка −250..+250 — выверить мировые координаты по скриншоту до/после.
-- [ ] **Шаг 4 — rebuild:** `on_rebuild_map` мутирует `TileGrid` + `TilemapChunkTileData` вместо despawn/respawn; `RebuildMapCompleteEvent` остаётся (noise уже обновляется на месте после 2.1).
-- [ ] **Шаг 5 — потребители:** hover-панель читает `Tile` из `TileGrid` по координате (минус `tile_query` из трёх сигнатур hovered); debug-noise итерирует ресурс; `HoverMarker` — по итогам Шага 0; grep `get_occupants::<Tile>` — 0.
-- [ ] **Шаг 6 — верификация:** тесты/clippy; live-app: счётчик сущностей (~289k → ~39k по `Transform`), hover тайлов, noise-циклы; сравнение FPS master vs ветка — за пользователем.
+- [x] **Шаг 1 — хранилище тайлов:** вариант B выполнен — ресурс `TileGrid` (плоский `Vec<Tile>`, собственная проверка границ: `Navmesh::is_in_range` не годится — он строгий и исключает крайний столбец −250). `Tile` больше не `Component`, тайл-сущности и `add_occupant::<Tile>` удалены.
+- [x] **Шаг 2 — тайлсет:** `src/map/tileset.rs` — array texture из 9 png напрямую через `Image::new` (depth_or_array_layers=9), слой = `TileKind as u16`. Грабли: png разноформатные — 8-бит sRGB и 16-бит; `Image::convert` не читает 16-битные источники → ручная конверсия каналов, причём с linear→sRGB преобразованием (Rgba16Unorm — линейный формат, старый пайплайн рисовал его «как есть»; без преобразования менялась цветовая гамма).
+- [x] **Шаг 3 — чанки:** 400 чанков 25×25, компонент `MapChunk{chunk_x,chunk_y}` для rebuild. `TilemapChunkPlugin` НЕ добавлять — уже в DefaultPlugins (паника «already added»). Порядок данных: row-major от НИЖНЕГО-левого тайла (проверено эмпирически — при top-left каждый чанк зеркалится по вертикали). Меш чанка центрирован на Transform.
+- [x] **Шаг 4 — rebuild:** `on_rebuild_map` пересобирает `TileGrid` и мутирует `TilemapChunkTileData` всех чанков; сущности живут вечно. (Рантайм-путь rebuild — кнопка в egui-окне перлина; проверить при случае.)
+- [x] **Шаг 5 — потребители:** hovered — `Option<Res<TileGrid>>` (события спавна пешек летят до флаша generate_map — жёсткий `Res` роняет валидацию с паникой); debug-noise итерирует ресурс; `HoverMarker` + `map::on_hover` удалены; `get_occupants::<Tile>` — 0; `render_tile_ui` без entity id (заголовок — координата), новый хелпер `render_node_bunlde`.
+- [x] **Шаг 6 — верификация:** 30 тестов, clippy чистый. Пользователь подтвердил визуально: карта корректна, hover работает, цвета совпали с master. **Результаты: FPS ×2–3, память приложения 1.58GB → ~755MB.** Noise-циклы (`p`) и rebuild из egui — проверить при игре.
 
 **Риски:** логика занятости (гл. риск → вариант A); png тайлов должны быть одного размера; стыки чанков (nearest-фильтрация уже стоит — ок).
 
@@ -678,7 +678,7 @@ app.add_observer(|on: On<Insert, RootConfigRes>, cfg: Res<RootConfigRes>| {
 - [x] 1.6 Hooks + immutable для `*Tag`
 - [x] 2.1 `DespawnOnExit` для debug-слоёв
 - [x] 2.2 Аудит `NextState` (поведение 0.18) — изменений не потребовалось
-- [ ] 2.3 `TilemapChunk`
+- [x] 2.3 `TilemapChunk` (ветка `tilemap-chunk`)
 - [x] 2.4 Reflect auto-registration
 - [x] 2.5 `children![...]`
 - [x] 2.6 `Gizmos::text_2d` + `FpsOverlayPlugin`
@@ -694,5 +694,7 @@ app.add_observer(|on: On<Insert, RootConfigRes>, cfg: Res<RootConfigRes>| {
 - **0.4 (Val::Px → px())**: не применимо для статиков `UI_SCREEN_EDGE_PX_OFFSET`/`UI_WINDOWS_GAP` — `px()` не является `const fn`, статики требуют const-инициализатор. `Val::Px` там остаётся намеренно. Остальной UI-код уже использует `px()`.
 
 - **2.8 (features)**: зависимости 585 → 551 крейта; выброшены 3d (кроме `bevy_pbr` — жёсткая зависимость dev_tools) и audio. Пересборка после смены фич: 6м00с.
+
+- **2.3 (TilemapChunk)**: −250k сущностей (тайлы стали ресурсом `TileGrid` + 400 чанк-мешей), FPS ×2–3 (замер пользователя), память 1.58GB → ~755MB. Побочный багфикс: `has_occupants_except_of::<Pawn>` перестал быть всегда-true — пешка теперь может спать на месте, если клетка реально пуста.
 
 _(далее по ходу работ: вердикт по Feathers (3.2), семантика static vs Resource (3.3), результаты бенчмарка (3.1))_
