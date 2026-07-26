@@ -1,5 +1,10 @@
 use crate::*;
-expose_submodules!(components, systems, farm, bed, storage);
+mod bed;
+mod components;
+mod farm;
+mod storage;
+mod systems;
+pub use self::{bed::*, components::*, farm::*, storage::*, systems::*};
 
 pub struct StructurePlugin;
 

@@ -1,18 +1,20 @@
 use crate::*;
 
-expose_submodules!(
-    bed,
-    carryable,
-    farm,
-    pawn,
-    storage,
-    tile,
-    hovered,
-    items_stock,
-    simulation_state,
-    user_select,
-    debug
-);
+mod bed;
+mod carryable;
+mod debug;
+mod farm;
+mod hovered;
+mod items_stock;
+mod pawn;
+mod simulation_state;
+mod storage;
+mod tile;
+mod user_select;
+pub use self::{
+    bed::*, carryable::*, debug::*, farm::*, hovered::*, items_stock::*, pawn::*,
+    simulation_state::*, storage::*, tile::*, user_select::*,
+};
 
 pub static UI_COLOR: LazyLock<Color> = LazyLock::new(|| Color::from(Srgba::hex("181a1c").unwrap()));
 pub static UI_SCREEN_EDGE_PX_OFFSET: Val = Val::Px(8.);

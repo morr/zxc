@@ -2,7 +2,9 @@ use bevy::tasks::Task;
 
 use super::*;
 
-expose_submodules!(navtile, navmesh);
+mod navmesh;
+mod navtile;
+pub use self::{navmesh::*, navtile::*};
 
 #[derive(Debug)]
 pub struct PathfindingResult {

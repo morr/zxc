@@ -1,7 +1,11 @@
 use crate::*;
 
+mod components;
 pub mod generator;
-expose_submodules!(components, systems, tileset, utils);
+mod systems;
+mod tileset;
+mod utils;
+pub use self::{components::*, systems::*, tileset::*, utils::*};
 
 pub struct MapPlugin;
 impl Plugin for MapPlugin {

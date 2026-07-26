@@ -1,6 +1,9 @@
 use super::*;
 
-expose_submodules!(components, systems, utils);
+mod components;
+mod systems;
+mod utils;
+pub use self::{components::*, systems::*, utils::*};
 
 pub struct DebugNoisePlugin;
 impl Plugin for DebugNoisePlugin {
@@ -17,7 +20,8 @@ impl Plugin for DebugNoisePlugin {
         if init_noise_state != DebugNoiseState::Hidden {
             app.add_systems(
                 OnExit(AppState::Loading),
-                (move |mut next_state: ResMut<NextState<DebugNoiseState>>, mut commands: Commands| {
+                (move |mut next_state: ResMut<NextState<DebugNoiseState>>,
+                       mut commands: Commands| {
                     next_state.set(init_noise_state.clone());
                     commands.trigger(log_event!(StateChangeEvent(init_noise_state.clone())));
                 })

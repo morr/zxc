@@ -114,7 +114,7 @@ pub fn on_pawn_entity_state_change(
     }
 }
 
-pub fn on_new_day(
+pub fn on_new_day_age_pawns(
     event: On<NewDayEvent>,
     mut commands: Commands,
     mut query: Query<(Entity, &mut Pawn), Without<pawn_state::PawnStateDeadTag>>,

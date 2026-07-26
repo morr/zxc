@@ -1,6 +1,13 @@
 use crate::*;
 
-expose_submodules!(grid, movepath, navmesh, noise, info, tasks_queue, toggles);
+mod grid;
+mod info;
+mod movepath;
+mod navmesh;
+mod noise;
+mod tasks_queue;
+mod toggles;
+pub use self::{grid::*, info::*, movepath::*, navmesh::*, noise::*, tasks_queue::*, toggles::*};
 
 pub struct UiDebugPlugin;
 

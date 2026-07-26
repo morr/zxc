@@ -1,6 +1,8 @@
 use crate::*;
 
-expose_submodules!(components, systems);
+mod components;
+mod systems;
+pub use self::{components::*, systems::*};
 
 pub struct WorkablePlugin;
 

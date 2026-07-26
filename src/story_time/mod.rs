@@ -1,6 +1,9 @@
 use crate::*;
 
-expose_submodules!(components, systems, utils);
+mod components;
+mod systems;
+mod utils;
+pub use self::{components::*, systems::*, utils::*};
 
 pub struct StoryTimePlugin;
 

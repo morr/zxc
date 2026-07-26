@@ -1,18 +1,21 @@
 use crate::*;
 
-expose_submodules!(
-    components,
-    systems,
-    complete_task_command,
-    drop_carried_item_command,
-    feed_command,
-    move_to_command,
-    sleep_command,
-    pick_up_item_command,
-    to_rest_command,
-    user_selection_command,
-    work_on_command
-);
+mod complete_task_command;
+mod components;
+mod drop_carried_item_command;
+mod feed_command;
+mod move_to_command;
+mod pick_up_item_command;
+mod sleep_command;
+mod systems;
+mod to_rest_command;
+mod user_selection_command;
+mod work_on_command;
+pub use self::{
+    complete_task_command::*, components::*, drop_carried_item_command::*, feed_command::*,
+    move_to_command::*, pick_up_item_command::*, sleep_command::*, systems::*, to_rest_command::*,
+    user_selection_command::*, work_on_command::*,
+};
 
 pub struct CommandablePlugin;
 

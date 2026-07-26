@@ -1,12 +1,15 @@
 use super::*;
 
-expose_submodules!(components, systems, debug_components);
+mod components;
+mod debug_components;
+mod systems;
+pub use self::{components::*, debug_components::*, systems::*};
 
 pub struct FarmPlugin;
 
 impl Plugin for FarmPlugin {
     fn build(&self, app: &mut App) {
-        app.add_observer(self::systems::on_new_day.run_if(in_state(AppState::Playing)))
+        app.add_observer(on_new_day_schedule_farm_tending.run_if(in_state(AppState::Playing)))
             .add_observer(on_farm_state_change.run_if(in_state(AppState::Playing)))
             .add_observer(on_farm_tended.run_if(in_state(AppState::Playing)))
             .add_observer(on_farm_progress.run_if(in_state(AppState::Playing)))

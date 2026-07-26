@@ -153,7 +153,7 @@ pub fn on_farm_state_change(
     }
 }
 
-pub fn on_new_day(
+pub fn on_new_day_schedule_farm_tending(
     _event: On<NewDayEvent>,
     mut commands: Commands,
     mut query: Query<(Entity, &mut Farm), With<farm_state::Planted>>,

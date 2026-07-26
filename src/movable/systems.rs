@@ -116,7 +116,7 @@ fn move_to_target_location(
     transform.translation.truncate().world_pos_to_grid()
 }
 
-pub fn on_pawn_death(
+pub fn on_pawn_death_stop_movement(
     event: On<PawnDeathEvent>,
     mut commands: Commands,
     mut query: Query<&mut Movable>,
