@@ -15,6 +15,26 @@ Skills hold the detail; this file holds the map. Load them — don't reconstruct
 
 ZXC is a 2D top-down simulation/strategy game built with **Bevy 0.19** (Rust, edition 2024). It uses Bevy's ECS (Entity-Component-System) architecture with a plugin-based modular design. Requires **nightly Rust toolchain**.
 
+## Reference Points
+
+**`~/develop/bevy/bevy` — a checkout of the Bevy repo at `c6f634ca9` (release 0.19.0),** the
+exact version this project pins. `examples/` there are first-party, compiling code and are
+the authoritative answer to "how is this API actually used in 0.19" — prefer them over
+recalled pre-0.19 syntax, which is usually wrong. Useful dirs: `2d/`, `ui/`, `ecs/`,
+`state/`, `app/`, `input/`, `camera/`, `picking/`, `remote/`, `dev_tools/`, `window/`,
+`asset/`, `time/`.
+
+```bash
+rg 'OrthographicProjection' ~/develop/bevy/bevy/examples/
+```
+
+Over the unpacked registry copy the checkout also gives `crates/` (read the implementation
+when an example isn't enough) and git history (`git log -S <symbol>` to see when and why an
+API changed). See the `bevy` skill for the full ground-truth order.
+
+**`~/develop/bevy/qwe`** is a small sibling Bevy 0.19 project. It shares `.claude/skills/`
+with this repo via symlinks — a skill edit made there lands in this repo's history.
+
 ## Build, Test, Verify
 
 After completing any task, run these in parallel — all must pass:
