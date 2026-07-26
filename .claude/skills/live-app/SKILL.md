@@ -117,7 +117,7 @@ where they do not (the common case — the derive is opt-in), the consequences a
   typo in the type path can't masquerade as "feature broken".
 - `world.trigger_event` fails with `Unknown event type` for the project's own
   events — they are not in the reflect event registry. Verify events through the
-  log (§7), not BRP.
+  log (§8), not BRP.
 
 Bevy's own components are fully readable — that is the fast path for UI/transform
 assertions.
@@ -179,7 +179,61 @@ Avoid unbounded dumps: in a project with a tilemap, `Transform` alone can match
 hundreds of thousands of entities. Always aggregate in python; never pipe a full
 query into the transcript.
 
-## 7. Log-based verification (usually stronger than BRP)
+## 7. Driving the app over BRP: event streams, screenshots, synthetic input
+
+All three patterns come from `examples/remote/integration_test.rs` in the Bevy
+repo (verified against release-0.19.0). They lift BRP from "inspect state" to
+"drive the app like a user".
+
+### Wait for an event instead of polling: `world.observe+watch`
+
+Streams observer events of a reflect-registered event type as SSE lines
+(`data: {json}`). Needs `curl -N`; exit after the first hit:
+
+```bash
+curl -N -s -m 30 -X POST http://127.0.0.1:15702/ -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"world.observe+watch","params":{"event":"<full::type::path>","entity":123}}' \
+  | while read -r line; do case "$line" in data:*) echo "${line#data: }"; break;; esac; done
+```
+
+`entity` is optional — omit it for global events. Same reflect restriction as
+`world.trigger_event`: non-reflect project events stay invisible; `bevy_*`
+events work.
+
+### Screenshot over BRP
+
+1. `world.spawn_entity` with
+   `{"components":{"bevy_render::view::window::screenshot::Screenshot":{"Window":"Primary"}}}`
+   → response carries the new entity id.
+2. `world.observe+watch` for event
+   `bevy_render::view::window::screenshot::ScreenshotCaptured` on that entity.
+3. The event payload embeds the serialized `Image`
+   (`.image.texture_descriptor.size.{width,height}` + raw data). From bash,
+   asserting the size and non-black bytes is usually enough; full PNG decoding
+   needs a Rust helper (`Image::try_into_dynamic`).
+
+The window must be actually visible — an occluded window renders black.
+
+### Synthetic mouse input — click real UI buttons
+
+`world.write_message` with `bevy_window::event::WindowEvent` feeds the real
+input path: the picking stack turns CursorMoved + Pressed + Released into a
+genuine `Pointer<Click>` (so `bevy_ui_widgets::Button` observers fire).
+
+```bash
+W=<window entity id>   # from a world.query on bevy_window::window::Window
+brp world.write_message "{\"message\":\"bevy_window::event::WindowEvent\",\"value\":{\"CursorMoved\":{\"window\":$W,\"position\":[$X,$Y],\"delta\":null}}}"
+brp world.write_message "{\"message\":\"bevy_window::event::WindowEvent\",\"value\":{\"MouseButtonInput\":{\"button\":\"Left\",\"state\":\"Pressed\",\"window\":$W}}}"
+brp world.write_message "{\"message\":\"bevy_window::event::WindowEvent\",\"value\":{\"MouseButtonInput\":{\"button\":\"Left\",\"state\":\"Released\",\"window\":$W}}}"
+```
+
+Coordinates are **logical** pixels. To click a UI node: query
+`bevy_ui::ui_transform::UiGlobalTransform` (serialized as a flat 6-element
+affine array; elements `[4]`,`[5]` are the node center in *physical* px) with
+`filter.with` the button marker, then divide by
+`Window.resolution.scale_factor`.
+
+## 8. Log-based verification (usually stronger than BRP)
 
 `LogPlugin` runs with `filter: "info,<crate>=trace"`. This section assumes the
 project emits structured lines for state transitions and events — in the example
@@ -208,7 +262,7 @@ A healthy ~30 s run shows hundreds of `EntityStateChangeEvent`, dozens of
 counters after a refactor mean observers stopped firing even though the build is
 green.
 
-## 8. One-shot smoke test
+## 9. One-shot smoke test
 
 Launch in one call, then a single verification call that waits, greps and queries:
 
@@ -222,7 +276,7 @@ brp world.query "{\"data\":{\"components\":[\"$CRATE::carryable::components::Car
   | python3 -c "import json,sys; print('carryables in world:', len(json.load(sys.stdin).get('result',[])))"
 ```
 
-## 9. Shutdown
+## 10. Shutdown
 
 ```
 TaskStop(task_id: "<task_id>")
@@ -233,7 +287,7 @@ keeps a window on the user's screen, and makes the next run's BRP answers come
 from the stale process. If the user asked for the app to stay open, say so and
 leave it.
 
-## 10. Gotchas
+## 11. Gotchas
 
 - `cargo run` occasionally dies with `failed to build archive … libbevy_*.rlib:
   failed to open object file` — an artifact of `dynamic_linking` after an
