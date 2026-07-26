@@ -1,5 +1,6 @@
-use crate::*;
-
+use crate::assets::FontAssets;
+use crate::prelude::*;
+use std::sync::LazyLock;
 mod bed;
 mod carryable;
 mod debug;

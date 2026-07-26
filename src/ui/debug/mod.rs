@@ -1,5 +1,4 @@
-use crate::*;
-
+use crate::prelude::*;
 mod grid;
 mod info;
 mod movepath;
@@ -8,6 +7,8 @@ mod noise;
 mod tasks_queue;
 mod toggles;
 pub use self::{grid::*, info::*, movepath::*, navmesh::*, noise::*, tasks_queue::*, toggles::*};
+use crate::ui::UiOpacity;
+use crate::ui::ui_color;
 
 pub struct UiDebugPlugin;
 

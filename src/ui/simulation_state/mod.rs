@@ -1,5 +1,12 @@
-use super::*;
-
+use crate::assets::FontAssets;
+use crate::prelude::*;
+use crate::story_time::current_day_hour;
+use crate::story_time::current_hour_minute;
+use crate::story_time::current_year;
+use crate::story_time::current_year_day;
+use crate::story_time::year_day_to_season_day_label;
+use crate::ui::UiOpacity;
+use crate::ui::ui_color;
 #[derive(Component, Default)]
 struct SimulationSpeedTextUIMarker {}
 

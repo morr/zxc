@@ -1,7 +1,13 @@
 use bevy::ecs::system::EntityCommands;
 
-use super::*;
-
+use crate::assets::FontAssets;
+use crate::map::Tile;
+use crate::prelude::*;
+use crate::ui::UiOpacity;
+use crate::ui::headline_text_bundle;
+use crate::ui::property_text_bundle;
+use crate::ui::render_entity_component_node_bunlde;
+use crate::ui::render_node_bunlde;
 #[derive(Component, Default)]
 pub struct TileUIMarker {}
 

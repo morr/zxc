@@ -1,5 +1,11 @@
-use super::*;
-
+use crate::assets::FontAssets;
+use crate::assets::IconAssets;
+use crate::carryable::FoodStock;
+use crate::pawn::Pawn;
+use crate::prelude::*;
+use crate::ui::UI_SCREEN_EDGE_PX_OFFSET;
+use crate::ui::UiOpacity;
+use crate::ui::ui_color;
 #[derive(Component, Default)]
 struct PawnStockTextUIMarker {}
 

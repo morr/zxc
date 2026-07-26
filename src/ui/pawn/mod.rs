@@ -1,7 +1,20 @@
 use bevy::ecs::system::EntityCommands;
 
-use super::*;
-
+use crate::assets::FontAssets;
+use crate::carryable::Carrying;
+use crate::commandable::Commandable;
+use crate::feedable::Feedable;
+use crate::movable::Movable;
+use crate::pawn::Pawn;
+use crate::prelude::*;
+use crate::restable::Restable;
+use crate::story_time::year_day_to_season_day_label;
+use crate::ui::TargetEntityUiMarker;
+use crate::ui::UiOpacity;
+use crate::ui::headline_text_bundle;
+use crate::ui::property_text_bundle;
+use crate::ui::render_entity_component_node_bunlde;
+use crate::ui::render_entity_node_bunlde;
 #[derive(Component)]
 pub struct PawnUIMarker {
     pawn_id: Entity,

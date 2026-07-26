@@ -1,7 +1,13 @@
 use bevy::ecs::system::EntityCommands;
 
-use super::*;
-
+use crate::assets::FontAssets;
+use crate::prelude::*;
+use crate::structure::Storage;
+use crate::ui::TargetEntityUiMarker;
+use crate::ui::UiOpacity;
+use crate::ui::headline_text_bundle;
+use crate::ui::render_entity_component_node_bunlde;
+use crate::ui::render_entity_node_bunlde;
 #[derive(Component)]
 pub struct StorageUIMarker {
     #[allow(dead_code)]

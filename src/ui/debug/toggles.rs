@@ -1,8 +1,16 @@
 use bevy::ecs::system::IntoObserverSystem;
 use bevy::ui_widgets::{Activate, Button};
 
-use super::*;
-
+use crate::assets::FontAssets;
+use crate::events::StateChangeEvent;
+use crate::prelude::*;
+use crate::ui::DebugGridState;
+use crate::ui::DebugMovepathState;
+use crate::ui::DebugNavmeshState;
+use crate::ui::DebugNoiseState;
+use crate::ui::DebugUiContainerMarker;
+use crate::ui::UiOpacity;
+use crate::ui::ui_color;
 /// TODO 3.2 prototype: debug layer toggles built on the first-party headless
 /// `bevy_ui_widgets::Button` instead of egui. Buttons emit `Activate` (an
 /// `EntityEvent`), handled by per-entity `.observe()` observers.

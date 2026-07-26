@@ -1,9 +1,10 @@
-use super::*;
-
+use crate::prelude::*;
 mod components;
 mod systems;
 mod utils;
 pub use self::{components::*, systems::*, utils::*};
+use crate::events::StateChangeEvent;
+use crate::map::generate_map;
 
 pub struct DebugNoisePlugin;
 impl Plugin for DebugNoisePlugin {

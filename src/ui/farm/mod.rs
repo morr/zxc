@@ -1,7 +1,17 @@
 use bevy::ecs::system::EntityCommands;
 
-use super::*;
-
+use crate::assets::FontAssets;
+use crate::prelude::*;
+use crate::structure;
+use crate::structure::Farm;
+use crate::structure::FarmState;
+use crate::ui::TargetEntityUiMarker;
+use crate::ui::UiOpacity;
+use crate::ui::headline_text_bundle;
+use crate::ui::property_text_bundle;
+use crate::ui::render_entity_component_node_bunlde;
+use crate::ui::render_entity_node_bunlde;
+use crate::workable::Workable;
 #[derive(Component)]
 pub struct FarmUIMarker {
     farm_id: Entity,
