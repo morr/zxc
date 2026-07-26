@@ -1,7 +1,9 @@
+use arc_swap::ArcSwapOption;
 use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
+use std::ops::Deref;
+use std::sync::Arc;
 pub use std::sync::LazyLock;
-use std::sync::{Arc, RwLock};
 use std::{fs::File, io::Read};
 
 use crate::DebugNoiseState;
@@ -26,18 +28,26 @@ pub fn load_config() -> RootConfig {
     config
 }
 
-static CONFIG: RwLock<Option<Arc<RootConfig>>> = RwLock::new(None);
+static CONFIG: ArcSwapOption<RootConfig> = ArcSwapOption::const_empty();
 
 pub fn apply_global_config(config: RootConfig) {
-    *CONFIG.write().expect("config lock poisoned") = Some(Arc::new(config));
+    CONFIG.store(Some(Arc::new(config)));
 }
 
-pub fn config() -> Arc<RootConfig> {
-    CONFIG
-        .read()
-        .expect("config lock poisoned")
-        .clone()
-        .expect("Config not initialized")
+/// Cheap lock-free borrow of the current config snapshot (see `RootConfig`
+/// docs for the resource/static relationship).
+pub fn config() -> ConfigGuard {
+    ConfigGuard(CONFIG.load())
+}
+
+pub struct ConfigGuard(arc_swap::Guard<Option<Arc<RootConfig>>>);
+
+impl Deref for ConfigGuard {
+    type Target = RootConfig;
+
+    fn deref(&self) -> &RootConfig {
+        self.0.as_ref().expect("Config not initialized")
+    }
 }
 
 /// Config exists in two forms:

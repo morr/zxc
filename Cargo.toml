@@ -38,6 +38,7 @@ rand_chacha = "0.9"
 ron = "0.8.1"
 serde = "1.0.204"
 noise = "0.9.0"
+arc-swap = "1.9.2"
 
 [dev-dependencies]
 ctor = "0.3.6"

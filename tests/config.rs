@@ -8,7 +8,7 @@ mod config_tests {
     #[test]
     fn runtime_config_edit_reaches_global_snapshot() {
         let mut app = App::new();
-        app.insert_resource(config().as_ref().clone()).add_systems(
+        app.insert_resource(config().clone()).add_systems(
             Update,
             on_root_config_changed.run_if(resource_changed::<RootConfig>),
         );
@@ -42,13 +42,12 @@ mod config_tests {
 
 #[cfg(test)]
 mod bench {
-    use super::config_tests as _;
     use std::sync::OnceLock;
     use std::time::Instant;
     use zxc::*;
 
     /// Compares the cost of the old `OnceLock<&'static>` config access with
-    /// the current `RwLock<Option<Arc<..>>>` one. Run with:
+    /// the current `ArcSwap` one. Run with:
     ///   cargo test --test config --release -- --ignored --nocapture
     #[test]
     #[ignore = "micro-benchmark, run manually"]
@@ -56,7 +55,7 @@ mod bench {
         const CALLS: usize = 10_000_000;
 
         static BASELINE: OnceLock<RootConfig> = OnceLock::new();
-        BASELINE.set(config().as_ref().clone()).unwrap();
+        BASELINE.set(config().clone()).unwrap();
 
         let start = Instant::now();
         let mut acc = 0.0f32;
@@ -73,7 +72,7 @@ mod bench {
 
         std::hint::black_box(acc);
         println!(
-            "{CALLS} calls:\n  OnceLock &'static: {oncelock:?} ({:.2}ns/call)\n  RwLock<Arc>:       {rwlock_arc:?} ({:.2}ns/call)",
+            "{CALLS} calls:\n  OnceLock &'static: {oncelock:?} ({:.2}ns/call)\n  ArcSwap:           {rwlock_arc:?} ({:.2}ns/call)",
             oncelock.as_secs_f64() * 1e9 / CALLS as f64,
             rwlock_arc.as_secs_f64() * 1e9 / CALLS as f64,
         );
