@@ -1,7 +1,6 @@
 use bevy::tasks::Task;
 
-use super::*;
-
+use crate::prelude::*;
 mod navmesh;
 mod navtile;
 pub use self::{navmesh::*, navtile::*};

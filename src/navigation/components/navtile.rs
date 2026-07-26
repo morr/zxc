@@ -1,8 +1,10 @@
 use std::any::TypeId;
 
-use super::*;
+use crate::prelude::*;
 use bevy_platform::collections::{HashMap, HashSet};
 
+use crate::navigation::grid_tile_to_navmesh_index;
+use crate::navigation::navmesh_index_to_grid_tile;
 use rand_distr::num_traits::Zero;
 
 const DEFAULT_COST: i32 = 1;

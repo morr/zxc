@@ -3,8 +3,10 @@ use std::{
     sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard},
 };
 
-use super::*;
-
+use crate::navigation::Navtiles;
+use crate::navigation::grid_tile_to_navmesh_index;
+use crate::navigation::navmesh_index_to_grid_tile;
+use crate::prelude::*;
 #[derive(Resource, Default)]
 pub struct ArcNavmesh(pub Arc<RwLock<Navmesh>>);
 

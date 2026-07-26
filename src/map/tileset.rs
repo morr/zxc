@@ -2,8 +2,9 @@ use bevy::asset::RenderAssetUsages;
 use bevy::image::Image;
 use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat};
 
-use super::*;
-
+use crate::assets::TextureAssets;
+use crate::map::TileKind;
+use crate::prelude::*;
 /// Array texture with one layer per `TileKind` (layer index == `kind as u16`),
 /// used as the `TilemapChunk` tileset.
 #[derive(Resource)]

@@ -1,4 +1,6 @@
-use super::*;
+use crate::navigation::COST_MULTIPLIER;
+use crate::navigation::Navmesh;
+use crate::prelude::*;
 use pathfinding::directed::astar::astar;
 
 // macro_rules! measure_time {

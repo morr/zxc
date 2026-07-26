@@ -1,7 +1,21 @@
 use bevy::tasks::{block_on, futures_lite::future};
 
-use super::*;
-
+use crate::commandable::CommandType;
+use crate::commandable::Commandable;
+use crate::commandable::MoveToCommand;
+use crate::input::ClickStage1Event;
+use crate::movable::Movable;
+use crate::movable::MovableState;
+use crate::navigation::ArcNavmesh;
+use crate::navigation::PathfindAnswerEvent;
+use crate::navigation::PathfindRequestEvent;
+use crate::navigation::PathfindingTask;
+use crate::navigation::pathfinding_algo;
+use crate::pawn::pawn_state;
+use crate::prelude::*;
+use crate::user_selection::CurrentUserSelection;
+use crate::user_selection::UserSelectionData;
+use crate::user_selection::UserSelectionKind;
 pub fn on_click_stage1(
     event: On<ClickStage1Event>,
     mut commands: Commands,

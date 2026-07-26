@@ -1,8 +1,21 @@
 use bevy::sprite_render::{AlphaMode2d, TileData, TilemapChunk, TilemapChunkTileData};
 use rand::Rng;
 
-use super::*;
-
+use crate::assets::TreeAssets;
+use crate::config::MapGeneratorConfig;
+use crate::map::GeneratorKind;
+use crate::map::RebuildMapCompleteEvent;
+use crate::map::RebuildMapEvent;
+use crate::map::Tile;
+use crate::map::TileGrid;
+use crate::map::TileItem;
+use crate::map::TilesetHandle;
+use crate::map::generator;
+use crate::map::grid_tile_edge_to_world;
+use crate::navigation::ArcNavmesh;
+use crate::navigation::Navmesh;
+use crate::navigation::navmesh_index_to_grid_tile;
+use crate::prelude::*;
 /// The map is split into square render chunks of this many tiles per side.
 /// Must divide `config().grid.size` evenly.
 pub const MAP_CHUNK_SIZE: usize = 25;
