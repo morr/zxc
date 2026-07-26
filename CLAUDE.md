@@ -4,26 +4,37 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Skills
 
-- **MANDATORY — load the `git` skill BEFORE any git operation** — staging, committing, branching, rebasing, history inspection, conflict resolution. This is a blocking prerequisite: do NOT run git commands until the skill is loaded. It contains hard rules (no Claude co-author trailer; never chain `git add` and `git commit` with `&&`; no `--no-verify`) and this repo's commit message conventions.
-- **Load the `live-app` skill BEFORE running the game** — `cargo run`, smoke-testing a change in the real app, or querying the running world over the Bevy Remote Protocol on port 15702. It covers background launch, which components are actually readable over BRP (most `zxc::` ones are not `Reflect`), log-based verification, and shutdown.
+Skills hold the detail; this file holds the map. Load them — don't reconstruct their content from here.
+
+- **`git` — MANDATORY before any git operation** (staging, committing, branching, rebasing, history inspection, conflict resolution). Blocking prerequisite: do NOT run git commands until it is loaded.
+- **`live-app` — before running the game** (`cargo run`, smoke-testing in the real app, querying the live world over BRP).
+- **`bevy` — when writing or debugging Bevy code.** Bevy 0.19 API facts that pre-0.19 training data gets wrong, plus this project's ECS conventions in depth.
+- **`message-to-event` — when adding an event** or choosing between `Event` and `EntityEvent`.
 
 ## Project Overview
 
 ZXC is a 2D top-down simulation/strategy game built with **Bevy 0.19** (Rust, edition 2024). It uses Bevy's ECS (Entity-Component-System) architecture with a plugin-based modular design. Requires **nightly Rust toolchain**.
 
-## Build & Development Commands
+## Build, Test, Verify
+
+After completing any task, run these in parallel — all must pass:
 
 ```bash
-cargo build --verbose       # Build
-cargo run                   # Run the game
-cargo test --verbose        # Run all tests
-cargo clippy -- -D warnings # Lint (CI enforced, warnings are errors)
+cargo build --verbose
+cargo test --verbose
+cargo clippy -- -D warnings        # CI enforced, warnings are errors
+# fmt only the files you changed
+RUSTFMT=~/.rustup/toolchains/nightly-aarch64-apple-darwin/bin/rustfmt cargo fmt -- src/changed_file.rs src/other_file.rs
 ```
 
-Run a single test:
+Other commands:
+
 ```bash
-cargo test test_name --verbose
+cargo run                    # run the game (load the `live-app` skill first)
+cargo test test_name --verbose   # single test
 ```
+
+`dynamic_linking` is already enabled in `Cargo.toml` — never pass `--features bevy/dynamic_linking`.
 
 ## Architecture
 
@@ -33,16 +44,15 @@ Each feature is a Bevy plugin registered in `main.rs`. Plugins are split into tw
 2. **Entity behavior**: ai, pawn, restable, feedable, movable, commandable, workable, carryable
 
 ### Module Convention
-Modules follow a consistent pattern using macros defined in `lib.rs`:
-- `use_modules!()` — declares and re-exports top-level modules
-- `expose_submodules!()` — declares and re-exports submodules within a module
-- Typical module structure: `mod.rs` (plugin), `components.rs`, `systems.rs`
+One feature = one module = one plugin. A feature is `src/<name>.rs` while it fits in one file, and `src/<name>/mod.rs` + submodules (`components.rs`, `systems.rs`, or domain-named files) once it doesn't — `mod.rs` holds the plugin. Single-file module *directories* were deliberately flattened; don't reintroduce them. Grouping is by feature, never by ECS role (no global `components/` or `systems/` folders).
+
+`src/prelude.rs` is the only legal glob import in the crate; a symbol earns a place there only when ≥10 files need it. Everything domain-level is imported by path (clippy warns on `wildcard_imports`).
 
 ### Core Entity: Pawn
 Pawns are NPCs composed of multiple components: `Pawn`, `Movable`, `Commandable`, `Restable`, `Feedable`, `Carryable`. Each has its own state machine with tag components (e.g., `PawnStateIdleTag`, `MovableStateMovingTag`).
 
 ### Command System (`commandable/`)
-Type-safe command queue with 12+ command types (move_to, work_on, feed, sleep, pick_up_item, etc.). Commands are processed sequentially per entity.
+Type-safe command queue, 9 `CommandType` variants (move_to, work_on, feed, sleep, pick_up_item, …), one file per command. Commands are processed sequentially per entity.
 
 ### Task System (`tasks_queue/` + `ai/`)
 Central `TasksQueue` holds work requests. The AI system assigns tasks to pawns based on their current needs (hunger, fatigue) and available work.
@@ -57,30 +67,18 @@ RON-based global config loaded at startup. Accessed via `config()` (returns `&'s
 `TILE_Z_INDEX(0) → PROP(5) → STRUCTURE(10) → PAWN(20) → ITEM(40) → NIGHT(100)`
 
 ### State Machines
-State tag components are used for ECS query filtering. Guard macros enforce valid states:
-- `ensure_state!(loop: ...)` / `ensure_state!(fn: ...)` — continue/return on state mismatch
+Each stateful entity carries both an enum field and a mirrored tag component, generated by `exclusive_state_tags!` (immutable tags whose `on_add` hook removes their siblings). Transition only through the type's `change_state(..)` — never insert a tag by hand. Guard macros:
+- `ensure_state!(loop: ...)` / `ensure_state!(fn: ...)` — continue/return on state mismatch, with a `trace!`
 - `continue_unless!` / `return_unless!` — silent state guards
 
 ### UI
-Debug UI via `bevy_egui` (behind `debug_ui` feature flag, enabled by default).
-
-## Verification After Each Task
-
-After completing any task, run all these commands in parallel:
-
-```bash
-cargo build --verbose
-cargo test --verbose
-cargo clippy -- -D warnings
-# fmt only the files you changed
-RUSTFMT=~/.rustup/toolchains/nightly-aarch64-apple-darwin/bin/rustfmt cargo fmt -- src/changed_file.rs src/other_file.rs
-```
+Gameplay UI is plain `bevy_ui` under `src/ui/`; debug UI is `bevy_egui` + `bevy-inspector-egui` under `src/ui/debug/`, behind the `debug_ui` feature flag (enabled by default).
 
 ## Code Conventions
 
 - State tags use `*Tag` suffix; plugins use `*Plugin` suffix
 - Event handlers use `on_*` prefix
-- Logging macros: `log_state_change!`, `log_message!`, `log_event!`
+- Logging macros: `log_state_change!`, `log_event!`
 - Clippy `type_complexity` lint is allowed globally
 - Formatting: block indent style, reorder imports (`.rustfmt.toml`)
 
@@ -101,15 +99,3 @@ RUSTFMT=~/.rustup/toolchains/nightly-aarch64-apple-darwin/bin/rustfmt cargo fmt 
 Use `Res<Time<Virtual>>` when you need **`elapsed_secs()`** — i.e., to read the current total virtual game time (e.g., `total_days(time.elapsed_secs())`). This is the right choice in observers and anywhere you need "what game time is it now?" rather than "how much time passed this step?".
 
 Use `Res<Time<Real>>` only for things that must ignore pause and time_scale.
-
-## Code Intelligence
-
-An MCP language server (rust-analyzer) is available. Prefer it over grepping or reading files for:
-
-- **Type information** — use `hover` on any symbol before assuming its type
-- **Finding definitions** — use `definition` instead of searching for function/struct declarations
-- **Finding usages** — use `references` instead of grep when you need to know where something is used
-- **Diagnostics** — check `diagnostics` after making changes to confirm no errors were introduced
-- **Renames** — use the LSP `rename` tool rather than find-and-replace
-
-Only fall back to reading files directly when you need context that LSP doesn't provide (comments, logic flow, etc.).
