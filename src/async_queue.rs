@@ -5,8 +5,7 @@ use std::sync::{
 
 use bevy::tasks::AsyncComputeTaskPool;
 
-use super::*;
-
+use crate::prelude::*;
 pub struct AsyncQueuePlugin;
 
 #[derive(Resource, Default)]

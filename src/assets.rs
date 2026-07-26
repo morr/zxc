@@ -1,5 +1,7 @@
-use crate::*;
-
+use crate::prelude::*;
+use bevy_asset_loader::prelude::{
+    AssetCollection, ConfigureLoadingState, LoadingStateAppExt, LoadingStateConfig,
+};
 pub struct AssetsPlugin;
 
 impl Plugin for AssetsPlugin {

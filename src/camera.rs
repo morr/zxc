@@ -1,4 +1,4 @@
-use super::*;
+use crate::prelude::*;
 use bevy_pancam::PanCam;
 use bevy_pancam::PanCamPlugin;
 
