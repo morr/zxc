@@ -1,7 +1,11 @@
 use crate::prelude::*;
 mod components;
 mod systems;
-pub use self::{components::*, systems::*};
+pub use self::components::*;
+pub use self::systems::progress_pawn_dying;
+use self::systems::{
+    on_new_day_age_pawns, on_pawn_death, on_pawn_entity_state_change, spawn_pawns,
+};
 use crate::structure::spawn_base;
 
 pub struct PawnPlugin;

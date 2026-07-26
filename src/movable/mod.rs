@@ -1,7 +1,8 @@
 use crate::prelude::*;
 mod components;
 mod systems;
-pub use self::{components::*, systems::*};
+pub use self::components::*;
+use self::systems::{move_moving_entities, on_pawn_death_stop_movement};
 
 pub struct MovablePlugin;
 

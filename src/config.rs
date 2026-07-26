@@ -6,8 +6,6 @@ use std::sync::Arc;
 pub use std::sync::LazyLock;
 use std::{fs::File, io::Read};
 
-use crate::DebugNoiseState;
-
 pub const TILE_Z_INDEX: f32 = 0.0;
 pub const PROP_Z_INDEX: f32 = 5.0;
 pub const STRUCTURE_Z_INDEX: f32 = 10.0;
@@ -92,6 +90,15 @@ pub struct AppConfig {
     pub resolution: (u32, u32),
 }
 
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States, Reflect, Deserialize, Serialize)]
+pub enum DebugNoiseState {
+    #[default]
+    Hidden,
+    HeightNoise,
+    HumidityNoise,
+    PropsNoise,
+}
+
 #[derive(Reflect, Deserialize, Serialize, Clone, Debug)]
 pub struct DebugConfig {
     pub is_grid: bool,
@@ -116,7 +123,7 @@ pub struct PerlinNoiseConfig {
     pub persistence: f64,
     pub offset_x: i32,
     pub offset_y: i32,
-    pub distortion: crate::generator::perlin_noise::NoiseDistortion,
+    pub distortion: crate::map::generator::perlin_noise::NoiseDistortion,
 }
 
 #[derive(Reflect, Deserialize, Serialize, Clone, Debug)]

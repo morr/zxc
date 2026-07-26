@@ -12,8 +12,12 @@ use crate::structure::Warehouse;
 use crate::structure::Well;
 pub const BASE_WIDTH: i32 = 8;
 pub const BASE_HEIGHT: i32 = 14;
+// house/well отключены в StructurePlugin (см. mod.rs), спавнеры сохранены
+#[allow(dead_code)]
 pub const HOUSE_WIDTH: i32 = 4;
+#[allow(dead_code)]
 pub const HOUSE_HEIGHT: i32 = 4;
+#[allow(dead_code)]
 pub const WELL_SIZE: i32 = 2;
 pub const FARM_TILE_SIZE: i32 = 1;
 pub const BED_SIZE: i32 = 1;
@@ -77,6 +81,7 @@ pub fn spawn_farm(
     }
 }
 
+#[allow(dead_code)]
 pub fn spawn_house(
     mut commands: Commands,
     assets: Res<TextureAssets>,
@@ -108,6 +113,7 @@ pub fn spawn_house(
     )
 }
 
+#[allow(dead_code)]
 pub fn spawn_well(
     mut commands: Commands,
     assets: Res<TextureAssets>,

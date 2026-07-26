@@ -2,12 +2,12 @@ use crate::ui::headline_text_bundle;
 
 use crate::assets::FontAssets;
 use crate::async_queue::AsyncQueueCounter;
+use crate::config::DebugNoiseState;
 use crate::events::StateChangeEvent;
 use crate::prelude::*;
 use crate::ui::DebugGridState;
 use crate::ui::DebugMovepathState;
 use crate::ui::DebugNavmeshState;
-use crate::ui::DebugNoiseState;
 use crate::ui::UI_WINDOWS_GAP;
 use crate::ui::debug_ui_window_node;
 #[derive(Component, Default)]

@@ -1,16 +1,7 @@
-pub use bevy::prelude::*;
-pub use bevy_asset_loader::prelude::*;
-pub use bevy_inspector_egui::prelude::*;
-pub use std::sync::LazyLock;
-// pub use bevy_magic_light_2d::prelude::*;
-
 pub mod events;
 mod macros;
 pub mod prelude;
 pub mod state;
-
-// ВРЕМЕННО: снимается в 4.5 вместе с остальными плоскими реэкспортами
-pub use crate::{events::*, state::*};
 
 pub mod ai;
 pub mod assets;
@@ -33,10 +24,3 @@ pub mod tasks_queue;
 pub mod ui;
 pub mod user_selection;
 pub mod workable;
-
-// ВРЕМЕННО: плоские реэкспорты, снимаются в 4.5
-pub use crate::{
-    ai::*, assets::*, async_queue::*, camera::*, carryable::*, commandable::*, config::*,
-    daylight::*, feedable::*, input::*, map::*, movable::*, navigation::*, pawn::*, restable::*,
-    story_time::*, structure::*, tasks_queue::*, ui::*, user_selection::*, workable::*,
-};

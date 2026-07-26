@@ -1,7 +1,8 @@
 use crate::prelude::*;
 mod components;
 mod systems;
-pub use self::{components::*, systems::*};
+pub use self::components::*;
+use self::systems::on_click_stage0;
 
 pub struct UserSelectPlugin;
 

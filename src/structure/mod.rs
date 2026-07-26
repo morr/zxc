@@ -4,7 +4,11 @@ mod components;
 mod farm;
 mod storage;
 mod systems;
-pub use self::{bed::*, components::*, farm::*, storage::*, systems::*};
+pub use self::systems::{
+    BASE_HEIGHT, BASE_WIDTH, BED_SIZE, FARM_TILE_SIZE, STORAGE_SIZE, spawn_base,
+};
+use self::systems::{spawn_bed, spawn_farm, spawn_storage};
+pub use self::{bed::*, components::*, farm::*, storage::*};
 
 pub struct StructurePlugin;
 

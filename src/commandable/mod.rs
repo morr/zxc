@@ -10,9 +10,10 @@ mod systems;
 mod to_rest_command;
 mod user_selection_command;
 mod work_on_command;
+use self::systems::{on_command_complete, on_interrupt_command, process_pending_commands};
 pub use self::{
     complete_task_command::*, components::*, drop_carried_item_command::*, feed_command::*,
-    move_to_command::*, pick_up_item_command::*, sleep_command::*, systems::*, to_rest_command::*,
+    move_to_command::*, pick_up_item_command::*, sleep_command::*, to_rest_command::*,
     user_selection_command::*, work_on_command::*,
 };
 

@@ -1,7 +1,8 @@
 use crate::prelude::*;
 mod components;
 mod systems;
-pub use self::{components::*, systems::*};
+pub use self::components::*;
+use self::systems::{on_work_complete, progress_work};
 
 pub struct WorkablePlugin;
 

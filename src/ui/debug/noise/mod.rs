@@ -3,6 +3,7 @@ mod components;
 mod systems;
 mod utils;
 pub use self::{components::*, systems::*, utils::*};
+use crate::config::DebugNoiseState;
 use crate::events::StateChangeEvent;
 use crate::map::generate_map;
 

@@ -4,7 +4,20 @@ mod pawn {
     use std::time::Duration;
 
     use bevy::time::{TimePlugin, TimeUpdateStrategy};
-    use zxc::*;
+    use zxc::commandable::Commandable;
+    use zxc::commandable::CommandablePlugin;
+    use zxc::pawn::DyingMarker;
+    use zxc::pawn::Pawn;
+    use zxc::pawn::PawnDeathEvent;
+    use zxc::pawn::PawnDeathReason;
+    use zxc::pawn::PawnPlugin;
+    use zxc::pawn::PawnState;
+    use zxc::pawn::progress_pawn_dying;
+    use zxc::prelude::*;
+    use zxc::restable::Restable;
+    use zxc::restable::RestablePlugin;
+    use zxc::structure::BedPlugin;
+    use zxc::workable::WorkablePlugin;
 
     #[test]
     fn lifetime_loss_to_zero_leads_to_death_event() {

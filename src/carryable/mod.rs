@@ -1,7 +1,10 @@
 use crate::prelude::*;
 mod components;
 mod systems;
-pub use self::{components::*, systems::*};
+pub use self::components::*;
+use self::systems::{
+    on_merge_carryable, on_spawn_carryable, on_store_carryable, spawn_initial_items,
+};
 
 pub struct CarryablePlugin;
 

@@ -2,12 +2,12 @@ use bevy::ecs::system::IntoObserverSystem;
 use bevy::ui_widgets::{Activate, Button};
 
 use crate::assets::FontAssets;
+use crate::config::DebugNoiseState;
 use crate::events::StateChangeEvent;
 use crate::prelude::*;
 use crate::ui::DebugGridState;
 use crate::ui::DebugMovepathState;
 use crate::ui::DebugNavmeshState;
-use crate::ui::DebugNoiseState;
 use crate::ui::DebugUiContainerMarker;
 use crate::ui::UiOpacity;
 use crate::ui::ui_color;

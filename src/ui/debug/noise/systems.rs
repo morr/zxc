@@ -1,9 +1,9 @@
+use crate::config::DebugNoiseState;
 use crate::events::StateChangeEvent;
 use crate::map::RebuildMapCompleteEvent;
 use crate::map::TileGrid;
 use crate::prelude::*;
 use crate::ui::DebugNoise;
-use crate::ui::DebugNoiseState;
 use crate::ui::NoiseType;
 use crate::ui::NoiseVisual;
 use crate::ui::NoiseVisuals;

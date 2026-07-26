@@ -2,7 +2,8 @@ use crate::prelude::*;
 mod components;
 mod systems;
 mod utils;
-pub use self::{components::*, systems::*, utils::*};
+use self::systems::{apply_config_starting_scene_time_options, modify_time, track_time};
+pub use self::{components::*, utils::*};
 
 pub struct StoryTimePlugin;
 

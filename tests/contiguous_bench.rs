@@ -6,7 +6,9 @@ mod apply_default_global_config;
 mod contiguous_bench {
     use std::time::Instant;
 
-    use zxc::*;
+    use zxc::feedable::Feedable;
+    use zxc::prelude::*;
+    use zxc::restable::Restable;
 
     const ENTITIES: usize = 2000;
     const ITERATIONS: usize = 10_000;

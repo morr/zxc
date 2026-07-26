@@ -4,7 +4,9 @@ pub mod generator;
 mod systems;
 mod tileset;
 mod utils;
-pub use self::{components::*, systems::*, tileset::*, utils::*};
+pub use self::systems::generate_map;
+use self::systems::on_rebuild_map;
+pub use self::{components::*, tileset::*, utils::*};
 
 pub struct MapPlugin;
 impl Plugin for MapPlugin {

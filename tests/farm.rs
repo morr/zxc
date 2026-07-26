@@ -1,7 +1,9 @@
 mod apply_default_global_config;
 
 mod farm {
-    use zxc::*;
+    use zxc::prelude::*;
+    use zxc::structure::Farm;
+    use zxc::structure::FarmState;
 
     #[test]
     fn not_tended_yield() {

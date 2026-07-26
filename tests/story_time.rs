@@ -1,7 +1,18 @@
 mod apply_default_global_config;
 
 mod story_time {
-    use zxc::*;
+    use zxc::prelude::*;
+    use zxc::story_time;
+    use zxc::story_time::YearSeason;
+    use zxc::story_time::current_day_hour;
+    use zxc::story_time::current_day_normalized_time;
+    use zxc::story_time::current_hour_minute;
+    use zxc::story_time::current_season_day;
+    use zxc::story_time::current_year;
+    use zxc::story_time::current_year_day;
+    use zxc::story_time::current_year_season;
+    use zxc::story_time::total_days;
+    use zxc::story_time::total_seconds;
 
     fn day_to_seconds(amount: f32) -> f32 {
         config().time.day_duration * amount

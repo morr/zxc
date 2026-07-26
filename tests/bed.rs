@@ -1,5 +1,12 @@
 mod bed {
-    use zxc::*;
+    use zxc::config::apply_global_config;
+    use zxc::config::load_config;
+    use zxc::navigation::ArcNavmesh;
+    use zxc::navigation::NavigationPlugin;
+    use zxc::prelude::*;
+    use zxc::structure::AvailableBeds;
+    use zxc::structure::Bed;
+    use zxc::structure::BedPlugin;
 
     #[test]
     fn no_beds_spawned() {

@@ -1,7 +1,9 @@
 mod apply_default_global_config;
 
 mod config_tests {
-    use zxc::*;
+    use zxc::config::RootConfig;
+    use zxc::config::on_root_config_changed;
+    use zxc::prelude::*;
 
     /// A runtime edit of the `RootConfig` resource must recalculate derived
     /// fields and re-publish the `config()` snapshot.
@@ -44,7 +46,8 @@ mod config_tests {
 mod bench {
     use std::sync::OnceLock;
     use std::time::Instant;
-    use zxc::*;
+    use zxc::config::RootConfig;
+    use zxc::prelude::*;
 
     /// Compares the cost of the old `OnceLock<&'static>` config access with
     /// the current `ArcSwap` one. Run with:

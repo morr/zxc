@@ -1,14 +1,4 @@
 use crate::prelude::*;
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States, Reflect, Deserialize, Serialize)]
-pub enum DebugNoiseState {
-    #[default]
-    Hidden,
-    HeightNoise,
-    HumidityNoise,
-    PropsNoise,
-}
 
 #[derive(Component)]
 pub struct DebugNoise;
