@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
 pub use std::sync::LazyLock;
-use std::{fs::File, io::Read, sync::OnceLock};
+use std::sync::{Arc, RwLock};
+use std::{fs::File, io::Read};
 
 use crate::DebugNoiseState;
 
@@ -25,22 +26,29 @@ pub fn load_config() -> RootConfig {
     config
 }
 
-pub static CONFIG: OnceLock<RootConfig> = OnceLock::new();
+static CONFIG: RwLock<Option<Arc<RootConfig>>> = RwLock::new(None);
 
 pub fn apply_global_config(config: RootConfig) {
-    CONFIG.set(config).expect("Failed to set global config");
+    *CONFIG.write().expect("config lock poisoned") = Some(Arc::new(config));
 }
 
-pub fn config() -> &'static RootConfig {
-    CONFIG.get().expect("Config not initialized")
+pub fn config() -> Arc<RootConfig> {
+    CONFIG
+        .read()
+        .expect("config lock poisoned")
+        .clone()
+        .expect("Config not initialized")
 }
 
 /// Config exists in two forms:
-/// - the `CONFIG` static (`config()`): an immutable startup snapshot used by
-///   hot paths and places without ECS access; it NEVER changes at runtime;
-/// - the `RootConfig` ECS resource: the same data, visible and editable via
-///   the inspector / BRP. `on_root_config_changed` recalculates derived
-///   fields after runtime edits. Only readers of `Res<RootConfig>` see them.
+/// - the `RootConfig` ECS resource: the source of truth, visible and editable
+///   via the inspector / BRP;
+/// - the `CONFIG` static (`config()`): a snapshot for code without ECS access
+///   (coordinate helpers, `Default` impls, required-component constructors).
+///
+/// After a runtime edit of the resource, `on_root_config_changed` recalculates
+/// derived fields and re-publishes the snapshot, so `config()` readers see the
+/// edit too (from their next call; values captured at spawn stay as spawned).
 ///
 /// Prefer `Res<RootConfig>` in new code.
 #[derive(Resource, Reflect, Deserialize, Serialize, Clone, Debug)]
@@ -255,10 +263,12 @@ impl FeedableConfig {
 }
 
 /// Recalculates derived fields after the `RootConfig` resource is edited at
-/// runtime (inspector / BRP). `bypass_change_detection` prevents the write
-/// from re-triggering the `resource_changed` run condition forever.
+/// runtime (inspector / BRP) and re-publishes the `config()` snapshot from it.
+/// `bypass_change_detection` prevents the write from re-triggering the
+/// `resource_changed` run condition forever.
 pub fn on_root_config_changed(mut config: ResMut<RootConfig>) {
     let config = config.bypass_change_detection();
     config.calculate_derived_fields();
-    info!("RootConfig changed, derived fields recalculated");
+    apply_global_config(config.clone());
+    info!("RootConfig changed, derived fields recalculated and republished");
 }
