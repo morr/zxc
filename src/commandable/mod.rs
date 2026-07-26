@@ -44,8 +44,8 @@ impl Plugin for CommandablePlugin {
 #[macro_export]
 macro_rules! interrupt_commandable_commands_queue {
     ($commands:expr, $entity:expr) => {
-        $commands.trigger(log_event!(ExternalCommandInterruptEvent {
-            entity: $entity
-        }));
+        $commands.trigger($crate::log_event!(
+            $crate::commandable::ExternalCommandInterruptEvent { entity: $entity }
+        ));
     };
 }

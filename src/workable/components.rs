@@ -1,5 +1,8 @@
-use super::*;
-
+use crate::commandable::WorkOnCommand;
+use crate::interrupt_commandable_commands_queue;
+use crate::prelude::*;
+use bevy_inspector_egui::prelude::InspectorOptions;
+use bevy_inspector_egui::prelude::ReflectInspectorOptions;
 #[derive(Component, Debug, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
 pub struct Workable {

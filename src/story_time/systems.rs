@@ -1,5 +1,6 @@
-use super::*;
-
+use crate::prelude::*;
+use crate::story_time::NewDayEvent;
+use crate::story_time::total_days;
 pub fn apply_config_starting_scene_time_options(mut time: ResMut<Time<Virtual>>) {
     time.set_relative_speed(config().starting_scene.time_scale);
 

@@ -1,5 +1,12 @@
-use super::*;
-
+use crate::commandable::WorkOnCommand;
+use crate::prelude::*;
+use crate::structure::FarmProgressEvent;
+use crate::structure::FarmTendedEvent;
+use crate::workable::WorkCompleteEvent;
+use crate::workable::WorkKind;
+use crate::workable::Workable;
+use crate::workable::WorkableState;
+use crate::workable::workable_state;
 pub fn progress_work(
     mut commands: Commands,
     mut workable_query: Query<

@@ -1,5 +1,4 @@
-use crate::*;
-
+use crate::prelude::*;
 mod components;
 mod systems;
 mod utils;
