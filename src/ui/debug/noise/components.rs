@@ -1,13 +1,13 @@
-use serde::{Deserialize, Serialize};
 use super::*;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States, Deserialize, Serialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States, Reflect, Deserialize, Serialize)]
 pub enum DebugNoiseState {
     #[default]
     Hidden,
     HeightNoise,
     HumidityNoise,
-    PropsNoise
+    PropsNoise,
 }
 
 #[derive(Component)]
@@ -16,7 +16,7 @@ pub struct DebugNoise;
 pub enum NoiseType {
     Height,
     Humidity,
-    Props
+    Props,
 }
 
 #[derive(Resource)]
@@ -31,5 +31,5 @@ pub struct NoiseVisual {
     pub texture_handle: Handle<Image>,
     pub mesh_handle: Handle<Mesh>,
     pub material_handle: Handle<ColorMaterial>,
-    pub is_synced: bool
+    pub is_synced: bool,
 }

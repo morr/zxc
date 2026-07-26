@@ -18,7 +18,7 @@ impl Plugin for PerlinNoisePlugin {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Reflect, Serialize, Deserialize)]
 pub enum NoiseDistortion {
     RawValue,
     EdgeShape,

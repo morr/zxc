@@ -51,9 +51,9 @@ impl Restable {
 
     pub fn progress_fatigue(&mut self, time_amount: f32) {
         let amount = match self.state {
-            RestableState::Activity => time_amount * config().restable.activity_cost,
+            RestableState::Activity => time_amount * config().restable.activity_cost_per_second,
             RestableState::Resting(sleep_quality_multiplier) => {
-                config().restable.resting_cost * time_amount * sleep_quality_multiplier
+                config().restable.resting_cost_per_second * time_amount * sleep_quality_multiplier
             }
             RestableState::Dead => 0.0,
         };

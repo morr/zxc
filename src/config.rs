@@ -1,4 +1,4 @@
-use bevy::prelude::Resource;
+use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
 pub use std::sync::LazyLock;
 use std::{fs::File, io::Read, sync::OnceLock};
@@ -35,7 +35,16 @@ pub fn config() -> &'static RootConfig {
     CONFIG.get().expect("Config not initialized")
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+/// Config exists in two forms:
+/// - the `CONFIG` static (`config()`): an immutable startup snapshot used by
+///   hot paths and places without ECS access; it NEVER changes at runtime;
+/// - the `RootConfig` ECS resource: the same data, visible and editable via
+///   the inspector / BRP. `on_root_config_changed` recalculates derived
+///   fields after runtime edits. Only readers of `Res<RootConfig>` see them.
+///
+/// Prefer `Res<RootConfig>` in new code.
+#[derive(Resource, Reflect, Deserialize, Serialize, Clone, Debug)]
+#[reflect(Resource)]
 pub struct RootConfig {
     pub app: AppConfig,
     pub debug: DebugConfig,
@@ -60,19 +69,20 @@ impl RootConfig {
     }
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Reflect, Deserialize, Serialize, Clone, Debug)]
 pub struct AppConfig {
     pub resolution: (u32, u32),
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Reflect, Deserialize, Serialize, Clone, Debug)]
 pub struct DebugConfig {
     pub is_grid: bool,
     pub is_navmesh: bool,
     pub noise_state: DebugNoiseState,
 }
 
-#[derive(Resource, Deserialize, Serialize, Clone, Debug)]
+#[derive(Resource, Reflect, Deserialize, Serialize, Clone, Debug)]
+#[reflect(Resource)]
 pub struct MapGeneratorConfig {
     pub auto_generate: bool,
     pub seed: Option<u64>,
@@ -80,7 +90,7 @@ pub struct MapGeneratorConfig {
     pub props_noise: PerlinNoiseConfig,
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Reflect, Deserialize, Serialize, Clone, Debug)]
 pub struct PerlinNoiseConfig {
     pub frequency: f64,
     pub octaves: usize,
@@ -91,7 +101,7 @@ pub struct PerlinNoiseConfig {
     pub distortion: crate::generator::perlin_noise::NoiseDistortion,
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Reflect, Deserialize, Serialize, Clone, Debug)]
 pub struct GridConfig {
     pub size: i32,
 
@@ -105,13 +115,13 @@ impl GridConfig {
     }
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Reflect, Deserialize, Serialize, Clone, Debug)]
 pub struct TileConfig {
     /// size in pixels
     pub size: f32,
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Reflect, Deserialize, Serialize, Clone, Debug)]
 pub struct StartingSceneConfig {
     pub is_paused: bool,
     pub time_scale: f32,
@@ -125,7 +135,7 @@ pub struct StartingSceneConfig {
 
 const SEASONS_IN_YEAR: u32 = 4;
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Reflect, Deserialize, Serialize, Clone, Debug)]
 pub struct TimeConfig {
     /// in game seconds
     pub day_duration: f32,
@@ -161,7 +171,7 @@ impl TimeConfig {
     }
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Reflect, Deserialize, Serialize, Clone, Debug)]
 pub struct PawnConfig {
     pub speed: f32,
     pub work_force: f32,
@@ -170,7 +180,7 @@ pub struct PawnConfig {
     pub wander_when_idle: bool,
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Reflect, Deserialize, Serialize, Clone, Debug)]
 pub struct FarmingConfig {
     /// percent of `max_yield` for 0 tended tile
     pub basic_yield_percent: f32,
@@ -190,7 +200,7 @@ pub struct FarmingConfig {
     pub tending_rest_hours: f32,
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Reflect, Deserialize, Serialize, Clone, Debug)]
 pub struct MovementCostConfig {
     /// percentage of speed reduction in number between 0.0..=1.0
     /// where 0.0 - impassable, 0.5 - half of normal speed, 1.0 0 normal speed
@@ -200,7 +210,7 @@ pub struct MovementCostConfig {
     pub furniture: f32,
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Reflect, Deserialize, Serialize, Clone, Debug)]
 pub struct RestableConfig {
     pub resting_on_ground_multiplier: f32,
     pub resting_on_bed_multiplier: f32,
@@ -208,20 +218,25 @@ pub struct RestableConfig {
     pub resting_cost: f32,
     /// amount of stamina change per in-game hour of living
     pub activity_cost: f32,
+
+    /// derived: stamina change per virtual second (not in RON)
+    #[serde(skip)]
+    pub resting_cost_per_second: f32,
+    /// derived: stamina change per virtual second (not in RON)
+    #[serde(skip)]
+    pub activity_cost_per_second: f32,
 }
 
 impl RestableConfig {
+    // derived fields must stay a pure function of the RON fields so the
+    // recalculation after a runtime config edit is idempotent
     pub fn calculate_derived_fields(&mut self, time: &TimeConfig) {
-        // convert desired numbers to proper values according to ingame hour duration
-        // self.idle /= time.hour_duration;
-        // self.moving /= time.hour_duration;
-        // self.working /= time.hour_duration;
-        self.resting_cost /= time.hour_duration;
-        self.activity_cost /= time.hour_duration;
+        self.resting_cost_per_second = self.resting_cost / time.hour_duration;
+        self.activity_cost_per_second = self.activity_cost / time.hour_duration;
     }
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Reflect, Deserialize, Serialize, Clone, Debug)]
 pub struct FeedableConfig {
     /// how many food units a pawn consumes per in-game day
     pub food_consumption_per_day: f32,
@@ -237,4 +252,13 @@ impl FeedableConfig {
         self.hunger_drain_per_hour =
             self.food_consumption_per_day * self.hunger_per_food / 24.0 / time.hour_duration;
     }
+}
+
+/// Recalculates derived fields after the `RootConfig` resource is edited at
+/// runtime (inspector / BRP). `bypass_change_detection` prevents the write
+/// from re-triggering the `resource_changed` run condition forever.
+pub fn on_root_config_changed(mut config: ResMut<RootConfig>) {
+    let config = config.bypass_change_detection();
+    config.calculate_derived_fields();
+    info!("RootConfig changed, derived fields recalculated");
 }

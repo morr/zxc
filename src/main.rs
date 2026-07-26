@@ -7,10 +7,15 @@ use bevy::remote::{RemotePlugin, http::RemoteHttpPlugin};
 use zxc::*;
 
 fn main() {
-    apply_global_config(load_config());
+    let root_config = load_config();
+    apply_global_config(root_config.clone());
 
     let mut app = App::new();
-    app
+    app.insert_resource(root_config)
+        .add_systems(
+            Update,
+            on_root_config_changed.run_if(resource_changed::<RootConfig>),
+        )
         // .insert_resource(CONFIG.get().unwrap().clone())
         .add_plugins(
             DefaultPlugins
