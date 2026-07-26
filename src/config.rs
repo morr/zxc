@@ -3,7 +3,6 @@ use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use std::sync::Arc;
-pub use std::sync::LazyLock;
 use std::{fs::File, io::Read};
 
 pub const TILE_Z_INDEX: f32 = 0.0;
