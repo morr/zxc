@@ -109,7 +109,44 @@ Query<&Pawn, (With<PawnStateIdleTag>, Without<DyingMarker>)>
 
 Archetypal filtering skips whole tables; `Option<&T>` + `continue` does not.
 
-## 12. Forgetting to register the plugin / observer
+## 12. Observer run conditions silently drop events
+
+`add_observer(handler.run_if(in_state(..)))`: if the condition is false when the
+event fires, the event is **gone** — observers have no queue (unlike `Message`s,
+which wait in their buffer). Gate an observer only when losing the event is
+acceptable; never gate one that mutates a resource or must not miss traffic.
+
+## 13. Mirroring `States` transitions with a custom event
+
+For app-level `States` types, react in `OnEnter(..)` / `OnExit(..)` schedules
+(+ `DespawnOnExit`). Don't pair every `NextState::set` with a hand-made
+state-change event — dual-fire desyncs the moment one call site forgets.
+(Per-entity state machines are a different thing: those go through
+`change_state` + tags, see ecs_patterns.md.)
+
+## 14. Expecting `bevy_ui` panels to block world input
+
+Clicks and hover pass straight through `Node` panels to the game's own cursor
+logic. Guard world-input systems with `Res<HoverMap>`
+(`bevy::picking::hover`): early-return when the pointer is over any entity with
+`Node`. The existing `EguiWantsFocus` guard covers egui only.
+
+## 15. `TextUiWriter` for single-section text; ungated text refresh
+
+`TextUiWriter` is for multi-span text blocks. For plain single-section `Text`
+(all of ZXC), use `Query<&mut Text, With<Marker>>` / `Single<&mut Text, ..>`.
+Gate refresh systems with `run_if(resource_changed::<T>)` or `Changed<T>` —
+unconditionally rewriting the string dirties `Text` and forces relayout every
+tick.
+
+## 16. "Modernizing" manual tick accumulation into `Timer` / `on_timer`
+
+`restable.rs` / `feedable.rs` accumulate `Local<f32>` deltas deliberately: at
+5000× time_scale `on_timer` fires at most once per frame and *loses time*,
+while the manual accumulator carries the full scaled delta into
+`progress_*(time_amount)`. Don't refactor it away.
+
+## 17. Forgetting to register the plugin / observer
 
 A new system or observer does nothing until it appears in the feature's
 `impl Plugin::build`, and a new feature does nothing until its plugin is added in

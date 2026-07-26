@@ -79,6 +79,15 @@ TextFont {
 `bevy::scene` → `bevy::world_serialization`; `DefaultErrorHandler` → `FallbackErrorHandler`;
 `schedule.set_executor_kind(..)` → `schedule.set_executor(MultiThreadedExecutor::new())`.
 
+**Also commonly written wrong** (details in `references/api_0_19.md` § "APIs
+pre-0.19 priors don't know"): poll a `Task` with
+`bevy::tasks::futures::check_ready(&mut task)`, not `block_on(poll_once(..))`;
+2D cursor→world is `camera.viewport_to_world_2d(..)`, not the ray-based 3D
+variant; guard world input against UI with `Res<HoverMap>`; observer
+`run_if` **drops** the event when false (no queue); app-level `States`
+transitions are handled in `OnEnter`/`OnExit`, never mirrored with a custom
+event.
+
 For the full sweep see `references/api_0_19.md`.
 
 ## This project's conventions
