@@ -1,8 +1,32 @@
 use rand::Rng;
 use rand_distr::num_traits::Zero;
 
-use super::*;
-
+use crate::assets::AssetsCollection;
+use crate::assets::FontAssets;
+use crate::assets::MeshesCollection;
+use crate::commandable::CommandType;
+use crate::commandable::Commandable;
+use crate::events::EntityStateChangeEvent;
+use crate::map::WorldTranslationHelper;
+use crate::navigation::ArcNavmesh;
+use crate::navigation::OccupationChangeEvent;
+use crate::pawn::DyingMarker;
+use crate::pawn::Pawn;
+use crate::pawn::PawnDeathEvent;
+use crate::pawn::PawnDeathReason;
+use crate::pawn::PawnState;
+use crate::pawn::PawnStateText;
+use crate::pawn::pawn_state;
+use crate::prelude::*;
+use crate::restable::Restable;
+use crate::restable::RestableState;
+use crate::story_time::NewDayEvent;
+use crate::structure::BASE_HEIGHT;
+use crate::structure::BASE_WIDTH;
+use crate::structure::BedOwnedBy;
+use crate::structure::FARM_TILE_SIZE;
+use crate::structure::Farm;
+use crate::structure::OwnedBed;
 #[allow(clippy::too_many_arguments)]
 pub fn spawn_pawns(
     mut commands: Commands,

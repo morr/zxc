@@ -1,5 +1,7 @@
-use super::*;
-
+use crate::map::TileItem;
+use crate::navigation::Navmesh;
+use crate::prelude::*;
+use crate::structure::BED_SIZE;
 pub struct BedPlugin;
 
 impl Plugin for BedPlugin {

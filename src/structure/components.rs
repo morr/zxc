@@ -1,5 +1,4 @@
-use super::*;
-
+use crate::prelude::*;
 #[derive(Component, Reflect, Default)]
 #[require(Name = Name::new("Warehouse"), Sprite, Transform)]
 pub struct Warehouse {}

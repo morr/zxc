@@ -1,8 +1,8 @@
-use crate::*;
-
+use crate::prelude::*;
 mod components;
 mod systems;
 pub use self::{components::*, systems::*};
+use crate::structure::spawn_base;
 
 pub struct PawnPlugin;
 

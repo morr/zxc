@@ -1,4 +1,5 @@
-use super::*;
+use crate::prelude::*;
+use crate::structure::{HarvestedState, PlantedState};
 use std::fmt;
 
 pub struct PlantedStateDebug<'a>(pub &'a PlantedState);

@@ -1,4 +1,4 @@
-use crate::*;
+use crate::prelude::*;
 mod bed;
 mod components;
 mod farm;

@@ -1,5 +1,4 @@
-use super::*;
-
+use crate::prelude::*;
 mod components;
 mod debug_components;
 mod systems;
