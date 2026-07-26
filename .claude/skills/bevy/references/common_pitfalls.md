@@ -1,217 +1,117 @@
-# Common Bevy Pitfalls Reference
+# Common pitfalls — Bevy 0.19 and this repo
 
-## 1. Using Old Event System in Bevy 0.17
+## 1. Writing the pre-0.17 event API
 
-**❌ Problem:**
 ```rust
-// Bevy 0.15/0.16 event system doesn't work in 0.17
-#[derive(Event)]
-struct MyEvent { data: String }
-
-app.add_event::<MyEvent>()
-   .add_systems(Update, handle_event);
-
-fn handle_event(mut events: EventReader<MyEvent>) { /* ... */ }
-fn trigger(mut events: EventWriter<MyEvent>) { /* ... */ }
+// ❌ does not exist in 0.19
+#[derive(Event)] struct Foo;
+app.add_event::<Foo>();
+fn send(mut w: EventWriter<Foo>) { w.send(Foo); }
+fn recv(mut r: EventReader<Foo>) { for e in r.read() {} }
+fn obs(trigger: Trigger<Foo>) { let e = trigger.event(); }
 ```
 
-**Symptoms:**
-- Compilation error: `MyEvent is not a Message`
-- `method 'send' not found for MessageWriter`
-- `method 'read' not found for MessageReader`
-
-**✅ Solution:**
-Migrate to the observer pattern:
 ```rust
-// Bevy 0.17 observer pattern
-#[derive(Event, Clone)]  // Must derive Clone!
-struct MyEvent { data: String }
-
-app.add_observer(handle_event);  // Use observer, not system
-
-fn handle_event(
-    trigger: Trigger<MyEvent>,  // Trigger parameter
-    // ... other params
-) {
-    let event = trigger.event();
-}
-
-fn trigger_event(mut commands: Commands) {
-    commands.trigger(MyEvent { data: "test".into() });
-}
+// ✅
+#[derive(Event, Debug)] struct FooEvent;
+app.add_observer(on_foo.run_if(in_state(AppState::Playing)));
+fn on_foo(event: On<FooEvent>) { /* On<E> derefs to E */ }
+commands.trigger(log_event!(FooEvent));
 ```
 
-See `references/bevy_specific_tips.md` for complete migration guide.
+Symptoms of the old API: `no method named send`, `EventWriter not found`,
+`Trigger not found`, `no method named event`.
 
-## 2. Querying Material Handles in Bevy 0.17
+## 2. Reaching for `On::target()`
 
-**❌ Problem:**
+There is none. `EntityEvent` carries its target in a field — read `event.entity`,
+`event.commandable_entity`, or whatever the struct calls it. If the struct is a
+tuple (`EntityStateChangeEvent(Entity, T)`), read `event.0`.
+
+## 3. `get_single()` / assuming `single()` panics
+
+`single()` and `single_mut()` return `Result` in 0.19:
+
 ```rust
-// Bevy 0.15/0.16 pattern doesn't work in 0.17
-Query<&Handle<StandardMaterial>>
+let Ok(window) = windows.single() else { return };
 ```
 
-**Symptoms:**
-- `Handle<StandardMaterial> is not a Component`
-- Query trait bounds not satisfied
+## 4. `#[derive(Component, Resource)]`
 
-**✅ Solution:**
-Use the `MeshMaterial3d` wrapper:
+Illegal in 0.19 — `Resource` already implies `Component`. Split into two types.
+Related: a very broad query (`Query<EntityMut>`) now conflicts with `Res<T>`
+params; add `Without<IsResource>`.
+
+## 5. Inserting a state tag directly
+
 ```rust
-Query<&MeshMaterial3d<StandardMaterial>>
+// ❌ desyncs the enum from the tag, skips the log line and the state-change event
+commands.entity(entity).insert(pawn_state::PawnStateDeadTag);
 
-// Access handle with .0
-for material_3d in query.iter() {
-    if let Some(material) = materials.get_mut(&material_3d.0) {
-        material.emissive = color;
-    }
-}
+// ✅
+pawn.change_state(PawnState::Dead, entity, &mut commands);
 ```
 
-## 3. Forgetting to Register Systems
+The tags are `immutable` and remove their siblings via an `on_add` hook, so a
+manual insert *looks* like it works — the damage is the missing
+`EntityStateChangeEvent` and the missing `log_state_change!` line, which is what
+UI panels and the `live-app` verification loop both rely on.
 
-**❌ Problem:**
+## 6. `Time<Virtual>` deltas inside `FixedUpdate`
+
 ```rust
-// Created system but forgot to add to app
-pub fn my_new_system() { /* ... */ }
+// ❌ advances time_scale× too fast when FixedUpdate runs several times per frame
+fn tick(time: Res<Time<Virtual>>) { acc += time.delta_secs(); }
+
+// ✅
+fn tick(time: Res<Time>) { acc += time.delta_secs(); }          // Time<Fixed> in FixedUpdate
+fn now(time: Res<Time<Virtual>>) { total_days(time.elapsed_secs()); }  // elapsed only
 ```
 
-**✅ Solution:**
-Always add to `main.rs`:
+Full rule in CLAUDE.md § Bevy Time Types.
+
+## 7. Glob-importing a crate module
+
+`use crate::pawn::*;` trips the `wildcard_imports` clippy lint (CI is
+`-D warnings`). `crate::prelude::*` is the only permitted glob. Adding a symbol to
+the prelude is justified only at ≥10 call sites.
+
+## 8. Expecting BRP to read ZXC components
+
+Most `zxc::` components do not derive `Reflect`, so `world.query` counts them but
+returns `"components": {}`, and `world.get_components` errors "isn't reflectable".
+`filter.with` / `without` still work, so state tags are countable. Verify
+behaviour through the trace log instead. See the `live-app` skill.
+
+## 9. Querying an entity after despawn in the same system
+
+Commands are deferred, so within one system the entity is still there — but by
+the time an observer runs, it may be gone. Always `let Ok(..) = query.get(entity)
+else { return }`; never `.unwrap()` on a query result keyed by an entity that
+another system might have despawned.
+
+## 10. Adding `--features bevy/dynamic_linking`
+
+Already enabled in `Cargo.toml`. Passing it again just invalidates the feature
+resolution and triggers a full rebuild. Related: avoid `cargo clean`, and if
+`cargo run` dies with `failed to build archive … libbevy_*.rlib`, re-run
+`cargo build` — it's a known `dynamic_linking` artifact, not a code error.
+
+## 11. Filtering inside the loop instead of the query
+
 ```rust
-.add_systems(Update, my_new_system)
+// ❌
+for (pawn, tag) in query.iter() { if tag.is_none() { continue } }
+
+// ✅
+Query<&Pawn, (With<PawnStateIdleTag>, Without<DyingMarker>)>
 ```
 
-## 2. Borrowing Conflicts
+Archetypal filtering skips whole tables; `Option<&T>` + `continue` does not.
 
-**❌ Problem:**
-```rust
-// Can't have multiple mutable borrows
-mut query1: Query<&mut Transform>,
-mut query2: Query<&mut Transform>,  // Error!
-```
+## 12. Forgetting to register the plugin / observer
 
-**✅ Solution:**
-```rust
-// Use get_many_mut for specific entities
-mut query: Query<&mut Transform>,
-
-if let Ok([mut a, mut b]) = query.get_many_mut([entity_a, entity_b]) {
-    // Can mutate both
-}
-```
-
-## 3. Infinite Loops with Events
-
-**❌ Problem:**
-```rust
-// System reads and writes same event type
-fn system(
-    mut events: EventWriter<MyEvent>,
-    reader: EventReader<MyEvent>,
-) {
-    for event in reader.read() {
-        events.send(MyEvent);  // Infinite loop!
-    }
-}
-```
-
-**✅ Solution:**
-Use different event types or add termination condition.
-
-## 4. Not Using Changed<T>
-
-**❌ Problem:**
-```rust
-// Runs every frame for every entity
-fn system(query: Query<&BigFive>) {
-    for traits in query.iter() {
-        // Expensive calculation every frame
-    }
-}
-```
-
-**✅ Solution:**
-```rust
-// Only runs when BigFive changes
-fn system(query: Query<&BigFive, Changed<BigFive>>) {
-    for traits in query.iter() {
-        // Only when needed
-    }
-}
-```
-
-## 5. Entity Queries After Despawn
-
-**❌ Problem:**
-```rust
-commands.entity(entity).despawn();
-// Later in same system
-let component = query.get(entity).unwrap();  // Crash!
-```
-
-**✅ Solution:**
-Commands apply at end of stage. Use `Ok()` pattern:
-```rust
-if let Ok(component) = query.get(entity) {
-    // Safe
-}
-```
-
-## 6. Material/Asset Handle Confusion
-
-**❌ Problem:**
-```rust
-// Created material but didn't store handle
-materials.add(StandardMaterial { .. });  // Handle dropped!
-```
-
-**✅ Solution:**
-```rust
-let material_handle = materials.add(StandardMaterial { .. });
-commands.spawn((
-    MeshMaterial3d(material_handle),
-    // ...
-));
-```
-
-## 7. System Ordering Issues
-
-**❌ Problem:**
-```rust
-// UI updates before state changes
-.add_systems(Update, (
-    update_ui,
-    process_input,  // Wrong order!
-))
-```
-
-**✅ Solution:**
-Order systems by dependencies:
-```rust
-.add_systems(Update, (
-    // Input processing
-    process_input,
-
-    // State changes
-    update_state,
-
-    // UI updates (reads state)
-    update_ui,
-))
-```
-
-## 8. Not Filtering Queries Early
-
-**❌ Problem:**
-```rust
-// Filter in loop (inefficient)
-Query<(&A, Option<&B>, Option<&C>)>
-// Then check in loop
-```
-
-**✅ Solution:**
-```rust
-// Filter in query (efficient)
-Query<&A, (With<B>, Without<C>)>
-```
+A new system or observer does nothing until it appears in the feature's
+`impl Plugin::build`, and a new feature does nothing until its plugin is added in
+`main.rs`. Silent no-op, green build — check registration first when new code
+"doesn't run".

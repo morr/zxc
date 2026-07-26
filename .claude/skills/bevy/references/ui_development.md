@@ -1,147 +1,101 @@
-# Bevy UI Development Reference
+# UI in ZXC
 
-## Bevy UI Hierarchy
+Two separate stacks, don't mix them up:
 
-Bevy UI uses a flexbox-like layout system:
+- **Gameplay UI** — plain `bevy_ui` (`Node` / `Text`), one plugin per panel under
+  `src/ui/`. This is what the player sees.
+- **Debug UI** — `bevy_egui` + `bevy-inspector-egui`, under `src/ui/debug/`,
+  behind `#[cfg(feature = "debug_ui")]`. Immediate-mode, no entities.
+
+`UiPlugin` (`src/ui/mod.rs`) aggregates the panel plugins: `UiSimulationStatePlugin`,
+`UiItemsStockPlugin`, `UiPawnPlugin`, `UiFarmPlugin`, `UiBedPlugin`,
+`UiCarryablePlugin`, `UiStoragePlugin`, `UiHoveredPlugin`, `UiUserSelectedPlugin`,
+`UiDebugPlugin`. `UiPlugin` itself is registered in `main.rs` under the
+`debug_ui` feature.
+
+## Shared style vocabulary
 
 ```rust
-commands
-    .spawn((
-        Node {
-            position_type: PositionType::Absolute,
-            left: Val::Px(10.0),
-            top: Val::Px(10.0),
-            width: Val::Px(300.0),
-            padding: UiRect::all(Val::Px(10.0)),
-            flex_direction: FlexDirection::Column,
-            ..default()
-        },
-        BackgroundColor(Color::srgba(0.1, 0.1, 0.1, 0.9)),
-    ))
-    .with_children(|parent| {
-        parent.spawn((
-            Text::new("Title"),
-            TextFont { font_size: 16.0, ..default() },
-            TextColor(Color::WHITE),
-        ));
-    });
+pub static UI_COLOR: LazyLock<Color> = /* hex "181a1c" */;
+pub static UI_SCREEN_EDGE_PX_OFFSET: Val = Val::Px(8.);
+pub static UI_WINDOWS_GAP: Val = Val::Px(25.);
+
+pub enum UiOpacity { Light, Medium, Heavy }   // 0.25 / 0.65 / 0.85
+pub fn ui_color(opacity: UiOpacity) -> Color;
 ```
 
-## UI Component Pattern
+Use these instead of literal colors or spacings. Panels are built from the bundle
+helpers in `src/ui/mod.rs` rather than hand-written `Node`s:
 
-**1. Marker Components for UI Elements**
-```rust
-#[derive(Component)]
-pub struct SpellBar;
+- `render_entity_node_bunlde::<T>(target_id, opacity)` — root panel bound to an entity
+- `render_node_bunlde::<T>(opacity)` — root panel with no entity target
+- `render_entity_component_node_bunlde::<T>()` — a column section inside a panel
+- `headline_text_bundle(text, &font_assets)` — 18 px title
+- `property_text_bundle::<T>(text, &font_assets)` — 16 px labelled value
 
-#[derive(Component)]
-pub struct HoverTooltip;
+(The `bunlde` typo is the existing spelling — match it, don't half-rename.)
 
-#[derive(Component)]
-pub struct InspectPanel;
-```
+## 0.19 node / text API
 
-**2. Setup System (Startup)**
-```rust
-pub fn setup_ui(mut commands: Commands) {
-    commands.spawn((
-        SpellBar,
-        Node { /* layout */ },
-        BackgroundColor(/* color */),
-    ))
-    .with_children(|parent| {
-        // Child elements
-    });
-}
-```
-
-**3. Update System (Update)**
-```rust
-pub fn update_ui(
-    state: Res<GameState>,
-    mut query: Query<&mut Text, With<SpellBar>>,
-) {
-    for mut text in query.iter_mut() {
-        **text = format!("State: {:?}", state);
-    }
-}
-```
-
-## UI Best Practices
-
-### Layout Tips
-
-- Use `Val::Px()` for fixed sizes
-- Use `Val::Percent()` for responsive layouts
-- Use `flex_direction: FlexDirection::Column` for vertical stacking
-- Use `flex_direction: FlexDirection::Row` for horizontal stacking
-- Use `justify_content` and `align_items` for alignment
-
-### Positioning
-
-**Absolute positioning (HUD elements):**
 ```rust
 Node {
-    position_type: PositionType::Absolute,
-    left: Val::Px(10.0),
-    top: Val::Px(10.0),
+    display: Display::Flex,
+    flex_direction: FlexDirection::Column,
+    row_gap: px(10.),
+    padding: UiRect { top: px(10.), right: px(10.), bottom: px(10.), left: px(10.) },
+    width: px(300.),
     ..default()
-}
-```
+},
+BackgroundColor(ui_color(UiOpacity::Medium)),
 
-**Centered element:**
-```rust
-Node {
-    position_type: PositionType::Absolute,
-    left: Val::Percent(50.0),
-    top: Val::Percent(50.0),
-    margin: UiRect {
-        left: Val::Px(-150.0),  // Half of width
-        top: Val::Px(-100.0),   // Half of height
-        ..default()
-    },
-    width: Val::Px(300.0),
-    height: Val::Px(200.0),
+Text(text),
+TextFont {
+    font: font_assets.fira.clone().into(),   // FontSource — `.into()` from Handle<Font>
+    font_size: FontSize::Px(16.),            // NOT a bare f32
     ..default()
+},
+TextColor(Color::WHITE),
+```
+
+- `px(..)` / `percent(..)` are free functions; `Val::Px(..)` still works and is
+  used for the `static` constants.
+- No `TextBundle` / `NodeBundle` — components are spawned as tuples.
+- Fonts come from `FontAssets` (bevy_asset_loader), not `AssetServer::load` at
+  spawn time.
+
+## Entity-bound panel pattern
+
+Each panel has a marker component carrying the entity it describes, so update
+systems can find "the UI for this pawn":
+
+```rust
+#[derive(Component)]
+pub struct PawnUIMarker { pawn_id: Entity }
+
+impl TargetEntityUiMarker for PawnUIMarker {
+    fn new(pawn_id: Entity) -> Self { Self { pawn_id } }
 }
+
+// per-field markers for the text nodes that need refreshing
+#[derive(Component, Default)] struct PawnAgeTextUIMarker {}
+#[derive(Component, Default)] struct PawnStateTextUIMarker {}
 ```
 
-### Visibility Control
+Spawn = build the tree once with the bundle helpers; update = query
+`Query<&mut Text, With<PawnAgeTextUIMarker>>` and overwrite the string. Don't
+despawn and respawn a panel to refresh a value.
 
-```rust
-// Show/hide with Display
-mut node: Query<&mut Node, With<Panel>>
+Panels react to `EntityStateChangeEvent` / domain events via observers rather
+than polling every frame.
 
-// Hide
-node.display = Display::None;
+## Debug UI
 
-// Show
-node.display = Display::Flex;
-```
+`src/ui/debug/` — `info.rs`, `toggles.rs`, `tasks_queue.rs`, `grid.rs`,
+`navmesh.rs`, `movepath.rs`, `noise/`. egui panels read resources directly and
+draw immediately; toggles flip resource flags that gizmo-drawing systems check.
+Everything here stays behind `#[cfg(feature = "debug_ui")]` so a
+`--no-default-features` build still links.
 
-### Color and Styling
-
-```rust
-// Background
-BackgroundColor(Color::srgba(0.1, 0.1, 0.1, 0.9))
-
-// Border
-BorderColor::all(Color::srgba(0.3, 0.6, 0.9, 1.0))
-
-// Highlight on selection
-*bg_color = BackgroundColor(Color::srgba(0.2, 0.4, 0.6, 1.0));
-*border_color = BorderColor::all(Color::srgba(0.3, 0.6, 0.9, 1.0));
-```
-
-### Text Updates
-
-```rust
-// Update text content
-**text = "New content".to_string();
-
-// Or with formatting
-**text = format!("Value: {:.2}", value);
-
-// Multi-line text
-**text = "Line 1\nLine 2\nLine 3".to_string();
-```
+`bevy-inspector-egui` shows components that derive `Reflect` + `InspectorOptions`
+with `#[reflect(InspectorOptions)]`. A component without those derives is
+invisible in the inspector — and also unreadable over BRP (see `live-app`).

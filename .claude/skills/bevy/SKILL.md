@@ -1,406 +1,132 @@
 ---
 name: bevy
-description: This skill should be used when working on Bevy game engine projects. It provides specialized knowledge for Bevy's Entity Component System (ECS) architecture, component-driven design patterns, system ordering, UI development, build strategies, and common pitfalls. Use this skill when implementing game features, debugging Bevy code, designing component architectures, or working with Bevy's UI system.
+description: Use when writing or debugging Bevy code in this repo — components, systems, observers/events, queries, state tags, UI nodes, plugin wiring. Covers Bevy 0.19 API facts that pre-0.19 training data gets wrong, and this project's ECS conventions.
 ---
 
-# Bevy Game Development Skill
+# Bevy 0.19 in this project
 
-A specialized skill for developing games and applications using the Bevy game engine, based on real-world experience building complex Bevy projects.
+This repo pins **Bevy 0.19** (`Cargo.toml`), edition 2024, nightly toolchain.
+Most model priors come from 0.12–0.16 and are wrong here. Check an API against
+ground truth before writing it.
 
-## When to Use This Skill
+## Ground truth, in order of cost
 
-Invoke this skill when:
-- Implementing features in a Bevy game or application
-- Designing component architectures for ECS
-- Creating or debugging Bevy systems
-- Working with Bevy's UI system
-- Building and testing Bevy projects
-- Troubleshooting common Bevy issues
-- Organizing project structure for Bevy applications
+1. **Local registry examples** — authoritative, compile against the exact version:
+   ```
+   ~/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy-0.19.0/examples/
+   ```
+   `examples/ecs/observers.rs`, `ecs/message.rs`, `ecs/observer_propagation.rs`,
+   `ecs/relationships.rs`, `ui/*` answer most questions faster than the web.
+   `bevy-0.18.0` is also unpacked — diff the two to see what a release changed.
+2. **This repo** — `rg` for an existing usage. If ZXC already does it, copy that shape.
+3. **Migration guides** — `https://bevy.org/learn/migration-guides/0-18-to-0-19/`
+   (swap the version numbers in the URL for older hops; release notes live at
+   `https://bevy.org/news/bevy-0-19/`). Use when you need *why* something moved.
 
-## Before You Start: Essential Bevy Tips
+Never cite an API from memory when the answer is one `rg` away in the registry.
 
-### ⚠️ Bevy 0.17 Breaking Changes
+## 0.19 facts that get written wrong
 
-**If working with Bevy 0.17**, be aware of significant API changes:
-- Material handles now wrapped in `MeshMaterial3d<T>` (not `Handle<T>`)
-- Event system replaced with observer pattern (`commands.trigger()`, `add_observer()`)
-- Color arithmetic operations removed (use component extraction)
+**Events are three different things.** Pick deliberately — details and this
+project's convention live in the `message-to-event` skill.
 
-**See `references/bevy_specific_tips.md` for complete Bevy 0.17 migration guide and examples.**
+| Kind | Derive | Send | Receive | Register |
+|---|---|---|---|---|
+| Global event | `#[derive(Event)]` | `commands.trigger(e)` | `fn on_x(ev: On<E>)` | `app.add_observer(on_x)` |
+| Entity-targeted event | `#[derive(EntityEvent)]` | `commands.trigger(e)` | `On<E>`, or `commands.entity(id).observe(..)` | `add_observer` / per-entity |
+| Buffered message | `#[derive(Message)]` | `MessageWriter::write` | `MessageReader::read` | `app.add_message::<M>()` |
 
-### Consult Bevy Registry Examples First
+- The observer param is **`On<E>`**, not `Trigger<E>`. `On<E>` derefs to `E`;
+  read the target through the event's own field (`ev.entity`), **there is no
+  `On::target()`**.
+- `EntityEvent` needs a target field: named `entity`, the only field of a tuple
+  struct, or `#[event_target]`. Unit structs are rejected.
+- Lifecycle observers take two params: `On<Add, Mine>`, `On<Remove, Mine>`.
+- Propagation is opt-in: `#[entity_event(propagate, auto_propagate)]`, toggled
+  per-trigger with `ev.propagate(false)`.
+- `EventWriter` / `EventReader` / `add_event` / `.send()` **do not exist**.
+- Observers support run conditions in 0.19.
+- **ZXC defines no `Message` types.** Default to `Event` / `EntityEvent`. The one
+  `MessageWriter` in the repo (`main.rs`, `AppExit`) is a Bevy builtin — leave it.
 
-**The registry examples are your bible.** Always check them before implementing new features.
-
-**Location:**
-```bash
-~/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy-0.17.1/examples
-```
-
-There are MANY examples covering all aspects of Bevy development. Review relevant examples to understand best practices and working patterns.
-
-### Use Plugin Structure
-
-Break your app into discrete modules using plugins. This improves organization and makes code discoverable.
-
+**Queries.** `single()` / `single_mut()` return `Result`:
 ```rust
-pub struct CombatPlugin;
+let Ok(window) = windows.single() else { return };
+```
+`get_single()` is gone. Multi-entity mutation is `query.get_many_mut([a, b])`.
 
-impl Plugin for CombatPlugin {
-    fn build(&self, app: &mut App) {
-        app
-            .add_event::<DamageEvent>()
-            .add_systems(Update, (process_damage, check_death));
-    }
+**Resources are Components now (0.19).** Consequences:
+- `#[derive(Resource)]` already implements `Component` — `#[derive(Component, Resource)]`
+  on one type is a compile error. Split the type.
+- Broad queries collide with resource params: `Query<EntityMut>` + `Res<T>` now
+  conflicts; filter with `Without<IsResource>`.
+- Lifecycle observers and relationships work on resources.
+
+**Text / UI.**
+```rust
+TextFont {
+    font: font_assets.fira.clone().into(), // FontSource, not Handle<Font>
+    font_size: FontSize::Px(16.),          // not a bare f32
+    ..default()
 }
 ```
-
-See `references/bevy_specific_tips.md` for detailed plugin patterns and examples.
-
-### Design Before Coding
-
-**Pure ECS demands careful data modeling.** It's hard to search a massive list of systems in one file!
-
-Before implementing:
-1. Design the data model (entities, components, events, systems)
-2. Check Bevy examples for similar patterns
-3. Review docs and existing code
-4. Create a plugin for the feature domain
-
-See `references/bevy_specific_tips.md` for domain-driven design guidance.
-
-## Core Development Principles
-
-### Think in ECS Terms
-
-Bevy is an Entity Component System (ECS) engine. Always think in terms of **data** (components) and **transformations** (systems), not objects and methods.
-
-**Separation of Concerns:**
-- **Components** = Pure data, no logic
-- **Systems** = Pure logic, operate on components
-- **Events** = Communication between systems
-- **Resources** = Global state (use sparingly)
-
-### Component-Driven Design
-
-**Keep components focused:**
-```rust
-// ✅ GOOD: Small, focused components
-#[derive(Component)]
-pub struct Health { pub current: f32, pub max: f32 }
-
-#[derive(Component)]
-pub struct Armor { pub defense: f32 }
-
-// ❌ BAD: Monolithic component
-#[derive(Component)]
-pub struct CombatStats {
-    pub health: f32,
-    pub armor: f32,
-    pub strength: f32,
-    // ... wastes memory for entities that only have some stats
-}
-```
-
-**Add helper methods via impl blocks:**
-```rust
-impl Health {
-    pub fn is_alive(&self) -> bool {
-        self.current > 0.0
-    }
-
-    pub fn percentage(&self) -> f32 {
-        self.current / self.max
-    }
-}
-```
-
-For detailed component patterns, see `references/ecs_patterns.md`.
-
-### System Design and Ordering
-
-**Order systems by dependencies:**
-```rust
-.add_systems(
-    Update,
-    (
-        // 1. Input processing
-        handle_input,
-
-        // 2. State changes
-        process_events,
-        update_state,
-
-        // 3. Derive properties from state
-        calculate_derived_values,
-
-        // 4. Visual updates
-        update_materials,
-        update_animations,
-
-        // 5. UI updates (must run last)
-        update_ui_displays,
-    ),
-)
-```
-
-**Use change detection to optimize:**
-```rust
-// Only process entities where Health changed
-pub fn update_health_bar(
-    query: Query<(&Health, &mut HealthBar), Changed<Health>>,
-) {
-    for (health, mut bar) in query.iter_mut() {
-        bar.width = health.percentage() * 100.0;
-    }
-}
-```
-
-For detailed query patterns and system design, see `references/ecs_patterns.md`.
-
-## Build and Testing Workflow
-
-### Build Commands
-
-**Development (faster iteration):**
-```bash
-cargo build --features bevy/dynamic_linking
-```
-- Uses dynamic linking for faster compile times
-- 2-3x faster than release builds
-- Only use during development
-- **CRITICAL:** Always use this for development builds
-
-**Quick Check:**
-```bash
-cargo check
-```
-- Fastest way to verify compilation
-- Use after every significant change
-
-**Release (production):**
-```bash
-cargo build --release
-```
-- Full optimization
-- Use for final testing and distribution
-
-### Build Management - CRITICAL
-
-**DO NOT delete target binaries freely!** Bevy takes minutes to rebuild from scratch.
-
-- Avoid `cargo clean` unless absolutely necessary
-- Each clean rebuild costs valuable development time
-- Be mindful of versions, targets, and crate dependencies getting tangled
-- Bevy is under active development - stick to one version per project
-
-See `references/bevy_specific_tips.md` for detailed build optimization and version management.
-
-### Testing Workflow
-
-1. **After component changes:** Run `cargo check`
-2. **After system changes:** Run `cargo check` then `cargo build --features bevy/dynamic_linking`
-3. **Manual testing:**
-   - Does the game launch?
-   - Do the new features work?
-   - Are console logs showing expected output?
-   - Do visual changes appear correctly?
-
-**Validation points** - Let the user test at these milestones:
-- New entity spawned
-- New mechanic implemented
-- Visual effects added
-- Major system changes
-
-## UI Development in Bevy
-
-Bevy uses a flexbox-like layout system. Follow the marker component pattern:
-
-**1. Create marker components:**
-```rust
-#[derive(Component)]
-pub struct HealthBar;
-
-#[derive(Component)]
-pub struct ScoreDisplay;
-```
-
-**2. Setup in Startup:**
-```rust
-pub fn setup_ui(mut commands: Commands) {
-    commands.spawn((
-        HealthBar,
-        Node {
-            position_type: PositionType::Absolute,
-            left: Val::Px(10.0),
-            top: Val::Px(10.0),
-            width: Val::Px(200.0),
-            height: Val::Px(20.0),
-            ..default()
-        },
-        BackgroundColor(Color::srgba(0.8, 0.2, 0.2, 0.9)),
-    ));
-}
-```
-
-**3. Update in Update:**
-```rust
-pub fn update_health_ui(
-    health: Query<&Health, With<Player>>,
-    mut ui: Query<&mut Node, With<HealthBar>>,
-) {
-    if let (Ok(health), Ok(mut node)) = (health.get_single(), ui.get_single_mut()) {
-        node.width = Val::Px(health.percentage() * 200.0);
-    }
-}
-```
-
-For detailed UI patterns including positioning, styling, and text updates, see `references/ui_development.md`.
-
-## Incremental Development Strategy
-
-### Phase-Based Development
-
-Break features into phases:
-
-**Phase 1: Foundation** - Core components and basic systems
-**Phase 2: Content** - Add entities and populate world
-**Phase 3: Polish** - UI improvements and visual effects
-**Phase 4: Advanced Features** - Complex mechanics and AI
-
-### Iteration Pattern
-
-```
-1. Plan → 2. Implement → 3. Build → 4. Test → 5. Refine
-     ↑                                           ↓
-     ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
-```
-
-**Each phase should have:**
-1. Clear success criteria (checklist of what works)
-2. Manual test cases (step-by-step testing procedures)
-3. User validation points (when to let user test)
-
-## Performance Optimization
-
-### When to Optimize
-
-**For prototypes (7-100 entities):**
-- No optimization needed
-- Change detection is sufficient
-- Focus on features, not performance
-
-**For production (100+ entities):**
-- Use spatial partitioning for proximity queries
-- Batch material updates
-- Consider Fixed timestep for physics
-- Profile before optimizing
-
-### Query Optimization Tips
-
-1. **Use change detection:** `Query<&Component, Changed<Component>>`
-2. **Filter early:** `Query<&A, (With<B>, Without<C>)>` instead of filtering in loops
-3. **Check resource changes:** Return early if resource hasn't changed
-
-## Common Pitfalls to Avoid
-
-**Critical mistakes and their solutions are documented in `references/common_pitfalls.md`. Key pitfalls include:**
-
-1. Forgetting to register systems in `main.rs`
-2. Borrowing conflicts (use `get_many_mut` for multiple mutations)
-3. Not using `Changed<T>` for expensive operations
-4. Wrong system ordering (input → state → derived → visual → UI)
-5. Entity queries after despawn (use `if let Ok()` pattern)
-6. Material/asset handle confusion (store handles properly)
-
-Review `references/common_pitfalls.md` before implementing complex features.
-
-## Using Subagents for Complex Features
-
-When implementing multi-step features, use the plan-implementer subagent with this structure:
-
-```
-Goal: [One sentence describing end state]
-
-Current State: [What exists now]
-
-Requirements: [Numbered list of what to build]
-
-Implementation Steps: [Suggested approach]
-
-Success Criteria: [How to verify it works]
-
-Notes: [Important context, edge cases, design principles]
-```
-
-**Example:**
-```
-Implement Health System
-
-Goal: Implement a health system with damage, healing, and death mechanics.
-
-Current State:
-- Player entity exists
-- No health tracking yet
-
-Requirements:
-1. Create Health component with current/max values
-2. Create DamageEvent for dealing damage
-3. Create system to process damage events
-4. Add death detection when health reaches 0
-5. Add visual health bar UI
-
-Implementation Steps:
-1. Create Health component in src/components/properties.rs
-2. Create DamageEvent in src/events.rs
-3. Create process_damage system in src/systems/combat.rs
-4. Create check_death system
-5. Create health bar UI in src/systems/ui/health_bar.rs
-6. Register all systems in main.rs in correct order
-
-Success Criteria:
-- Player spawns with Health component
-- Damage events reduce health
-- Health bar updates when health changes
-- Entity despawns when health reaches 0
-- Code compiles without errors
-```
-
-## Project Structure Reference
-
-For details on recommended file organization, module structure, and component file patterns, see `references/project_structure.md`.
+- `Val` helpers: `px(10.)`, `percent(25.)` — used throughout `src/ui/`.
+- `TextLayout::new_with_justify` → `TextLayout::justify` (same for `linebreak`, `no_wrap`).
+- `ComputedNode::stack_index` moved to its own `ComputedStackIndex` component.
+- `Node` gained `direction: InlineDirection`.
+
+**Renames worth knowing.** `Scene` → `WorldAsset`, `SceneRoot` → `WorldAssetRoot`,
+`bevy::scene` → `bevy::world_serialization`; `DefaultErrorHandler` → `FallbackErrorHandler`;
+`schedule.set_executor_kind(..)` → `schedule.set_executor(MultiThreadedExecutor::new())`.
+
+For the full sweep see `references/api_0_19.md`.
+
+## This project's conventions
+
+Follow these over any generic Bevy advice — full detail in
+`references/project_structure.md`.
+
+- **Feature modules, not `components/` + `systems/` folders.** A feature is
+  `src/<feature>.rs` when it fits one file, `src/<feature>/mod.rs` + submodules
+  when it doesn't. `mod.rs` holds the plugin. Single-file module *directories*
+  were deliberately flattened — don't reintroduce them.
+- **Every feature is a plugin**, registered in `main.rs` (~30 of them, split
+  infrastructure / entity-behaviour).
+- **`crate::prelude::*` is the only legal glob import.** A symbol earns a place
+  in it only when ≥10 files need it. Everything domain-level is imported by path.
+  Clippy warns on `wildcard_imports`.
+- **State machines are exclusive tag components.** Generate them with
+  `exclusive_state_tags!(A, B, C)` — it emits `#[component(immutable, on_add = ..)]`
+  tags that remove their siblings via a hook, so the invariant holds at the ECS
+  level. Query with `With<Tag>` / `Without<Tag>`; guard with `ensure_state!(fn:/loop:)`,
+  `return_unless!`, `continue_unless!`.
+- **Logging macros:** `log_state_change!` (debug!) and `log_event!` (wraps an
+  event value, logs it, returns it — use inline: `commands.trigger(log_event!(FooEvent { entity }))`).
+- **Config** is RON, read via `config()` → `&'static RootConfig`. Z-index
+  constants come from `config.rs` (`TILE(0) → PROP(5) → STRUCTURE(10) → PAWN(20) → ITEM(40) → NIGHT(100)`).
+- **Time types**: see CLAUDE.md § Bevy Time Types. `Res<Time>` for deltas,
+  `Res<Time<Virtual>>` only for `elapsed_secs()`, never `Time<Virtual>` deltas
+  inside `FixedUpdate`.
+- **Debug UI** is `bevy_egui` + `bevy-inspector-egui` behind the `debug_ui`
+  feature; gameplay UI is plain `bevy_ui` nodes with marker components.
+
+## Build workflow
+
+`dynamic_linking` is **already on** in `Cargo.toml` — do not add
+`--features bevy/dynamic_linking` to commands. Avoid `cargo clean`; a cold Bevy
+rebuild costs minutes.
+
+Verification after a change is defined in CLAUDE.md (build / test / clippy /
+targeted fmt). `cargo check` is fine for a fast inner loop, but the CLAUDE.md
+block is what must pass before calling a task done.
+
+To verify something only observable at runtime, use the **`live-app` skill** —
+don't hand-roll a `cargo run` + BRP session.
 
 ## References
 
-This skill includes detailed reference documentation:
-
-- `references/bevy_specific_tips.md` - **START HERE:** Registry examples, plugin structure, build optimization, version management, domain-driven design for ECS
-- `references/ecs_patterns.md` - Component design patterns, query patterns, and common ECS design patterns (Derivation, State Machine, Threshold/Trigger, Event-Driven, Initialization)
-- `references/ui_development.md` - Bevy UI hierarchy, component patterns, layout tips, positioning, styling, and text updates
-- `references/common_pitfalls.md` - Common mistakes and their solutions (system registration, borrowing conflicts, change detection, system ordering, entity queries, asset handles)
-- `references/project_structure.md` - Recommended file organization, module structure, component file patterns, and change detection
-
-Load these references as needed to inform implementation decisions.
-
-## Additional Resources
-
-**Bevy Documentation:**
-- Official Bevy Book: https://bevyengine.org/learn/book/
-- Bevy Examples: https://github.com/bevyengine/bevy/tree/main/examples (also in `~/.cargo/registry/...`)
-- Bevy Cheat Book: https://bevy-cheatbook.github.io/
-- Plugin Guide: https://bevy.org/learn/quick-start/getting-started/plugins/
-- System Sets: https://bevy-cheatbook.github.io/programming/system-sets.html
-- Setup & Optimization: https://bevy.org/learn/quick-start/getting-started/setup/
-
-**ECS Design Principles:**
-- Prefer composition over inheritance
-- One component = one concern
-- Systems should be pure functions
-- Use events to decouple systems
-- **Design data model before coding**
-- **Check registry examples first**
-
----
-
-**Remember:** Think in terms of data (components) and transformations (systems), not objects and methods. Always consult registry examples and design your data model before diving into implementation. This is the key to effective Bevy development.
+- `references/api_0_19.md` — 0.19 breaking-change cheat sheet, grouped by area
+- `references/project_structure.md` — real ZXC layout, plugin wiring, prelude rules
+- `references/ecs_patterns.md` — the patterns this codebase actually uses
+- `references/ui_development.md` — bevy_ui node/marker idiom + egui debug panels
+- `references/common_pitfalls.md` — traps specific to 0.19 and to this repo
