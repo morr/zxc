@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Bevy Remote Protocol helper for the running ZXC game.
+# Bevy Remote Protocol helper for the running app.
 #
 #   brp.sh <method> [params-json]
 #
-# Examples:
+# Examples (swap <crate> for this project's crate name):
 #   brp.sh rpc.discover
-#   brp.sh world.query '{"data":{"components":["zxc::pawn::components::Pawn"]},"strict":true}'
+#   brp.sh world.query '{"data":{"components":["<crate>::pawn::components::Pawn"]},"strict":true}'
 #   brp.sh world.list_components '{"entity":4294966761}'
 #   brp.sh world.get_resources '{"resource":"bevy_time::time::Time<bevy_time::virt::Virtual>"}'
 #
@@ -27,7 +27,7 @@ fi
 
 if ! curl -s -m "${BRP_TIMEOUT:-5}" -X POST "$URL" \
     -H 'Content-Type: application/json' -d "$BODY"; then
-    echo "brp: no response from $URL — is the game running (cargo run in background)?" >&2
+    echo "brp: no response from $URL — is the app running (cargo run in background)?" >&2
     exit 1
 fi
 echo
