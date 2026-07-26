@@ -1,5 +1,17 @@
-use crate::*;
-
+use crate::carryable::CarriedBy;
+use crate::carryable::Carryable;
+use crate::carryable::CarryableFoodMarker;
+use crate::carryable::FoodStock;
+use crate::commandable::CommandType;
+use crate::commandable::Commandable;
+use crate::commandable::FeedCommand;
+use crate::map::WorldTranslationHelper;
+use crate::navigation::ArcNavmesh;
+use crate::pawn::PawnDeathEvent;
+use crate::pawn::PawnDeathReason;
+use crate::prelude::*;
+use bevy_inspector_egui::prelude::InspectorOptions;
+use bevy_inspector_egui::prelude::ReflectInspectorOptions;
 pub struct FeedablePlugin;
 
 impl Plugin for FeedablePlugin {

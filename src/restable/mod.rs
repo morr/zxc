@@ -1,4 +1,9 @@
-use crate::*;
+use crate::commandable::CommandType;
+use crate::commandable::Commandable;
+use crate::commandable::ToRestCommand;
+use crate::prelude::*;
+use bevy_inspector_egui::prelude::InspectorOptions;
+use bevy_inspector_egui::prelude::ReflectInspectorOptions;
 use std::mem;
 
 pub struct RestablePlugin;

@@ -1,4 +1,5 @@
-use super::*;
+use crate::prelude::*;
+use crate::workable::WorkKind;
 use std::collections::VecDeque;
 
 pub struct TasksQueuePlugin;

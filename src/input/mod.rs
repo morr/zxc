@@ -1,7 +1,9 @@
 use bevy::window::PrimaryWindow;
 
-use crate::*;
-
+use crate::camera::FloorCamera;
+use crate::map::WorldTranslationHelper;
+use crate::navigation::Navmesh;
+use crate::prelude::*;
 pub struct InputPlugin;
 
 impl Plugin for InputPlugin {

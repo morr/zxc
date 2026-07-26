@@ -1,5 +1,30 @@
-use crate::*;
-
+use crate::carryable::FoodStock;
+use crate::commandable::CommandType;
+use crate::commandable::Commandable;
+use crate::commandable::CommandableState;
+use crate::commandable::CompleteTaskCommand;
+use crate::commandable::DropCarriedItemCommand;
+use crate::commandable::FeedCommand;
+use crate::commandable::MoveToCommand;
+use crate::commandable::PickUpItemCommand;
+use crate::commandable::ToRestCommand;
+use crate::commandable::WorkOnCommand;
+use crate::feedable::Feedable;
+use crate::map::WorldTranslationHelper;
+use crate::movable::Movable;
+use crate::movable::MovableState;
+use crate::navigation::ArcNavmesh;
+use crate::navigation::find_empty_grid_tile;
+use crate::pawn::Pawn;
+use crate::pawn::PawnState;
+use crate::pawn::pawn_state;
+use crate::prelude::*;
+use crate::restable::Restable;
+use crate::structure::Farm;
+use crate::structure::FarmState;
+use crate::tasks_queue::TaskKind;
+use crate::tasks_queue::TasksQueue;
+use crate::workable::WorkKind;
 pub struct AiPlugin;
 
 impl Plugin for AiPlugin {
