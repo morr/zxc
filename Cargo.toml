@@ -53,3 +53,4 @@ opt-level = 3
 
 [lints.clippy]
 type_complexity = "allow"
+wildcard_imports = "warn"
