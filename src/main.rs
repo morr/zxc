@@ -4,7 +4,21 @@ use bevy::app::AppExit;
 // #[cfg(feature = "debug_ui")]
 // use bevy::dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin};
 use bevy::remote::{RemotePlugin, http::RemoteHttpPlugin};
-use zxc::*;
+use bevy_asset_loader::prelude::{LoadingState, LoadingStateAppExt};
+use zxc::commandable::Commandable;
+use zxc::config::{RootConfig, apply_global_config, load_config, on_root_config_changed};
+use zxc::feedable::Feedable;
+use zxc::movable::Movable;
+use zxc::pawn::Pawn;
+use zxc::prelude::*;
+use zxc::restable::Restable;
+use zxc::structure::Farm;
+use zxc::workable::Workable;
+use zxc::{
+    ai, assets, async_queue, camera, carryable, commandable, daylight, feedable, input, map,
+    movable, navigation, pawn, restable, story_time, structure, tasks_queue, ui, user_selection,
+    workable,
+};
 
 fn main() {
     let root_config = load_config();

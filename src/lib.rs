@@ -6,6 +6,7 @@ pub use std::sync::LazyLock;
 
 pub mod events;
 mod macros;
+pub mod prelude;
 pub mod state;
 
 // ВРЕМЕННО: снимается в 4.5 вместе с остальными плоскими реэкспортами
