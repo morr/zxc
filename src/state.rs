@@ -5,5 +5,4 @@ pub enum AppState {
     #[default]
     Loading,
     Playing,
-    Quiting,
 }

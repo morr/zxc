@@ -131,7 +131,6 @@ pub fn close_on_esc(
         // Option<&commandable_state::CommandableStateExecutingTag>,
     )>,
     farms_query: Query<(Entity, &Farm, &Workable)>,
-    mut next_state: ResMut<NextState<AppState>>,
     mut event_writer: MessageWriter<AppExit>,
 ) {
     let mut is_quiting = false;
@@ -162,8 +161,6 @@ pub fn close_on_esc(
             info!("{:?}", workable);
         }
 
-        next_state.set(AppState::Quiting);
         event_writer.write(AppExit::Success);
-        std::process::exit(0);
     }
 }
